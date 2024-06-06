@@ -16,6 +16,7 @@ exports.FlightController = void 0;
 const common_1 = require("@nestjs/common");
 const flight_service_1 = require("./flight.service");
 const flight_model_1 = require("./flight.model");
+const swagger_1 = require("@nestjs/swagger");
 let FlightController = class FlightController {
     constructor(flightService) {
         this.flightService = flightService;
@@ -33,6 +34,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "filterFlights", null);
 exports.FlightController = FlightController = __decorate([
+    (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
     __metadata("design:paramtypes", [flight_service_1.FlightService])
 ], FlightController);
