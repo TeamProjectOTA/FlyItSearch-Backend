@@ -5,6 +5,5 @@ export declare class TourpackageController {
     private readonly tourpackageService;
     constructor(tourpackageService: TourpackageService);
     create(tourpackageDto: TourpackageDto, file: Express.Multer.File): Promise<Tourpackage>;
-    findAllFlight(): Promise<Tourpackage[]>;
-    findAll(): Promise<Tourpackage[]>;
+    findAll(category: string): Promise<Tourpackage[]>;
 }

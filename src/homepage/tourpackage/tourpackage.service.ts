@@ -32,10 +32,9 @@ export class TourpackageService {
     newPackage.picture = path;
     const savedPackage = await this.tourPacageRepository.save(newPackage);
 
-  
-  if (!savedPackage) {
-    throw new InternalServerErrorException('Failed to save tour package');
-  }
+    if (!savedPackage) {
+      throw new InternalServerErrorException('Failed to save tour package');
+    }
     return savedPackage;
   }
   async findOne(title: string) {
@@ -47,11 +46,47 @@ export class TourpackageService {
     }
     return packagefind;
   }
-  async findByFlight(category: string) {
-    return await this.tourPacageRepository.find({
-      where: { category: category },
-    });
+
+
+ 
+
+
+  async findAll(category:string) {
+    return await this.tourPacageRepository.find({where:{category}});
   }
-  async findAll()
-  {return await this.tourPacageRepository.find()}
+
+
+//   async findByHotel(category:string){
+//     const hotel =await this.tourPacageRepository.find({where:{category}})
+//     if(!hotel||hotel.length==0){
+//       throw new NotFoundException("No Hotel deals avilable at the moment")
+//     }
+//     return hotel
+//   }
+
+
+
+//   async findByGroupFare(category: string) {
+//     const groupFare = await this.tourPacageRepository.find({ where: { category } });
+//     if (!groupFare || groupFare.length === 0) {
+//         throw new NotFoundException("No Group Fare available at the moment");
+//     }
+//     return groupFare;
+// }
+
+// async findByTour(category:string){
+//   const tour= await this.tourPacageRepository.find({where:{category}})
+//   if(!tour || tour.length==0){
+//     throw new NotFoundException("No Tour deals avilable at the moment")
+//   }
+// }
+ // async findByFlight(category: string) {
+  //   const flight = await this.tourPacageRepository.find({
+  //     where: { category },
+  //   })
+  //   if(!flight||flight.length==0){
+  //     throw new NotFoundException("No flight deals avilable at the moment")
+  //   }
+  //   return flight;
+  // }
 }

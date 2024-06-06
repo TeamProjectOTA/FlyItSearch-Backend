@@ -47,7 +47,7 @@ export class UserService {
     add.fullName = createUserDto.fullName.toUpperCase();
     add.phone = createUserDto.phone;
     add.email = createUserDto.email;
-    
+
     add.password = hashedPassword;
 
     return this.userRepository.save(add);
@@ -61,9 +61,9 @@ export class UserService {
       throw new NotFoundException();
     }
     const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-    updateUser.fullName=updateUserDto.fullName
+    updateUser.fullName = updateUserDto.fullName;
     updateUser.email = updateUserDto.email;
-    updateUser.password=hashedPassword
+    updateUser.password = hashedPassword;
 
     return await this.userRepository.save(updateUser);
   }

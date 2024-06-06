@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -10,9 +11,9 @@ import { TourpackageService } from './tourpackage.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { Tourpackage, TourpackageDto } from './tourpackage.model';
+import { Category, Tourpackage, TourpackageDto } from './tourpackage.model';
 import { ApiTags } from '@nestjs/swagger';
-
+import { get } from 'http';
 
 @ApiTags('Hotdeals-Api')
 @Controller('hotdeals')
@@ -40,14 +41,36 @@ export class TourpackageController {
   ): Promise<Tourpackage> {
     return this.tourpackageService.create(tourpackageDto, file.filename);
   }
-  @Get("/flight")
-  findAllFlight(){
-    const category='Flight'
-    return this.tourpackageService.findByFlight(category)
+
+  @Get('/:category')
+  findAll(@Param('category')category:string) {
+    return this.tourpackageService.findAll(category);
   }
-  @Get('/all-hotdeals')
-  findAll(){
-    return this.tourpackageService.findAll()
-  }
+
+
+  // @Get('/flight')
+  // findAllFlight() {
+  //   const category = 'Flight';
+  //   return this.tourpackageService.findByFlight(category);
+  // }
+
+
+  // @Get('/hotel')
+  // findAllHotel(){
+  //   const category = 'Hotel';
+  //   return this.tourpackageService.findByHotel(category)
+  // }
+
+  // @Get('/group-fare')
+  // findAllGroupFare(){
+  //   const category = 'Group Fare';
+  //   return this.tourpackageService.findByGroupFare(category)
+  // }
+
+  // @Get('/tour')
+  // findAllTour(){
+  //   const category = 'Tour';
+  //   return this.tourpackageService.findByTour(category)
+  // }
 
 }

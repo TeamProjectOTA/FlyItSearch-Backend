@@ -69,7 +69,7 @@ exports.AppModule = AppModule = __decorate([
             book_module_1.BookModule,
             homepage_module_1.HomepageModule,
             pdf_module_1.PdfModule,
-            tourpackage_module_1.TourpackageModule
+            tourpackage_module_1.TourpackageModule,
         ],
         controllers: [google_outh_controller_1.GoogleOuthController],
         providers: [

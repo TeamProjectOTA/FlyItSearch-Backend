@@ -49,12 +49,9 @@ let TourpackageService = class TourpackageService {
         }
         return packagefind;
     }
-    async findByFlight(category) {
-        return await this.tourPacageRepository.find({
-            where: { category: category },
-        });
+    async findAll(category) {
+        return await this.tourPacageRepository.find({ where: { category } });
     }
-    async findAll() { return await this.tourPacageRepository.find(); }
 };
 exports.TourpackageService = TourpackageService;
 exports.TourpackageService = TourpackageService = __decorate([

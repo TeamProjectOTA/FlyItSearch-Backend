@@ -1,8 +1,8 @@
 export declare enum Category {
-    FLight = "Flight",
-    Hotel = "Hotel",
-    Tour = "Tour",
-    GroupFare = "Group Fare"
+    FLight = "flight",
+    Hotel = "hotel",
+    Tour = "tour",
+    GroupFare = "groupFare"
 }
 export declare class TourpackageDto {
     category: Category;

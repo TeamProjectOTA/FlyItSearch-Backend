@@ -2,10 +2,10 @@ import { IsEnum, IsString } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 export enum Category {
-  FLight = 'Flight',
-  Hotel = 'Hotel',
-  Tour="Tour",
-  GroupFare="Group Fare"
+  FLight = 'flight',
+  Hotel = 'hotel',
+  Tour = 'tour',
+  GroupFare = 'groupFare',
 }
 
 export class TourpackageDto {

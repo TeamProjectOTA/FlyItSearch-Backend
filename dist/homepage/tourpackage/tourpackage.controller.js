@@ -27,12 +27,8 @@ let TourpackageController = class TourpackageController {
     async create(tourpackageDto, file) {
         return this.tourpackageService.create(tourpackageDto, file.filename);
     }
-    findAllFlight() {
-        const category = 'Flight';
-        return this.tourpackageService.findByFlight(category);
-    }
-    findAll() {
-        return this.tourpackageService.findAll();
+    findAll(category) {
+        return this.tourpackageService.findAll(category);
     }
 };
 exports.TourpackageController = TourpackageController;
@@ -56,15 +52,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TourpackageController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)("/flight"),
+    (0, common_1.Get)('/:category'),
+    __param(0, (0, common_1.Param)('category')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], TourpackageController.prototype, "findAllFlight", null);
-__decorate([
-    (0, common_1.Get)('/all-hotdeals'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], TourpackageController.prototype, "findAll", null);
 exports.TourpackageController = TourpackageController = __decorate([

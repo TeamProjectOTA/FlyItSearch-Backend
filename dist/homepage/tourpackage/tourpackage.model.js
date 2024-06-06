@@ -14,10 +14,10 @@ const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
 var Category;
 (function (Category) {
-    Category["FLight"] = "Flight";
-    Category["Hotel"] = "Hotel";
-    Category["Tour"] = "Tour";
-    Category["GroupFare"] = "Group Fare";
+    Category["FLight"] = "flight";
+    Category["Hotel"] = "hotel";
+    Category["Tour"] = "tour";
+    Category["GroupFare"] = "groupFare";
 })(Category || (exports.Category = Category = {}));
 class TourpackageDto {
 }

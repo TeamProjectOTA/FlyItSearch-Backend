@@ -3,7 +3,6 @@ import { FlightService } from './flight.service';
 import { Flight, flightModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
 
-
 @ApiTags('Flight-filters')
 @Controller('flights')
 export class FlightController {

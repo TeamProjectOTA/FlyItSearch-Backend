@@ -69,7 +69,7 @@ require('dotenv').config();
     BookModule,
     HomepageModule,
     PdfModule,
-    TourpackageModule
+    TourpackageModule,
   ],
   controllers: [GoogleOuthController],
   providers: [
