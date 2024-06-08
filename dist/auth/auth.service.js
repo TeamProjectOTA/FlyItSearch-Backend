@@ -26,23 +26,15 @@ let AuthService = class AuthService {
         this.userRepository = userRepository;
         this.jwtservice = jwtservice;
     }
-    async signInAdmin(adminId, pass) {
+    async signInAdmin(uuid, pass) {
         const admin = await this.adminRepository.findOne({
-            where: { adminid: adminId },
+            where: { uuid: uuid },
         });
         if (!admin || admin.password !== pass) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
+            throw new common_1.UnauthorizedException('Invalid UUID or password');
         }
-        const payload = { sub: admin.adminid };
-        const sanitizedAdmin = {
-            firstName: admin.firstName,
-            lastName: admin.lastName,
-            email: admin.email,
-        };
-        return {
-            admin: sanitizedAdmin,
-            access_token: await this.jwtservice.signAsync(payload),
-        };
+        const payload = { sub: admin.uuid };
+        return { access_token: await this.jwtservice.signAsync(payload) };
     }
     async verifyAdminToken(header) {
         try {
@@ -51,9 +43,9 @@ let AuthService = class AuthService {
                 throw new common_1.UnauthorizedException();
             }
             const decodedToken = await this.jwtservice.verifyAsync(token);
-            const adminId = decodedToken.sub;
+            const uuid = decodedToken.sub;
             const adminData = await this.adminRepository.findOne({
-                where: { adminid: adminId },
+                where: { uuid: uuid },
             });
             if (!adminData) {
                 throw new common_1.UnauthorizedException();
@@ -86,7 +78,6 @@ let AuthService = class AuthService {
             phone: user.phone,
         };
         return {
-            user: sanitizedUser,
             access_token: await this.jwtservice.signAsync(payload),
         };
     }

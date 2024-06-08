@@ -9,7 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Segment = exports.Flight = exports.CityInfo = exports.SegmentModel = exports.flightModel = exports.JourneyType = void 0;
+exports.Segment = exports.Flight = exports.FlightSearchModel = exports.JourneyType = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
 var JourneyType;
@@ -19,36 +20,65 @@ var JourneyType;
     JourneyType[JourneyType["Business"] = 3] = "Business";
     JourneyType[JourneyType["First"] = 4] = "First";
 })(JourneyType || (exports.JourneyType = JourneyType = {}));
-class flightModel {
+class SegmentDto {
 }
-exports.flightModel = flightModel;
 __decorate([
-    (0, class_validator_1.IsIn)(['One way', 'Round Way', 'Multi City']),
+    (0, swagger_1.ApiProperty)({ default: 'DAC' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(3, 3),
     __metadata("design:type", String)
-], flightModel.prototype, "journyType", void 0);
+], SegmentDto.prototype, "depfrom", void 0);
 __decorate([
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], flightModel.prototype, "Segments", void 0);
+    (0, swagger_1.ApiProperty)({ default: 'DXB' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(3, 3),
+    __metadata("design:type", String)
+], SegmentDto.prototype, "arrto", void 0);
 __decorate([
-    (0, class_validator_1.IsArray)(),
-    (0, class_validator_1.ArrayMaxSize)(10),
-    __metadata("design:type", Array)
-], flightModel.prototype, "cities", void 0);
-class SegmentModel {
+    (0, swagger_1.ApiProperty)({ default: '2024-07-01' }),
+    (0, class_validator_1.IsDate)(),
+    __metadata("design:type", Date)
+], SegmentDto.prototype, "depdate", void 0);
+class FlightSearchModel {
+    constructor() {
+        this.connection = '2';
+        this.cabinclass = 'Y';
+    }
 }
-exports.SegmentModel = SegmentModel;
+exports.FlightSearchModel = FlightSearchModel;
 __decorate([
-    (0, class_validator_1.IsEnum)(JourneyType),
+    (0, swagger_1.ApiProperty)({ default: 1 }),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.IsPositive)(),
     __metadata("design:type", Number)
-], SegmentModel.prototype, "CabinClass", void 0);
-class CityInfo {
-}
-exports.CityInfo = CityInfo;
+], FlightSearchModel.prototype, "adultcount", void 0);
 __decorate([
-    (0, class_validator_1.IsDateString)(),
+    (0, swagger_1.ApiProperty)({ default: 0 }),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], FlightSearchModel.prototype, "childcount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: 0 }),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], FlightSearchModel.prototype, "infantcount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: 2 }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], CityInfo.prototype, "journyDate", void 0);
+], FlightSearchModel.prototype, "connection", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: 'Y' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.Length)(1, 1),
+    __metadata("design:type", String)
+], FlightSearchModel.prototype, "cabinclass", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [SegmentDto] }),
+    (0, class_validator_1.ArrayMinSize)(1),
+    (0, class_validator_1.ArrayMaxSize)(4),
+    __metadata("design:type", Array)
+], FlightSearchModel.prototype, "segments", void 0);
 let Flight = class Flight {
 };
 exports.Flight = Flight;

@@ -22,7 +22,7 @@ let AuthController = class AuthController {
         this.authservice = authservice;
     }
     signIn(signIndto) {
-        return this.authservice.signInAdmin(signIndto.adminid, signIndto.password);
+        return this.authservice.signInAdmin(signIndto.uuid, signIndto.password);
     }
     signInUser(signIndto) {
         return this.authservice.signInUser(signIndto.email, signIndto.password);

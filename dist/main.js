@@ -7,15 +7,13 @@ const common_1 = require("@nestjs/common");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.useGlobalPipes(new common_1.ValidationPipe());
-    app.enableCors();
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Flight')
         .setDescription('Flight api description')
         .setVersion('2.0')
         .addTag('flight')
         .addSecurityRequirements('token')
-        .addBearerAuth({
-        type: 'http',
+        .addBearerAuth({ type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
         in: 'header',

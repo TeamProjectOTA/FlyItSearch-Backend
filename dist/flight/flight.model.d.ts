@@ -4,24 +4,18 @@ export declare enum JourneyType {
     Business = 3,
     First = 4
 }
-export declare class flightModel {
-    journyType: string;
-    adultCount: number;
-    childerenCount: number;
-    infantCount: number;
-    Segments: SegmentModel[];
-    cities: CityInfo[];
+declare class SegmentDto {
+    depfrom: string;
+    arrto: string;
+    depdate: Date;
 }
-export declare class SegmentModel {
-    Origin: string;
-    Destination: string;
-    CabinClass: JourneyType;
-    DepartureDateTime: string;
-}
-export declare class CityInfo {
-    from: string;
-    to: string;
-    journyDate: string;
+export declare class FlightSearchModel {
+    adultcount: number;
+    childcount: number;
+    infantcount: number;
+    connection: string;
+    cabinclass: string;
+    segments: SegmentDto[];
 }
 export declare class Flight {
     id: number;
@@ -40,3 +34,4 @@ export declare class Segment {
     DepartureDateTime: string;
     flight: Flight;
 }
+export {};

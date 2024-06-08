@@ -60,7 +60,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Tourpackage.prototype, "picture", void 0);
+], Tourpackage.prototype, "pictureName", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Tourpackage.prototype, "path", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Tourpackage.prototype, "size", void 0);
 exports.Tourpackage = Tourpackage = __decorate([
     (0, typeorm_1.Entity)()
 ], Tourpackage);

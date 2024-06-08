@@ -5,10 +5,8 @@ export declare class AuthController {
     constructor(authservice: AuthService);
     signIn(signIndto: Authdto): Promise<{
         access_token: string;
-        admin: Partial<import("../admin/entities/admin.entity").Admin>;
     }>;
     signInUser(signIndto: Userauthdto): Promise<{
         access_token: string;
-        user: Partial<import("../user/entities/user.entity").User>;
     }>;
 }

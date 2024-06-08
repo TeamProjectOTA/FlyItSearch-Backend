@@ -79,6 +79,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "remove", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)(),
     __param(0, (0, common_1.Headers)()),
     __metadata("design:type", Function),

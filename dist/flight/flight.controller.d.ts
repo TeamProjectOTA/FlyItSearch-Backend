@@ -1,7 +1,9 @@
 import { FlightService } from './flight.service';
-import { Flight, flightModel } from './flight.model';
+import { FlightSearchModel } from './flight.model';
+import { SabreService } from './sabre.flights.service';
 export declare class FlightController {
     private readonly flightService;
-    constructor(flightService: FlightService);
-    filterFlights(filter: flightModel): Promise<Flight[]>;
+    private readonly sabreService;
+    constructor(flightService: FlightService, sabreService: SabreService);
+    search(flightdto: FlightSearchModel): Promise<any>;
 }

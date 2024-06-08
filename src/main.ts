@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
-  app.enableCors();
+  //app.enableCors();
   //app.useStaticAssets(join(__dirname, '..', 'uploads'));
   /*
   const allowedIP = ('192.168.10.30')
@@ -30,15 +30,12 @@ async function bootstrap() {
     .addTag('flight')
     .addSecurityRequirements('token')
     .addBearerAuth(
-      {
-        type: 'http',
+      { type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
         in: 'header',
         name: 'Authorization',
-      },
-      'access_token',
-    )
+      },'access_token')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

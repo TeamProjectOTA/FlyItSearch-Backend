@@ -17,27 +17,24 @@ export class AuthService {
   ) {}
 
   async signInAdmin(
-    adminId: string,
+    uuid: string,
     pass: string,
-  ): Promise<{ access_token: string; admin: Partial<Admin> }> {
+  ): Promise<{ access_token: string;  }> {
     const admin = await this.adminRepository.findOne({
-      where: { adminid: adminId },
+      where: { uuid: uuid },
     });
 
     if (!admin || admin.password !== pass) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid UUID or password');
     }
 
-    const payload = { sub: admin.adminid };
-    const sanitizedAdmin: Partial<Admin> = {
-      firstName: admin.firstName,
-      lastName: admin.lastName,
-      email: admin.email,
-    };
-    return {
-      admin: sanitizedAdmin,
-      access_token: await this.jwtservice.signAsync(payload),
-    };
+    const payload = { sub: admin.uuid };
+    // const sanitizedAdmin: Partial<Admin> = {
+    //   firstName: admin.firstName,
+    //   lastName: admin.lastName,
+    //   email: admin.email,
+    // };
+    return { access_token: await this.jwtservice.signAsync(payload) }   
   }
 
   async verifyAdminToken(header: any) {
@@ -49,10 +46,10 @@ export class AuthService {
       }
 
       const decodedToken = await this.jwtservice.verifyAsync(token);
-      const adminId = decodedToken.sub;
+      const uuid = decodedToken.sub;
 
       const adminData = await this.adminRepository.findOne({
-        where: { adminid: adminId },
+        where: { uuid: uuid },
       });
 
       if (!adminData) {
@@ -72,7 +69,7 @@ export class AuthService {
   async signInUser(
     email: string,
     pass: string,
-  ): Promise<{ access_token: string; user: Partial<User> }> {
+  ): Promise<{ access_token: string;}> {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
@@ -94,7 +91,6 @@ export class AuthService {
       phone: user.phone,
     };
     return {
-      user: sanitizedUser,
       access_token: await this.jwtservice.signAsync(payload),
     };
   }

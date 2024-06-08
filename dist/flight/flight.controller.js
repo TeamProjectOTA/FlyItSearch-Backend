@@ -17,25 +17,27 @@ const common_1 = require("@nestjs/common");
 const flight_service_1 = require("./flight.service");
 const flight_model_1 = require("./flight.model");
 const swagger_1 = require("@nestjs/swagger");
+const sabre_flights_service_1 = require("./sabre.flights.service");
 let FlightController = class FlightController {
-    constructor(flightService) {
+    constructor(flightService, sabreService) {
         this.flightService = flightService;
+        this.sabreService = sabreService;
     }
-    async filterFlights(filter) {
-        return await this.flightService.filterFlights(filter);
+    search(flightdto) {
+        return this.sabreService.shoppingBranded(flightdto);
     }
 };
 exports.FlightController = FlightController;
 __decorate([
-    (0, common_1.Post)('filter'),
+    (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flight_model_1.flightModel]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "filterFlights", null);
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
+    __metadata("design:returntype", void 0)
+], FlightController.prototype, "search", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
-    __metadata("design:paramtypes", [flight_service_1.FlightService])
+    __metadata("design:paramtypes", [flight_service_1.FlightService, sabre_flights_service_1.SabreService])
 ], FlightController);
 //# sourceMappingURL=flight.controller.js.map

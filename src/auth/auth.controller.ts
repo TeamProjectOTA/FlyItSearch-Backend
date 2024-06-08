@@ -10,7 +10,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('sign-in-admin')
   signIn(@Body() signIndto: Authdto) {
-    return this.authservice.signInAdmin(signIndto.adminid, signIndto.password);
+    return this.authservice.signInAdmin(signIndto.uuid, signIndto.password);
   }
 
   @HttpCode(HttpStatus.OK)

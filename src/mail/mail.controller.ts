@@ -5,13 +5,12 @@ import {
   Headers,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MailService } from './mail.service';
 import { sendEmaildto } from './mail.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import { Admin } from 'src/admin/entities/admin.entity';
 
@@ -25,6 +24,8 @@ export class MailController {
     private readonly mailsevice: MailService,
     private readonly jwtservice: JwtService,
   ) {}
+
+  @ApiBearerAuth('access_token')
   @Post('/send-email/:passengerId')
   async sendMail(
     @Param('passengerId') passengerId: string,
@@ -38,13 +39,13 @@ export class MailController {
       const token = header['authorization'].replace('Bearer ', '');
       const decodedToken = await this.jwtservice.verifyAsync(token);
       const adminId = decodedToken.sub;
-      const emailData = this.adminRepository.findOne({
-        where: { adminid: adminId },
+      const emailData = await this.adminRepository.findOne({
+        where: { uuid: adminId },
       });
       const dto: sendEmaildto = {
         from: {
-          name: (await emailData).firstName + (await emailData).lastName,
-          address: (await emailData).email,
+          name: ( emailData).firstName + ( emailData).lastName,
+          address: ( emailData).email,
         },
         recipeants: [
           {

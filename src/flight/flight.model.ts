@@ -1,10 +1,19 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMaxSize,
+  ArrayMinSize,
   IsArray,
+  IsDate,
   IsDateString,
   IsEnum,
   IsIn,
+  IsInt,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Length,
 } from 'class-validator';
+
 import {
   Column,
   Entity,
@@ -19,32 +28,50 @@ export enum JourneyType {
   Business = 3,
   First = 4,
 }
-export class flightModel {
-  @IsIn(['One way', 'Round Way', 'Multi City'])
-  journyType: string;
-  adultCount: number;
-  childerenCount: number;
-  infantCount: number;
-  @IsArray()
-  Segments: SegmentModel[];
-  @IsArray()
-  @ArrayMaxSize(10)
-  cities: CityInfo[];
-}
-export class SegmentModel {
-  Origin: string;
-  Destination: string;
-  @IsEnum(JourneyType)
-  CabinClass: JourneyType;
-  DepartureDateTime: string;
-}
-export class CityInfo {
-  from: string;
-  to: string;
-  @IsDateString()
-  journyDate: string;
+class SegmentDto {
+  @ApiProperty({ default: 'DAC' })
+  @IsString()
+  @Length(3, 3)
+  depfrom: string;
+
+  @ApiProperty({ default: 'DXB' })
+  @IsString()
+  @Length(3, 3)
+  arrto: string;
+
+  @ApiProperty( { default: '2024-07-01' })
+  @IsDate()
+  depdate: Date;
 }
 
+export class FlightSearchModel {
+  @ApiProperty({ default: 1 })
+  @IsInt()
+  @IsPositive()
+  adultcount: number;
+
+  @ApiProperty({ default: 0 })
+  @IsInt()
+  childcount: number;
+
+  @ApiProperty({ default: 0 })
+  @IsInt()
+  infantcount: number;
+
+  @ApiProperty({ default: 2 })
+  @IsOptional()
+  connection: string = '2' ;
+
+  @ApiProperty({ default: 'Y' })
+  @IsString()
+  @Length(1, 1)
+  cabinclass: string = 'Y';
+
+  @ApiProperty({ type: [SegmentDto] })
+  @ArrayMinSize(1)
+  @ArrayMaxSize(4)
+  segments: SegmentDto[];
+}
 @Entity()
 export class Flight {
   @PrimaryGeneratedColumn()

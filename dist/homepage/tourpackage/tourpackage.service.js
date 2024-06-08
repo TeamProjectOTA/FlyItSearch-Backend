@@ -21,7 +21,7 @@ let TourpackageService = class TourpackageService {
     constructor(tourPacageRepository) {
         this.tourPacageRepository = tourPacageRepository;
     }
-    async create(tourPackageDto, path) {
+    async create(tourPackageDto, paths, fileDetails) {
         const packageTitle = await this.tourPacageRepository.findOne({
             where: { title: tourPackageDto.title },
         });
@@ -33,24 +33,33 @@ let TourpackageService = class TourpackageService {
         newPackage.category = tourPackageDto.category;
         newPackage.date = tourPackageDto.date;
         newPackage.description = tourPackageDto.description;
-        newPackage.picture = path;
+        newPackage.pictureName = JSON.stringify(paths);
+        newPackage.path = fileDetails[0].path;
+        newPackage.size = fileDetails[0].size;
         const savedPackage = await this.tourPacageRepository.save(newPackage);
         if (!savedPackage) {
             throw new common_1.InternalServerErrorException('Failed to save tour package');
         }
         return savedPackage;
     }
-    async findOne(title) {
-        let packagefind = await this.tourPacageRepository.findOne({
-            where: { title: title },
+    async findOne(category) {
+        let packagefind = await this.tourPacageRepository.find({
+            where: { category },
         });
         if (!packagefind) {
-            throw new common_1.NotFoundException();
+            throw new common_1.NotFoundException(`No ${category} avilable at the moment`);
         }
-        return packagefind;
+        if (category == 'all') {
+            return await this.tourPacageRepository.find();
+        }
+        else {
+            return packagefind;
+        }
     }
-    async findAll(category) {
-        return await this.tourPacageRepository.find({ where: { category } });
+    async Delete(title) {
+        const findDeals = await this.tourPacageRepository.findOne({ where: { title: title } });
+        const deleteDeals = await this.tourPacageRepository.delete({ title: title });
+        return { findDeals, deleteDeals };
     }
 };
 exports.TourpackageService = TourpackageService;

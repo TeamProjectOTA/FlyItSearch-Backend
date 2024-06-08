@@ -12,6 +12,8 @@ const flight_controller_1 = require("./flight.controller");
 const flight_service_1 = require("./flight.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const flight_model_1 = require("./flight.model");
+const sabre_flights_service_1 = require("./sabre.flights.service");
+const booking_service_1 = require("./booking.service");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -19,7 +21,7 @@ exports.FlightModule = FlightModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([flight_model_1.Flight, flight_model_1.Segment])],
         controllers: [flight_controller_1.FlightController],
-        providers: [flight_service_1.FlightService],
+        providers: [flight_service_1.FlightService, sabre_flights_service_1.SabreService, booking_service_1.BookingService],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

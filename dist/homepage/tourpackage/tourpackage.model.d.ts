@@ -9,6 +9,7 @@ export declare class TourpackageDto {
     title: string;
     description: string;
     date: Date;
+    picture: string;
 }
 export declare class Tourpackage {
     id: number;
@@ -16,5 +17,7 @@ export declare class Tourpackage {
     title: string;
     description: string;
     date: Date;
-    picture: string;
+    pictureName: string;
+    path: string;
+    size: number;
 }

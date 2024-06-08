@@ -17,7 +17,7 @@ exports.Authdto = Authdto;
 __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Authdto.prototype, "adminid", void 0);
+], Authdto.prototype, "uuid", void 0);
 class Userauthdto {
 }
 exports.Userauthdto = Userauthdto;

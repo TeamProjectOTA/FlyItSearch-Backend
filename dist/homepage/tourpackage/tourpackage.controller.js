@@ -17,38 +17,58 @@ const common_1 = require("@nestjs/common");
 const tourpackage_service_1 = require("./tourpackage.service");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
-const path_1 = require("path");
 const tourpackage_model_1 = require("./tourpackage.model");
 const swagger_1 = require("@nestjs/swagger");
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 let TourpackageController = class TourpackageController {
     constructor(tourpackageService) {
         this.tourpackageService = tourpackageService;
+        this.counter = 0;
     }
-    async create(tourpackageDto, file) {
-        return this.tourpackageService.create(tourpackageDto, file.filename);
+    async create(tourpackageDto, files) {
+        const fileDetails = files.map(file => ({
+            path: file.path,
+            size: file.size,
+        }));
+        const filenames = files.map(file => file.filename);
+        tourpackageDto.picture = filenames.join(',');
+        return await this.tourpackageService.create(tourpackageDto, filenames, fileDetails);
     }
-    findAll(category) {
-        return this.tourpackageService.findAll(category);
+    async findOne(category) {
+        return await this.tourpackageService.findOne(category);
+    }
+    Delete(title) {
+        return this.tourpackageService.Delete(title);
     }
 };
 exports.TourpackageController = TourpackageController;
 __decorate([
     (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('avatar', {
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 10, {
         storage: (0, multer_1.diskStorage)({
             destination: './src/AllFile/HotDeals',
             filename: (req, file, callback) => {
-                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-                const ext = (0, path_1.extname)(file.originalname);
-                const filename = `${uniqueSuffix}${ext}`;
+                const name = Date.now();
+                const filename = `hotdeals-${name}`;
                 callback(null, filename);
             },
         }),
+        fileFilter: (req, file, callback) => {
+            if (allowedMimeTypes.includes(file.mimetype)) {
+                callback(null, true);
+            }
+            else {
+                callback(new common_1.BadRequestException('Only picture files are allowed!'), false);
+            }
+        },
+        limits: {
+            fileSize: 5 * 1024 * 1024,
+        },
     })),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [tourpackage_model_1.TourpackageDto, Object]),
+    __metadata("design:paramtypes", [tourpackage_model_1.TourpackageDto, Array]),
     __metadata("design:returntype", Promise)
 ], TourpackageController.prototype, "create", null);
 __decorate([
@@ -56,8 +76,15 @@ __decorate([
     __param(0, (0, common_1.Param)('category')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TourpackageController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Delete)('/delete/:title'),
+    __param(0, (0, common_1.Param)('title')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], TourpackageController.prototype, "findAll", null);
+], TourpackageController.prototype, "Delete", null);
 exports.TourpackageController = TourpackageController = __decorate([
     (0, swagger_1.ApiTags)('Hotdeals-Api'),
     (0, common_1.Controller)('hotdeals'),

@@ -36,13 +36,13 @@ let MailController = class MailController {
             const token = header['authorization'].replace('Bearer ', '');
             const decodedToken = await this.jwtservice.verifyAsync(token);
             const adminId = decodedToken.sub;
-            const emailData = this.adminRepository.findOne({
-                where: { adminid: adminId },
+            const emailData = await this.adminRepository.findOne({
+                where: { uuid: adminId },
             });
             const dto = {
                 from: {
-                    name: (await emailData).firstName + (await emailData).lastName,
-                    address: (await emailData).email,
+                    name: (emailData).firstName + (emailData).lastName,
+                    address: (emailData).email,
                 },
                 recipeants: [
                     {
@@ -67,6 +67,7 @@ let MailController = class MailController {
 };
 exports.MailController = MailController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('/send-email/:passengerId'),
     __param(0, (0, common_1.Param)('passengerId')),
     __param(1, (0, common_1.Headers)()),

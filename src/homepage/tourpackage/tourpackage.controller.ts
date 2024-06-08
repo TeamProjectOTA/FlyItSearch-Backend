@@ -1,51 +1,83 @@
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
   UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { TourpackageService } from './tourpackage.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { Category, Tourpackage, TourpackageDto } from './tourpackage.model';
+import { Tourpackage, TourpackageDto } from './tourpackage.model';
 import { ApiTags } from '@nestjs/swagger';
-import { get } from 'http';
+import { readdirSync } from 'fs';
+const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
 
 @ApiTags('Hotdeals-Api')
 @Controller('hotdeals')
 export class TourpackageController {
+  private counter = 0;
   constructor(private readonly tourpackageService: TourpackageService) {}
 
   @Post()
   @UseInterceptors(
-    FileInterceptor('avatar', {
+    FilesInterceptor('files', 10, {
       storage: diskStorage({
         destination: './src/AllFile/HotDeals',
         filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          const filename = `${uniqueSuffix}${ext}`;
+         const name=Date.now()
+          const filename = `hotdeals-${name}`;
           callback(null, filename);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        if (allowedMimeTypes.includes(file.mimetype)) {
+          callback(null, true);
+        } else {
+          callback(new BadRequestException('Only picture files are allowed!'), false);
+        }
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, 
+      },
     }),
   )
   async create(
     @Body() tourpackageDto: TourpackageDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<Tourpackage> {
-    return this.tourpackageService.create(tourpackageDto, file.filename);
+    const fileDetails = files.map(file => ({
+     
+      path: file.path,
+      size: file.size,
+    }));
+    const filenames = files.map(file => file.filename);
+    tourpackageDto.picture = filenames.join(','); 
+    return await this.tourpackageService.create(tourpackageDto, filenames,fileDetails);
   }
 
   @Get('/:category')
-  findAll(@Param('category')category:string) {
-    return this.tourpackageService.findAll(category);
+  async findOne(@Param('category')category:string) {
+    return await this.tourpackageService.findOne(category);
   }
+
+  // @Get()
+  // async findAll(){
+  //   return await this.tourpackageService.findAll()
+  // }
+
+  @Delete('/delete/:title')
+  Delete(@Param('title')title:string){
+    return this.tourpackageService.Delete(title)
+  }
+
 
 
   // @Get('/flight')
