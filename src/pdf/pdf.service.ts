@@ -6,7 +6,7 @@ export class PdfService {
   private readonly logger = new Logger(PdfService.name);
 
   async generatePdfFromHtml(htmlContent: string): Promise<Buffer> {
-    let browser;
+    let browser: any;
     try {
       this.logger.log('Launching browser');
       browser = await puppeteer.launch({

@@ -16,37 +16,37 @@ class FareRulesDto {
 }
 exports.FareRulesDto = FareRulesDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "Sabre" }),
+    (0, swagger_1.ApiProperty)({ default: 'Sabre' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FareRulesDto.prototype, "System", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "2024-01-10" }),
+    (0, swagger_1.ApiProperty)({ default: '2024-01-10' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FareRulesDto.prototype, "DepDate", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "DAC" }),
+    (0, swagger_1.ApiProperty)({ default: 'DAC' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FareRulesDto.prototype, "Origin", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "DXB" }),
+    (0, swagger_1.ApiProperty)({ default: 'DXB' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FareRulesDto.prototype, "Destination", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "GF" }),
+    (0, swagger_1.ApiProperty)({ default: 'GF' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], FareRulesDto.prototype, "Carrier", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "WERTYUI" }),
+    (0, swagger_1.ApiProperty)({ default: 'WERTYUI' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

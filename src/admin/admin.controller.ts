@@ -41,7 +41,6 @@ export class AdminController {
   remove(@Headers() header: Headers, @Param('adminId') adminId: string) {
     return this.adminService.remove(header, adminId);
   }
-  
 
   @ApiBearerAuth('access_token')
   @Get()

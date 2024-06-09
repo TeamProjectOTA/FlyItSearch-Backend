@@ -53,6 +53,7 @@ let PaymentController = class PaymentController {
 };
 exports.PaymentController = PaymentController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)('/:passengerId'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Param)('passengerId')),

@@ -26,11 +26,11 @@ let TourpackageController = class TourpackageController {
         this.counter = 0;
     }
     async create(tourpackageDto, files) {
-        const fileDetails = files.map(file => ({
+        const fileDetails = files.map((file) => ({
             path: file.path,
             size: file.size,
         }));
-        const filenames = files.map(file => file.filename);
+        const filenames = files.map((file) => file.filename);
         tourpackageDto.picture = filenames.join(',');
         return await this.tourpackageService.create(tourpackageDto, filenames, fileDetails);
     }

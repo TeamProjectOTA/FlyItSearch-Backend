@@ -50,7 +50,7 @@ let AuthService = class AuthService {
             if (!adminData) {
                 throw new common_1.UnauthorizedException();
             }
-            return await adminData;
+            return adminData;
         }
         catch (error) {
             if (error.name === 'TokenExpiredError') {

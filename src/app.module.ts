@@ -1,22 +1,26 @@
-import { Module } from '@nestjs/common';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+// src/app.module.ts
+import { Module, ValidationPipe } from '@nestjs/common';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_PIPE } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
 import { AgentsModule } from './agents/agents.module';
 import { PaymentModule } from './payment/payment.module';
 import { FlightModule } from './flight/flight.module';
-import { GoogleOuthService } from './google-outh/google-outh.service';
-import { GoogleOuthController } from './google-outh/google-outh.controller';
 import { GoogleOuthModule } from './google-outh/google-outh.module';
 import { BookModule } from './book/book.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { PdfModule } from './pdf/pdf.module';
 import { TourpackageModule } from './homepage/tourpackage/tourpackage.module';
+
+import { RateLimitingPipe } from './rate-limiting/rate-limiting.pipe';
+import { GoogleOuthController } from './google-outh/google-outh.controller';
+import { GoogleOuthService } from './google-outh/google-outh.service';
+import { RateLimitingModule } from './ip-address/ip-address.module';
 
 require('dotenv').config();
 
@@ -28,8 +32,8 @@ require('dotenv').config();
     }),
     ThrottlerModule.forRoot([
       {
-        limit: 10,
-        ttl: 6000,
+        ttl: 86400, // 24 hours
+        limit: 100, // default limit
       },
     ]),
     // TypeOrmModule.forRoot({
@@ -70,12 +74,17 @@ require('dotenv').config();
     HomepageModule,
     PdfModule,
     TourpackageModule,
+    RateLimitingModule, // Ensure this is included
   ],
   controllers: [GoogleOuthController],
   providers: [
     {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: RateLimitingPipe,
     },
     GoogleOuthService,
   ],

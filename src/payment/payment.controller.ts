@@ -10,12 +10,13 @@ import {
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response } from 'express'; // Needed for response redirection
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @ApiTags('SSLCOMMERZ')
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
+  @ApiBearerAuth('access_token')
   @Get('/:passengerId')
   async getPaymentUrl(
     @Req() res: Response,

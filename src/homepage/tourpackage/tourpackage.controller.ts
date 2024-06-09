@@ -19,7 +19,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { readdirSync } from 'fs';
 const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 
-
 @ApiTags('Hotdeals-Api')
 @Controller('hotdeals')
 export class TourpackageController {
@@ -32,7 +31,7 @@ export class TourpackageController {
       storage: diskStorage({
         destination: './src/AllFile/HotDeals',
         filename: (req, file, callback) => {
-         const name=Date.now()
+          const name = Date.now();
           const filename = `hotdeals-${name}`;
           callback(null, filename);
         },
@@ -41,11 +40,14 @@ export class TourpackageController {
         if (allowedMimeTypes.includes(file.mimetype)) {
           callback(null, true);
         } else {
-          callback(new BadRequestException('Only picture files are allowed!'), false);
+          callback(
+            new BadRequestException('Only picture files are allowed!'),
+            false,
+          );
         }
       },
       limits: {
-        fileSize: 5 * 1024 * 1024, 
+        fileSize: 5 * 1024 * 1024,
       },
     }),
   )
@@ -53,18 +55,21 @@ export class TourpackageController {
     @Body() tourpackageDto: TourpackageDto,
     @UploadedFiles() files: Express.Multer.File[],
   ): Promise<Tourpackage> {
-    const fileDetails = files.map(file => ({
-     
+    const fileDetails = files.map((file) => ({
       path: file.path,
       size: file.size,
     }));
-    const filenames = files.map(file => file.filename);
-    tourpackageDto.picture = filenames.join(','); 
-    return await this.tourpackageService.create(tourpackageDto, filenames,fileDetails);
+    const filenames = files.map((file) => file.filename);
+    tourpackageDto.picture = filenames.join(',');
+    return await this.tourpackageService.create(
+      tourpackageDto,
+      filenames,
+      fileDetails,
+    );
   }
 
   @Get('/:category')
-  async findOne(@Param('category')category:string) {
+  async findOne(@Param('category') category: string) {
     return await this.tourpackageService.findOne(category);
   }
 
@@ -74,18 +79,15 @@ export class TourpackageController {
   // }
 
   @Delete('/delete/:title')
-  Delete(@Param('title')title:string){
-    return this.tourpackageService.Delete(title)
+  Delete(@Param('title') title: string) {
+    return this.tourpackageService.Delete(title);
   }
-
-
 
   // @Get('/flight')
   // findAllFlight() {
   //   const category = 'Flight';
   //   return this.tourpackageService.findByFlight(category);
   // }
-
 
   // @Get('/hotel')
   // findAllHotel(){
@@ -104,5 +106,4 @@ export class TourpackageController {
   //   const category = 'Tour';
   //   return this.tourpackageService.findByTour(category)
   // }
-
 }

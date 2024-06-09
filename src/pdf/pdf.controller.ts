@@ -1,15 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpStatus,
-  Post,
-  Query,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { PdfService } from './pdf.service';
 import { ApiTags } from '@nestjs/swagger';
+import { ReportDto } from './pdf.model';
 
 @ApiTags('PDF')
 @Controller('pdf')
@@ -17,7 +10,7 @@ export class PdfController {
   constructor(private readonly pdfservice: PdfService) {}
   @Post('generate')
   async generatePdf(
-    @Body() jsonData: any,
+    @Body() jsonData: ReportDto,
     @Res() res: Response,
   ): Promise<void> {
     try {

@@ -39,7 +39,7 @@ class SegmentDto {
   @Length(3, 3)
   arrto: string;
 
-  @ApiProperty( { default: '2024-07-01' })
+  @ApiProperty({ default: '2024-07-01' })
   @IsDate()
   depdate: Date;
 }
@@ -60,7 +60,7 @@ export class FlightSearchModel {
 
   @ApiProperty({ default: 2 })
   @IsOptional()
-  connection: string = '2' ;
+  connection: string = '2';
 
   @ApiProperty({ default: 'Y' })
   @IsString()

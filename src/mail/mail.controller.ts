@@ -44,8 +44,8 @@ export class MailController {
       });
       const dto: sendEmaildto = {
         from: {
-          name: ( emailData).firstName + ( emailData).lastName,
-          address: ( emailData).email,
+          name: emailData.firstName + emailData.lastName,
+          address: emailData.email,
         },
         recipeants: [
           {

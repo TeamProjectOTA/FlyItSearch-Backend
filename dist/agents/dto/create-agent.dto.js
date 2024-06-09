@@ -25,7 +25,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateAgentDto.prototype, "email", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "testCompany" }),
+    (0, swagger_1.ApiProperty)({ default: 'testCompany' }),
     __metadata("design:type", String)
 ], CreateAgentDto.prototype, "company", void 0);
 __decorate([

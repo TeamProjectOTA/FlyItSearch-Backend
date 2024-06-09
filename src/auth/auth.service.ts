@@ -19,7 +19,7 @@ export class AuthService {
   async signInAdmin(
     uuid: string,
     pass: string,
-  ): Promise<{ access_token: string;  }> {
+  ): Promise<{ access_token: string }> {
     const admin = await this.adminRepository.findOne({
       where: { uuid: uuid },
     });
@@ -34,7 +34,7 @@ export class AuthService {
     //   lastName: admin.lastName,
     //   email: admin.email,
     // };
-    return { access_token: await this.jwtservice.signAsync(payload) }   
+    return { access_token: await this.jwtservice.signAsync(payload) };
   }
 
   async verifyAdminToken(header: any) {
@@ -56,7 +56,7 @@ export class AuthService {
         throw new UnauthorizedException();
       }
 
-      return await adminData;
+      return adminData;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         throw new UnauthorizedException('Token has expired');
@@ -69,7 +69,7 @@ export class AuthService {
   async signInUser(
     email: string,
     pass: string,
-  ): Promise<{ access_token: string;}> {
+  ): Promise<{ access_token: string }> {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });

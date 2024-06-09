@@ -1,12 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class PdfDto {
-  @ApiProperty({ default: 'Hasibul Islam' })
-  fullName: string;
-  @ApiProperty({ default: '01756' })
-  phone: string;
-  @ApiProperty({ default: 'hasibul.dev506@gmail.com' })
-  email: string;
-  @ApiProperty({ default: '1234' })
-  password: string;
+export class SectionDto {
+  @ApiProperty({ example: 'Introduction' })
+  heading: string;
+
+  @ApiProperty({ example: 'This is the introduction section.' })
+  text: string;
+}
+
+export class ReportDto {
+  @ApiProperty({ example: 'Sample Report' })
+  title: string;
+
+  @ApiProperty({ example: 'John Doe' })
+  author: string;
+
+  @ApiProperty({ example: '2024-06-05' })
+  date: string;
+
+  @ApiProperty({ type: [SectionDto] })
+  sections: SectionDto[];
 }

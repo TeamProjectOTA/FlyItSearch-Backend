@@ -3,17 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
 const app_module_1 = require("./app.module");
 const swagger_1 = require("@nestjs/swagger");
-const common_1 = require("@nestjs/common");
+const ip_logger_middleware_1 = require("./ip-logger/ip-logger.middleware");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.useGlobalPipes(new common_1.ValidationPipe());
+    app.use(new ip_logger_middleware_1.IpLoggerMiddleware().use);
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Flight')
         .setDescription('Flight api description')
         .setVersion('2.0')
         .addTag('flight')
         .addSecurityRequirements('token')
-        .addBearerAuth({ type: 'http',
+        .addBearerAuth({
+        type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
         in: 'header',

@@ -67,10 +67,6 @@ let UserService = class UserService {
         return await this.userRepository.save(updateUser);
     }
     async allUser(header) {
-        const verifyAdminToken = await this.authservice.verifyAdminToken(header);
-        if (!verifyAdminToken) {
-            throw new common_1.UnauthorizedException();
-        }
         return await this.userRepository.find();
     }
 };

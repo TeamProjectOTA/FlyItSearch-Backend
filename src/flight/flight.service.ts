@@ -2,15 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-
-
 @Injectable()
 export class FlightService {
   // constructor(
   //   @InjectRepository(Flight)
   //   private readonly flightRepository: Repository<Flight>,
   // ) {}
-
   // async filterFlights(filter: flightModel){
   // //   let query = this.flightRepository.createQueryBuilder('flight');
   // //   if (filter.journyType) {
@@ -61,7 +58,6 @@ export class FlightService {
   // //       });
   // //     });
   // //   }
-
   // //   return await query.getMany();
   // }
 }

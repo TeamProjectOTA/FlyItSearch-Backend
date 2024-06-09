@@ -9,6 +9,6 @@ import { BookingService } from './booking.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Flight, Segment])],
   controllers: [FlightController],
-  providers: [FlightService,SabreService,BookingService],
+  providers: [FlightService, SabreService, BookingService],
 })
 export class FlightModule {}

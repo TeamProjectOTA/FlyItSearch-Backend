@@ -1,20 +1,23 @@
-import { Injectable } from "@nestjs/common";
-
-
+import { Injectable } from '@nestjs/common';
 
 interface AgentData {
-    name: string;
-    age: number;
-  }
-  interface PriceCheckResult {
-    IsBookable: boolean; 
-  }
+  name: string;
+  age: number;
+}
+interface PriceCheckResult {
+  IsBookable: boolean;
+}
 
 @Injectable()
-export class BookingService{
-    constructor(){}
+export class BookingService {
+  constructor() {}
 
-    async createBooking(agentdata: AgentData[], path: string, bookingDto: any, priceCheckResult: PriceCheckResult): Promise<any> {
-        return { success: true ,agentdata}; 
-      }
+  async createBooking(
+    agentdata: AgentData[],
+    path: string,
+    bookingDto: any,
+    priceCheckResult: PriceCheckResult,
+  ): Promise<any> {
+    return { success: true, agentdata };
+  }
 }

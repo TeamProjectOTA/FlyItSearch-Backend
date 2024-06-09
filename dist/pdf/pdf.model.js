@@ -9,25 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PdfDto = void 0;
+exports.ReportDto = exports.SectionDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
-class PdfDto {
+class SectionDto {
 }
-exports.PdfDto = PdfDto;
+exports.SectionDto = SectionDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'Hasibul Islam' }),
+    (0, swagger_1.ApiProperty)({ example: 'Introduction' }),
     __metadata("design:type", String)
-], PdfDto.prototype, "fullName", void 0);
+], SectionDto.prototype, "heading", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '01756' }),
+    (0, swagger_1.ApiProperty)({ example: 'This is the introduction section.' }),
     __metadata("design:type", String)
-], PdfDto.prototype, "phone", void 0);
+], SectionDto.prototype, "text", void 0);
+class ReportDto {
+}
+exports.ReportDto = ReportDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'hasibul.dev506@gmail.com' }),
+    (0, swagger_1.ApiProperty)({ example: 'Sample Report' }),
     __metadata("design:type", String)
-], PdfDto.prototype, "email", void 0);
+], ReportDto.prototype, "title", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '1234' }),
+    (0, swagger_1.ApiProperty)({ example: 'John Doe' }),
     __metadata("design:type", String)
-], PdfDto.prototype, "password", void 0);
+], ReportDto.prototype, "author", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ example: '2024-06-05' }),
+    __metadata("design:type", String)
+], ReportDto.prototype, "date", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [SectionDto] }),
+    __metadata("design:type", Array)
+], ReportDto.prototype, "sections", void 0);
 //# sourceMappingURL=pdf.model.js.map

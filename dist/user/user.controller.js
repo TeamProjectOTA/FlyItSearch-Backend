@@ -20,6 +20,7 @@ const update_user_dto_1 = require("./dto/update-user.dto");
 const swagger_1 = require("@nestjs/swagger");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
+const rate_limiting_pipe_1 = require("../rate-limiting/rate-limiting.pipe");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -57,7 +58,9 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "update", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)(),
+    (0, common_1.UsePipes)(rate_limiting_pipe_1.RateLimitingPipe),
     __param(0, (0, common_1.Headers)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

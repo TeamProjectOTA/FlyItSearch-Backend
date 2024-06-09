@@ -69,10 +69,10 @@ export class UserService {
   }
 
   async allUser(header: any): Promise<User[]> {
-    const verifyAdminToken = await this.authservice.verifyAdminToken(header);
-    if (!verifyAdminToken) {
-      throw new UnauthorizedException();
-    }
+    // const verifyAdminToken = await this.authservice.verifyAdminToken(header);
+    // if (!verifyAdminToken) {
+    //   throw new UnauthorizedException();
+    // }
     return await this.userRepository.find();
   }
 }

@@ -41,8 +41,8 @@ let MailController = class MailController {
             });
             const dto = {
                 from: {
-                    name: (emailData).firstName + (emailData).lastName,
-                    address: (emailData).email,
+                    name: emailData.firstName + emailData.lastName,
+                    address: emailData.email,
                 },
                 recipeants: [
                     {

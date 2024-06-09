@@ -16,6 +16,7 @@ exports.PdfController = void 0;
 const common_1 = require("@nestjs/common");
 const pdf_service_1 = require("./pdf.service");
 const swagger_1 = require("@nestjs/swagger");
+const pdf_model_1 = require("./pdf.model");
 let PdfController = class PdfController {
     constructor(pdfservice) {
         this.pdfservice = pdfservice;
@@ -65,7 +66,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [pdf_model_1.ReportDto, Object]),
     __metadata("design:returntype", Promise)
 ], PdfController.prototype, "generatePdf", null);
 exports.PdfController = PdfController = __decorate([

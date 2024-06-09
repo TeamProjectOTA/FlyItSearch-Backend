@@ -9,23 +9,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const throttler_1 = require("@nestjs/throttler");
-const user_module_1 = require("./user/user.module");
-const admin_module_1 = require("./admin/admin.module");
 const typeorm_1 = require("@nestjs/typeorm");
-const auth_module_1 = require("./auth/auth.module");
-const mail_module_1 = require("./mail/mail.module");
 const config_1 = require("@nestjs/config");
 const core_1 = require("@nestjs/core");
+const user_module_1 = require("./user/user.module");
+const admin_module_1 = require("./admin/admin.module");
+const auth_module_1 = require("./auth/auth.module");
+const mail_module_1 = require("./mail/mail.module");
 const agents_module_1 = require("./agents/agents.module");
 const payment_module_1 = require("./payment/payment.module");
 const flight_module_1 = require("./flight/flight.module");
-const google_outh_service_1 = require("./google-outh/google-outh.service");
-const google_outh_controller_1 = require("./google-outh/google-outh.controller");
 const google_outh_module_1 = require("./google-outh/google-outh.module");
 const book_module_1 = require("./book/book.module");
 const homepage_module_1 = require("./homepage/homepage.module");
 const pdf_module_1 = require("./pdf/pdf.module");
 const tourpackage_module_1 = require("./homepage/tourpackage/tourpackage.module");
+const rate_limiting_pipe_1 = require("./rate-limiting/rate-limiting.pipe");
+const google_outh_controller_1 = require("./google-outh/google-outh.controller");
+const google_outh_service_1 = require("./google-outh/google-outh.service");
+const ip_address_module_1 = require("./ip-address/ip-address.module");
 require('dotenv').config();
 let AppModule = class AppModule {
 };
@@ -39,8 +41,8 @@ exports.AppModule = AppModule = __decorate([
             }),
             throttler_1.ThrottlerModule.forRoot([
                 {
-                    limit: 10,
-                    ttl: 6000,
+                    ttl: 86400,
+                    limit: 100,
                 },
             ]),
             typeorm_1.TypeOrmModule.forRootAsync({
@@ -70,12 +72,17 @@ exports.AppModule = AppModule = __decorate([
             homepage_module_1.HomepageModule,
             pdf_module_1.PdfModule,
             tourpackage_module_1.TourpackageModule,
+            ip_address_module_1.RateLimitingModule,
         ],
         controllers: [google_outh_controller_1.GoogleOuthController],
         providers: [
             {
-                provide: core_1.APP_GUARD,
-                useClass: throttler_1.ThrottlerGuard,
+                provide: core_1.APP_PIPE,
+                useClass: common_1.ValidationPipe,
+            },
+            {
+                provide: core_1.APP_PIPE,
+                useClass: rate_limiting_pipe_1.RateLimitingPipe,
             },
             google_outh_service_1.GoogleOuthService,
         ],

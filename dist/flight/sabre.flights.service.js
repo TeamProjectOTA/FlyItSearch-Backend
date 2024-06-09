@@ -32,7 +32,9 @@ let SabreService = class SabreService {
             'Content-Type': 'application/x-www-form-urlencoded',
         };
         try {
-            const response = await axios_1.default.post(process.env.SABRE_AUTH_ENDPOINT, data, { headers });
+            const response = await axios_1.default.post(process.env.SABRE_AUTH_ENDPOINT, data, {
+                headers,
+            });
             const result = response?.data;
             return result['access_token'];
         }
@@ -74,7 +76,7 @@ let SabreService = class SabreService {
                 'Content-Type': 'text/xml',
                 'Conversation-ID': '2021.01.DevStudio',
             },
-            data: payload
+            data: payload,
         };
         try {
             const response = await axios_1.default.request(sabretokenRq);
@@ -118,7 +120,7 @@ let SabreService = class SabreService {
                 'Content-Type': 'text/xml',
                 'Conversation-ID': '2021.01.DevStudio',
             },
-            data: payload
+            data: payload,
         };
         try {
             const response = await axios_1.default.request(sabretokenRq);
@@ -162,7 +164,7 @@ let SabreService = class SabreService {
                 'Content-Type': 'text/xml',
                 'Conversation-ID': '2021.01.DevStudio',
             },
-            data: payload
+            data: payload,
         };
         try {
             const response = await axios_1.default.request(sabretokenRq);
@@ -181,35 +183,52 @@ let SabreService = class SabreService {
         const SabreRequestPax = [];
         if (adultCount > 0) {
             const PaxQuantity = {
-                Code: "ADT",
+                Code: 'ADT',
                 Quantity: adultCount,
             };
             SabreRequestPax.push(PaxQuantity);
         }
         if (childCount > 0) {
             const PaxQuantity = {
-                Code: "CNN",
+                Code: 'CNN',
                 Quantity: childCount,
             };
             SabreRequestPax.push(PaxQuantity);
         }
         if (infantCount > 0) {
             const PaxQuantity = {
-                Code: "INF",
+                Code: 'INF',
                 Quantity: infantCount,
             };
             SabreRequestPax.push(PaxQuantity);
         }
-        const IncludeVendorPref = [{ Code: "BG" }, { Code: "EK" }, { Code: "SQ" }, { Code: "BS" }, { Code: "TK" },
-            { Code: "QR" }, { Code: "GF" }, { Code: "SV" }, { Code: "KU" }, { Code: "CX" }, { Code: "UL" }, { Code: "AI" }, { Code: "TG" }, {
-                Code: "UK"
-            }, { Code: "MH" }, { Code: "WY" }, { Code: "FZ" }];
+        const IncludeVendorPref = [
+            { Code: 'BG' },
+            { Code: 'EK' },
+            { Code: 'SQ' },
+            { Code: 'BS' },
+            { Code: 'TK' },
+            { Code: 'QR' },
+            { Code: 'GF' },
+            { Code: 'SV' },
+            { Code: 'KU' },
+            { Code: 'CX' },
+            { Code: 'UL' },
+            { Code: 'AI' },
+            { Code: 'TG' },
+            {
+                Code: 'UK',
+            },
+            { Code: 'MH' },
+            { Code: 'WY' },
+            { Code: 'FZ' },
+        ];
         const SegmentList = [];
         for (let i = 0; i < segments.length; i++) {
             const segment = segments[i];
             const DepFrom = segment.depfrom;
             const ArrTo = segment.arrto;
-            const DepDate = segment.depdate + "T00:00:00";
+            const DepDate = segment.depdate + 'T00:00:00';
             const SingleSegment = {
                 RPH: i.toString(),
                 DepartureDateTime: DepDate,
@@ -218,135 +237,133 @@ let SabreService = class SabreService {
                 },
                 DestinationLocation: {
                     LocationCode: ArrTo,
-                    LocationType: "C",
-                    AllAirports: true
+                    LocationType: 'C',
+                    AllAirports: true,
                 },
                 TPA_Extensions: {
-                    IncludeVendorPref: IncludeVendorPref
-                }
+                    IncludeVendorPref: IncludeVendorPref,
+                },
             };
             SegmentList.push(SingleSegment);
         }
         const sabreToken = await this.restToken();
         let payload_data = {
-            "OTA_AirLowFareSearchRQ": {
-                "OriginDestinationInformation": SegmentList,
-                "POS": {
-                    "Source": [
+            OTA_AirLowFareSearchRQ: {
+                OriginDestinationInformation: SegmentList,
+                POS: {
+                    Source: [
                         {
-                            "PseudoCityCode": process.env.SABRE_PCC,
-                            "RequestorID": {
-                                "Type": "1",
-                                "ID": "1",
-                                "CompanyName": {
-                                    "Code": "TN"
-                                }
-                            }
-                        }
-                    ]
-                },
-                "AvailableFlightsOnly": true,
-                "SeparateMessages": true,
-                "TPA_Extensions": {
-                    "IntelliSellTransaction": {
-                        "RequestType": {
-                            "Name": "50ITINS"
-                        }
-                    },
-                    "RichContent": {
-                        "FlightAmenities": true,
-                        "SeatInfo": true,
-                        "UniversalProductAttributes": true,
-                        "UniversalTicketingAttributes": true
-                    }
-                },
-                "TravelerInfoSummary": {
-                    "AirTravelerAvail": [
-                        {
-                            "PassengerTypeQuantity": SabreRequestPax
-                        }
+                            PseudoCityCode: process.env.SABRE_PCC,
+                            RequestorID: {
+                                Type: '1',
+                                ID: '1',
+                                CompanyName: {
+                                    Code: 'TN',
+                                },
+                            },
+                        },
                     ],
-                    "PriceRequestInformation": {
-                        "CurrencyCode": "BDT",
-                        "TPA_Extensions": {
-                            "PrivateFare": {
-                                "Ind": false
-                            },
-                            "PublicFare": {
-                                "Ind": false
-                            },
-                            "BrandedFareIndicators": {
-                                "MultipleBrandedFares": true,
-                                "ReturnBrandAncillaries": true,
-                                "UpsellLimit": 2
-                            }
-                        }
-                    },
-                    "SeatsRequested": [
-                        1
-                    ]
                 },
-                "TravelPreferences": {
-                    "TPA_Extensions": {
-                        "CodeShareIndicator": {
-                            "ExcludeCodeshare": true,
-                            "KeepOnlines": true
+                AvailableFlightsOnly: true,
+                SeparateMessages: true,
+                TPA_Extensions: {
+                    IntelliSellTransaction: {
+                        RequestType: {
+                            Name: '50ITINS',
                         },
-                        "OnlineIndicator": {
-                            "Ind": false
-                        },
-                        "PreferNDCSourceOnTie": {
-                            "Value": false
-                        },
-                        "XOFares": {
-                            "Value": true
-                        },
-                        "DataSources": {
-                            "NDC": "Disable",
-                            "ATPCO": "Enable",
-                            "LCC": "Disable"
-                        },
-                        "LongConnectTime": {
-                            "Min": 59,
-                            "Max": 1439,
-                            "Enable": true
-                        }
                     },
-                    "AncillaryFees": {
-                        "AncillaryFeeGroup": [
-                            {
-                                "Code": "BG",
-                            },
-                            {
-                                "Code": "ST"
-                            },
-                            {
-                                "Code": "ML"
-                            }
-                        ],
-                        "Enable": true,
-                        "Summary": true
+                    RichContent: {
+                        FlightAmenities: true,
+                        SeatInfo: true,
+                        UniversalProductAttributes: true,
+                        UniversalTicketingAttributes: true,
                     },
-                    "Baggage": {
-                        "Description": true,
-                        "CarryOnInfo": true,
-                        "FreeCarryOn": true,
-                        "FreePieceRequired": true,
-                        "RequestType": "C",
-                        "RequestedPieces": 1
-                    },
-                    "FlightTypePref": {
-                        "MaxConnections": "4"
-                    },
-                    "CabinPref": [
+                },
+                TravelerInfoSummary: {
+                    AirTravelerAvail: [
                         {
-                            "Cabin": cabinclass,
-                            "PreferLevel": "Preferred"
-                        }
-                    ]
+                            PassengerTypeQuantity: SabreRequestPax,
+                        },
+                    ],
+                    PriceRequestInformation: {
+                        CurrencyCode: 'BDT',
+                        TPA_Extensions: {
+                            PrivateFare: {
+                                Ind: false,
+                            },
+                            PublicFare: {
+                                Ind: false,
+                            },
+                            BrandedFareIndicators: {
+                                MultipleBrandedFares: true,
+                                ReturnBrandAncillaries: true,
+                                UpsellLimit: 2,
+                            },
+                        },
+                    },
+                    SeatsRequested: [flightDto.adultcount + flightDto.childcount],
                 },
-                "Version": "5"
-            }
+                TravelPreferences: {
+                    TPA_Extensions: {
+                        CodeShareIndicator: {
+                            ExcludeCodeshare: true,
+                            KeepOnlines: true,
+                        },
+                        OnlineIndicator: {
+                            Ind: false,
+                        },
+                        PreferNDCSourceOnTie: {
+                            Value: false,
+                        },
+                        XOFares: {
+                            Value: true,
+                        },
+                        DataSources: {
+                            NDC: 'Disable',
+                            ATPCO: 'Enable',
+                            LCC: 'Disable',
+                        },
+                        LongConnectTime: {
+                            Min: 59,
+                            Max: 1439,
+                            Enable: true,
+                        },
+                    },
+                    AncillaryFees: {
+                        AncillaryFeeGroup: [
+                            {
+                                Code: 'BG',
+                            },
+                            {
+                                Code: 'ST',
+                            },
+                            {
+                                Code: 'ML',
+                            },
+                        ],
+                        Enable: true,
+                        Summary: true,
+                    },
+                    Baggage: {
+                        Description: true,
+                        CarryOnInfo: true,
+                        FreeCarryOn: true,
+                        FreePieceRequired: true,
+                        RequestType: 'C',
+                        RequestedPieces: 1,
+                    },
+                    FlightTypePref: {
+                        MaxConnections: '4',
+                    },
+                    CabinPref: [
+                        {
+                            Cabin: cabinclass,
+                            PreferLevel: 'Preferred',
+                        },
+                    ],
+                },
+                Version: '5',
+            },
         };
         const shoppingrequest = {
             method: 'post',
@@ -354,9 +371,9 @@ let SabreService = class SabreService {
             url: process.env.SABRE_AIRSEARCH_ENDPOINT,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload_data
+            data: payload_data,
         };
         try {
             const response = await axios_1.default.request(shoppingrequest);
@@ -382,25 +399,25 @@ let SabreService = class SabreService {
                 InfantCount = pricebreakdown.PaxCount;
             }
             else {
-                throw new Error("Invalid Price Break down");
+                throw new Error('Invalid Price Break down');
             }
         }
         const SabreRequestPax = [];
         if (AdultCount > 0) {
             SabreRequestPax.push({
-                Code: "ADT",
+                Code: 'ADT',
                 Quantity: AdultCount,
             });
         }
         if (ChildCount > 0) {
             SabreRequestPax.push({
-                Code: "CNN",
+                Code: 'CNN',
                 Quantity: ChildCount,
             });
         }
         if (InfantCount > 0) {
             SabreRequestPax.push({
-                Code: "INF",
+                Code: 'INF',
                 Quantity: InfantCount,
             });
         }
@@ -429,14 +446,14 @@ let SabreService = class SabreService {
                     },
                     TPA_Extensions: {
                         SegmentType: {
-                            Code: "O",
+                            Code: 'O',
                         },
                         Flight: [
                             {
                                 Number: MarketingFlightNumber,
                                 DepartureDateTime: DepTime,
                                 ArrivalDateTime: ArrTime,
-                                Type: "A",
+                                Type: 'A',
                                 ClassOfService: BookingCode,
                                 OriginLocation: {
                                     LocationCode: DepFrom,
@@ -457,11 +474,11 @@ let SabreService = class SabreService {
         }
         const sabre_revalidation_request_data = {
             OTA_AirLowFareSearchRQ: {
-                Version: "4",
+                Version: '4',
                 TravelPreferences: {
                     TPA_Extensions: {
                         VerificationItinCallLogic: {
-                            Value: "B",
+                            Value: 'B',
                         },
                     },
                 },
@@ -478,10 +495,10 @@ let SabreService = class SabreService {
                         {
                             PseudoCityCode: process.env.SABRE_PCC,
                             RequestorID: {
-                                Type: "1",
-                                ID: "1",
+                                Type: '1',
+                                ID: '1',
                                 CompanyName: {
-                                    Code: "TN",
+                                    Code: 'TN',
                                 },
                             },
                         },
@@ -491,7 +508,7 @@ let SabreService = class SabreService {
                 TPA_Extensions: {
                     IntelliSellTransaction: {
                         RequestType: {
-                            Name: "100ITINS",
+                            Name: '100ITINS',
                         },
                     },
                 },
@@ -505,9 +522,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: sabre_revalidation_request_data
+            data: sabre_revalidation_request_data,
         };
         try {
             const revalidation_response = await axios_1.default.request(sabreflightrequest);
@@ -520,25 +537,21 @@ let SabreService = class SabreService {
         }
     }
     async price_check(agentdata, flightInfo) {
-        return [
-            { IsBookable: true },
-        ];
+        return [{ IsBookable: true }];
     }
     async booking(bookingDto) {
-        const agentdata = [
-            { name: 'hasibul', age: 10 },
-        ];
+        const agentdata = [{ name: 'hasibul', age: 10 }];
         const priceCheck = await this.price_check(agentdata, bookingDto.FlightInfo);
         if (priceCheck[0].IsBookable === false) {
             return this.bookingService.createBooking(agentdata, '', bookingDto, priceCheck[0]);
         }
         const time_now = new Date();
-        const email = bookingDto.ContactInfo.email || "dev@flyjatt.com";
-        const leadPassengerEmail = email.replace("@", "//");
-        const phone = bookingDto.ContactInfo.phone || "08801685370455";
-        const adult = (bookingDto.PassengerInfo.adult).length;
-        const child = (bookingDto.PassengerInfo.child).length || 0;
-        const infant = (bookingDto.PassengerInfo.infant).length || 0;
+        const email = bookingDto.ContactInfo.email || 'dev@flyjatt.com';
+        const leadPassengerEmail = email.replace('@', '//');
+        const phone = bookingDto.ContactInfo.phone || '08801685370455';
+        const adult = bookingDto.PassengerInfo.adult.length;
+        const child = bookingDto.PassengerInfo.child.length || 0;
+        const infant = bookingDto.PassengerInfo.infant.length || 0;
         let AllPerson = [];
         let AdvancePassenger = [];
         let SecureFlight = [];
@@ -548,16 +561,16 @@ let SabreService = class SabreService {
             PaxInfo = [
                 {
                     Code: 'ADT',
-                    Quantity: adult.toString()
+                    Quantity: adult.toString(),
                 },
                 {
                     Code: 'C04',
-                    Quantity: child.toString()
+                    Quantity: child.toString(),
                 },
                 {
                     Code: 'INF',
-                    Quantity: infant.toString()
-                }
+                    Quantity: infant.toString(),
+                },
             ];
             let adultCount = 0;
             let totalCount = 0;
@@ -581,69 +594,69 @@ let SabreService = class SabreService {
                     title = 'MS';
                 }
                 const Person = {
-                    "NameNumber": `${totalCount}.1`,
-                    "GivenName": `${givenname} ${title}`,
-                    "Surname": surname,
-                    "Infant": false,
-                    "PassengerType": "ADT",
-                    "NameReference": "",
+                    NameNumber: `${totalCount}.1`,
+                    GivenName: `${givenname} ${title}`,
+                    Surname: surname,
+                    Infant: false,
+                    PassengerType: 'ADT',
+                    NameReference: '',
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "OTHS",
-                    "Text": `CC ${givenname} ${surname}`,
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
+                    SSR_Code: 'OTHS',
+                    Text: `CC ${givenname} ${surname}`,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
                 const SSRCTCM = {
-                    "SSR_Code": "CTCM",
-                    "Text": phone,
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
+                    SSR_Code: 'CTCM',
+                    Text: phone,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCM);
                 const SSRCTCE = {
-                    "SSR_Code": "CTCE",
-                    "Text": leadPassengerEmail,
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
+                    SSR_Code: 'CTCE',
+                    Text: leadPassengerEmail,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCE);
             }
@@ -675,51 +688,51 @@ let SabreService = class SabreService {
                     ctitle = 'MISS';
                 }
                 const Person = {
-                    "NameNumber": `${totalCount}.1`,
-                    "GivenName": `${givenname} ${ctitle}`,
-                    "Surname": surname,
-                    "Infant": false,
-                    "PassengerType": `C${String(cAge).padStart(2, '0')}`,
-                    "NameReference": `C${String(cAge).padStart(2, '0')}`,
+                    NameNumber: `${totalCount}.1`,
+                    GivenName: `${givenname} ${ctitle}`,
+                    Surname: surname,
+                    Infant: false,
+                    PassengerType: `C${String(cAge).padStart(2, '0')}`,
+                    NameReference: `C${String(cAge).padStart(2, '0')}`,
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "CHLD",
-                    "Text": childSSR,
-                    "PersonName": {
-                        "NameNumber": `${totalCount}.1`,
+                    SSR_Code: 'CHLD',
+                    Text: childSSR,
+                    PersonName: {
+                        NameNumber: `${totalCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
             }
@@ -740,7 +753,8 @@ let SabreService = class SabreService {
                 const month = idate.toLocaleString('en-US', { month: 'short' });
                 const day = idate.getDate().toString().padStart(2, '0');
                 const infantSSR = `${day}${month}${year}`;
-                const iAge = Math.ceil(time_now.getFullYear() - idate.getFullYear()) * 12 + (time_now.getMonth() - idate.getMonth());
+                const iAge = Math.ceil(time_now.getFullYear() - idate.getFullYear()) * 12 +
+                    (time_now.getMonth() - idate.getMonth());
                 let title;
                 if (gender === 'MALE') {
                     gender = 'M';
@@ -751,51 +765,51 @@ let SabreService = class SabreService {
                     title = 'MISS';
                 }
                 const Person = {
-                    "NameNumber": `${totalCount}.1`,
-                    "GivenName": `${givenname} ${title}`,
-                    "Surname": surname,
-                    "Infant": true,
-                    "PassengerType": "INF",
-                    "NameReference": `I${String(iAge).padStart(2, '0')}`,
+                    NameNumber: `${totalCount}.1`,
+                    GivenName: `${givenname} ${title}`,
+                    Surname: surname,
+                    Infant: true,
+                    PassengerType: 'INF',
+                    NameReference: `I${String(iAge).padStart(2, '0')}`,
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${infantCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": `${gender}I`,
+                    PersonName: {
+                        NameNumber: `${infantCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: `${gender}I`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${infantCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": `${gender}I`,
+                    PersonName: {
+                        NameNumber: `${infantCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: `${gender}I`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "INFT",
-                    "Text": `${givenname}/${surname} ${title}/${infantSSR}`,
-                    "PersonName": {
-                        "NameNumber": `${infantCount}.1`,
+                    SSR_Code: 'INFT',
+                    Text: `${givenname}/${surname} ${title}/${infantSSR}`,
+                    PersonName: {
+                        NameNumber: `${infantCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
             }
@@ -809,7 +823,7 @@ let SabreService = class SabreService {
                 {
                     Code: 'C05',
                     Quantity: child.toString(),
-                }
+                },
             ];
             let adultCount = 0;
             let childCount = 0;
@@ -832,69 +846,69 @@ let SabreService = class SabreService {
                     atitle = 'MS';
                 }
                 const Person = {
-                    "NameNumber": `${adultCount}.1`,
-                    "GivenName": `${givenname} ${atitle}`,
-                    "Surname": surname,
-                    "Infant": false,
-                    "PassengerType": "ADT",
-                    "NameReference": "",
+                    NameNumber: `${adultCount}.1`,
+                    GivenName: `${givenname} ${atitle}`,
+                    Surname: surname,
+                    Infant: false,
+                    PassengerType: 'ADT',
+                    NameReference: '',
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "OTHS",
-                    "Text": `CC ${givenname} ${givenname}`,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'OTHS',
+                    Text: `CC ${givenname} ${givenname}`,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
                 const SSRCTCM = {
-                    "SSR_Code": "CTCM",
-                    "Text": phone,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CTCM',
+                    Text: phone,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCM);
                 const SSRCTCE = {
-                    "SSR_Code": "CTCE",
-                    "Text": leadPassengerEmail,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CTCE',
+                    Text: leadPassengerEmail,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCE);
             }
@@ -924,51 +938,51 @@ let SabreService = class SabreService {
                     ctitle = 'MISS';
                 }
                 const Person = {
-                    "NameNumber": `${adultCount}.1`,
-                    "GivenName": `${givenname} ${ctitle}`,
-                    "Surname": surname,
-                    "Infant": false,
-                    "PassengerType": `C${String(cAge).padStart(2, '0')}`,
-                    "NameReference": `C${String(cAge).padStart(2, '0')}`,
+                    NameNumber: `${adultCount}.1`,
+                    GivenName: `${givenname} ${ctitle}`,
+                    Surname: surname,
+                    Infant: false,
+                    PassengerType: `C${String(cAge).padStart(2, '0')}`,
+                    NameReference: `C${String(cAge).padStart(2, '0')}`,
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "CHLD",
-                    "Text": childSSR,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CHLD',
+                    Text: childSSR,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
             }
@@ -982,7 +996,7 @@ let SabreService = class SabreService {
                 {
                     Code: 'INF',
                     Quantity: infant.toString(),
-                }
+                },
             ];
             let adultCount = 0;
             for (const adultPax of bookingDto?.PassengerInfo?.adult) {
@@ -1004,69 +1018,69 @@ let SabreService = class SabreService {
                     atitle = 'MS';
                 }
                 const Person = {
-                    "NameNumber": `${adultCount}.1`,
-                    "GivenName": `${givenname} ${atitle}`,
-                    "Surname": surname,
-                    "Infant": false,
-                    "PassengerType": "ADT",
-                    "NameReference": "",
+                    NameNumber: `${adultCount}.1`,
+                    GivenName: `${givenname} ${atitle}`,
+                    Surname: surname,
+                    Infant: false,
+                    PassengerType: 'ADT',
+                    NameReference: '',
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "OTHS",
-                    "Text": `CC ${givenname} ${givenname}`,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'OTHS',
+                    Text: `CC ${givenname} ${givenname}`,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
                 const SSRCTCM = {
-                    "SSR_Code": "CTCM",
-                    "Text": phone,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CTCM',
+                    Text: phone,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCM);
                 const SSRCTCE = {
-                    "SSR_Code": "CTCE",
-                    "Text": leadPassengerEmail,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CTCE',
+                    Text: leadPassengerEmail,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCE);
             }
@@ -1086,7 +1100,8 @@ let SabreService = class SabreService {
                 const month = idate.toLocaleString('en-US', { month: 'short' });
                 const day = idate.getDate().toString().padStart(2, '0');
                 const infantSSR = `${day}${month}${year}`;
-                const iAge = Math.ceil(time_now.getFullYear() - idate.getFullYear()) * 12 + (time_now.getMonth() - idate.getMonth());
+                const iAge = Math.ceil(time_now.getFullYear() - idate.getFullYear()) * 12 +
+                    (time_now.getMonth() - idate.getMonth());
                 let ititle;
                 if (gender === 'MALE') {
                     gender = 'M';
@@ -1097,51 +1112,51 @@ let SabreService = class SabreService {
                     ititle = 'MISS';
                 }
                 const Person = {
-                    "NameNumber": `${adultCount}.1`,
-                    "GivenName": `${givenname} ${ititle}`,
-                    "Surname": surname,
-                    "Infant": true,
-                    "PassengerType": "INF",
-                    "NameReference": `I${String(iAge).padStart(2, '0')}`,
+                    NameNumber: `${adultCount}.1`,
+                    GivenName: `${givenname} ${ititle}`,
+                    Surname: surname,
+                    Infant: true,
+                    PassengerType: 'INF',
+                    NameReference: `I${String(iAge).padStart(2, '0')}`,
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${infantCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": `${gender}I`,
+                    PersonName: {
+                        NameNumber: `${infantCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: `${gender}I`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${infantCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": `${gender}I`,
+                    PersonName: {
+                        NameNumber: `${infantCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: `${gender}I`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "INFT",
-                    "Text": `${givenname}/${surname} ${ititle}/${infantSSR}`,
-                    "PersonName": {
-                        "NameNumber": `${infantCount}.1`,
+                    SSR_Code: 'INFT',
+                    Text: `${givenname}/${surname} ${ititle}/${infantSSR}`,
+                    PersonName: {
+                        NameNumber: `${infantCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
             }
@@ -1151,7 +1166,7 @@ let SabreService = class SabreService {
                 {
                     Code: 'ADT',
                     Quantity: adult.toString(),
-                }
+                },
             ];
             let adultCount = 0;
             for (const adultPax of bookingDto?.PassengerInfo.adult) {
@@ -1173,69 +1188,69 @@ let SabreService = class SabreService {
                     atitle = 'MS';
                 }
                 const Person = {
-                    "NameNumber": `${adultCount}.1`,
-                    "GivenName": `${givenname} ${atitle}`,
-                    "Surname": surname,
-                    "Infant": false,
-                    "PassengerType": "ADT",
-                    "NameReference": "",
+                    NameNumber: `${adultCount}.1`,
+                    GivenName: `${givenname} ${atitle}`,
+                    Surname: surname,
+                    Infant: false,
+                    PassengerType: 'ADT',
+                    NameReference: '',
                 };
                 AllPerson.push(Person);
                 const AdvPax = {
-                    "Document": {
-                        "Number": document,
-                        "IssueCountry": nationality,
-                        "NationalityCountry": nationality,
-                        "ExpirationDate": expiredate,
-                        "Type": "P",
+                    Document: {
+                        Number: document,
+                        IssueCountry: nationality,
+                        NationalityCountry: nationality,
+                        ExpirationDate: expiredate,
+                        Type: 'P',
                     },
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "MiddleName": "",
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        MiddleName: '',
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AdvancePassenger.push(AdvPax);
                 const secureFlightPax = {
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
-                        "GivenName": givenname,
-                        "Surname": surname,
-                        "DateOfBirth": dob,
-                        "Gender": gender,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
+                        GivenName: givenname,
+                        Surname: surname,
+                        DateOfBirth: dob,
+                        Gender: gender,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 SecureFlight.push(secureFlightPax);
                 const SSROThers = {
-                    "SSR_Code": "OTHS",
-                    "Text": `CC ${givenname} ${givenname}`,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'OTHS',
+                    Text: `CC ${givenname} ${givenname}`,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSROThers);
                 const SSRCTCM = {
-                    "SSR_Code": "CTCM",
-                    "Text": phone,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CTCM',
+                    Text: phone,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCM);
                 const SSRCTCE = {
-                    "SSR_Code": "CTCE",
-                    "Text": leadPassengerEmail,
-                    "PersonName": {
-                        "NameNumber": `${adultCount}.1`,
+                    SSR_Code: 'CTCE',
+                    Text: leadPassengerEmail,
+                    PersonName: {
+                        NameNumber: `${adultCount}.1`,
                     },
-                    "SegmentNumber": "A",
+                    SegmentNumber: 'A',
                 };
                 AllSsr.push(SSRCTCE);
             }
@@ -1296,38 +1311,38 @@ let SabreService = class SabreService {
                             StreetNmbr: process.env.SABRE_AGENCY_STNO,
                         },
                         Ticketing: {
-                            TicketType: "7TAW",
+                            TicketType: '7TAW',
                         },
                     },
                     CustomerInfo: {
                         ContactNumbers: {
                             ContactNumber: [
                                 {
-                                    NameNumber: "1.1",
+                                    NameNumber: '1.1',
                                     Phone: phone,
-                                    PhoneUseType: "H",
+                                    PhoneUseType: 'H',
                                 },
                             ],
                         },
                         Email: [
                             {
-                                NameNumber: "1.1",
+                                NameNumber: '1.1',
                                 Address: email,
-                                Type: "CC",
-                            }
+                                Type: 'CC',
+                            },
                         ],
                         PersonName: AllPerson,
                     },
                 },
                 AirBook: {
                     HaltOnStatus: [
-                        { Code: "HL" },
-                        { Code: "KK" },
-                        { Code: "LL" },
-                        { Code: "NN" },
-                        { Code: "NO" },
-                        { Code: "UC" },
-                        { Code: "US" },
+                        { Code: 'HL' },
+                        { Code: 'KK' },
+                        { Code: 'LL' },
+                        { Code: 'NN' },
+                        { Code: 'NO' },
+                        { Code: 'UC' },
+                        { Code: 'US' },
                     ],
                     OriginDestinationInformation: {
                         FlightSegment: FlightSegment,
@@ -1344,7 +1359,7 @@ let SabreService = class SabreService {
                             OptionalQualifiers: {
                                 FOP_Qualifiers: {
                                     BasicFOP: {
-                                        Type: "CASH",
+                                        Type: 'CASH',
                                     },
                                 },
                                 PricingQualifiers: {
@@ -1366,11 +1381,11 @@ let SabreService = class SabreService {
                 PostProcessing: {
                     EndTransaction: {
                         Source: {
-                            ReceivedFrom: "API WEB",
+                            ReceivedFrom: 'API WEB',
                         },
                         Email: {
-                            Ind: true
-                        }
+                            Ind: true,
+                        },
                     },
                     RedisplayReservation: {
                         waitInterval: 1000,
@@ -1385,9 +1400,9 @@ let SabreService = class SabreService {
             url: process.env.SABRE_AIRBOOKING_ENDPOINT,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: sabre_booking_request
+            data: sabre_booking_request,
         };
         try {
             const response = await axios_1.default.request(sabrebookingrequest);
@@ -1400,10 +1415,10 @@ let SabreService = class SabreService {
     }
     async aircancel(pnr) {
         const payload = {
-            "confirmationId": pnr,
-            "retrieveBooking": true,
-            "cancelAll": true,
-            "errorHandlingPolicy": "ALLOW_PARTIAL_CANCEL"
+            confirmationId: pnr,
+            retrieveBooking: true,
+            cancelAll: true,
+            errorHandlingPolicy: 'ALLOW_PARTIAL_CANCEL',
         };
         const sabreToken = await this.restToken();
         let sabrecancelrequest = {
@@ -1413,9 +1428,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload
+            data: payload,
         };
         try {
             const aircancel_response = await axios_1.default.request(sabrecancelrequest);
@@ -1429,7 +1444,7 @@ let SabreService = class SabreService {
     }
     async airretrieve(pnr) {
         const payload = {
-            confirmationId: pnr
+            confirmationId: pnr,
         };
         const sabreToken = await this.restToken();
         let sabreflightrequest = {
@@ -1439,9 +1454,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload
+            data: payload,
         };
         try {
             const get_booking_response = await axios_1.default.request(sabreflightrequest);
@@ -1454,7 +1469,7 @@ let SabreService = class SabreService {
     }
     async checkpnr(pnr) {
         const payload = {
-            confirmationId: pnr
+            confirmationId: pnr,
         };
         const sabreToken = await this.restToken();
         let sabreflightrequest = {
@@ -1464,9 +1479,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload
+            data: payload,
         };
         try {
             const get_booking_response = await axios_1.default.request(sabreflightrequest);
@@ -1496,49 +1511,49 @@ let SabreService = class SabreService {
             passengerArray = [{ Number: 1 }, { Number: 2 }];
         }
         const payload = {
-            "AirTicketRQ": {
-                "version": "1.3.0",
-                "targetCity": process.env.SABRE_PCC,
-                "DesignatePrinter": {
-                    "Printers": {
-                        "Ticket": {
-                            "CountryCode": process.env.SABRE_PCC_COUNTRY
+            AirTicketRQ: {
+                version: '1.3.0',
+                targetCity: process.env.SABRE_PCC,
+                DesignatePrinter: {
+                    Printers: {
+                        Ticket: {
+                            CountryCode: process.env.SABRE_PCC_COUNTRY,
                         },
-                        "Hardcopy": {
-                            "LNIATA": process.env.SABRE_LNIATA
+                        Hardcopy: {
+                            LNIATA: process.env.SABRE_LNIATA,
                         },
-                        "InvoiceItinerary": {
-                            "LNIATA": process.env.SABRE_LNIATA
-                        }
-                    }
+                        InvoiceItinerary: {
+                            LNIATA: process.env.SABRE_LNIATA,
+                        },
+                    },
                 },
-                "Itinerary": {
-                    "ID": pnr
+                Itinerary: {
+                    ID: pnr,
                 },
-                "Ticketing": [
+                Ticketing: [
                     {
-                        "MiscQualifiers": {
-                            "Commission": {
-                                "Percent": 7
-                            }
+                        MiscQualifiers: {
+                            Commission: {
+                                Percent: 7,
+                            },
                         },
-                        "PricingQualifiers": {
-                            "PriceQuote": [
+                        PricingQualifiers: {
+                            PriceQuote: [
                                 {
-                                    "Record": passengerArray
-                                }
-                            ]
-                        }
-                    }
+                                    Record: passengerArray,
+                                },
+                            ],
+                        },
+                    },
                 ],
-                "PostProcessing": {
-                    "EndTransaction": {
-                        "Source": {
-                            "ReceivedFrom": "SABRE WEB"
-                        }
-                    }
-                }
-            }
+                PostProcessing: {
+                    EndTransaction: {
+                        Source: {
+                            ReceivedFrom: 'SABRE WEB',
+                        },
+                    },
+                },
+            },
         };
         const sabreToken = await this.restToken();
         let sabreissuerequest = {
@@ -1548,9 +1563,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload
+            data: payload,
         };
         try {
             const ticketing_response = await axios_1.default.request(sabreissuerequest);
@@ -1565,7 +1580,8 @@ let SabreService = class SabreService {
                     allticket_data.push(ticketCopy);
                 });
                 BookingData['ticketcopy'] = allticket_data.join(' ,');
-                BookingData['ticketed_at'] = get_ticket_data.AirTicketRS.Summary[0].LocalIssueDateTime;
+                BookingData['ticketed_at'] =
+                    get_ticket_data.AirTicketRS.Summary[0].LocalIssueDateTime;
                 BookingData['status'] = 'Ticketed';
                 return get_ticket_data;
             }
@@ -1579,10 +1595,10 @@ let SabreService = class SabreService {
     async airvoid(pnr) {
         const payload = {
             confirmationId: pnr,
-            "retrieveBooking": true,
-            "cancelAll": true,
-            "flightTicketOperation": "VOID",
-            "errorHandlingPolicy": "HALT_ON_ERROR"
+            retrieveBooking: true,
+            cancelAll: true,
+            flightTicketOperation: 'VOID',
+            errorHandlingPolicy: 'HALT_ON_ERROR',
         };
         const sabreToken = await this.restToken();
         let sabrevoidrequest = {
@@ -1592,9 +1608,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload
+            data: payload,
         };
         try {
             const void_response = await axios_1.default.request(sabrevoidrequest);
@@ -1654,7 +1670,7 @@ let SabreService = class SabreService {
                 'Content-Type': 'text/xml',
                 'Conversation-ID': '2021.01.DevStudio',
             },
-            data: payload
+            data: payload,
         };
         try {
             const response = await axios_1.default.request(farerulesrequest);
@@ -1674,9 +1690,9 @@ let SabreService = class SabreService {
             headers: {
                 'Content-Type': 'application/json',
                 'Conversation-ID': '2021.01.DevStudio',
-                'Authorization': `Bearer ${sabreToken}`,
+                Authorization: `Bearer ${sabreToken}`,
             },
-            data: payload
+            data: payload,
         };
         try {
             const checkticket_response = await axios_1.default.request(sabreticketrequest);
@@ -1732,7 +1748,7 @@ let SabreService = class SabreService {
                 'Content-Type': 'text/xml',
                 'Conversation-ID': '2021.01.DevStudio',
             },
-            data: EnhancedSeatMapRQ
+            data: EnhancedSeatMapRQ,
         };
         try {
             const response = await axios_1.default.request(seatmaprequest);

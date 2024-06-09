@@ -16,7 +16,7 @@ export class TourpackageDto {
   @IsString()
   description: string;
   date: Date;
-  picture:string
+  picture: string;
 }
 
 @Entity()
@@ -34,7 +34,7 @@ export class Tourpackage {
   @Column()
   pictureName: string;
   @Column()
-  path:string
+  path: string;
   @Column()
-  size:number
+  size: number;
 }

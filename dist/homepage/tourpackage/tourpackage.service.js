@@ -57,8 +57,12 @@ let TourpackageService = class TourpackageService {
         }
     }
     async Delete(title) {
-        const findDeals = await this.tourPacageRepository.findOne({ where: { title: title } });
-        const deleteDeals = await this.tourPacageRepository.delete({ title: title });
+        const findDeals = await this.tourPacageRepository.findOne({
+            where: { title: title },
+        });
+        const deleteDeals = await this.tourPacageRepository.delete({
+            title: title,
+        });
         return { findDeals, deleteDeals };
     }
 };
