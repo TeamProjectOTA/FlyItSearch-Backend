@@ -47,7 +47,7 @@ export class UserService {
     add.fullName = createUserDto.fullName.toUpperCase();
     add.phone = createUserDto.phone;
     add.email = createUserDto.email;
-
+    add.role=createUserDto.role;
     add.password = hashedPassword;
 
     return this.userRepository.save(add);
@@ -69,10 +69,10 @@ export class UserService {
   }
 
   async allUser(header: any): Promise<User[]> {
-    // const verifyAdminToken = await this.authservice.verifyAdminToken(header);
-    // if (!verifyAdminToken) {
-    //   throw new UnauthorizedException();
-    // }
+    const verifyAdminToken = await this.authservice.verifyUserToken(header);
+    if (!verifyAdminToken) {
+      throw new UnauthorizedException();
+    }
     return await this.userRepository.find();
   }
 }

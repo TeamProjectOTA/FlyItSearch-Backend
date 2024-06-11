@@ -1,9 +1,8 @@
-// src/app.module.ts
-import { Module, ValidationPipe } from '@nestjs/common';
+
+import { MiddlewareConsumer, Module, RequestMethod, ValidationPipe } from '@nestjs/common';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_PIPE } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
@@ -16,11 +15,11 @@ import { BookModule } from './book/book.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { PdfModule } from './pdf/pdf.module';
 import { TourpackageModule } from './homepage/tourpackage/tourpackage.module';
-
-import { RateLimitingPipe } from './rate-limiting/rate-limiting.pipe';
 import { GoogleOuthController } from './google-outh/google-outh.controller';
 import { GoogleOuthService } from './google-outh/google-outh.service';
-import { RateLimitingModule } from './ip-address/ip-address.module';
+import { JwtMiddleware } from './rate-limiter/jwt.middleware';
+import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
+
 
 require('dotenv').config();
 
@@ -74,19 +73,25 @@ require('dotenv').config();
     HomepageModule,
     PdfModule,
     TourpackageModule,
-    RateLimitingModule, // Ensure this is included
+ 
   ],
   controllers: [GoogleOuthController],
   providers: [
-    {
-      provide: APP_PIPE,
-      useClass: ValidationPipe,
-    },
-    {
-      provide: APP_PIPE,
-      useClass: RateLimitingPipe,
-    },
+ 
     GoogleOuthService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware, RateLimiterMiddleware)
+      .exclude(
+        { path: 'auth/sign-in-admin', method: RequestMethod.POST },
+        { path: 'auth/sign-in-user', method: RequestMethod.POST },
+        { path: 'social-site/google', method: RequestMethod.GET },
+        { path: 'social-site/google-redirect', method: RequestMethod.GET },
+      
+      )
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

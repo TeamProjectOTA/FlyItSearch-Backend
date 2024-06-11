@@ -5,4 +5,5 @@ export declare class User {
     phone: string;
     email: string;
     password: string;
+    role: string;
 }

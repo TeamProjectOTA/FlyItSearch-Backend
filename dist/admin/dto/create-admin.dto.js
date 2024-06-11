@@ -40,7 +40,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateAdminDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'Super Admin' }),
+    (0, swagger_1.ApiProperty)({ default: 'superAdmin' }),
     __metadata("design:type", String)
 ], CreateAdminDto.prototype, "role", void 0);
 __decorate([

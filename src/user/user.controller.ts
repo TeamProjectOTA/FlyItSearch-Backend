@@ -17,7 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { RateLimitingPipe } from 'src/rate-limiting/rate-limiting.pipe';
+
 
 @ApiTags('User')
 @Controller('user')
@@ -38,8 +38,7 @@ export class UserController {
 
   @ApiBearerAuth('access_token')
   @Get()
-  @UsePipes(RateLimitingPipe)
-  findAllUser(@Headers() header: Headers) {
+   findAllUser(@Headers() header: Headers) {
     return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
   }
   @Post('/upload')

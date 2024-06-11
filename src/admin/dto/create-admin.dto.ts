@@ -15,7 +15,7 @@ export class CreateAdminDto {
   phone: string;
   @ApiProperty({ default: 'admin' })
   password: string;
-  @ApiProperty({ default: 'Super Admin' })
+  @ApiProperty({ default: 'superAdmin' })
   role: string;
   @ApiProperty({ default: 'ACTIVE' })
   status: Status;

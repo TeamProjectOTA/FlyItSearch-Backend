@@ -2,13 +2,13 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { IpLoggerMiddleware } from './ip-logger/ip-logger.middleware';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(new IpLoggerMiddleware().use);
+ 
 
-  //app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
   //app.enableCors();
   //app.useStaticAssets(join(__dirname, '..', 'uploads'));
   /*

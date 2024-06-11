@@ -106,6 +106,12 @@ let AuthService = class AuthService {
             }
         }
     }
+    async getUserByEmail(email) {
+        return this.userRepository.findOne({ where: { email: email } });
+    }
+    async getAdminByUUID(uuid) {
+        return this.adminRepository.findOne({ where: { uuid: uuid } });
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

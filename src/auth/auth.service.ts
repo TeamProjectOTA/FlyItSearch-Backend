@@ -6,6 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -120,4 +121,14 @@ export class AuthService {
       }
     }
   }
+
+  //  for ratelimiter
+   async getUserByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({ where: { email:email } });
+  }
+    //for ratelimiter
+    async getAdminByUUID(uuid: string): Promise<Admin> {
+      return this.adminRepository.findOne({ where: { uuid:uuid } });
+    }
+  
 }

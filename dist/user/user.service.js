@@ -50,6 +50,7 @@ let UserService = class UserService {
         add.fullName = createUserDto.fullName.toUpperCase();
         add.phone = createUserDto.phone;
         add.email = createUserDto.email;
+        add.role = createUserDto.role;
         add.password = hashedPassword;
         return this.userRepository.save(add);
     }
@@ -67,6 +68,10 @@ let UserService = class UserService {
         return await this.userRepository.save(updateUser);
     }
     async allUser(header) {
+        const verifyAdminToken = await this.authservice.verifyUserToken(header);
+        if (!verifyAdminToken) {
+            throw new common_1.UnauthorizedException();
+        }
         return await this.userRepository.find();
     }
 };
