@@ -8,6 +8,6 @@ export declare class UserService {
     private readonly authservice;
     constructor(userRepository: Repository<User>, authservice: AuthService);
     create(createUserDto: CreateUserDto): Promise<User>;
-    update(passengerId: string, updateUserDto: UpdateUserDto): Promise<User>;
+    update(header: any, updateUserDto: UpdateUserDto): Promise<User>;
     allUser(header: any): Promise<User[]>;
 }

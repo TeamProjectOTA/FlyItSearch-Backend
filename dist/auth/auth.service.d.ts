@@ -17,4 +17,5 @@ export declare class AuthService {
     verifyUserToken(header: any): Promise<User>;
     getUserByEmail(email: string): Promise<User>;
     getAdminByUUID(uuid: string): Promise<Admin>;
+    decodeToken(header: any): Promise<any>;
 }

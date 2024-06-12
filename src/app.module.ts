@@ -1,6 +1,6 @@
 
 import { MiddlewareConsumer, Module, RequestMethod, ValidationPipe } from '@nestjs/common';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
@@ -19,6 +19,8 @@ import { GoogleOuthController } from './google-outh/google-outh.controller';
 import { GoogleOuthService } from './google-outh/google-outh.service';
 import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
+import { IpModule } from './ip/ip.module';
+import { APP_GUARD } from '@nestjs/core';
 
 
 require('dotenv').config();
@@ -31,8 +33,8 @@ require('dotenv').config();
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 86400, // 24 hours
-        limit: 100, // default limit
+        ttl: 60, 
+        limit: 15, 
       },
     ]),
     // TypeOrmModule.forRoot({
@@ -73,10 +75,15 @@ require('dotenv').config();
     HomepageModule,
     PdfModule,
     TourpackageModule,
+    IpModule,
  
   ],
   controllers: [GoogleOuthController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    },
  
     GoogleOuthService,
   ],
@@ -85,6 +92,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JwtMiddleware, RateLimiterMiddleware)
+      //exclude the path that dont use the middle ware
       .exclude(
         { path: 'auth/sign-in-admin', method: RequestMethod.POST },
         { path: 'auth/sign-in-user', method: RequestMethod.POST },

@@ -9,25 +9,35 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateUserDto = void 0;
-const swagger_1 = require("@nestjs/swagger");
-class CreateUserDto {
-}
-exports.CreateUserDto = CreateUserDto;
+exports.IpAddress = void 0;
+const class_validator_1 = require("class-validator");
+const typeorm_1 = require("typeorm");
+let IpAddress = class IpAddress {
+};
+exports.IpAddress = IpAddress;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'Hasibul Islam' }),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "fullName", void 0);
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], IpAddress.prototype, "id", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '01756' }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "phone", void 0);
+], IpAddress.prototype, "ip", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'hasibul.dev506@gmail.com' }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], CreateUserDto.prototype, "email", void 0);
+], IpAddress.prototype, "role", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '1234' }),
-    __metadata("design:type", String)
-], CreateUserDto.prototype, "password", void 0);
-//# sourceMappingURL=create-user.dto.js.map
+    (0, typeorm_1.Column)('int'),
+    (0, class_validator_1.IsInt)(),
+    (0, class_validator_1.Min)(0),
+    __metadata("design:type", Number)
+], IpAddress.prototype, "points", void 0);
+__decorate([
+    (0, typeorm_1.Column)('bigint'),
+    __metadata("design:type", Number)
+], IpAddress.prototype, "lastRequestTime", void 0);
+exports.IpAddress = IpAddress = __decorate([
+    (0, typeorm_1.Entity)()
+], IpAddress);
+//# sourceMappingURL=ip.model.js.map

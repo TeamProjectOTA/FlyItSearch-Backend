@@ -27,8 +27,8 @@ let UserController = class UserController {
     create(createUserDto) {
         return this.userService.create(createUserDto);
     }
-    update(passengerId, updateUserDto) {
-        return this.userService.update(passengerId, updateUserDto);
+    update(header, updateUserDto) {
+        return this.userService.update(header, updateUserDto);
     }
     findAllUser(header) {
         return this.userService.allUser(header);
@@ -49,11 +49,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "create", null);
 __decorate([
-    (0, common_1.Patch)(':passengerId'),
-    __param(0, (0, common_1.Param)('passengerId')),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Patch)(':header'),
+    __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_user_dto_1.UpdateUserDto]),
+    __metadata("design:paramtypes", [Object, update_user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "update", null);
 __decorate([

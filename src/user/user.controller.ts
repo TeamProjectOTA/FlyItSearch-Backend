@@ -28,12 +28,13 @@ export class UserController {
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-  @Patch(':passengerId')
+  @ApiBearerAuth('access_token')
+  @Patch(':header')
   update(
-    @Param('passengerId') passengerId: string,
+    @Headers() header: Headers,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(passengerId, updateUserDto);
+    return this.userService.update(header, updateUserDto);
   }
 
   @ApiBearerAuth('access_token')

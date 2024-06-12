@@ -27,6 +27,8 @@ const google_outh_controller_1 = require("./google-outh/google-outh.controller")
 const google_outh_service_1 = require("./google-outh/google-outh.service");
 const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
+const ip_module_1 = require("./ip/ip.module");
+const core_1 = require("@nestjs/core");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -46,8 +48,8 @@ exports.AppModule = AppModule = __decorate([
             }),
             throttler_1.ThrottlerModule.forRoot([
                 {
-                    ttl: 86400,
-                    limit: 100,
+                    ttl: 60,
+                    limit: 15,
                 },
             ]),
             typeorm_1.TypeOrmModule.forRootAsync({
@@ -77,9 +79,14 @@ exports.AppModule = AppModule = __decorate([
             homepage_module_1.HomepageModule,
             pdf_module_1.PdfModule,
             tourpackage_module_1.TourpackageModule,
+            ip_module_1.IpModule,
         ],
         controllers: [google_outh_controller_1.GoogleOuthController],
         providers: [
+            {
+                provide: core_1.APP_GUARD,
+                useClass: throttler_1.ThrottlerGuard
+            },
             google_outh_service_1.GoogleOuthService,
         ],
     })

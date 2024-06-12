@@ -87,10 +87,6 @@ export class AuthService {
     }
 
     const payload = { sub: user.email };
-    const sanitizedUser: Partial<User> = {
-      fullName: user.fullName,
-      phone: user.phone,
-    };
     return {
       access_token: await this.jwtservice.signAsync(payload),
     };
@@ -129,6 +125,15 @@ export class AuthService {
     //for ratelimiter
     async getAdminByUUID(uuid: string): Promise<Admin> {
       return this.adminRepository.findOne({ where: { uuid:uuid } });
+    }
+
+
+    async decodeToken(header:any){
+      const token = header['authorization'].replace('Bearer ', '');
+      const decodedToken = await this.jwtservice.verifyAsync(token);
+      const decoded = decodedToken.sub;
+      return decoded
+      
     }
   
 }

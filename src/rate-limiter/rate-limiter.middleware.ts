@@ -1,43 +1,66 @@
-import { Injectable, NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestMiddleware, HttpStatus } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
+import { IpService } from 'src/ip/ip.service';
 
 const rateLimiterByRole = {
   unregistered: new RateLimiterMemory({
-    points: 10, 
-    duration: 86400, 
+    points: 10,
+    duration: 86400,
   }),
   registered: new RateLimiterMemory({
-    points: 100, 
-    duration: 86400, 
+    points: 50,
+    duration: 86400,
   }),
   admin: new RateLimiterMemory({
-    points: Number.MAX_SAFE_INTEGER, 
+    points: Number.MAX_SAFE_INTEGER,
     duration: 86400,
   }),
   superAdmin: new RateLimiterMemory({
-    points: Number.MAX_SAFE_INTEGER, 
+    points: Number.MAX_SAFE_INTEGER,
     duration: 86400,
   }),
 };
 
 @Injectable()
 export class RateLimiterMiddleware implements NestMiddleware {
-  use(req: Request, res: Response, next: NextFunction) {
+  constructor(private readonly ipService: IpService) {}
+
+  async use(req: Request, res: Response, next: NextFunction) {
     const ip = req.ip;
-    const userRole = req.user?.role || 'unregistered'; 
-    const day = Date.now()
+    const userRole = req.user?.role || 'unregistered';
 
     const rateLimiter = rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;
 
-    rateLimiter.consume(ip)
-      .then(() => {
-        next();
-      })
-      .catch(() => {
-        const resetTime = new Date(Date.now() + 86400 * 1000); 
-        const resetTimeString = resetTime.toLocaleString(); 
-        res.status(HttpStatus.TOO_MANY_REQUESTS).json({ message: `Limit over for today. Try again at ${resetTimeString}` });
-      });
+    try {
+      await rateLimiter.consume(ip);
+
+      if (userRole !== 'unregistered') {
+        const currentTime = Date.now();
+        const duration = 86400 * 1000;
+
+        let ipAddress = await this.ipService.findOne(ip);
+
+        if (ipAddress) {
+          if (ipAddress.role !== userRole) {
+            ipAddress.points = rateLimiter.points - 1;
+            ipAddress.role = userRole;
+            ipAddress.lastRequestTime = currentTime;
+          } else if (ipAddress.lastRequestTime + duration > currentTime) {
+            ipAddress.points = Math.max(ipAddress.points - 1, 0);
+          } else {
+            ipAddress.points = rateLimiter.points - 1;
+            ipAddress.lastRequestTime = currentTime;
+          }
+        } else {
+          ipAddress = await this.ipService.create(ip, userRole, rateLimiter.points - 1, currentTime);
+        }
+        await this.ipService.createOrUpdate(ip, userRole, ipAddress.points, currentTime);
+      }
+
+      next();
+    } catch {
+      res.status(HttpStatus.TOO_MANY_REQUESTS).json({ message: 'Too many requests' });
+    }
   }
 }

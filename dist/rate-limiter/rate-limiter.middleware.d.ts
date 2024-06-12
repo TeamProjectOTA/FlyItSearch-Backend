@@ -1,5 +1,8 @@
 import { NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
+import { IpService } from 'src/ip/ip.service';
 export declare class RateLimiterMiddleware implements NestMiddleware {
-    use(req: Request, res: Response, next: NextFunction): void;
+    private readonly ipService;
+    constructor(ipService: IpService);
+    use(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

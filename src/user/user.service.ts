@@ -47,24 +47,27 @@ export class UserService {
     add.fullName = createUserDto.fullName.toUpperCase();
     add.phone = createUserDto.phone;
     add.email = createUserDto.email;
-    add.role=createUserDto.role;
+    add.role='registered';
     add.password = hashedPassword;
 
     return this.userRepository.save(add);
   }
 
-  async update(passengerId: string, updateUserDto: UpdateUserDto) {
+  async update( header:any,updateUserDto: UpdateUserDto) {
+    const email=await this.authservice.decodeToken(header)
     const updateUser = await this.userRepository.findOne({
-      where: { passengerId: passengerId },
+      where: { email:email },
     });
+    console.log(updateUser)
     if (!updateUser) {
       throw new NotFoundException();
     }
-    const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
+    if (updateUserDto.password) {
+      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
+      updateUser.password = hashedPassword;
+    }
     updateUser.fullName = updateUserDto.fullName;
     updateUser.email = updateUserDto.email;
-    updateUser.password = hashedPassword;
-
     return await this.userRepository.save(updateUser);
   }
 

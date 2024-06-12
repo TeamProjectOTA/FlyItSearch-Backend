@@ -73,10 +73,6 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
         const payload = { sub: user.email };
-        const sanitizedUser = {
-            fullName: user.fullName,
-            phone: user.phone,
-        };
         return {
             access_token: await this.jwtservice.signAsync(payload),
         };
@@ -111,6 +107,12 @@ let AuthService = class AuthService {
     }
     async getAdminByUUID(uuid) {
         return this.adminRepository.findOne({ where: { uuid: uuid } });
+    }
+    async decodeToken(header) {
+        const token = header['authorization'].replace('Bearer ', '');
+        const decodedToken = await this.jwtservice.verifyAsync(token);
+        const decoded = decodedToken.sub;
+        return decoded;
     }
 };
 exports.AuthService = AuthService;
