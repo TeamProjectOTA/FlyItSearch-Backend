@@ -21,6 +21,7 @@ import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 import { IpModule } from './ip/ip.module';
 import { APP_GUARD } from '@nestjs/core';
+import { TourPackageModule } from './tour-package/tour-package.module';
 
 
 require('dotenv').config();
@@ -76,6 +77,7 @@ require('dotenv').config();
     PdfModule,
     TourpackageModule,
     IpModule,
+    TourPackageModule,
  
   ],
   controllers: [GoogleOuthController],

@@ -29,6 +29,7 @@ const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
 const ip_module_1 = require("./ip/ip.module");
 const core_1 = require("@nestjs/core");
+const tour_package_module_1 = require("./tour-package/tour-package.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -80,6 +81,7 @@ exports.AppModule = AppModule = __decorate([
             pdf_module_1.PdfModule,
             tourpackage_module_1.TourpackageModule,
             ip_module_1.IpModule,
+            tour_package_module_1.TourPackageModule,
         ],
         controllers: [google_outh_controller_1.GoogleOuthController],
         providers: [
