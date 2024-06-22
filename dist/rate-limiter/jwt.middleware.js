@@ -31,14 +31,20 @@ let JwtMiddleware = class JwtMiddleware {
             return next();
         }
         try {
-            const decoded = await this.jwtService.verifyAsync(token, { secret: jwt_constaints_1.jwtConstants.secret });
+            const decoded = await this.jwtService.verifyAsync(token, {
+                secret: jwt_constaints_1.jwtConstants.secret,
+            });
             const emailOrUUID = decoded.sub;
-            const user = await this.authService.getUserByEmail(emailOrUUID).catch(() => null);
+            const user = await this.authService
+                .getUserByEmail(emailOrUUID)
+                .catch(() => null);
             if (user) {
                 req.user = { email: user.email, role: user.role };
                 return next();
             }
-            const admin = await this.authService.getAdminByUUID(emailOrUUID).catch(() => null);
+            const admin = await this.authService
+                .getAdminByUUID(emailOrUUID)
+                .catch(() => null);
             if (admin) {
                 req.user = { uuid: admin.uuid, role: admin.role };
                 return next();

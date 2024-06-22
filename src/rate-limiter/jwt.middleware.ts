@@ -1,5 +1,8 @@
-
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NestMiddleware,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response, NextFunction } from 'express';
 import { AuthService } from 'src/auth/auth.service';
@@ -9,7 +12,7 @@ import { jwtConstants } from 'src/auth/jwt.constaints';
 export class JwtMiddleware implements NestMiddleware {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
@@ -26,16 +29,22 @@ export class JwtMiddleware implements NestMiddleware {
     }
 
     try {
-      const decoded = await this.jwtService.verifyAsync(token, { secret: jwtConstants.secret });
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret: jwtConstants.secret,
+      });
       const emailOrUUID = decoded.sub;
 
-      const user = await this.authService.getUserByEmail(emailOrUUID).catch(() => null);
+      const user = await this.authService
+        .getUserByEmail(emailOrUUID)
+        .catch(() => null);
       if (user) {
         req.user = { email: user.email, role: user.role };
         return next();
       }
 
-      const admin = await this.authService.getAdminByUUID(emailOrUUID).catch(() => null);
+      const admin = await this.authService
+        .getAdminByUUID(emailOrUUID)
+        .catch(() => null);
       if (admin) {
         req.user = { uuid: admin.uuid, role: admin.role };
         return next();

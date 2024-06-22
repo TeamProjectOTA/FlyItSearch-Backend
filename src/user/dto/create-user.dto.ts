@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
 
-
-
 export class CreateUserDto {
   @ApiProperty({ default: 'Hasibul Islam' })
   fullName: string;
@@ -12,5 +10,4 @@ export class CreateUserDto {
   email: string;
   @ApiProperty({ default: '1234' })
   password: string;
- 
 }

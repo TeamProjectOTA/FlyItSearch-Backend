@@ -18,7 +18,7 @@ let IpModule = class IpModule {
 exports.IpModule = IpModule;
 exports.IpModule = IpModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([ip_model_1.IpAddress]), schedule_1.ScheduleModule.forRoot(),],
+        imports: [typeorm_1.TypeOrmModule.forFeature([ip_model_1.IpAddress]), schedule_1.ScheduleModule.forRoot()],
         providers: [ip_service_1.IpService, ip_cleanup_service_1.IpCleanupService],
         exports: [ip_service_1.IpService, ip_cleanup_service_1.IpCleanupService],
     })

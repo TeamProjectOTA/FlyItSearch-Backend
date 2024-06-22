@@ -1,55 +1,180 @@
+// create-introduction.dto.ts
+import {  IsArray, IsDecimal, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ValidateNested } from 'class-validator';
+import { TravelPackageInclusionDto, TripType } from './types';
 
-import { ApiProperty } from '@nestjs/swagger';
+export class CreateIntroductionDto {
+  @IsString()
+  @IsNotEmpty()
+  mainTitle: string;
 
-export enum TripType{
-    tp1="Family Tour",
-    tp2="Group Tour",
-    tp3="Relax"
+  @IsString()
+  @IsNotEmpty()
+  subTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  journeyDuration: string;
+
+  @IsString()
+  @IsNotEmpty()
+  startDate: string;
+
+  @IsString()
+  @IsNotEmpty()
+  endDate: string;
+
+  @IsString()
+  @IsNotEmpty()
+  countryName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  cityName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  journeyLocation: string;
+
+  @IsString()
+  @IsNotEmpty()
+  totalSeat: string;
+
+  @IsNumber()
+  maximumAge: number;
+
+  @IsNumber()
+  minimumAge: number;
+
+  @IsDecimal()
+  packagePrice: number;
+
+  @IsDecimal()
+  packageDiscount: number;
+
+  @IsString()
+  @IsNotEmpty()
+  packageOverview: string;
 }
 
+
+export class CreateOverviewDto {
+  @IsString()
+  @IsNotEmpty()
+  packageOverview: string;
+
+  @IsArray()
+  packageInclude: TravelPackageInclusionDto[];
+}
+
+
+
+export class CreateMainImageDto {
+  @IsString()
+  @IsNotEmpty()
+  path: string;
+
+  @IsNumber()
+  size: number;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  mainTitle: string;
+}
+
+
+
+export class CreateVisitPlaceDto {
+  @IsString()
+  @IsNotEmpty()
+  path: string;
+
+  @IsNumber()
+  size: number;
+
+  @IsString()
+  @IsNotEmpty()
+  placeName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  mainTitle: string;
+}
+
+
+
+export class CreateTourPlanDto {
+  @IsString()
+  @IsNotEmpty()
+  tourPlanTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  dayPlan: string;
+}
+
+
+
+export class CreateObjectivesDto {
+  @IsString()
+  @IsNotEmpty()
+  objective: string;
+}
+
+
+
+export class CreateMetaInfoDto {
+  @IsString()
+  @IsNotEmpty()
+  metaTitle: string;
+
+  @IsArray()
+  metaKeywords: TripType[];
+
+  @IsString()
+  @IsNotEmpty()
+  metaDescription: string;
+}
+
+
+
+
+
 export class CreateTourPackageDto {
-    @ApiProperty({ default: 'Exciting Adventure' })
-    mainTitle: string;
-  
-    @ApiProperty({ default: 'An unforgettable journey' })
-    subTitle: string;
-  
-    @ApiProperty({ enum: TripType, isArray: true, default: [TripType.tp1, TripType.tp2] })
-    tripType: TripType[];
-  
-    @ApiProperty({ default: '7 days' })
-    journeyDuration: string;
-  
-    @ApiProperty({ default: '2024-07-01 (Monday)' })
-    startDate: string;
-  
-    @ApiProperty({ default: '2024-07-07 (Sunday)' })
-    endDate: string;
-  
-    @ApiProperty({ default: 'USA' })
-    countryName: string;
-  
-    @ApiProperty({ default: 'New York' })
-    cityName: string;
-  
-    @ApiProperty({ default: 'Multiple locations' })
-    journeyLocation: string;
-  
-    @ApiProperty({ default: '50' })
-    totalSeat: string;
-  
-    @ApiProperty({ default: 60 })
-    maximunAge: number;
-  
-    @ApiProperty({ default: 18 })
-    minimumAge: number;
-  
-    @ApiProperty({ default: 999.99 })
-    packagePrice: number;
-  
-    @ApiProperty({ default: 10.00 })
-    packageDiscount: number;
-  
-    @ApiProperty({ default: 'A thrilling 7-day adventure tour through multiple locations.' })
-    packageOverview: string;
-  }
+  @ValidateNested()
+  @Type(() => CreateIntroductionDto)
+  introduction: CreateIntroductionDto;
+
+  @ValidateNested()
+  @Type(() => CreateOverviewDto)
+  overview: CreateOverviewDto;
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateMainImageDto)
+  mainImage: CreateMainImageDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateVisitPlaceDto)
+  visitPlace: CreateVisitPlaceDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateTourPlanDto)
+  tourPlan: CreateTourPlanDto[];
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateObjectivesDto)
+  objectives: CreateObjectivesDto[];
+
+  @ValidateNested()
+  @Type(() => CreateMetaInfoDto)
+  metaInfo: CreateMetaInfoDto;
+}

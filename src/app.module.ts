@@ -1,5 +1,9 @@
-
-import { MiddlewareConsumer, Module, RequestMethod, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -23,7 +27,6 @@ import { IpModule } from './ip/ip.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TourPackageModule } from './tour-package/tour-package.module';
 
-
 require('dotenv').config();
 
 @Module({
@@ -34,8 +37,8 @@ require('dotenv').config();
     }),
     ThrottlerModule.forRoot([
       {
-        ttl: 60, 
-        limit: 15, 
+        ttl: 60,
+        limit: 15,
       },
     ]),
     // TypeOrmModule.forRoot({
@@ -78,15 +81,14 @@ require('dotenv').config();
     TourpackageModule,
     IpModule,
     TourPackageModule,
- 
   ],
   controllers: [GoogleOuthController],
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard
+      useClass: ThrottlerGuard,
     },
- 
+
     GoogleOuthService,
   ],
 })
@@ -100,7 +102,6 @@ export class AppModule {
         { path: 'auth/sign-in-user', method: RequestMethod.POST },
         { path: 'social-site/google', method: RequestMethod.GET },
         { path: 'social-site/google-redirect', method: RequestMethod.GET },
-      
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }

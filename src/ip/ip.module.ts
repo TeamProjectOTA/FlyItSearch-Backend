@@ -6,7 +6,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { IpCleanupService } from './ip-cleanup.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IpAddress]),ScheduleModule.forRoot(),],
+  imports: [TypeOrmModule.forFeature([IpAddress]), ScheduleModule.forRoot()],
   providers: [IpService, IpCleanupService],
   exports: [IpService, IpCleanupService],
 })

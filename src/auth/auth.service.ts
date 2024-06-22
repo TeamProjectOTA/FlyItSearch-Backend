@@ -6,7 +6,6 @@ import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -119,21 +118,18 @@ export class AuthService {
   }
 
   //  for ratelimiter
-   async getUserByEmail(email: string): Promise<User> {
-    return this.userRepository.findOne({ where: { email:email } });
+  async getUserByEmail(email: string): Promise<User> {
+    return this.userRepository.findOne({ where: { email: email } });
   }
-    //for ratelimiter
-    async getAdminByUUID(uuid: string): Promise<Admin> {
-      return this.adminRepository.findOne({ where: { uuid:uuid } });
-    }
+  //for ratelimiter
+  async getAdminByUUID(uuid: string): Promise<Admin> {
+    return this.adminRepository.findOne({ where: { uuid: uuid } });
+  }
 
-
-    async decodeToken(header:any){
-      const token = header['authorization'].replace('Bearer ', '');
-      const decodedToken = await this.jwtservice.verifyAsync(token);
-      const decoded = decodedToken.sub;
-      return decoded
-      
-    }
-  
+  async decodeToken(header: any) {
+    const token = header['authorization'].replace('Bearer ', '');
+    const decodedToken = await this.jwtservice.verifyAsync(token);
+    const decoded = decodedToken.sub;
+    return decoded;
+  }
 }

@@ -67,7 +67,9 @@ let RateLimiterMiddleware = class RateLimiterMiddleware {
             next();
         }
         catch {
-            res.status(common_1.HttpStatus.TOO_MANY_REQUESTS).json({ message: 'Too many requests' });
+            res
+                .status(common_1.HttpStatus.TOO_MANY_REQUESTS)
+                .json({ message: 'Too many requests' });
         }
     }
 };

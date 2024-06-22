@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
@@ -15,12 +14,27 @@ export class IpService {
     return this.ipRepository.findOne({ where: { ip } });
   }
 
-  async create(ip: string, role: string, points: number, lastRequestTime: number): Promise<IpAddress> {
-    const ipAddress = this.ipRepository.create({ ip, role, points, lastRequestTime });
+  async create(
+    ip: string,
+    role: string,
+    points: number,
+    lastRequestTime: number,
+  ): Promise<IpAddress> {
+    const ipAddress = this.ipRepository.create({
+      ip,
+      role,
+      points,
+      lastRequestTime,
+    });
     return this.ipRepository.save(ipAddress);
   }
 
-  async createOrUpdate(ip: string, role: string, points: number, lastRequestTime: number): Promise<IpAddress> {
+  async createOrUpdate(
+    ip: string,
+    role: string,
+    points: number,
+    lastRequestTime: number,
+  ): Promise<IpAddress> {
     let ipAddress = await this.findOne(ip);
     if (ipAddress) {
       ipAddress.role = role;
@@ -37,6 +51,8 @@ export class IpService {
   }
 
   async cleanupOldIps(expirationTime: number): Promise<void> {
-    await this.ipRepository.delete({ lastRequestTime: LessThan(expirationTime) });
+    await this.ipRepository.delete({
+      lastRequestTime: LessThan(expirationTime),
+    });
   }
 }

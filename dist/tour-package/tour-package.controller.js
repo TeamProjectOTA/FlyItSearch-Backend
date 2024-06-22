@@ -14,69 +14,62 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TourPackageController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const tour_package_service_1 = require("./tour-package.service");
 const create_tour_package_dto_1 = require("./dto/create-tour-package.dto");
-const update_tour_package_dto_1 = require("./dto/update-tour-package.dto");
-const swagger_1 = require("@nestjs/swagger");
+const multer_1 = require("multer");
+const path_1 = require("path");
 let TourPackageController = class TourPackageController {
     constructor(tourPackageService) {
         this.tourPackageService = tourPackageService;
     }
-    create(createTourPackageDto) {
+    async create(createTourPackageDto, files) {
+        const images = files.map(file => ({
+            path: `/uploads/${file.filename}`,
+            size: file.size,
+            description: '',
+            mainTitle: '',
+        }));
+        createTourPackageDto.mainImage = images.filter((_, index) => index < createTourPackageDto.mainImage.length);
+        createTourPackageDto.visitPlace.forEach((visitPlace, index) => {
+            if (images[createTourPackageDto.mainImage.length + index]) {
+                visitPlace.path = images[createTourPackageDto.mainImage.length + index].path;
+                visitPlace.size = images[createTourPackageDto.mainImage.length + index].size;
+            }
+        });
         return this.tourPackageService.create(createTourPackageDto);
     }
-    findAll() {
+    async findAll() {
         return this.tourPackageService.findAll();
-    }
-    findOne(id) {
-        return this.tourPackageService.findOne(+id);
-    }
-    update(id, updateTourPackageDto) {
-        return this.tourPackageService.update(+id, updateTourPackageDto);
-    }
-    remove(id) {
-        return this.tourPackageService.remove(+id);
     }
 };
 exports.TourPackageController = TourPackageController;
 __decorate([
     (0, common_1.Post)(),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 20, {
+        storage: (0, multer_1.diskStorage)({
+            destination: './uploads',
+            filename: (req, file, callback) => {
+                const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+                const ext = (0, path_1.extname)(file.originalname);
+                callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+            },
+        }),
+    })),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_tour_package_dto_1.CreateTourPackageDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [create_tour_package_dto_1.CreateTourPackageDto, Array]),
+    __metadata("design:returntype", Promise)
 ], TourPackageController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], TourPackageController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], TourPackageController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_tour_package_dto_1.UpdateTourPackageDto]),
-    __metadata("design:returntype", void 0)
-], TourPackageController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], TourPackageController.prototype, "remove", null);
 exports.TourPackageController = TourPackageController = __decorate([
-    (0, swagger_1.ApiTags)('Tour-package-Api'),
-    (0, common_1.Controller)('tour-package'),
+    (0, common_1.Controller)('tour-packages'),
     __metadata("design:paramtypes", [tour_package_service_1.TourPackageService])
 ], TourPackageController);
 //# sourceMappingURL=tour-package.controller.js.map

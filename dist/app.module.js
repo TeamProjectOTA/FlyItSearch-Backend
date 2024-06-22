@@ -87,7 +87,7 @@ exports.AppModule = AppModule = __decorate([
         providers: [
             {
                 provide: core_1.APP_GUARD,
-                useClass: throttler_1.ThrottlerGuard
+                useClass: throttler_1.ThrottlerGuard,
             },
             google_outh_service_1.GoogleOuthService,
         ],

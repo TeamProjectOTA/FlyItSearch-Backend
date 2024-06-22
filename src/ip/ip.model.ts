@@ -14,7 +14,7 @@ export class IpAddress {
 
   @Column('int')
   @IsInt()
-  @Min(0) 
+  @Min(0)
   points: number;
 
   @Column('bigint')

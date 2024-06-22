@@ -30,7 +30,8 @@ export class RateLimiterMiddleware implements NestMiddleware {
     const ip = req.ip;
     const userRole = req.user?.role || 'unregistered';
 
-    const rateLimiter = rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;
+    const rateLimiter =
+      rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;
 
     try {
       await rateLimiter.consume(ip);
@@ -53,14 +54,26 @@ export class RateLimiterMiddleware implements NestMiddleware {
             ipAddress.lastRequestTime = currentTime;
           }
         } else {
-          ipAddress = await this.ipService.create(ip, userRole, rateLimiter.points - 1, currentTime);
+          ipAddress = await this.ipService.create(
+            ip,
+            userRole,
+            rateLimiter.points - 1,
+            currentTime,
+          );
         }
-        await this.ipService.createOrUpdate(ip, userRole, ipAddress.points, currentTime);
+        await this.ipService.createOrUpdate(
+          ip,
+          userRole,
+          ipAddress.points,
+          currentTime,
+        );
       }
 
       next();
     } catch {
-      res.status(HttpStatus.TOO_MANY_REQUESTS).json({ message: 'Too many requests' });
+      res
+        .status(HttpStatus.TOO_MANY_REQUESTS)
+        .json({ message: 'Too many requests' });
     }
   }
 }

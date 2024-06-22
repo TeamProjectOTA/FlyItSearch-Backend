@@ -3,7 +3,7 @@ declare module 'express' {
   interface Request {
     user?: {
       email?: string;
-      uuid?:string
+      uuid?: string;
       role: Role;
     };
   }

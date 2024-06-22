@@ -15,51 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TourPackageService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const tour_package_entity_1 = require("./entities/tour-package.entity");
 const typeorm_2 = require("typeorm");
+const tour_package_entity_1 = require("./entities/tour-package.entity");
 let TourPackageService = class TourPackageService {
     constructor(tourPackageRepository) {
         this.tourPackageRepository = tourPackageRepository;
     }
     async create(createTourPackageDto) {
-        const tourPackage = new tour_package_entity_1.TourPackage();
-        tourPackage.mainTitle = createTourPackageDto.mainTitle;
-        tourPackage.subTitle = createTourPackageDto.subTitle;
-        tourPackage.tripType = createTourPackageDto.tripType;
-        tourPackage.journeyDuration = createTourPackageDto.journeyDuration;
-        const startDate = new Date(createTourPackageDto.startDate);
-        const endDate = new Date(createTourPackageDto.endDate);
-        tourPackage.startDate = `${this.formatDate(startDate)} (${this.getDayOfWeek(startDate)})`;
-        tourPackage.endDate = `${this.formatDate(endDate)} (${this.getDayOfWeek(endDate)})`;
-        tourPackage.countryName = createTourPackageDto.countryName;
-        tourPackage.cityName = createTourPackageDto.cityName;
-        tourPackage.journeyLocation = createTourPackageDto.journeyLocation;
-        tourPackage.totalSeat = createTourPackageDto.totalSeat;
-        tourPackage.maximunAge = createTourPackageDto.maximunAge;
-        tourPackage.minimumAge = createTourPackageDto.minimumAge;
-        tourPackage.packagePrice = createTourPackageDto.packagePrice;
-        tourPackage.packageDiscount = createTourPackageDto.packageDiscount;
-        tourPackage.packageOverview = createTourPackageDto.packageOverview;
+        const tourPackage = this.tourPackageRepository.create(createTourPackageDto);
         return this.tourPackageRepository.save(tourPackage);
     }
-    getDayOfWeek(date) {
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return days[date.getUTCDay()];
-    }
-    formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
-    findAll() {
-        return `This action returns all tourPackage`;
-    }
-    findOne(id) {
-        return `This action returns a #${id} tourPackage`;
-    }
-    update(id, updateTourPackageDto) {
-        return `This action updates a #${id} tourPackage`;
-    }
-    remove(id) {
-        return `This action removes a #${id} tourPackage`;
+    async findAll() {
+        return this.tourPackageRepository.find({ relations: ["introduction", "overview", "mainImage", "visitPlace", "tourPlan", "objectives", "metaInfo"] });
     }
 };
 exports.TourPackageService = TourPackageService;

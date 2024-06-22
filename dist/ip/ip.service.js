@@ -25,7 +25,12 @@ let IpService = class IpService {
         return this.ipRepository.findOne({ where: { ip } });
     }
     async create(ip, role, points, lastRequestTime) {
-        const ipAddress = this.ipRepository.create({ ip, role, points, lastRequestTime });
+        const ipAddress = this.ipRepository.create({
+            ip,
+            role,
+            points,
+            lastRequestTime,
+        });
         return this.ipRepository.save(ipAddress);
     }
     async createOrUpdate(ip, role, points, lastRequestTime) {
@@ -44,7 +49,9 @@ let IpService = class IpService {
         await this.ipRepository.delete({ ip });
     }
     async cleanupOldIps(expirationTime) {
-        await this.ipRepository.delete({ lastRequestTime: (0, typeorm_2.LessThan)(expirationTime) });
+        await this.ipRepository.delete({
+            lastRequestTime: (0, typeorm_2.LessThan)(expirationTime),
+        });
     }
 };
 exports.IpService = IpService;

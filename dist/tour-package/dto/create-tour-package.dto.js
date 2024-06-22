@@ -9,75 +9,214 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateTourPackageDto = exports.TripType = void 0;
-const swagger_1 = require("@nestjs/swagger");
-var TripType;
-(function (TripType) {
-    TripType["tp1"] = "Family Tour";
-    TripType["tp2"] = "Group Tour";
-    TripType["tp3"] = "Relax";
-})(TripType || (exports.TripType = TripType = {}));
+exports.CreateTourPackageDto = exports.CreateMetaInfoDto = exports.CreateObjectivesDto = exports.CreateTourPlanDto = exports.CreateVisitPlaceDto = exports.CreateMainImageDto = exports.CreateOverviewDto = exports.CreateIntroductionDto = void 0;
+const class_validator_1 = require("class-validator");
+const class_transformer_1 = require("class-transformer");
+const class_validator_2 = require("class-validator");
+class CreateIntroductionDto {
+}
+exports.CreateIntroductionDto = CreateIntroductionDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "mainTitle", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "subTitle", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "journeyDuration", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "startDate", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "endDate", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "countryName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "cityName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "journeyLocation", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "totalSeat", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateIntroductionDto.prototype, "maximumAge", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateIntroductionDto.prototype, "minimumAge", void 0);
+__decorate([
+    (0, class_validator_1.IsDecimal)(),
+    __metadata("design:type", Number)
+], CreateIntroductionDto.prototype, "packagePrice", void 0);
+__decorate([
+    (0, class_validator_1.IsDecimal)(),
+    __metadata("design:type", Number)
+], CreateIntroductionDto.prototype, "packageDiscount", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "packageOverview", void 0);
+class CreateOverviewDto {
+}
+exports.CreateOverviewDto = CreateOverviewDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateOverviewDto.prototype, "packageOverview", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], CreateOverviewDto.prototype, "packageInclude", void 0);
+class CreateMainImageDto {
+}
+exports.CreateMainImageDto = CreateMainImageDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateMainImageDto.prototype, "path", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateMainImageDto.prototype, "size", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateMainImageDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateMainImageDto.prototype, "mainTitle", void 0);
+class CreateVisitPlaceDto {
+}
+exports.CreateVisitPlaceDto = CreateVisitPlaceDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateVisitPlaceDto.prototype, "path", void 0);
+__decorate([
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], CreateVisitPlaceDto.prototype, "size", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateVisitPlaceDto.prototype, "placeName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateVisitPlaceDto.prototype, "description", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateVisitPlaceDto.prototype, "mainTitle", void 0);
+class CreateTourPlanDto {
+}
+exports.CreateTourPlanDto = CreateTourPlanDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateTourPlanDto.prototype, "tourPlanTitle", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateTourPlanDto.prototype, "dayPlan", void 0);
+class CreateObjectivesDto {
+}
+exports.CreateObjectivesDto = CreateObjectivesDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateObjectivesDto.prototype, "objective", void 0);
+class CreateMetaInfoDto {
+}
+exports.CreateMetaInfoDto = CreateMetaInfoDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateMetaInfoDto.prototype, "metaTitle", void 0);
+__decorate([
+    (0, class_validator_1.IsArray)(),
+    __metadata("design:type", Array)
+], CreateMetaInfoDto.prototype, "metaKeywords", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CreateMetaInfoDto.prototype, "metaDescription", void 0);
 class CreateTourPackageDto {
 }
 exports.CreateTourPackageDto = CreateTourPackageDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'Exciting Adventure' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "mainTitle", void 0);
+    (0, class_validator_2.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => CreateIntroductionDto),
+    __metadata("design:type", CreateIntroductionDto)
+], CreateTourPackageDto.prototype, "introduction", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'An unforgettable journey' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "subTitle", void 0);
+    (0, class_validator_2.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => CreateOverviewDto),
+    __metadata("design:type", CreateOverviewDto)
+], CreateTourPackageDto.prototype, "overview", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: TripType, isArray: true, default: [TripType.tp1, TripType.tp2] }),
+    (0, class_validator_2.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => CreateMainImageDto),
     __metadata("design:type", Array)
-], CreateTourPackageDto.prototype, "tripType", void 0);
+], CreateTourPackageDto.prototype, "mainImage", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '7 days' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "journeyDuration", void 0);
+    (0, class_validator_2.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => CreateVisitPlaceDto),
+    __metadata("design:type", Array)
+], CreateTourPackageDto.prototype, "visitPlace", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '2024-07-01 (Monday)' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "startDate", void 0);
+    (0, class_validator_2.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => CreateTourPlanDto),
+    __metadata("design:type", Array)
+], CreateTourPackageDto.prototype, "tourPlan", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: '2024-07-07 (Sunday)' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "endDate", void 0);
+    (0, class_validator_2.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => CreateObjectivesDto),
+    __metadata("design:type", Array)
+], CreateTourPackageDto.prototype, "objectives", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 'USA' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "countryName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 'New York' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "cityName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 'Multiple locations' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "journeyLocation", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: '50' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "totalSeat", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 60 }),
-    __metadata("design:type", Number)
-], CreateTourPackageDto.prototype, "maximunAge", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 18 }),
-    __metadata("design:type", Number)
-], CreateTourPackageDto.prototype, "minimumAge", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 999.99 }),
-    __metadata("design:type", Number)
-], CreateTourPackageDto.prototype, "packagePrice", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 10.00 }),
-    __metadata("design:type", Number)
-], CreateTourPackageDto.prototype, "packageDiscount", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 'A thrilling 7-day adventure tour through multiple locations.' }),
-    __metadata("design:type", String)
-], CreateTourPackageDto.prototype, "packageOverview", void 0);
+    (0, class_validator_2.ValidateNested)(),
+    (0, class_transformer_1.Type)(() => CreateMetaInfoDto),
+    __metadata("design:type", CreateMetaInfoDto)
+], CreateTourPackageDto.prototype, "metaInfo", void 0);
 //# sourceMappingURL=create-tour-package.dto.js.map

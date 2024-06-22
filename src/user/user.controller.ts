@@ -18,7 +18,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 
-
 @ApiTags('User')
 @Controller('user')
 export class UserController {
@@ -30,16 +29,13 @@ export class UserController {
   }
   @ApiBearerAuth('access_token')
   @Patch(':header')
-  update(
-    @Headers() header: Headers,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  update(@Headers() header: Headers, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(header, updateUserDto);
   }
 
   @ApiBearerAuth('access_token')
   @Get()
-   findAllUser(@Headers() header: Headers) {
+  findAllUser(@Headers() header: Headers) {
     return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
   }
   @Post('/upload')
