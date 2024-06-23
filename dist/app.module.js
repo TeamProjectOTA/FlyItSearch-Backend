@@ -23,13 +23,13 @@ const book_module_1 = require("./book/book.module");
 const homepage_module_1 = require("./homepage/homepage.module");
 const pdf_module_1 = require("./pdf/pdf.module");
 const tourpackage_module_1 = require("./homepage/tourpackage/tourpackage.module");
-const google_outh_controller_1 = require("./google-outh/google-outh.controller");
-const google_outh_service_1 = require("./google-outh/google-outh.service");
 const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
 const ip_module_1 = require("./ip/ip.module");
 const core_1 = require("@nestjs/core");
 const tour_package_module_1 = require("./tour-package/tour-package.module");
+const airports_module_1 = require("./airports/airports.module");
+const airlines_module_1 = require("./airlines/airlines.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -82,14 +82,14 @@ exports.AppModule = AppModule = __decorate([
             tourpackage_module_1.TourpackageModule,
             ip_module_1.IpModule,
             tour_package_module_1.TourPackageModule,
+            airlines_module_1.AirlinesModule,
+            airports_module_1.AirportsModule,
         ],
-        controllers: [google_outh_controller_1.GoogleOuthController],
         providers: [
             {
                 provide: core_1.APP_GUARD,
                 useClass: throttler_1.ThrottlerGuard,
             },
-            google_outh_service_1.GoogleOuthService,
         ],
     })
 ], AppModule);
