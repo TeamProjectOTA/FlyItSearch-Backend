@@ -6,7 +6,7 @@ export declare class AdminController {
     constructor(adminService: AdminService);
     create(createAdminDto: CreateAdminDto): Promise<import("./entities/admin.entity").Admin>;
     findOne(header: Headers, adminId: string): Promise<import("./entities/admin.entity").Admin>;
-    update(header: Headers, adminId: string, updateAdminDto: UpdateAdminDto): Promise<import("./entities/admin.entity").Admin>;
+    update(header: Headers, updateAdminDto: UpdateAdminDto): Promise<import("./entities/admin.entity").Admin>;
     remove(header: Headers, adminId: string): Promise<any>;
     findAll(header: Headers): Promise<import("./entities/admin.entity").Admin[]>;
     findUser(header: Headers, passengerId: string): Promise<import("../user/entities/user.entity").User>;

@@ -85,13 +85,13 @@ let AuthService = class AuthService {
             }
             const decodedToken = await this.jwtservice.verifyAsync(token);
             const email = decodedToken.sub;
-            const userData = this.userRepository.findOne({
+            const userData = await this.userRepository.findOne({
                 where: { email: email },
             });
             if (!userData) {
                 throw new common_1.UnauthorizedException();
             }
-            return await userData;
+            return userData;
         }
         catch (error) {
             if (error.name === 'TokenExpiredError') {

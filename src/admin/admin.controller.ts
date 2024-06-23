@@ -27,14 +27,13 @@ export class AdminController {
   findOne(@Headers() header: Headers, @Param('adminId') adminId: string) {
     return this.adminService.findOne(header, adminId);
   }
-
+  @ApiBearerAuth('access_token')
   @Patch(':adminId')
   update(
     @Headers() header: Headers,
-    @Param('adminId') adminId: string,
     @Body() updateAdminDto: UpdateAdminDto,
   ) {
-    return this.adminService.update(header, adminId, updateAdminDto);
+    return this.adminService.update(header,updateAdminDto);
   }
 
   @Delete(':adminId')

@@ -28,8 +28,8 @@ let AdminController = class AdminController {
     findOne(header, adminId) {
         return this.adminService.findOne(header, adminId);
     }
-    update(header, adminId, updateAdminDto) {
-        return this.adminService.update(header, adminId, updateAdminDto);
+    update(header, updateAdminDto) {
+        return this.adminService.update(header, updateAdminDto);
     }
     remove(header, adminId) {
         return this.adminService.remove(header, adminId);
@@ -62,12 +62,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "findOne", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Patch)(':adminId'),
     __param(0, (0, common_1.Headers)()),
-    __param(1, (0, common_1.Param)('adminId')),
-    __param(2, (0, common_1.Body)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, update_admin_dto_1.UpdateAdminDto]),
+    __metadata("design:paramtypes", [Object, update_admin_dto_1.UpdateAdminDto]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "update", null);
 __decorate([

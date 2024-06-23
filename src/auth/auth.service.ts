@@ -29,11 +29,6 @@ export class AuthService {
     }
 
     const payload = { sub: admin.uuid };
-    // const sanitizedAdmin: Partial<Admin> = {
-    //   firstName: admin.firstName,
-    //   lastName: admin.lastName,
-    //   email: admin.email,
-    // };
     return { access_token: await this.jwtservice.signAsync(payload) };
   }
 
@@ -69,7 +64,7 @@ export class AuthService {
   async signInUser(
     email: string,
     pass: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string}> {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
@@ -84,7 +79,6 @@ export class AuthService {
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid email or password');
     }
-
     const payload = { sub: user.email };
     return {
       access_token: await this.jwtservice.signAsync(payload),
@@ -97,9 +91,11 @@ export class AuthService {
       if (!token) {
         throw new UnauthorizedException();
       }
+
       const decodedToken = await this.jwtservice.verifyAsync(token);
       const email = decodedToken.sub;
-      const userData = this.userRepository.findOne({
+
+      const userData = await this.userRepository.findOne({
         where: { email: email },
       });
 
@@ -107,7 +103,7 @@ export class AuthService {
         throw new UnauthorizedException();
       }
 
-      return await userData;
+      return userData;
     } catch (error) {
       if (error.name === 'TokenExpiredError') {
         throw new UnauthorizedException('Token has expired');

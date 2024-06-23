@@ -55,11 +55,14 @@ let UserService = class UserService {
         return this.userRepository.save(add);
     }
     async update(header, updateUserDto) {
+        const verifyUserToken = await this.authservice.verifyUserToken(header);
+        if (!verifyUserToken) {
+            throw new common_1.UnauthorizedException();
+        }
         const email = await this.authservice.decodeToken(header);
         const updateUser = await this.userRepository.findOne({
             where: { email: email },
         });
-        console.log(updateUser);
         if (!updateUser) {
             throw new common_1.NotFoundException();
         }
@@ -67,13 +70,19 @@ let UserService = class UserService {
             const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
             updateUser.password = hashedPassword;
         }
+        if (updateUserDto.email) {
+            const findEmail = await this.userRepository.findOne({ where: { email: updateUserDto.email } });
+            if (findEmail) {
+                throw new common_1.ConflictException('Email already existed');
+            }
+        }
         updateUser.fullName = updateUserDto.fullName;
         updateUser.email = updateUserDto.email;
         return await this.userRepository.save(updateUser);
     }
     async allUser(header) {
-        const verifyAdminToken = await this.authservice.verifyUserToken(header);
-        if (!verifyAdminToken) {
+        const verifyUser = await this.authservice.verifyUserToken(header);
+        if (!verifyUser) {
             throw new common_1.UnauthorizedException();
         }
         return await this.userRepository.find();

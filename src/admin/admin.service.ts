@@ -100,13 +100,14 @@ export class AdminService {
     return finduser;
   }
 
-  async update(header: any, adminId: string, updateAdminDto: UpdateAdminDto) {
+  async update(header: any, updateAdminDto: UpdateAdminDto) {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
+    const uuid= await this.authservice.decodeToken(header)
     const updateAdmin = await this.adminRepository.findOne({
-      where: { adminid: adminId },
+      where: { uuid:uuid  },
     });
     if (!updateAdmin) {
       throw new NotFoundException();
@@ -121,7 +122,6 @@ export class AdminService {
         );
       }
     }
-    updateAdmin.adminid = adminId;
     updateAdmin.firstName = updateAdminDto.firstName;
     updateAdmin.lastName = updateAdminDto.lastName;
     updateAdmin.email = updateAdminDto.email;
@@ -129,6 +129,7 @@ export class AdminService {
     updateAdmin.password = updateAdminDto.password;
     updateAdmin.status = updateAdminDto.status;
     updateAdmin.updated_at = new Date();
+    console.log(uuid)
     return await this.adminRepository.save(updateAdmin);
   }
 

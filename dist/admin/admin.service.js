@@ -95,13 +95,14 @@ let AdminService = class AdminService {
         }
         return finduser;
     }
-    async update(header, adminId, updateAdminDto) {
+    async update(header, updateAdminDto) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);
         if (!verifyAdmin) {
             throw new common_1.UnauthorizedException();
         }
+        const uuid = await this.authservice.decodeToken(header);
         const updateAdmin = await this.adminRepository.findOne({
-            where: { adminid: adminId },
+            where: { uuid: uuid },
         });
         if (!updateAdmin) {
             throw new common_1.NotFoundException();
@@ -114,7 +115,6 @@ let AdminService = class AdminService {
                 throw new common_1.BadRequestException('Email already exists. Please enter another email.');
             }
         }
-        updateAdmin.adminid = adminId;
         updateAdmin.firstName = updateAdminDto.firstName;
         updateAdmin.lastName = updateAdminDto.lastName;
         updateAdmin.email = updateAdminDto.email;
@@ -122,6 +122,7 @@ let AdminService = class AdminService {
         updateAdmin.password = updateAdminDto.password;
         updateAdmin.status = updateAdminDto.status;
         updateAdmin.updated_at = new Date();
+        console.log(uuid);
         return await this.adminRepository.save(updateAdmin);
     }
     async remove(header, adminId) {

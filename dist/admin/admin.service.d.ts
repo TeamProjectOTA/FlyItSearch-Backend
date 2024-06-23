@@ -15,7 +15,7 @@ export declare class AdminService {
     findAll(header: any): Promise<Admin[]>;
     findOne(header: any, adminId: string): Promise<Admin>;
     findOneUser(passengerId: string, header: any): Promise<User>;
-    update(header: any, adminId: string, updateAdminDto: UpdateAdminDto): Promise<Admin>;
+    update(header: any, updateAdminDto: UpdateAdminDto): Promise<Admin>;
     remove(header: any, adminId: string): Promise<any>;
     removeUser(passengerId: string, header: any): Promise<{
         userToFind: User;
