@@ -1,6 +1,7 @@
 import { FlightSearchModel } from './flight.model';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { BookingService } from './booking.service';
+import { SabreUtils } from './sabre.utils';
 interface AgentData {
     name: string;
     age: number;
@@ -12,11 +13,12 @@ interface PriceCheckResult {
 }
 export declare class SabreService {
     private readonly bookingService;
-    constructor(bookingService: BookingService);
+    private readonly sabreUtils;
+    constructor(bookingService: BookingService, sabreUtils: SabreUtils);
     restToken(): Promise<string>;
     sabreCreateSessionSoap(): Promise<any>;
     sabreSessionLessTokenSoap(): Promise<any>;
-    closeSession(): Promise<import("axios").AxiosResponse<any, any> | "Token error">;
+    closeSession(): Promise<any>;
     shoppingBranded(flightDto: FlightSearchModel): Promise<any>;
     revalidation(revalidationDto: any): Promise<any>;
     price_check(agentdata: AgentData[], flightInfo: FlightInfo): Promise<PriceCheckResult[]>;
@@ -28,6 +30,6 @@ export declare class SabreService {
     airvoid(pnr: string): Promise<any>;
     airfarerules(farerulesDto: FareRulesDto): Promise<any>;
     get_ticket(pnr: string): Promise<any>;
-    seat_map(seatMapDto: any): Promise<import("axios").AxiosResponse<any, any>>;
+    seat_map(seatMapDto: any): Promise<void>;
 }
 export {};

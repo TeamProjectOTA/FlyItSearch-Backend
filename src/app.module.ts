@@ -19,13 +19,13 @@ import { BookModule } from './book/book.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { PdfModule } from './pdf/pdf.module';
 import { TourpackageModule } from './homepage/tourpackage/tourpackage.module';
-import { GoogleOuthController } from './google-outh/google-outh.controller';
-import { GoogleOuthService } from './google-outh/google-outh.service';
 import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 import { IpModule } from './ip/ip.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TourPackageModule } from './tour-package/tour-package.module';
+import { AirportsModule } from './airports/airports.module';
+import { AirlinesModule } from './airlines/airlines.module';
 
 require('dotenv').config();
 
@@ -81,15 +81,15 @@ require('dotenv').config();
     TourpackageModule,
     IpModule,
     TourPackageModule,
+    AirlinesModule,
+    AirportsModule,
   ],
-  controllers: [GoogleOuthController],
+
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-
-    GoogleOuthService,
   ],
 })
 export class AppModule {

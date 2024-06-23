@@ -26,7 +26,17 @@ let TourPackageService = class TourPackageService {
         return this.tourPackageRepository.save(tourPackage);
     }
     async findAll() {
-        return this.tourPackageRepository.find({ relations: ["introduction", "overview", "mainImage", "visitPlace", "tourPlan", "objectives", "metaInfo"] });
+        return this.tourPackageRepository.find({
+            relations: [
+                'introduction',
+                'overview',
+                'mainImage',
+                'visitPlace',
+                'tourPlan',
+                'objectives',
+                'metaInfo',
+            ],
+        });
     }
 };
 exports.TourPackageService = TourPackageService;

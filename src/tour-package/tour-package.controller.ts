@@ -1,4 +1,11 @@
-import { Controller, Post, Body, Get, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Get,
+  UseInterceptors,
+  UploadedFiles,
+} from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { TourPackageService } from './tour-package.service';
 import { CreateTourPackageDto } from './dto/create-tour-package.dto';
@@ -15,7 +22,8 @@ export class TourPackageController {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
           callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
         },
@@ -26,18 +34,22 @@ export class TourPackageController {
     @Body() createTourPackageDto: CreateTourPackageDto,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    const images = files.map(file => ({
+    const images = files.map((file) => ({
       path: `/uploads/${file.filename}`,
       size: file.size,
       description: '',
       mainTitle: '',
     }));
 
-    createTourPackageDto.mainImage = images.filter((_, index) => index < createTourPackageDto.mainImage.length);
+    createTourPackageDto.mainImage = images.filter(
+      (_, index) => index < createTourPackageDto.mainImage.length,
+    );
     createTourPackageDto.visitPlace.forEach((visitPlace, index) => {
       if (images[createTourPackageDto.mainImage.length + index]) {
-        visitPlace.path = images[createTourPackageDto.mainImage.length + index].path;
-        visitPlace.size = images[createTourPackageDto.mainImage.length + index].size;
+        visitPlace.path =
+          images[createTourPackageDto.mainImage.length + index].path;
+        visitPlace.size =
+          images[createTourPackageDto.mainImage.length + index].size;
       }
     });
 

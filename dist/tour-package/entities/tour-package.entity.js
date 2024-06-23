@@ -223,19 +223,19 @@ __decorate([
     __metadata("design:type", Overview)
 ], TourPackage.prototype, "overview", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => MainImage, mainImage => mainImage.id, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => MainImage, (mainImage) => mainImage.id, { cascade: true }),
     __metadata("design:type", Array)
 ], TourPackage.prototype, "mainImage", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => VisitPlace, visitPlace => visitPlace.id, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => VisitPlace, (visitPlace) => visitPlace.id, { cascade: true }),
     __metadata("design:type", Array)
 ], TourPackage.prototype, "visitPlace", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => TourPlan, tourPlan => tourPlan.id, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => TourPlan, (tourPlan) => tourPlan.id, { cascade: true }),
     __metadata("design:type", Array)
 ], TourPackage.prototype, "tourPlan", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => Objectives, objectives => objectives.id, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => Objectives, (objectives) => objectives.id, { cascade: true }),
     __metadata("design:type", Array)
 ], TourPackage.prototype, "objectives", void 0);
 __decorate([

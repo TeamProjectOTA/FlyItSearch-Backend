@@ -23,10 +23,11 @@ let PaymentController = class PaymentController {
     async getPaymentUrl(res, passengerId) {
         try {
             const redirectUrl = await this.paymentService.initiatePayment(passengerId);
-            return { url: redirectUrl, statusCode: 301 };
+            res.status(common_1.HttpStatus.OK).json({ url: redirectUrl });
         }
         catch (error) {
-            return { message: 'Failed to initiate payment' };
+            console.error('Failed to initiate payment:', error);
+            throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async validateOrder(val_id) {
@@ -35,34 +36,51 @@ let PaymentController = class PaymentController {
             return { data: response };
         }
         catch (error) {
-            return { message: 'Failed to validate order' };
+            console.error('Failed to validate order:', error);
+            throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    redirectSuccess(res) {
-        const successMessage = 'The payment was successful.';
-        res.status(common_1.HttpStatus.OK).send(successMessage);
+    async handleSuccess(val_id, res) {
+        try {
+            const response = await this.paymentService.validateOrder(val_id);
+            const successMessage = {
+                message: 'The payment was successful.',
+                data: response,
+                status: common_1.HttpStatus.OK,
+            };
+            res.status(common_1.HttpStatus.OK).json(successMessage);
+        }
+        catch (error) {
+            console.error('Success handling error:', error);
+            throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-    redirectFail(res) {
-        const message = ' The payment was not done';
-        res.status(common_1.HttpStatus.OK).send(message);
+    handleFail(res) {
+        const failMessage = {
+            message: 'The payment was not successful.',
+            status: common_1.HttpStatus.OK,
+        };
+        res.status(common_1.HttpStatus.OK).json(failMessage);
     }
-    redirectCancel(res) {
-        const message = 'The payment was canceled';
-        res.status(common_1.HttpStatus.OK).send(message);
+    handleCancel(res) {
+        const cancelMessage = {
+            message: 'The payment was canceled.',
+            status: common_1.HttpStatus.OK,
+        };
+        res.status(common_1.HttpStatus.OK).json(cancelMessage);
     }
 };
 exports.PaymentController = PaymentController;
 __decorate([
-    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)('/:passengerId'),
-    __param(0, (0, common_1.Req)()),
+    __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Param)('passengerId')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "getPaymentUrl", null);
 __decorate([
-    (0, common_1.Get)('/payment/validate/'),
+    (0, common_1.Get)('/payment/validate'),
     __param(0, (0, common_1.Query)('val_id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -70,25 +88,26 @@ __decorate([
 ], PaymentController.prototype, "validateOrder", null);
 __decorate([
     (0, common_1.Post)('/success'),
-    __param(0, (0, common_1.Res)()),
+    __param(0, (0, common_1.Query)('val_id')),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], PaymentController.prototype, "redirectSuccess", null);
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "handleSuccess", null);
 __decorate([
     (0, common_1.Post)('/fail'),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], PaymentController.prototype, "redirectFail", null);
+], PaymentController.prototype, "handleFail", null);
 __decorate([
     (0, common_1.Post)('/cancel'),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], PaymentController.prototype, "redirectCancel", null);
+], PaymentController.prototype, "handleCancel", null);
 exports.PaymentController = PaymentController = __decorate([
     (0, swagger_1.ApiTags)('SSLCOMMERZ'),
     (0, common_1.Controller)('payment'),

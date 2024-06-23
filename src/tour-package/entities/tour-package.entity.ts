@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { TravelPackageInclusionDto, TripType } from '../dto/types';
 
 @Entity()
@@ -149,16 +156,16 @@ export class TourPackage {
   @JoinColumn()
   overview: Overview;
 
-  @OneToMany(() => MainImage, mainImage => mainImage.id, { cascade: true })
+  @OneToMany(() => MainImage, (mainImage) => mainImage.id, { cascade: true })
   mainImage: MainImage[];
 
-  @OneToMany(() => VisitPlace, visitPlace => visitPlace.id, { cascade: true })
+  @OneToMany(() => VisitPlace, (visitPlace) => visitPlace.id, { cascade: true })
   visitPlace: VisitPlace[];
 
-  @OneToMany(() => TourPlan, tourPlan => tourPlan.id, { cascade: true })
+  @OneToMany(() => TourPlan, (tourPlan) => tourPlan.id, { cascade: true })
   tourPlan: TourPlan[];
 
-  @OneToMany(() => Objectives, objectives => objectives.id, { cascade: true })
+  @OneToMany(() => Objectives, (objectives) => objectives.id, { cascade: true })
   objectives: Objectives[];
 
   @OneToOne(() => MetaInfo, { cascade: true })

@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { FlightSearchModel } from './flight.model';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { BookingService } from './booking.service';
+import { SabreUtils } from './sabre.utils';
 
 dotenv.config();
 
@@ -23,7 +24,10 @@ interface PriceCheckResult {
 
 @Injectable()
 export class SabreService {
-  constructor(private readonly bookingService: BookingService) {}
+  constructor(
+    private readonly bookingService: BookingService,
+    private readonly sabreUtils: SabreUtils,
+  ) {}
 
   async restToken(): Promise<string> {
     const client_id_raw = `V1:${process.env.SABRE_ID}:${process.env.SABRE_PCC}:AA`;
@@ -181,8 +185,8 @@ export class SabreService {
 
     try {
       const response = await axios.request(sabretokenRq);
-      return response;
-      //   return await this.sabreUtils.tokenParser(response?.data);
+
+      return await this.sabreUtils.tokenParser(response?.data);
     } catch (error) {
       return 'Token error';
     }
@@ -1860,8 +1864,8 @@ export class SabreService {
 
     try {
       const response = await axios.request(farerulesrequest);
-      return response;
-      // return await this.sabreUtils.fareRulesParser(response?.data);
+
+      return await this.sabreUtils.fareRulesParser(response?.data);
     } catch (error) {
       return error.response?.data;
     }
@@ -1945,8 +1949,8 @@ export class SabreService {
 
     try {
       const response = await axios.request(seatmaprequest);
-      return response;
-      //return await this.sabreUtils.seatMapParser(response?.data);
+
+      return await this.sabreUtils.seatMapParser(response?.data);
     } catch (error) {
       console.error(error);
       throw error;

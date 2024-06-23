@@ -15,10 +15,12 @@ const axios_1 = require("axios");
 const base64 = require("base-64");
 const dotenv = require("dotenv");
 const booking_service_1 = require("./booking.service");
+const sabre_utils_1 = require("./sabre.utils");
 dotenv.config();
 let SabreService = class SabreService {
-    constructor(bookingService) {
+    constructor(bookingService, sabreUtils) {
         this.bookingService = bookingService;
+        this.sabreUtils = sabreUtils;
     }
     async restToken() {
         const client_id_raw = `V1:${process.env.SABRE_ID}:${process.env.SABRE_PCC}:AA`;
@@ -168,7 +170,7 @@ let SabreService = class SabreService {
         };
         try {
             const response = await axios_1.default.request(sabretokenRq);
-            return response;
+            return await this.sabreUtils.tokenParser(response?.data);
         }
         catch (error) {
             return 'Token error';
@@ -1674,7 +1676,7 @@ let SabreService = class SabreService {
         };
         try {
             const response = await axios_1.default.request(farerulesrequest);
-            return response;
+            return await this.sabreUtils.fareRulesParser(response?.data);
         }
         catch (error) {
             return error.response?.data;
@@ -1752,7 +1754,7 @@ let SabreService = class SabreService {
         };
         try {
             const response = await axios_1.default.request(seatmaprequest);
-            return response;
+            return await this.sabreUtils.seatMapParser(response?.data);
         }
         catch (error) {
             console.error(error);
@@ -1763,6 +1765,7 @@ let SabreService = class SabreService {
 exports.SabreService = SabreService;
 exports.SabreService = SabreService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [booking_service_1.BookingService])
+    __metadata("design:paramtypes", [booking_service_1.BookingService,
+        sabre_utils_1.SabreUtils])
 ], SabreService);
 //# sourceMappingURL=sabre.flights.service.js.map

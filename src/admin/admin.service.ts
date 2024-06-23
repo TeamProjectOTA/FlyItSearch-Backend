@@ -105,9 +105,9 @@ export class AdminService {
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
-    const uuid= await this.authservice.decodeToken(header)
+    const uuid = await this.authservice.decodeToken(header);
     const updateAdmin = await this.adminRepository.findOne({
-      where: { uuid:uuid  },
+      where: { uuid: uuid },
     });
     if (!updateAdmin) {
       throw new NotFoundException();
@@ -129,7 +129,7 @@ export class AdminService {
     updateAdmin.password = updateAdminDto.password;
     updateAdmin.status = updateAdminDto.status;
     updateAdmin.updated_at = new Date();
-    console.log(uuid)
+    console.log(uuid);
     return await this.adminRepository.save(updateAdmin);
   }
 

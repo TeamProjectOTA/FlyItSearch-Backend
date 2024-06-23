@@ -5,62 +5,84 @@ import {
   Param,
   Post,
   Query,
-  Req,
   Res,
+  HttpException,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { Response } from 'express'; // Needed for response redirection
+import { Response } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
 @ApiTags('SSLCOMMERZ')
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @ApiBearerAuth('access_token')
   @Get('/:passengerId')
   async getPaymentUrl(
-    @Req() res: Response,
+    @Res() res: Response,
     @Param('passengerId') passengerId: string,
   ) {
     try {
       const redirectUrl =
         await this.paymentService.initiatePayment(passengerId);
-      return { url: redirectUrl, statusCode: 301 };
+      res.status(HttpStatus.OK).json({ url: redirectUrl });
     } catch (error) {
-      return { message: 'Failed to initiate payment' };
+      console.error('Failed to initiate payment:', error);
+      throw new HttpException(
+        'Failed to initiate payment',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
-  @Get('/payment/validate/')
+
+  @Get('/payment/validate')
   async validateOrder(@Query('val_id') val_id: string) {
     try {
       const response = await this.paymentService.validateOrder(val_id);
       return { data: response };
     } catch (error) {
-      return { message: 'Failed to validate order' };
+      console.error('Failed to validate order:', error);
+      throw new HttpException(
+        'Failed to validate order',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   @Post('/success')
-  // @HttpCode(HttpStatus.MOVED_PERMANENTLY) // Redirect with appropriate status code
-  redirectSuccess(@Res() res: Response) {
-    //const redirectUrl=res.redirect(`${process.env.CLIENT_ROOT}/paymentSuccessful`)
-    const successMessage = 'The payment was successful.';
-    res.status(HttpStatus.OK).send(successMessage);
+  async handleSuccess(@Query('val_id') val_id: string, @Res() res: Response) {
+    try {
+      const response = await this.paymentService.validateOrder(val_id);
+      const successMessage = {
+        message: 'The payment was successful.',
+        data: response,
+        status: HttpStatus.OK,
+      };
+      res.status(HttpStatus.OK).json(successMessage);
+    } catch (error) {
+      console.error('Success handling error:', error);
+      throw new HttpException(
+        'Failed to validate order',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post('/fail')
-  //@HttpCode(HttpStatus.MOVED_PERMANENTLY)
-  redirectFail(@Res() res: Response) {
-    //const redirectUrl=res.redirect(`${process.env.CLIENT_ROOT}/paymentFailure`)
-    const message = ' The payment was not done';
-    res.status(HttpStatus.OK).send(message);
+  handleFail(@Res() res: Response) {
+    const failMessage = {
+      message: 'The payment was not successful.',
+      status: HttpStatus.OK,
+    };
+    res.status(HttpStatus.OK).json(failMessage);
   }
 
   @Post('/cancel')
-  //@HttpCode(HttpStatus.MOVED_PERMANENTLY)
-  redirectCancel(@Res() res: Response) {
-    //const redirectUrl=res.redirect(`${process.env.CLIENT_ROOT}/paymentFailure`)
-    const message = 'The payment was canceled';
-    res.status(HttpStatus.OK).send(message);
+  handleCancel(@Res() res: Response) {
+    const cancelMessage = {
+      message: 'The payment was canceled.',
+      status: HttpStatus.OK,
+    };
+    res.status(HttpStatus.OK).json(cancelMessage);
   }
 }

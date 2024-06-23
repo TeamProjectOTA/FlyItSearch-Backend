@@ -11,12 +11,24 @@ export class TourPackageService {
     private tourPackageRepository: Repository<TourPackage>,
   ) {}
 
-  async create(createTourPackageDto: CreateTourPackageDto): Promise<TourPackage> {
+  async create(
+    createTourPackageDto: CreateTourPackageDto,
+  ): Promise<TourPackage> {
     const tourPackage = this.tourPackageRepository.create(createTourPackageDto);
     return this.tourPackageRepository.save(tourPackage);
   }
 
   async findAll(): Promise<TourPackage[]> {
-    return this.tourPackageRepository.find({ relations: ["introduction", "overview", "mainImage", "visitPlace", "tourPlan", "objectives", "metaInfo"] });
+    return this.tourPackageRepository.find({
+      relations: [
+        'introduction',
+        'overview',
+        'mainImage',
+        'visitPlace',
+        'tourPlan',
+        'objectives',
+        'metaInfo',
+      ],
+    });
   }
 }

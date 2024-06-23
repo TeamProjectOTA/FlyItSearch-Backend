@@ -17,7 +17,18 @@ let TourPackageModule = class TourPackageModule {
 exports.TourPackageModule = TourPackageModule;
 exports.TourPackageModule = TourPackageModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([tour_package_entity_1.TourPackage, tour_package_entity_1.Introduction, tour_package_entity_1.Overview, tour_package_entity_1.MainImage, tour_package_entity_1.VisitPlace, tour_package_entity_1.TourPlan, tour_package_entity_1.Objectives, tour_package_entity_1.MetaInfo])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([
+                tour_package_entity_1.TourPackage,
+                tour_package_entity_1.Introduction,
+                tour_package_entity_1.Overview,
+                tour_package_entity_1.MainImage,
+                tour_package_entity_1.VisitPlace,
+                tour_package_entity_1.TourPlan,
+                tour_package_entity_1.Objectives,
+                tour_package_entity_1.MetaInfo,
+            ]),
+        ],
         controllers: [tour_package_controller_1.TourPackageController],
         providers: [tour_package_service_1.TourPackageService],
     })

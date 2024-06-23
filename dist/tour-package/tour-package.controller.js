@@ -24,7 +24,7 @@ let TourPackageController = class TourPackageController {
         this.tourPackageService = tourPackageService;
     }
     async create(createTourPackageDto, files) {
-        const images = files.map(file => ({
+        const images = files.map((file) => ({
             path: `/uploads/${file.filename}`,
             size: file.size,
             description: '',
@@ -33,8 +33,10 @@ let TourPackageController = class TourPackageController {
         createTourPackageDto.mainImage = images.filter((_, index) => index < createTourPackageDto.mainImage.length);
         createTourPackageDto.visitPlace.forEach((visitPlace, index) => {
             if (images[createTourPackageDto.mainImage.length + index]) {
-                visitPlace.path = images[createTourPackageDto.mainImage.length + index].path;
-                visitPlace.size = images[createTourPackageDto.mainImage.length + index].size;
+                visitPlace.path =
+                    images[createTourPackageDto.mainImage.length + index].path;
+                visitPlace.size =
+                    images[createTourPackageDto.mainImage.length + index].size;
             }
         });
         return this.tourPackageService.create(createTourPackageDto);

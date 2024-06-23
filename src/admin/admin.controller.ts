@@ -29,11 +29,8 @@ export class AdminController {
   }
   @ApiBearerAuth('access_token')
   @Patch(':adminId')
-  update(
-    @Headers() header: Headers,
-    @Body() updateAdminDto: UpdateAdminDto,
-  ) {
-    return this.adminService.update(header,updateAdminDto);
+  update(@Headers() header: Headers, @Body() updateAdminDto: UpdateAdminDto) {
+    return this.adminService.update(header, updateAdminDto);
   }
 
   @Delete(':adminId')

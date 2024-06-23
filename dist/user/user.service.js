@@ -71,7 +71,9 @@ let UserService = class UserService {
             updateUser.password = hashedPassword;
         }
         if (updateUserDto.email) {
-            const findEmail = await this.userRepository.findOne({ where: { email: updateUserDto.email } });
+            const findEmail = await this.userRepository.findOne({
+                where: { email: updateUserDto.email },
+            });
             if (findEmail) {
                 throw new common_1.ConflictException('Email already existed');
             }

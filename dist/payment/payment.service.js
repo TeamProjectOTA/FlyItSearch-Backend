@@ -29,8 +29,13 @@ let PaymentService = class PaymentService {
         const userData = await this.loginRepository.findOne({
             where: { passengerId: passengerId },
         });
+        if (!userData) {
+            throw new common_1.NotFoundException(`User with passengerId ${passengerId} not found`);
+        }
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
-        const tran_id = Date.now().toString(36);
+        const timestamp = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const tran_id = `${timestamp}_${randomNumber}`;
         const data = {
             total_amount: 100,
             currency: 'BDT',
@@ -38,44 +43,53 @@ let PaymentService = class PaymentService {
             success_url: 'http://localhost:3000/payment/success',
             fail_url: 'http://localhost:3000/payment/fail',
             cancel_url: 'http://localhost:3000/payment/cancel',
-            ipn_url: 'http://localhost:3000/ipn',
-            shipping_method: 'Courier',
-            product_name: 'Computer.',
-            product_category: 'Electronic',
-            product_profile: 'general',
+            shipping_method: 'NO',
+            product_name: 'Air Ticket',
+            product_category: 'air ticket',
+            product_profile: 'airline-tickets',
+            hours_till_departure: '24 hrs',
+            flight_type: 'Oneway',
+            pnr: 'Q123h4',
+            journey_from_to: 'DAC-CGP',
+            third_party_booking: 'No',
             cus_name: userData.fullName,
             cus_email: userData.email,
-            cus_add2: 'Dhaka',
             cus_city: 'Dhaka',
-            cus_state: 'Dhaka',
             cus_postcode: '1000',
             cus_country: 'Bangladesh',
             cus_phone: '01711111111',
-            ship_name: 'Customer Name',
-            ship_add1: 'Dhaka',
-            ship_add2: 'Dhaka',
-            ship_city: 'Dhaka',
-            ship_state: 'Dhaka',
-            ship_postcode: '1000',
-            ship_country: 'Bangladesh',
         };
         try {
             const apiResponse = await sslcommerz.init(data);
+            if (!apiResponse.GatewayPageURL) {
+                throw new common_1.HttpException('Failed to get payment URL', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             return apiResponse.GatewayPageURL;
         }
         catch (error) {
-            throw new Error('Failed to initiate payment');
+            console.error('Payment initiation error:', error);
+            throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     async validateOrder(val_id) {
         const sslcz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
-        const data = { val_id };
         try {
-            const response = await sslcz.validate(data);
-            return response;
+            const response = await sslcz.validate({ val_id });
+            if (response.status === 'VALID') {
+                return response;
+            }
+            else if (response.status === 'INVALID_TRANSACTION') {
+                console.error('Invalid transaction:', response);
+                throw new common_1.HttpException('Invalid transaction', common_1.HttpStatus.BAD_REQUEST);
+            }
+            else {
+                console.error('Unknown validation error:', response);
+                throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
         catch (error) {
-            throw new Error('Failed to validate order');
+            console.error('Order validation error:', error);
+            throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 };

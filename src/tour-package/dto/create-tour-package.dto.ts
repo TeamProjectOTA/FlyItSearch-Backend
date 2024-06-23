@@ -1,5 +1,11 @@
 // create-introduction.dto.ts
-import {  IsArray, IsDecimal, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDecimal,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 import { TravelPackageInclusionDto, TripType } from './types';
@@ -58,7 +64,6 @@ export class CreateIntroductionDto {
   packageOverview: string;
 }
 
-
 export class CreateOverviewDto {
   @IsString()
   @IsNotEmpty()
@@ -67,8 +72,6 @@ export class CreateOverviewDto {
   @IsArray()
   packageInclude: TravelPackageInclusionDto[];
 }
-
-
 
 export class CreateMainImageDto {
   @IsString()
@@ -86,8 +89,6 @@ export class CreateMainImageDto {
   @IsNotEmpty()
   mainTitle: string;
 }
-
-
 
 export class CreateVisitPlaceDto {
   @IsString()
@@ -110,8 +111,6 @@ export class CreateVisitPlaceDto {
   mainTitle: string;
 }
 
-
-
 export class CreateTourPlanDto {
   @IsString()
   @IsNotEmpty()
@@ -122,15 +121,11 @@ export class CreateTourPlanDto {
   dayPlan: string;
 }
 
-
-
 export class CreateObjectivesDto {
   @IsString()
   @IsNotEmpty()
   objective: string;
 }
-
-
 
 export class CreateMetaInfoDto {
   @IsString()
@@ -144,10 +139,6 @@ export class CreateMetaInfoDto {
   @IsNotEmpty()
   metaDescription: string;
 }
-
-
-
-
 
 export class CreateTourPackageDto {
   @ValidateNested()
