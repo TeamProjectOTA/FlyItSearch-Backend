@@ -12,6 +12,9 @@ const tour_package_service_1 = require("./tour-package.service");
 const tour_package_controller_1 = require("./tour-package.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const tour_package_entity_1 = require("./entities/tour-package.entity");
+const Introduction_model_1 = require("./entities/Introduction.model");
+const overview_model_1 = require("./entities/overview.model");
+const metaInfo_model_1 = require("./entities/metaInfo.model");
 let TourPackageModule = class TourPackageModule {
 };
 exports.TourPackageModule = TourPackageModule;
@@ -20,13 +23,13 @@ exports.TourPackageModule = TourPackageModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([
                 tour_package_entity_1.TourPackage,
-                tour_package_entity_1.Introduction,
-                tour_package_entity_1.Overview,
+                Introduction_model_1.Introduction,
+                overview_model_1.Overview,
                 tour_package_entity_1.MainImage,
                 tour_package_entity_1.VisitPlace,
                 tour_package_entity_1.TourPlan,
                 tour_package_entity_1.Objectives,
-                tour_package_entity_1.MetaInfo,
+                metaInfo_model_1.MetaInfo,
             ]),
         ],
         controllers: [tour_package_controller_1.TourPackageController],

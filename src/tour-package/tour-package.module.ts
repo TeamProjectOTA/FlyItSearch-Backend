@@ -3,15 +3,15 @@ import { TourPackageService } from './tour-package.service';
 import { TourPackageController } from './tour-package.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
-  Introduction,
   TourPackage,
-  Overview,
   MainImage,
   VisitPlace,
   TourPlan,
   Objectives,
-  MetaInfo,
 } from './entities/tour-package.entity';
+import { Introduction } from './entities/Introduction.model';
+import { Overview } from './entities/overview.model';
+import { MetaInfo } from './entities/metaInfo.model';
 
 @Module({
   imports: [

@@ -21,21 +21,13 @@ let TourPackageService = class TourPackageService {
     constructor(tourPackageRepository) {
         this.tourPackageRepository = tourPackageRepository;
     }
-    async create(createTourPackageDto) {
-        const tourPackage = this.tourPackageRepository.create(createTourPackageDto);
-        return this.tourPackageRepository.save(tourPackage);
+    async create(tourPackageData) {
+        const tourPackage = this.tourPackageRepository.create(tourPackageData);
+        return await this.tourPackageRepository.save(tourPackage);
     }
     async findAll() {
         return this.tourPackageRepository.find({
-            relations: [
-                'introduction',
-                'overview',
-                'mainImage',
-                'visitPlace',
-                'tourPlan',
-                'objectives',
-                'metaInfo',
-            ],
+            relations: ['introduction', 'overview', 'mainImage', 'visitPlace', 'tourPlan', 'objectives', 'metaInfo'],
         });
     }
 };

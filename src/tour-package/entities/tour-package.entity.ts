@@ -4,69 +4,45 @@ import {
   Column,
   OneToMany,
   OneToOne,
+  ManyToOne,
   JoinColumn,
 } from 'typeorm';
 import { TravelPackageInclusionDto, TripType } from '../dto/types';
+import { Introduction } from './Introduction.model';
+import { Overview } from './overview.model';
+import { MetaInfo } from './metaInfo.model';
 
 @Entity()
-export class Introduction {
+export class TourPackage {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  mainTitle: string;
+  @OneToOne(() => Introduction, { cascade: true, eager: true })
+  @JoinColumn()
+  introduction: Introduction;
 
-  @Column()
-  subTitle: string;
+  @OneToOne(() => Overview, { cascade: true, eager: true })
+  @JoinColumn()
+  overview: Overview;
 
-  @Column()
-  journeyDuration: string;
+  @OneToMany(() => MainImage, (mainImage) => mainImage.id, { cascade: true, eager: true })
+  mainImage: MainImage[];
 
-  @Column()
-  startDate: string;
+  @OneToMany(() => VisitPlace, (visitPlace) => visitPlace.id, { cascade: true })
+  visitPlace: VisitPlace[];
 
-  @Column()
-  endDate: string;
+  @OneToMany(() => TourPlan, (tourPlan) => tourPlan.id, { cascade: true })
+  tourPlan: TourPlan[];
 
-  @Column()
-  countryName: string;
+  @OneToMany(() => Objectives, (objectives) => objectives.id, { cascade: true })
+  objectives: Objectives[];
 
-  @Column()
-  cityName: string;
-
-  @Column()
-  journeyLocation: string;
-
-  @Column()
-  totalSeat: string;
-
-  @Column()
-  maximumAge: number;
-
-  @Column()
-  minimumAge: number;
-
-  @Column('decimal')
-  packagePrice: number;
-
-  @Column('decimal')
-  packageDiscount: number;
-
-  @Column()
-  packageOverview: string;
+  @OneToOne(() => MetaInfo, { cascade: true, eager: true })
+  @JoinColumn()
+  metaInfo: MetaInfo;
 }
 
-@Entity()
-export class Overview {
-  @PrimaryGeneratedColumn()
-  id: number;
 
-  @Column()
-  packageOverview: string;
-
-  @Column('json')
-  packageInclude: TravelPackageInclusionDto[];
-}
 
 @Entity()
 export class MainImage {
@@ -78,12 +54,10 @@ export class MainImage {
 
   @Column()
   size: number;
-
-  @Column()
-  description: string;
-
   @Column()
   mainTitle: string;
+  @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.mainImage)
+  tourPackage: TourPackage;
 }
 
 @Entity()
@@ -96,15 +70,10 @@ export class VisitPlace {
 
   @Column()
   size: number;
-
-  @Column()
-  placeName: string;
-
-  @Column()
-  description: string;
-
   @Column()
   mainTitle: string;
+  @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.visitPlace)
+  tourPackage: TourPackage;
 }
 
 @Entity()
@@ -117,6 +86,8 @@ export class TourPlan {
 
   @Column()
   dayPlan: string;
+  @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.tourPlan)
+  tourPackage: TourPackage;
 }
 
 @Entity()
@@ -126,49 +97,6 @@ export class Objectives {
 
   @Column()
   objective: string;
-}
-
-@Entity()
-export class MetaInfo {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  metaTitle: string;
-
-  @Column('simple-array')
-  metaKeywords: TripType[];
-
-  @Column()
-  metaDescription: string;
-}
-
-@Entity()
-export class TourPackage {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @OneToOne(() => Introduction, { cascade: true })
-  @JoinColumn()
-  introduction: Introduction;
-
-  @OneToOne(() => Overview, { cascade: true })
-  @JoinColumn()
-  overview: Overview;
-
-  @OneToMany(() => MainImage, (mainImage) => mainImage.id, { cascade: true })
-  mainImage: MainImage[];
-
-  @OneToMany(() => VisitPlace, (visitPlace) => visitPlace.id, { cascade: true })
-  visitPlace: VisitPlace[];
-
-  @OneToMany(() => TourPlan, (tourPlan) => tourPlan.id, { cascade: true })
-  tourPlan: TourPlan[];
-
-  @OneToMany(() => Objectives, (objectives) => objectives.id, { cascade: true })
-  objectives: Objectives[];
-
-  @OneToOne(() => MetaInfo, { cascade: true })
-  @JoinColumn()
-  metaInfo: MetaInfo;
+  @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.objectives)
+  tourPackage: TourPackage;
 }
