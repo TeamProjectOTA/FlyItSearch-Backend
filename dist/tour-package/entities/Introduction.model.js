@@ -30,6 +30,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
+], Introduction.prototype, "tripType", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], Introduction.prototype, "journeyDuration", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -53,7 +57,7 @@ __decorate([
 ], Introduction.prototype, "journeyLocation", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], Introduction.prototype, "totalSeat", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -72,11 +76,9 @@ __decorate([
     __metadata("design:type", Number)
 ], Introduction.prototype, "packageDiscount", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Introduction.prototype, "packageOverview", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)(() => tour_package_entity_1.TourPackage, tourPackage => tourPackage.introduction),
+    (0, typeorm_1.OneToOne)(() => tour_package_entity_1.TourPackage, (tourPackage) => tourPackage.introduction, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", tour_package_entity_1.TourPackage)
 ], Introduction.prototype, "tourPackage", void 0);
