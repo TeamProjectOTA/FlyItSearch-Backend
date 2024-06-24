@@ -13,3 +13,15 @@ export declare class TravelPackageInclusionDto {
     type: PackageInclude;
     details?: string;
 }
+export declare class Inclusion {
+    data: string;
+}
+export declare class Exclusion {
+    data: string;
+}
+export declare class BookingPolicy {
+    data: string;
+}
+export declare class RefundPolicy {
+    data: string;
+}
