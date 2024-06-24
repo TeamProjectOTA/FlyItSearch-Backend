@@ -72,7 +72,7 @@ let AuthService = class AuthService {
         if (!passwordMatch) {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
-        const payload = { sub: user.email };
+        const payload = { sub: user.email, sub2: user.passengerId };
         return {
             access_token: await this.jwtservice.signAsync(payload),
         };
