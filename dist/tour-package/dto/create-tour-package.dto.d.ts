@@ -1,19 +1,19 @@
-import { TravelPackageInclusionDto, TripType } from './types';
+import { BookingPolicy, Exclusion, Inclusion, RefundPolicy, TravelPackageInclusionDto, TripType } from './types';
 export declare class CreateIntroductionDto {
     mainTitle: string;
     subTitle: string;
+    tripType: string;
     journeyDuration: string;
     startDate: string;
     endDate: string;
     countryName: string;
     cityName: string;
     journeyLocation: string;
-    totalSeat: string;
+    totalSeat: number;
     maximumAge: number;
     minimumAge: number;
     packagePrice: number;
     packageDiscount: number;
-    packageOverview: string;
 }
 export declare class CreateOverviewDto {
     packageOverview: string;
@@ -22,22 +22,22 @@ export declare class CreateOverviewDto {
 export declare class CreateMainImageDto {
     path: string;
     size: number;
-    description: string;
     mainTitle: string;
 }
 export declare class CreateVisitPlaceDto {
     path: string;
     size: number;
-    placeName: string;
-    description: string;
-    mainTitle: string;
+    pictureName: string;
 }
 export declare class CreateTourPlanDto {
     tourPlanTitle: string;
     dayPlan: string;
 }
 export declare class CreateObjectivesDto {
-    objective: string;
+    inclusion: Inclusion[];
+    exclusion: Exclusion[];
+    bookingPolicy: BookingPolicy[];
+    refundPolicy: RefundPolicy[];
 }
 export declare class CreateMetaInfoDto {
     metaTitle: string;
