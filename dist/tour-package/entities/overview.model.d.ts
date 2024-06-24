@@ -1,5 +1,5 @@
-import { TravelPackageInclusionDto } from "../dto/types";
-import { TourPackage } from "./tour-package.entity";
+import { TourPackage } from './tour-package.entity';
+import { TravelPackageInclusionDto } from '../dto/types';
 export declare class Overview {
     id: number;
     packageOverview: string;

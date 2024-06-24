@@ -15,6 +15,10 @@ const tour_package_entity_1 = require("./entities/tour-package.entity");
 const Introduction_model_1 = require("./entities/Introduction.model");
 const overview_model_1 = require("./entities/overview.model");
 const metaInfo_model_1 = require("./entities/metaInfo.model");
+const mainImage_model_1 = require("./entities/mainImage.model");
+const visitPlace_model_1 = require("./entities/visitPlace.model");
+const objective_model_1 = require("./entities/objective.model");
+const tourPlan_Model_1 = require("./entities/tourPlan.Model");
 let TourPackageModule = class TourPackageModule {
 };
 exports.TourPackageModule = TourPackageModule;
@@ -25,10 +29,10 @@ exports.TourPackageModule = TourPackageModule = __decorate([
                 tour_package_entity_1.TourPackage,
                 Introduction_model_1.Introduction,
                 overview_model_1.Overview,
-                tour_package_entity_1.MainImage,
-                tour_package_entity_1.VisitPlace,
-                tour_package_entity_1.TourPlan,
-                tour_package_entity_1.Objectives,
+                mainImage_model_1.MainImage,
+                visitPlace_model_1.VisitPlace,
+                tourPlan_Model_1.TourPlan,
+                objective_model_1.Objectives,
                 metaInfo_model_1.MetaInfo,
             ]),
         ],

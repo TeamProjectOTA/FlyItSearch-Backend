@@ -102,7 +102,7 @@ export class AppModule {
         { path: 'auth/sign-in-user', method: RequestMethod.POST },
         { path: 'social-site/google', method: RequestMethod.GET },
         { path: 'social-site/google-redirect', method: RequestMethod.GET },
-        {path:'payment/{passengerId}',method:RequestMethod.GET}
+        { path: 'payment/{passengerId}', method: RequestMethod.GET },
       )
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }

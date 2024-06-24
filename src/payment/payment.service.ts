@@ -66,7 +66,7 @@ export class PaymentService {
       cus_city: 'Dhaka',
       cus_postcode: '1000',
       cus_country: 'Bangladesh',
-      cus_phone: '01711111111',
+      cus_phone: userData.phone,
     };
 
     try {

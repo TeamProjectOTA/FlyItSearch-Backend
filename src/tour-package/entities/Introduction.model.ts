@@ -1,5 +1,11 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { TourPackage } from "./tour-package.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { TourPackage } from './tour-package.entity';
 
 @Entity()
 export class Introduction {
@@ -11,6 +17,9 @@ export class Introduction {
 
   @Column()
   subTitle: string;
+
+  @Column()
+  tripType: string;
 
   @Column()
   journeyDuration: string;
@@ -31,7 +40,7 @@ export class Introduction {
   journeyLocation: string;
 
   @Column()
-  totalSeat: string;
+  totalSeat: number;
 
   @Column()
   maximumAge: number;
@@ -45,9 +54,9 @@ export class Introduction {
   @Column('decimal')
   packageDiscount: number;
 
-  @Column()
-  packageOverview: string;
-  @OneToOne(() => TourPackage, tourPackage => tourPackage.introduction)
+  @OneToOne(() => TourPackage, (tourPackage) => tourPackage.introduction, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   tourPackage: TourPackage;
 }

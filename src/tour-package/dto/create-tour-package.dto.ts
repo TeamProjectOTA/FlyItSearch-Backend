@@ -1,14 +1,13 @@
-// create-introduction.dto.ts
 import {
   IsArray,
-  IsDecimal,
   IsNotEmpty,
   IsNumber,
   IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { TravelPackageInclusionDto, TripType } from './types';
+import { BookingPolicy, Exclusion, Inclusion, RefundPolicy, TravelPackageInclusionDto, TripType } from './types';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateIntroductionDto {
   @IsString()
@@ -18,6 +17,10 @@ export class CreateIntroductionDto {
   @IsString()
   @IsNotEmpty()
   subTitle: string;
+
+  @IsString()
+  @IsNotEmpty()
+  tripType: string;
 
   @IsString()
   @IsNotEmpty()
@@ -43,9 +46,9 @@ export class CreateIntroductionDto {
   @IsNotEmpty()
   journeyLocation: string;
 
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  totalSeat: string;
+  totalSeat: number;
 
   @IsNumber()
   maximumAge: number;
@@ -53,23 +56,23 @@ export class CreateIntroductionDto {
   @IsNumber()
   minimumAge: number;
 
-  @IsDecimal()
+  @IsNumber()
   packagePrice: number;
 
-  @IsDecimal()
+  @IsNumber()
   packageDiscount: number;
-
-  @IsString()
-  @IsNotEmpty()
-  packageOverview: string;
 }
 
 export class CreateOverviewDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({
+    default:
+      'This package includes an exciting tour of the city with various activities.',
+  })
   packageOverview: string;
 
-  @IsArray()
+  @ApiProperty({ type: TravelPackageInclusionDto })
   packageInclude: TravelPackageInclusionDto[];
 }
 
@@ -80,11 +83,6 @@ export class CreateMainImageDto {
 
   @IsNumber()
   size: number;
-
-  @IsString()
-  @IsNotEmpty()
-  description: string;
-
   @IsString()
   @IsNotEmpty()
   mainTitle: string;
@@ -97,18 +95,9 @@ export class CreateVisitPlaceDto {
 
   @IsNumber()
   size: number;
-
   @IsString()
   @IsNotEmpty()
-  placeName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  description: string;
-
-  @IsString()
-  @IsNotEmpty()
-  mainTitle: string;
+  pictureName: string;
 }
 
 export class CreateTourPlanDto {
@@ -122,9 +111,14 @@ export class CreateTourPlanDto {
 }
 
 export class CreateObjectivesDto {
-  @IsString()
-  @IsNotEmpty()
-  objective: string;
+  @ApiProperty({ type: Inclusion })
+  inclusion:Inclusion[]
+  @ApiProperty({ type: Exclusion })
+  exclusion:Exclusion[]
+  @ApiProperty({ type: BookingPolicy })
+  bookingPolicy:BookingPolicy[]
+  @ApiProperty({ type: RefundPolicy })
+  refundPolicy:RefundPolicy[]
 }
 
 export class CreateMetaInfoDto {
@@ -142,29 +136,37 @@ export class CreateMetaInfoDto {
 
 export class CreateTourPackageDto {
   @ValidateNested()
+  @ApiProperty({ type: CreateIntroductionDto })
   @Type(() => CreateIntroductionDto)
   introduction: CreateIntroductionDto;
 
   @ValidateNested()
+  @ApiProperty({ type: CreateOverviewDto })
   @Type(() => CreateOverviewDto)
   overview: CreateOverviewDto;
 
+  @ApiProperty({ type: CreateMainImageDto })
   @ValidateNested({ each: true })
   @Type(() => CreateMainImageDto)
   mainImage: CreateMainImageDto[];
 
+@ApiProperty({ type: CreateVisitPlaceDto })
   @ValidateNested({ each: true })
   @Type(() => CreateVisitPlaceDto)
   visitPlace: CreateVisitPlaceDto[];
 
+  @ApiProperty({ type: CreateTourPlanDto })
   @ValidateNested({ each: true })
   @Type(() => CreateTourPlanDto)
   tourPlan: CreateTourPlanDto[];
 
+
+@ApiProperty({ type: CreateObjectivesDto })
   @ValidateNested({ each: true })
   @Type(() => CreateObjectivesDto)
   objectives: CreateObjectivesDto[];
 
+@ApiProperty({ type: CreateMetaInfoDto })
   @ValidateNested()
   @Type(() => CreateMetaInfoDto)
   metaInfo: CreateMetaInfoDto;

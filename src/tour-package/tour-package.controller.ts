@@ -8,53 +8,78 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { TourPackageService } from './tour-package.service';
-import { CreateTourPackageDto } from './dto/create-tour-package.dto';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import {
+  CreateIntroductionDto,
+  CreateOverviewDto,
+  CreateTourPackageDto,
+  CreateVisitPlaceDto,
+} from './dto/create-tour-package.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { multerConfig } from './mutlar/multer.config';
+import { MulterFile } from './mutlar/multer-file.interface';
+import { TourPackage } from './entities/tour-package.entity';
 
+@ApiTags('Tour-Package')
 @Controller('tour-packages')
 export class TourPackageController {
   constructor(private readonly tourPackageService: TourPackageService) {}
 
-  // @Post()
-  // @UseInterceptors(
-  //   FilesInterceptor('files', 20, {
-  //     storage: diskStorage({
-  //       destination: './uploads',
-  //       filename: (req, file, callback) => {
-  //         const uniqueSuffix =
-  //           Date.now() + '-' + Math.round(Math.random() * 1e9);
-  //         const ext = extname(file.originalname);
-  //         callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // async create(
-  //   @Body() createTourPackageDto: CreateTourPackageDto,
-  //   @UploadedFiles() files: Express.Multer.File[],
-  // ) {
-  //   const images = files.map((file) => ({
-  //     path: `/uploads/${file.filename}`,
-  //     size: file.size,
-  //     description: '',
-  //     mainTitle: '',
-  //   }));
+  @Post('/introduction')
+  async createIntroduction(
+    @Body() createIntroductionDto: CreateIntroductionDto,
+  ) {
+    return await this.tourPackageService.createIntorduction(
+      createIntroductionDto,
+    );
+  }
+  @Post('/overview')
+  async createOverview(@Body() createOverviewDto: CreateOverviewDto) {
+    return await this.tourPackageService.createOverview(createOverviewDto);
+  }
 
-  //   createTourPackageDto.mainImage = images.filter(
-  //     (_, index) => index < createTourPackageDto.mainImage.length,
-  //   );
-  //   createTourPackageDto.visitPlace.forEach((visitPlace, index) => {
-  //     if (images[createTourPackageDto.mainImage.length + index]) {
-  //       visitPlace.path =
-  //         images[createTourPackageDto.mainImage.length + index].path;
-  //       visitPlace.size =
-  //         images[createTourPackageDto.mainImage.length + index].size;
-  //     }
-  //   });
+  @Post('/mainImage')
+  @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
+  async uploadPicturesmain(@UploadedFiles() files: MulterFile[]): Promise<any> {
+    const results = [];
 
-  //   return this.tourPackageService.create(createTourPackageDto);
-  // }
+    for (const file of files) {
+      const savedPicture = await this.tourPackageService.createMainImage(file);
+      results.push({
+        id: savedPicture.id,
+        name: savedPicture.mainTitle,
+        path: savedPicture.path,
+        size: savedPicture.size,
+      });
+    }
+
+    return results;
+  }
+
+  @Post('/visitPlace')
+  @UseInterceptors(FilesInterceptor('files', 10, multerConfig))
+  async uploadPicturesVisit(
+    @UploadedFiles() files: MulterFile[],
+  ): Promise<any> {
+    const results = [];
+
+    for (const file of files) {
+      const savedPicture = await this.tourPackageService.createVisitImage(file);
+      results.push({
+        id: savedPicture.id,
+        path: savedPicture.path,
+        size: savedPicture.size,
+      });
+    }
+
+    return results;
+  }
+
+  @Post()
+  async create(
+    @Body() createTourPackageDto: CreateTourPackageDto,
+  ): Promise<TourPackage> {
+    return this.tourPackageService.create(createTourPackageDto);
+  }
 
   @Get()
   async findAll() {

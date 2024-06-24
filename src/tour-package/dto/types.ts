@@ -20,3 +20,19 @@ export class TravelPackageInclusionDto {
   @ApiProperty({ default: 'Details about the inclusion.' })
   details?: string;
 }
+export class Inclusion {
+  @ApiProperty({ default: 'This is the Inclusion' })
+  data: string;
+}
+export class Exclusion {
+  @ApiProperty({ default: 'This is the Exclusion' })
+  data: string;
+}
+export class BookingPolicy {
+  @ApiProperty({ default: 'This is the booking policy' })
+  data: string;
+}
+export class RefundPolicy {
+  @ApiProperty({ default: 'This is the Refund Policy' })
+  data: string;
+}

@@ -1,6 +1,11 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { TripType } from "../dto/types";
-import { TourPackage } from "./tour-package.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { TourPackage } from './tour-package.entity';
 
 @Entity()
 export class MetaInfo {
@@ -11,11 +16,14 @@ export class MetaInfo {
   metaTitle: string;
 
   @Column('simple-array')
-  metaKeywords: TripType[];
+  metaKeywords: string[];
 
   @Column()
   metaDescription: string;
-  @OneToOne(() => TourPackage, tourPackage => tourPackage.metaInfo)
+
+  @OneToOne(() => TourPackage, (tourPackage) => tourPackage.metaInfo, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   tourPackage: TourPackage;
 }

@@ -28,7 +28,9 @@ __decorate([
     __metadata("design:type", Array)
 ], Overview.prototype, "packageInclude", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => tour_package_entity_1.TourPackage, tourPackage => tourPackage.overview),
+    (0, typeorm_1.OneToOne)(() => tour_package_entity_1.TourPackage, (tourPackage) => tourPackage.overview, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", tour_package_entity_1.TourPackage)
 ], Overview.prototype, "tourPackage", void 0);

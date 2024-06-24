@@ -1,6 +1,12 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { TravelPackageInclusionDto } from "../dto/types";
-import { TourPackage } from "./tour-package.entity";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { TourPackage } from './tour-package.entity';
+import { TravelPackageInclusionDto } from '../dto/types';
 
 @Entity()
 export class Overview {
@@ -12,7 +18,10 @@ export class Overview {
 
   @Column('json')
   packageInclude: TravelPackageInclusionDto[];
-  @OneToOne(() => TourPackage, tourPackage => tourPackage.overview)
+
+  @OneToOne(() => TourPackage, (tourPackage) => tourPackage.overview, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   tourPackage: TourPackage;
 }
