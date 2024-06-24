@@ -1,9 +1,8 @@
-import { TripType } from "../dto/types";
-import { TourPackage } from "./tour-package.entity";
+import { TourPackage } from './tour-package.entity';
 export declare class MetaInfo {
     id: number;
     metaTitle: string;
-    metaKeywords: TripType[];
+    metaKeywords: string[];
     metaDescription: string;
     tourPackage: TourPackage;
 }
