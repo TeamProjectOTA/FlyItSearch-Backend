@@ -32,7 +32,9 @@ __decorate([
     __metadata("design:type", String)
 ], MetaInfo.prototype, "metaDescription", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => tour_package_entity_1.TourPackage, tourPackage => tourPackage.metaInfo),
+    (0, typeorm_1.OneToOne)(() => tour_package_entity_1.TourPackage, (tourPackage) => tourPackage.metaInfo, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", tour_package_entity_1.TourPackage)
 ], MetaInfo.prototype, "tourPackage", void 0);
