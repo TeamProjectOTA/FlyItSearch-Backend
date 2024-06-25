@@ -120,6 +120,62 @@ let TourPackageService = class TourPackageService {
         });
         return tourPackages;
     }
+    async delete(id) {
+        const result = await this.tourPackageRepository.delete(id);
+        if (result.affected === 0) {
+            throw new common_1.NotFoundException(`TourPackage with ID "${id}" not found`);
+        }
+    }
+    async findAllByCriteria(criteria) {
+        const { mainTitle, countryName, cityName, metaKeywords, startDate } = criteria;
+        let query = this.tourPackageRepository
+            .createQueryBuilder('tourPackage')
+            .leftJoinAndSelect('tourPackage.introduction', 'introduction')
+            .leftJoinAndSelect('tourPackage.overview', 'overview')
+            .leftJoinAndSelect('tourPackage.mainImage', 'mainImage')
+            .leftJoinAndSelect('tourPackage.visitPlace', 'visitPlace')
+            .leftJoinAndSelect('tourPackage.tourPlan', 'tourPlan')
+            .leftJoinAndSelect('tourPackage.objectives', 'objectives')
+            .leftJoinAndSelect('tourPackage.metaInfo', 'metaInfo');
+        const whereConditions = [];
+        const parameters = {};
+        if (mainTitle) {
+            whereConditions.push('introduction.mainTitle = :mainTitle');
+            parameters.mainTitle = mainTitle;
+        }
+        if (countryName) {
+            whereConditions.push('introduction.countryName = :countryName');
+            parameters.countryName = countryName;
+        }
+        if (cityName) {
+            whereConditions.push('introduction.cityName = :cityName');
+            parameters.cityName = cityName;
+        }
+        if (startDate) {
+            whereConditions.push('introduction.startDate = :startDate');
+            parameters.startDate = startDate;
+        }
+        if (metaKeywords && metaKeywords.length > 0) {
+            const keywordConditions = metaKeywords.map((keyword, index) => {
+                return `FIND_IN_SET(:keyword${index}, metaInfo.metaKeywords)`;
+            });
+            whereConditions.push(`(${keywordConditions.join(' OR ')})`);
+            metaKeywords.forEach((keyword, index) => {
+                parameters[`keyword${index}`] = keyword.trim();
+            });
+        }
+        if (whereConditions.length > 0) {
+            query = query.where(whereConditions.join(' AND '), parameters);
+        }
+        else {
+            throw new common_1.NotFoundException('No search criteria provided');
+        }
+        const tourPackages = await query.getMany();
+        if (tourPackages.length === 0) {
+            throw new common_1.NotFoundException('Tour packages not found');
+        }
+        return tourPackages;
+    }
 };
 exports.TourPackageService = TourPackageService;
 exports.TourPackageService = TourPackageService = __decorate([

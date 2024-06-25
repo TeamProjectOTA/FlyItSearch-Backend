@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { VisitPlace } from './entities/visitPlace.model';
 
 @Injectable()
 export class TourPackageService {
+  // private readonly logger = new Logger(TourPackageService.name);
   constructor(
     @InjectRepository(TourPackage)
     private tourPackageRepository: Repository<TourPackage>,
@@ -109,6 +111,7 @@ export class TourPackageService {
     createTourPackageDto: CreateTourPackageDto,
   ): Promise<TourPackage> {
     const { introduction } = createTourPackageDto;
+
     const existingIntroduction = await this.introductionRepository.findOne({
       where: { mainTitle: introduction.mainTitle },
     });
@@ -118,7 +121,9 @@ export class TourPackageService {
         'Introduction with the same mainTitle already exists',
       );
     }
+
     const tourPackage = this.tourPackageRepository.create(createTourPackageDto);
+
     return this.tourPackageRepository.save(tourPackage);
   }
 
@@ -134,6 +139,77 @@ export class TourPackageService {
         'metaInfo',
       ],
     });
+    return tourPackages;
+  }
+  async delete(id: number): Promise<any> {
+    const result = await this.tourPackageRepository.delete(id);
+    if (result.affected === 0) {
+      throw new NotFoundException(`TourPackage with ID "${id}" not found`);
+    }
+  }
+
+  async findAllByCriteria(criteria: {
+    mainTitle?: string;
+    countryName?: string;
+    cityName?: string;
+    metaKeywords?: string[];
+    startDate?: string;
+  }): Promise<TourPackage[]> {
+    const { mainTitle, countryName, cityName, metaKeywords, startDate } =
+      criteria;
+
+    let query = this.tourPackageRepository
+      .createQueryBuilder('tourPackage')
+      .leftJoinAndSelect('tourPackage.introduction', 'introduction')
+      .leftJoinAndSelect('tourPackage.overview', 'overview')
+      .leftJoinAndSelect('tourPackage.mainImage', 'mainImage')
+      .leftJoinAndSelect('tourPackage.visitPlace', 'visitPlace')
+      .leftJoinAndSelect('tourPackage.tourPlan', 'tourPlan')
+      .leftJoinAndSelect('tourPackage.objectives', 'objectives')
+      .leftJoinAndSelect('tourPackage.metaInfo', 'metaInfo');
+
+    // Build where conditions dynamically
+    const whereConditions: string[] = [];
+    const parameters: any = {};
+
+    if (mainTitle) {
+      whereConditions.push('introduction.mainTitle = :mainTitle');
+      parameters.mainTitle = mainTitle;
+    }
+    if (countryName) {
+      whereConditions.push('introduction.countryName = :countryName');
+      parameters.countryName = countryName;
+    }
+    if (cityName) {
+      whereConditions.push('introduction.cityName = :cityName');
+      parameters.cityName = cityName;
+    }
+    if (startDate) {
+      whereConditions.push('introduction.startDate = :startDate');
+      parameters.startDate = startDate;
+    }
+    if (metaKeywords && metaKeywords.length > 0) {
+      const keywordConditions: string[] = metaKeywords.map((keyword, index) => {
+        return `FIND_IN_SET(:keyword${index}, metaInfo.metaKeywords)`;
+      });
+      whereConditions.push(`(${keywordConditions.join(' OR ')})`);
+      metaKeywords.forEach((keyword, index) => {
+        parameters[`keyword${index}`] = keyword.trim();
+      });
+    }
+
+    if (whereConditions.length > 0) {
+      query = query.where(whereConditions.join(' AND '), parameters);
+    } else {
+      throw new NotFoundException('No search criteria provided');
+    }
+
+    const tourPackages = await query.getMany();
+
+    if (tourPackages.length === 0) {
+      throw new NotFoundException('Tour packages not found');
+    }
+
     return tourPackages;
   }
 }

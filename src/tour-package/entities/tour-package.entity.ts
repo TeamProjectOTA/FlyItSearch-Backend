@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  OneToMany,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, OneToMany, OneToOne } from 'typeorm';
 import { Introduction } from './Introduction.model';
 import { Overview } from './overview.model';
 import { MetaInfo } from './metaInfo.model';

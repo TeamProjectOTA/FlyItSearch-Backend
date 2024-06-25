@@ -5,6 +5,15 @@ import {
   Get,
   UseInterceptors,
   UploadedFiles,
+  Param,
+  ParseIntPipe,
+  Delete,
+  Query,
+  NotFoundException,
+  Logger,
+  HttpException,
+  HttpStatus,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { TourPackageService } from './tour-package.service';
@@ -22,6 +31,7 @@ import { TourPackage } from './entities/tour-package.entity';
 @ApiTags('Tour-Package')
 @Controller('tour-packages')
 export class TourPackageController {
+  private readonly logger = new Logger(TourPackageController.name);
   constructor(private readonly tourPackageService: TourPackageService) {}
 
   @Post('/introduction')
@@ -76,13 +86,56 @@ export class TourPackageController {
 
   @Post()
   async create(
-    @Body() createTourPackageDto: CreateTourPackageDto,
-  ): Promise<TourPackage> {
-    return this.tourPackageService.create(createTourPackageDto);
+    @Body() createTourPackageDtoArray: CreateTourPackageDto[],
+  ): Promise<any> {
+    const createdPackages = await Promise.all(
+      createTourPackageDtoArray.map((dto) =>
+        this.tourPackageService.create(dto),
+      ),
+    );
+    if (!createdPackages) {
+      throw new NotAcceptableException();
+    }
+    return createdPackages;
   }
 
   @Get()
   async findAll() {
-    return this.tourPackageService.findAll();
+    const tourpackage = await this.tourPackageService.findAll();
+    return tourpackage;
+  }
+  @Delete(':id')
+  async delete(@Param('id') id: number): Promise<any> {
+    return this.tourPackageService.delete(id);
+  }
+
+  @Get('search')
+  async findAllByCriteria(
+    @Query('mainTitle') mainTitle?: string,
+    @Query('countryName') countryName?: string,
+    @Query('cityName') cityName?: string,
+    @Query('metaKeywords') metaKeywords?: string,
+    @Query('startDate') startDate?: string,
+  ): Promise<TourPackage[]> {
+    const metaKeywordsArray = metaKeywords
+      ? metaKeywords.split(',').map((keyword) => keyword.trim())
+      : undefined;
+
+    //this.logger.debug(`Received search criteria: mainTitle=${mainTitle}, countryName=${countryName}, cityName=${cityName}, metaKeywords=${metaKeywordsArray}`);
+
+    const criteria = {
+      mainTitle,
+      countryName,
+      cityName,
+      metaKeywords: metaKeywordsArray,
+      startDate,
+    };
+
+    try {
+      return await this.tourPackageService.findAllByCriteria(criteria);
+    } catch (error) {
+      //this.logger.error(`Error finding tour packages: ${error.message}`);
+      throw new NotFoundException(error.message);
+    }
   }
 }

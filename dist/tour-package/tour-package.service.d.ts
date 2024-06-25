@@ -19,4 +19,12 @@ export declare class TourPackageService {
     createVisitImage(file: MulterFile): Promise<VisitPlace>;
     create(createTourPackageDto: CreateTourPackageDto): Promise<TourPackage>;
     findAll(): Promise<TourPackage[]>;
+    delete(id: number): Promise<any>;
+    findAllByCriteria(criteria: {
+        mainTitle?: string;
+        countryName?: string;
+        cityName?: string;
+        metaKeywords?: string[];
+        startDate?: string;
+    }): Promise<TourPackage[]>;
 }

@@ -78,6 +78,7 @@ __decorate([
 ], CreateIntroductionDto.prototype, "minimumAge", void 0);
 __decorate([
     (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Number)
 ], CreateIntroductionDto.prototype, "packagePrice", void 0);
 __decorate([

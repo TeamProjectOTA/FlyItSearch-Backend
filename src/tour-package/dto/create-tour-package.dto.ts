@@ -1,12 +1,14 @@
-import {
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
-import { BookingPolicy, Exclusion, Inclusion, RefundPolicy, TravelPackageInclusionDto, TripType } from './types';
+import {
+  BookingPolicy,
+  Exclusion,
+  Inclusion,
+  RefundPolicy,
+  TravelPackageInclusionDto,
+  TripType,
+} from './types';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateIntroductionDto {
@@ -57,6 +59,7 @@ export class CreateIntroductionDto {
   minimumAge: number;
 
   @IsNumber()
+  @IsNotEmpty()
   packagePrice: number;
 
   @IsNumber()
@@ -112,13 +115,13 @@ export class CreateTourPlanDto {
 
 export class CreateObjectivesDto {
   @ApiProperty({ type: Inclusion })
-  inclusion:Inclusion[]
+  inclusion: Inclusion[];
   @ApiProperty({ type: Exclusion })
-  exclusion:Exclusion[]
+  exclusion: Exclusion[];
   @ApiProperty({ type: BookingPolicy })
-  bookingPolicy:BookingPolicy[]
+  bookingPolicy: BookingPolicy[];
   @ApiProperty({ type: RefundPolicy })
-  refundPolicy:RefundPolicy[]
+  refundPolicy: RefundPolicy[];
 }
 
 export class CreateMetaInfoDto {
@@ -150,7 +153,7 @@ export class CreateTourPackageDto {
   @Type(() => CreateMainImageDto)
   mainImage: CreateMainImageDto[];
 
-@ApiProperty({ type: CreateVisitPlaceDto })
+  @ApiProperty({ type: CreateVisitPlaceDto })
   @ValidateNested({ each: true })
   @Type(() => CreateVisitPlaceDto)
   visitPlace: CreateVisitPlaceDto[];
@@ -160,13 +163,12 @@ export class CreateTourPackageDto {
   @Type(() => CreateTourPlanDto)
   tourPlan: CreateTourPlanDto[];
 
-
-@ApiProperty({ type: CreateObjectivesDto })
+  @ApiProperty({ type: CreateObjectivesDto })
   @ValidateNested({ each: true })
   @Type(() => CreateObjectivesDto)
   objectives: CreateObjectivesDto[];
 
-@ApiProperty({ type: CreateMetaInfoDto })
+  @ApiProperty({ type: CreateMetaInfoDto })
   @ValidateNested()
   @Type(() => CreateMetaInfoDto)
   metaInfo: CreateMetaInfoDto;
