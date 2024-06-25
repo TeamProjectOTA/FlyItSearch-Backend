@@ -155,10 +155,9 @@ export class TourPackageService {
     metaKeywords?: string[];
     startDate?: string;
   }): Promise<TourPackage[]> {
-    const { mainTitle, countryName, cityName, metaKeywords, startDate } =
-      criteria;
-
-    let query = this.tourPackageRepository
+    const { mainTitle, countryName, cityName, metaKeywords, startDate } = criteria;
+  
+    const query = this.tourPackageRepository
       .createQueryBuilder('tourPackage')
       .leftJoinAndSelect('tourPackage.introduction', 'introduction')
       .leftJoinAndSelect('tourPackage.overview', 'overview')
@@ -167,49 +166,38 @@ export class TourPackageService {
       .leftJoinAndSelect('tourPackage.tourPlan', 'tourPlan')
       .leftJoinAndSelect('tourPackage.objectives', 'objectives')
       .leftJoinAndSelect('tourPackage.metaInfo', 'metaInfo');
-
-    // Build where conditions dynamically
-    const whereConditions: string[] = [];
-    const parameters: any = {};
-
+  
     if (mainTitle) {
-      whereConditions.push('introduction.mainTitle = :mainTitle');
-      parameters.mainTitle = mainTitle;
+      query.andWhere('introduction.mainTitle LIKE :mainTitle', { mainTitle: `%${mainTitle}%` });
     }
     if (countryName) {
-      whereConditions.push('introduction.countryName = :countryName');
-      parameters.countryName = countryName;
+      query.andWhere('introduction.countryName = :countryName', { countryName });
     }
     if (cityName) {
-      whereConditions.push('introduction.cityName = :cityName');
-      parameters.cityName = cityName;
+      query.andWhere('introduction.cityName = :cityName', { cityName });
     }
     if (startDate) {
-      whereConditions.push('introduction.startDate = :startDate');
-      parameters.startDate = startDate;
+      query.andWhere('introduction.startDate LIKE :startDate', { startDate: `%${startDate}` });
     }
     if (metaKeywords && metaKeywords.length > 0) {
       const keywordConditions: string[] = metaKeywords.map((keyword, index) => {
         return `FIND_IN_SET(:keyword${index}, metaInfo.metaKeywords)`;
       });
-      whereConditions.push(`(${keywordConditions.join(' OR ')})`);
-      metaKeywords.forEach((keyword, index) => {
-        parameters[`keyword${index}`] = keyword.trim();
-      });
+      query.andWhere(`(${keywordConditions.join(' OR ')})`, 
+        metaKeywords.reduce((acc, keyword, index) => {
+          acc[`keyword${index}`] = keyword.trim();
+          return acc;
+        }, {})
+      );
     }
-
-    if (whereConditions.length > 0) {
-      query = query.where(whereConditions.join(' AND '), parameters);
-    } else {
-      throw new NotFoundException('No search criteria provided');
-    }
-
+  
     const tourPackages = await query.getMany();
-
+  
     if (tourPackages.length === 0) {
       throw new NotFoundException('Tour packages not found');
     }
-
+  
     return tourPackages;
   }
+  
 }
