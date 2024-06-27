@@ -16,7 +16,7 @@ export class FlyHubUtil{
             
     
             const DepCountry = SearchResponse?.segments.Origin.Airport.CountryName
-            const ArrCountry = SearchResponse?.Results.segments.Destination.Airport.CountryName
+            const ArrCountry = SearchResponse?.segments.Destination.Airport.CountryName
     
             let farepolicy: string;
             let partialoption: boolean;
@@ -50,8 +50,8 @@ export class FlyHubUtil{
               const airlineData: any = await this.airlinesService.getAirlines(ValidatingCarrier);
               const FareType: string = SearchResponse['FareType'] || "Regular";
               const AllPassenger: any[] = SearchResponse['Fares'];
-              const CarrierName: string = airlineData?.marketing_name || 'N/F';
-              const Instant_Payment: boolean = airlineData?.instantPayment;
+              const CarrierName: string =SearchResponse.segments.Airline.OperatingCarrier || 'N/F';
+              const Instant_Payment: boolean = airlineData?.instantPayment; //Whats THis
               const IssuePermit: boolean = airlineData?.issuePermit;
               const IsBookable: boolean = airlineData?.bookable;
               const equivalentAmount: number = AllPassenger[0]['BaseFare'];
