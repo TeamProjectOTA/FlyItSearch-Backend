@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import * as base64 from 'base-64';
 import * as dotenv from 'dotenv';
-import { Repository } from 'typeorm';
 import { FlightSearchModel } from './flight.model';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { BookingService } from './booking.service';

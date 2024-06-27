@@ -19,13 +19,26 @@ const flight_model_1 = require("./flight.model");
 const swagger_1 = require("@nestjs/swagger");
 const sabre_flights_service_1 = require("./sabre.flights.service");
 const fare_rules_flight_dto_1 = require("./dto/fare-rules.flight.dto");
+const bdfare_flights_service_1 = require("./bdfare.flights.service");
+const bdfare_model_1 = require("./bdfare.model");
 let FlightController = class FlightController {
-    constructor(flightService, sabreService) {
+    constructor(flightService, sabreService, bdFareService) {
         this.flightService = flightService;
         this.sabreService = sabreService;
+        this.bdFareService = bdFareService;
+    }
+    async getApiResponse(bdfaredto) {
+        return await this.bdFareService.processApi(bdfaredto);
+    }
+    async searchFlights(flightSearchModel) {
+        return this.bdFareService.processApi2(flightSearchModel);
     }
     search(flightdto) {
-        return this.sabreService.shoppingBranded(flightdto);
+        const sabre = this.sabreService.shoppingBranded(flightdto);
+        const BDFare = this.bdFareService.airShopping(flightdto);
+        return {
+            BdFare: BDFare
+        };
     }
     getpnr(pnr) {
         return this.sabreService.checkpnr(pnr);
@@ -44,6 +57,20 @@ let FlightController = class FlightController {
     }
 };
 exports.FlightController = FlightController;
+__decorate([
+    (0, common_1.Post)('/bdfare'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [bdfare_model_1.RequestDto]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "getApiResponse", null);
+__decorate([
+    (0, common_1.Post)('/bdfareupdate'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "searchFlights", null);
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
@@ -90,6 +117,7 @@ exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
     __metadata("design:paramtypes", [flight_service_1.FlightService,
-        sabre_flights_service_1.SabreService])
+        sabre_flights_service_1.SabreService,
+        bdfare_flights_service_1.BDFareService])
 ], FlightController);
 //# sourceMappingURL=flight.controller.js.map

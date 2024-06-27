@@ -138,16 +138,22 @@ let TourPackageService = class TourPackageService {
             .leftJoinAndSelect('tourPackage.objectives', 'objectives')
             .leftJoinAndSelect('tourPackage.metaInfo', 'metaInfo');
         if (mainTitle) {
-            query.andWhere('introduction.mainTitle LIKE :mainTitle', { mainTitle: `%${mainTitle}%` });
+            query.andWhere('introduction.mainTitle LIKE :mainTitle', {
+                mainTitle: `%${mainTitle}%`,
+            });
         }
         if (countryName) {
-            query.andWhere('introduction.countryName = :countryName', { countryName });
+            query.andWhere('introduction.countryName = :countryName', {
+                countryName,
+            });
         }
         if (cityName) {
             query.andWhere('introduction.cityName = :cityName', { cityName });
         }
         if (startDate) {
-            query.andWhere('introduction.startDate LIKE :startDate', { startDate: `%${startDate}` });
+            query.andWhere('introduction.startDate LIKE :startDate', {
+                startDate: `%${startDate}`,
+            });
         }
         if (metaKeywords && metaKeywords.length > 0) {
             const keywordConditions = metaKeywords.map((keyword, index) => {

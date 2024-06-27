@@ -21,7 +21,7 @@ import { diskStorage } from 'multer';
 @Controller('book')
 export class BookController {
   constructor(private readonly fileupload: BookService) {}
-  @Post()
+  @Post('/passportcopy')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({

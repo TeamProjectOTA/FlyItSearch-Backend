@@ -41,17 +41,17 @@ class SegmentDto {
 }
 
 export class FlightSearchModel {
-  @ApiProperty({ default: 1 })
-  @IsInt()
-  @IsPositive()
+  // @ApiProperty({ default: 1 })
+  // @IsInt()
+  // @IsPositive()
   adultcount: number;
 
-  @ApiProperty({ default: 0 })
-  @IsInt()
+  // @ApiProperty({ default: 0 })
+  // @IsInt()
   childcount: number;
 
-  @ApiProperty({ default: 0 })
-  @IsInt()
+  // @ApiProperty({ default: 0 })
+  // @IsInt()
   infantcount: number;
 
   @ApiProperty({ default: 2 })
