@@ -3,13 +3,18 @@ import { FlightController } from './flight.controller';
 import { FlightService } from './flight.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Flight, Segment } from './flight.model';
-import { SabreService } from './sabre.flights.service';
+
 import { BookingService } from './booking.service';
-import { SabreUtils } from './sabre.utils';
+
 import { AirportsModule } from 'src/airports/airports.module';
 import { AirlinesModule } from 'src/airlines/airlines.module';
-import { BDFareService } from './bdfare.flights.service';
+
 import { HttpModule } from '@nestjs/axios';
+import { BDFareService } from './API Utils/bdfare.flights.service';
+import { SabreUtils } from './API Utils/sabre.utils';
+import { SabreService } from './API Utils/sabre.flights.service';
+import { FlyHubService } from './API Utils/flyhub.flight.service';
+//import { FlyHubUtil } from './API Utils/flyhub.util';
 
 @Module({
   imports: [
@@ -18,6 +23,6 @@ import { HttpModule } from '@nestjs/axios';
     AirlinesModule,
   ],
   controllers: [FlightController],
-  providers: [FlightService, SabreService, BookingService, SabreUtils,BDFareService],
+  providers: [FlightService, SabreService, BookingService, SabreUtils,BDFareService,FlyHubService,],
 })
 export class FlightModule {}

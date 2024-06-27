@@ -13,12 +13,12 @@ exports.BDFareService = void 0;
 const common_1 = require("@nestjs/common");
 const rxjs_1 = require("rxjs");
 const axios_1 = require("@nestjs/axios");
-const bdfare_model_1 = require("./bdfare.model");
+const bdfare_model_1 = require("./Dto/bdfare.model");
 let BDFareService = class BDFareService {
     constructor(httpService) {
         this.httpService = httpService;
-        this.apiUrl = process.env.API_URL;
-        this.apiKey = process.env.API_KEY;
+        this.apiUrl = process.env.BDFareAPI_URL;
+        this.apiKey = process.env.BDFareAPI_KEY;
     }
     transformToRequestDto(flightSearchModel) {
         const originDest = flightSearchModel.segments.map(segment => {
@@ -54,7 +54,7 @@ let BDFareService = class BDFareService {
         const travelPreferences = new bdfare_model_1.TravelPreferencesDto();
         travelPreferences.cabinCode = this.mapCabinClass(flightSearchModel.cabinclass);
         const shoppingCriteria = new bdfare_model_1.ShoppingCriteriaDto();
-        shoppingCriteria.tripType = flightSearchModel.segments.length === 1 ? 'Oneway' : 'RoundWay';
+        shoppingCriteria.tripType = flightSearchModel.segments.length === 1 ? '1' : (flightSearchModel.segments.length === 2 ? '2' : '3');
         shoppingCriteria.travelPreferences = travelPreferences;
         shoppingCriteria.returnUPSellInfo = true;
         const requestInner = new bdfare_model_1.RequestInnerDto();
@@ -75,8 +75,9 @@ let BDFareService = class BDFareService {
             default: return 'Economy';
         }
     }
-    async processApi2(flightSearchModel) {
+    async airShopping(flightSearchModel) {
         const requestDto = this.transformToRequestDto(flightSearchModel);
+        console.log(requestDto);
         try {
             const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.apiUrl}/AirShopping`, requestDto, {
                 headers: {
@@ -90,7 +91,7 @@ let BDFareService = class BDFareService {
             throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async airShopping(flightDto) {
+    async airShopping1(flightDto) {
         let adultCount = flightDto?.adultcount || 1;
         let childCount = flightDto?.childcount || 0;
         let infantcount = flightDto?.infantcount || 0;

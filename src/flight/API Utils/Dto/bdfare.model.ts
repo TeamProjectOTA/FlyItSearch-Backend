@@ -33,9 +33,11 @@ export class OriginDepRequestDto {
     cabinCode: string;
   }
   
+
+
   
   export class ShoppingCriteriaDto {
-    @ApiProperty({default:"Oneway"})
+    @ApiProperty({default:"1"})
     tripType: string;
     @ApiProperty({type:TravelPreferencesDto})
     travelPreferences: TravelPreferencesDto;

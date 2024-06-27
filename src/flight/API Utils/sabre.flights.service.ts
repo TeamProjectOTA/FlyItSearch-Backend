@@ -2,10 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import * as base64 from 'base-64';
 import * as dotenv from 'dotenv';
-import { FlightSearchModel } from './flight.model';
-import { FareRulesDto } from './dto/fare-rules.flight.dto';
-import { BookingService } from './booking.service';
+
 import { SabreUtils } from './sabre.utils';
+import { FlightSearchModel } from '../flight.model';
+import { FareRulesDto } from '../dto/fare-rules.flight.dto';
+import { BookingService } from '../booking.service';
 
 dotenv.config();
 

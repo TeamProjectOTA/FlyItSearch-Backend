@@ -12,13 +12,14 @@ const flight_controller_1 = require("./flight.controller");
 const flight_service_1 = require("./flight.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const flight_model_1 = require("./flight.model");
-const sabre_flights_service_1 = require("./sabre.flights.service");
 const booking_service_1 = require("./booking.service");
-const sabre_utils_1 = require("./sabre.utils");
 const airports_module_1 = require("../airports/airports.module");
 const airlines_module_1 = require("../airlines/airlines.module");
-const bdfare_flights_service_1 = require("./bdfare.flights.service");
 const axios_1 = require("@nestjs/axios");
+const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
+const sabre_utils_1 = require("./API Utils/sabre.utils");
+const sabre_flights_service_1 = require("./API Utils/sabre.flights.service");
+const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -30,7 +31,7 @@ exports.FlightModule = FlightModule = __decorate([
             airlines_module_1.AirlinesModule,
         ],
         controllers: [flight_controller_1.FlightController],
-        providers: [flight_service_1.FlightService, sabre_flights_service_1.SabreService, booking_service_1.BookingService, sabre_utils_1.SabreUtils, bdfare_flights_service_1.BDFareService],
+        providers: [flight_service_1.FlightService, sabre_flights_service_1.SabreService, booking_service_1.BookingService, sabre_utils_1.SabreUtils, bdfare_flights_service_1.BDFareService, flyhub_flight_service_1.FlyHubService,],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

@@ -1,7 +1,7 @@
-import { FlightSearchModel } from './flight.model';
-import { FareRulesDto } from './dto/fare-rules.flight.dto';
-import { BookingService } from './booking.service';
 import { SabreUtils } from './sabre.utils';
+import { FlightSearchModel } from '../flight.model';
+import { FareRulesDto } from '../dto/fare-rules.flight.dto';
+import { BookingService } from '../booking.service';
 interface AgentData {
     name: string;
     age: number;

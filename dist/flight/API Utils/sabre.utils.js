@@ -11,12 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SabreUtils = void 0;
 const common_1 = require("@nestjs/common");
-const airports_service_1 = require("../airports/airports.service");
+const airports_service_1 = require("../../airports/airports.service");
 const xml2js_1 = require("xml2js");
 const uuid_1 = require("uuid");
-const airlinesData_1 = require("./data/airlinesData");
-const airportsData_1 = require("./data/airportsData");
-const airlines_service_1 = require("../airlines/airlines.service");
+const airlines_service_1 = require("../../airlines/airlines.service");
+const airportsData_1 = require("../data/airportsData");
+const airlinesData_1 = require("../data/airlinesData");
 let SabreUtils = class SabreUtils {
     constructor(airlinesService, airportsService) {
         this.airlinesService = airlinesService;

@@ -42,10 +42,25 @@ __decorate([
 class FlightSearchModel {
     constructor() {
         this.connection = '2';
-        this.cabinclass = 'Y';
     }
 }
 exports.FlightSearchModel = FlightSearchModel;
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: 1 }),
+    (0, class_validator_1.IsPositive)(),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], FlightSearchModel.prototype, "adultcount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: 0 }),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], FlightSearchModel.prototype, "childcount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: 0 }),
+    (0, class_validator_1.IsInt)(),
+    __metadata("design:type", Number)
+], FlightSearchModel.prototype, "infantcount", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ default: 2 }),
     (0, class_validator_1.IsOptional)(),

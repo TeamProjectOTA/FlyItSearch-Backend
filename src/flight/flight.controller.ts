@@ -2,10 +2,15 @@ import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { FlightService } from './flight.service';
 import { Flight, FlightSearchModel, } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
-import { SabreService } from './sabre.flights.service';
+
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
-import {  BDFareService } from './bdfare.flights.service';
-import { RequestDto } from './bdfare.model';
+import { SabreService } from './API Utils/sabre.flights.service';
+import { BDFareService } from './API Utils/bdfare.flights.service';
+import { RequestDto } from './API Utils/Dto/bdfare.model';
+import { FlyAirSearchDto } from './API Utils/Dto/flyhub.model';
+import { FlyHubService } from './API Utils/flyhub.flight.service';
+
+
 
 
 @ApiTags('Flight-filters')
@@ -14,8 +19,33 @@ export class FlightController {
   constructor(
     private readonly flightService: FlightService,
     private readonly sabreService: SabreService,
-    private readonly bdFareService:BDFareService
+    private readonly bdFareService:BDFareService,
+    private readonly flyHubService:FlyHubService
   ) {}
+
+  @Post('/flyhub')
+  async searchFlightsFlyhub(@Body() airSearchDto: FlyAirSearchDto) {
+    const result = await this.flyHubService.searchFlights(airSearchDto);
+    return result;
+  }
+  @Post("/auth")
+  async auth(){
+    return this.flyHubService.getToken()
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   @Post('/bdfare')
@@ -25,7 +55,7 @@ export class FlightController {
 
   @Post('/bdfareupdate')
   async searchFlights(@Body() flightSearchModel: FlightSearchModel): Promise<any> {
-    return this.bdFareService.processApi2(flightSearchModel);
+    return this.bdFareService.airShopping(flightSearchModel);
   }
 
   @Post()

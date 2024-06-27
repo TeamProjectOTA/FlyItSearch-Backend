@@ -1,14 +1,16 @@
 import { Injectable , HttpException, HttpStatus} from '@nestjs/common';
-import { FlightSearchModel} from './flight.model';
+
 import { AxiosResponse } from 'axios';
 import {  firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { DestArrivalRequestDto, OriginDepRequestDto, OriginDestDto, PaxDto, RequestDto, RequestInnerDto, ShoppingCriteriaDto, TravelPreferencesDto } from './bdfare.model';
+import { FlightSearchModel } from '../flight.model';
+import { DestArrivalRequestDto, OriginDepRequestDto, OriginDestDto, PaxDto, RequestDto, RequestInnerDto, ShoppingCriteriaDto, TravelPreferencesDto  } from './Dto/bdfare.model';
+
 
 @Injectable()
 export class BDFareService {
-    private readonly apiUrl: string = process.env.API_URL;
-    private readonly apiKey: string = process.env.API_KEY;
+    private readonly apiUrl: string = process.env.BDFareAPI_URL;
+    private readonly apiKey: string = process.env.BDFareAPI_KEY;
   
     constructor(private readonly httpService: HttpService) {}
   
@@ -54,7 +56,7 @@ export class BDFareService {
       const travelPreferences = new TravelPreferencesDto();
       travelPreferences.cabinCode = this.mapCabinClass(flightSearchModel.cabinclass);
       const shoppingCriteria = new ShoppingCriteriaDto();
-      shoppingCriteria.tripType = flightSearchModel.segments.length === 1 ? 'Oneway' : 'RoundWay'; // Assuming oneway for simplicity
+      shoppingCriteria.tripType = flightSearchModel.segments.length === 1 ? '1' : (flightSearchModel.segments.length === 2 ? '2' : '3');   //   Oneway='1',RoundWay="2",MultiCity="3"
       shoppingCriteria.travelPreferences = travelPreferences;
       shoppingCriteria.returnUPSellInfo = true; // Assuming true for simplicity
   
@@ -80,8 +82,9 @@ export class BDFareService {
       }
     }
   
-    async processApi2(flightSearchModel: FlightSearchModel): Promise<any> {
+    async airShopping(flightSearchModel: FlightSearchModel): Promise<any> {
       const requestDto: RequestDto = this.transformToRequestDto(flightSearchModel);
+      console.log(requestDto)
   
       try {
         const response: AxiosResponse = await firstValueFrom(
@@ -104,7 +107,7 @@ export class BDFareService {
     }
 
 
-  async airShopping(flightDto: FlightSearchModel) {
+  async airShopping1(flightDto: FlightSearchModel) {
     let adultCount = flightDto?.adultcount || 1;
     let childCount = flightDto?.childcount || 0;
     let infantcount = flightDto?.infantcount || 0;

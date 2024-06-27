@@ -62,7 +62,7 @@ class ShoppingCriteriaDto {
 }
 exports.ShoppingCriteriaDto = ShoppingCriteriaDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "Oneway" }),
+    (0, swagger_1.ApiProperty)({ default: "1" }),
     __metadata("design:type", String)
 ], ShoppingCriteriaDto.prototype, "tripType", void 0);
 __decorate([

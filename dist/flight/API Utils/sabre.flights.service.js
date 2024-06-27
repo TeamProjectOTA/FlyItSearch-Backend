@@ -14,8 +14,8 @@ const common_1 = require("@nestjs/common");
 const axios_1 = require("axios");
 const base64 = require("base-64");
 const dotenv = require("dotenv");
-const booking_service_1 = require("./booking.service");
 const sabre_utils_1 = require("./sabre.utils");
+const booking_service_1 = require("../booking.service");
 dotenv.config();
 let SabreService = class SabreService {
     constructor(bookingService, sabreUtils) {

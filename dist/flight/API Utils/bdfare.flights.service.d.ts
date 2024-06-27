@@ -1,6 +1,6 @@
-import { FlightSearchModel } from './flight.model';
 import { HttpService } from '@nestjs/axios';
-import { RequestDto } from './bdfare.model';
+import { FlightSearchModel } from '../flight.model';
+import { RequestDto } from './Dto/bdfare.model';
 export declare class BDFareService {
     private readonly httpService;
     private readonly apiUrl;
@@ -8,8 +8,8 @@ export declare class BDFareService {
     constructor(httpService: HttpService);
     private transformToRequestDto;
     private mapCabinClass;
-    processApi2(flightSearchModel: FlightSearchModel): Promise<any>;
-    airShopping(flightDto: FlightSearchModel): Promise<void>;
+    airShopping(flightSearchModel: FlightSearchModel): Promise<any>;
+    airShopping1(flightDto: FlightSearchModel): Promise<void>;
     fareRules(): Promise<void>;
     offerPrice(): Promise<void>;
     miniRule(): Promise<void>;

@@ -1,18 +1,23 @@
 import { FlightService } from './flight.service';
 import { FlightSearchModel } from './flight.model';
-import { SabreService } from './sabre.flights.service';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
-import { BDFareService } from './bdfare.flights.service';
-import { RequestDto } from './bdfare.model';
+import { SabreService } from './API Utils/sabre.flights.service';
+import { BDFareService } from './API Utils/bdfare.flights.service';
+import { RequestDto } from './API Utils/Dto/bdfare.model';
+import { FlyAirSearchDto } from './API Utils/Dto/flyhub.model';
+import { FlyHubService } from './API Utils/flyhub.flight.service';
 export declare class FlightController {
     private readonly flightService;
     private readonly sabreService;
     private readonly bdFareService;
-    constructor(flightService: FlightService, sabreService: SabreService, bdFareService: BDFareService);
+    private readonly flyHubService;
+    constructor(flightService: FlightService, sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService);
+    searchFlightsFlyhub(airSearchDto: FlyAirSearchDto): Promise<any>;
+    auth(): Promise<string>;
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
     search(flightdto: FlightSearchModel): {
-        BdFare: Promise<void>;
+        BdFare: Promise<any>;
     };
     getpnr(pnr: string): Promise<any>;
     airvoid(pnr: string): Promise<any>;
