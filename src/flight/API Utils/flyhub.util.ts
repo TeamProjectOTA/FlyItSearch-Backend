@@ -7,8 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class FlyHubUtil{
-  constructor(  private readonly airlinesService: AirlinesService,
-    private readonly airportsService: AirportsService,){}
+  constructor(  ){}
     async restBFMParser(SearchResponses: any[]): Promise<any[]> {
         const FlightItenary = [];
         for (const SearchResponse of SearchResponses) {
@@ -47,7 +46,7 @@ export class FlyHubUtil{
               }
     
               const ValidatingCarrier: string = SearchResponse['Validatingcarrier'];
-              const airlineData: any = await this.airlinesService.getAirlines(ValidatingCarrier);
+              const airlineData: any = SearchResponse?.Results.segments.Airline
               const FareType: string = SearchResponse['FareType'] || "Regular";
               const AllPassenger: any[] = SearchResponse['Fares'];
               const CarrierName: string =SearchResponse.segments.Airline.OperatingCarrier || 'N/F';
