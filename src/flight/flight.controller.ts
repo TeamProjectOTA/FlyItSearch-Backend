@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Param, Get } from '@nestjs/common';
 import { FlightService } from './flight.service';
-import { Flight, FlightSearchModel, } from './flight.model';
+import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
 
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
@@ -10,17 +10,14 @@ import { RequestDto } from './API Utils/Dto/bdfare.model';
 import { FlyAirSearchDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 
-
-
-
 @ApiTags('Flight-filters')
 @Controller('flights')
 export class FlightController {
   constructor(
     private readonly flightService: FlightService,
     private readonly sabreService: SabreService,
-    private readonly bdFareService:BDFareService,
-    private readonly flyHubService:FlyHubService
+    private readonly bdFareService: BDFareService,
+    private readonly flyHubService: FlyHubService,
   ) {}
 
   @Post('/flyhub')
@@ -28,44 +25,37 @@ export class FlightController {
     const result = await this.flyHubService.searchFlights(airSearchDto);
     return result;
   }
-  @Post("/auth")
-  async auth(){
-    return this.flyHubService.getToken()
+
+  @Post("/FLyHub")
+  async searchFlightByDto(@Body()flightSearchModel:FlightSearchModel){
+    const result= await this.flyHubService.convertToFlyAirSearchDto(flightSearchModel)
+    return result
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  @Post('/auth')
+  async auth() {
+    return this.flyHubService.getToken();
+  }
 
   @Post('/bdfare')
-  async getApiResponse(@Body()bdfaredto:RequestDto): Promise<any> {
+  async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
     return await this.bdFareService.processApi(bdfaredto);
   }
 
   @Post('/bdfareupdate')
-  async searchFlights(@Body() flightSearchModel: FlightSearchModel): Promise<any> {
+  async searchFlights(
+    @Body() flightSearchModel: FlightSearchModel,
+  ): Promise<any> {
     return this.bdFareService.airShopping(flightSearchModel);
   }
 
   @Post()
   search(@Body() flightdto: FlightSearchModel) {
-    const sabre=this.sabreService.shoppingBranded(flightdto);
-    const BDFare=this.bdFareService.airShopping(flightdto)
+    const sabre = this.sabreService.shoppingBranded(flightdto);
+    const BDFare = this.bdFareService.airShopping(flightdto);
     return {
-      
-      BdFare:BDFare
-    }
+      BdFare: BDFare,
+    };
   }
   @Get('/:pnr')
   getpnr(@Param('pnr') pnr: string) {

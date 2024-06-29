@@ -1,4 +1,4 @@
-import { Module, } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { FlightController } from './flight.controller';
 import { FlightService } from './flight.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,15 +14,24 @@ import { BDFareService } from './API Utils/bdfare.flights.service';
 import { SabreUtils } from './API Utils/sabre.utils';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
-//import { FlyHubUtil } from './API Utils/flyhub.util';
+import { FlyHubUtil } from './API Utils/flyhub.util';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Flight, Segment]),HttpModule,
+    TypeOrmModule.forFeature([Flight, Segment]),
+    HttpModule,
     AirportsModule,
     AirlinesModule,
   ],
   controllers: [FlightController],
-  providers: [FlightService, SabreService, BookingService, SabreUtils,BDFareService,FlyHubService,],
+  providers: [
+    FlightService,
+    SabreService,
+    BookingService,
+    SabreUtils,
+    BDFareService,
+    FlyHubService,
+    FlyHubUtil,
+  ],
 })
 export class FlightModule {}

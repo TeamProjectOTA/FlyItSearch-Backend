@@ -34,6 +34,10 @@ let FlightController = class FlightController {
         const result = await this.flyHubService.searchFlights(airSearchDto);
         return result;
     }
+    async searchFlightByDto(flightSearchModel) {
+        const result = await this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
+        return result;
+    }
     async auth() {
         return this.flyHubService.getToken();
     }
@@ -47,7 +51,7 @@ let FlightController = class FlightController {
         const sabre = this.sabreService.shoppingBranded(flightdto);
         const BDFare = this.bdFareService.airShopping(flightdto);
         return {
-            BdFare: BDFare
+            BdFare: BDFare,
         };
     }
     getpnr(pnr) {
@@ -75,7 +79,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlightsFlyhub", null);
 __decorate([
-    (0, common_1.Post)("/auth"),
+    (0, common_1.Post)("/FLyHub"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "searchFlightByDto", null);
+__decorate([
+    (0, common_1.Post)('/auth'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

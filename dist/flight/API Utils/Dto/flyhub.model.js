@@ -39,21 +39,6 @@ class FlyAirSearchDto {
 }
 exports.FlyAirSearchDto = FlyAirSearchDto;
 __decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(0),
-    __metadata("design:type", Number)
-], FlyAirSearchDto.prototype, "AdultQuantity", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(0),
-    __metadata("design:type", Number)
-], FlyAirSearchDto.prototype, "ChildQuantity", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(0),
-    __metadata("design:type", Number)
-], FlyAirSearchDto.prototype, "InfantQuantity", void 0);
-__decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], FlyAirSearchDto.prototype, "JourneyType", void 0);

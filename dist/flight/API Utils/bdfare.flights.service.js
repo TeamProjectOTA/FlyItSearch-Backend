@@ -21,10 +21,12 @@ let BDFareService = class BDFareService {
         this.apiKey = process.env.BDFareAPI_KEY;
     }
     transformToRequestDto(flightSearchModel) {
-        const originDest = flightSearchModel.segments.map(segment => {
+        const originDest = flightSearchModel.segments.map((segment) => {
             const originDepRequest = new bdfare_model_1.OriginDepRequestDto();
             originDepRequest.iatA_LocationCode = segment.depfrom;
-            originDepRequest.date = new Date(segment.depdate).toISOString().split('T')[0];
+            originDepRequest.date = new Date(segment.depdate)
+                .toISOString()
+                .split('T')[0];
             const destArrivalRequest = new bdfare_model_1.DestArrivalRequestDto();
             destArrivalRequest.iatA_LocationCode = segment.arrto;
             const originDestDto = new bdfare_model_1.OriginDestDto();
@@ -54,7 +56,12 @@ let BDFareService = class BDFareService {
         const travelPreferences = new bdfare_model_1.TravelPreferencesDto();
         travelPreferences.cabinCode = this.mapCabinClass(flightSearchModel.cabinclass);
         const shoppingCriteria = new bdfare_model_1.ShoppingCriteriaDto();
-        shoppingCriteria.tripType = flightSearchModel.segments.length === 1 ? '1' : (flightSearchModel.segments.length === 2 ? '2' : '3');
+        shoppingCriteria.tripType =
+            flightSearchModel.segments.length === 1
+                ? '1'
+                : flightSearchModel.segments.length === 2
+                    ? '2'
+                    : '3';
         shoppingCriteria.travelPreferences = travelPreferences;
         shoppingCriteria.returnUPSellInfo = true;
         const requestInner = new bdfare_model_1.RequestInnerDto();
@@ -68,11 +75,16 @@ let BDFareService = class BDFareService {
     }
     mapCabinClass(cabinClass) {
         switch (cabinClass) {
-            case 'Y': return 'Economy';
-            case 'W': return 'PremiumEconomy';
-            case 'C': return 'Business';
-            case 'F': return 'First';
-            default: return 'Economy';
+            case 'Y':
+                return 'Economy';
+            case 'W':
+                return 'PremiumEconomy';
+            case 'C':
+                return 'Business';
+            case 'F':
+                return 'First';
+            default:
+                return 'Economy';
         }
     }
     async airShopping(flightSearchModel) {

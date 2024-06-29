@@ -61,7 +61,7 @@ export class FlightSearchModel {
   @ApiProperty({ default: 'Y' })
   @IsString()
   @Length(1, 1)
-  cabinclass: string ;
+  cabinclass: string;
 
   @ApiProperty({ type: [SegmentDto] })
   @ArrayMinSize(1)

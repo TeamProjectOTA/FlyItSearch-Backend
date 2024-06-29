@@ -20,18 +20,28 @@ const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
 const sabre_utils_1 = require("./API Utils/sabre.utils");
 const sabre_flights_service_1 = require("./API Utils/sabre.flights.service");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
+const flyhub_util_1 = require("./API Utils/flyhub.util");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
 exports.FlightModule = FlightModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([flight_model_1.Flight, flight_model_1.Segment]), axios_1.HttpModule,
+            typeorm_1.TypeOrmModule.forFeature([flight_model_1.Flight, flight_model_1.Segment]),
+            axios_1.HttpModule,
             airports_module_1.AirportsModule,
             airlines_module_1.AirlinesModule,
         ],
         controllers: [flight_controller_1.FlightController],
-        providers: [flight_service_1.FlightService, sabre_flights_service_1.SabreService, booking_service_1.BookingService, sabre_utils_1.SabreUtils, bdfare_flights_service_1.BDFareService, flyhub_flight_service_1.FlyHubService,],
+        providers: [
+            flight_service_1.FlightService,
+            sabre_flights_service_1.SabreService,
+            booking_service_1.BookingService,
+            sabre_utils_1.SabreUtils,
+            bdfare_flights_service_1.BDFareService,
+            flyhub_flight_service_1.FlyHubService,
+            flyhub_util_1.FlyHubUtil,
+        ],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

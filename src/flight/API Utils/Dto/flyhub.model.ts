@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsDateString, IsInt, Min, ValidateNested, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsDateString,
+  IsInt,
+  Min,
+} from 'class-validator';
 
 export class SegmentDto {
   @IsString()
@@ -20,24 +26,21 @@ export class SegmentDto {
 }
 
 export class FlyAirSearchDto {
-    @IsInt()
-    @Min(0)
-    AdultQuantity: number;
   
-    @IsInt()
-    @Min(0)
-    ChildQuantity: number;
-  
-    @IsInt()
-    @Min(0)
-    InfantQuantity: number;
-  
-    // @IsIP()
-    EndUserIp: string;
-  
-    @IsString()
-    JourneyType: string;
-    
-    @Type(() => SegmentDto)
-    Segments: SegmentDto[];
-  }
+  AdultQuantity: number;
+
+ 
+  ChildQuantity: number;
+
+ 
+  InfantQuantity: number;
+
+  // @IsIP()
+  EndUserIp: string;
+
+  @IsString()
+  JourneyType: string;
+
+  @Type(() => SegmentDto)
+  Segments: SegmentDto[];
+}
