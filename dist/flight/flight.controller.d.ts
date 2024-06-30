@@ -13,7 +13,7 @@ export declare class FlightController {
     private readonly flyHubService;
     constructor(flightService: FlightService, sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService);
     searchFlightsFlyhub(airSearchDto: FlyAirSearchDto): Promise<any>;
-    searchFlightByDto(flightSearchModel: FlightSearchModel): Promise<FlyAirSearchDto>;
+    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
     auth(): Promise<string>;
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;

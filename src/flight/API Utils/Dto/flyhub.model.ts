@@ -1,46 +1,32 @@
-import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsNotEmpty,
-  IsDateString,
-  IsInt,
-  Min,
-} from 'class-validator';
-
-export class SegmentDto {
-  @IsString()
-  @IsNotEmpty()
-  Origin: string;
-
-  @IsString()
-  @IsNotEmpty()
-  Destination: string;
-
-  @IsInt()
-  @Min(1)
-  CabinClass: number;
-
-  @IsDateString()
-  @IsNotEmpty()
-  DepartureDateTime: string;
-}
+import { ApiProperty } from "@nestjs/swagger";
+import { IsInt, IsString } from "class-validator";
 
 export class FlyAirSearchDto {
-  
+  // @ApiProperty()
+  // @IsInt()
   AdultQuantity: number;
 
- 
+  // @ApiProperty()
+  // @IsInt()
   ChildQuantity: number;
 
- 
+  // @ApiProperty()
+  // @IsInt()
   InfantQuantity: number;
 
-  // @IsIP()
+  // @ApiProperty()
+  // @IsString()
   EndUserIp: string;
 
-  @IsString()
+  // @ApiProperty()
+  // @IsString()
   JourneyType: string;
 
-  @Type(() => SegmentDto)
-  Segments: SegmentDto[];
+  @ApiProperty()
+  Segments: {
+    Origin: string;
+    Destination: string;
+    CabinClass: string;
+    DepartureDateTime: string;
+  }[];
 }

@@ -22,44 +22,44 @@ let FlyHubUtil = class FlyHubUtil {
             Infant: 3,
         };
         if (FlightItenary) {
-            for (const Result of Results) {
-                if (Result) {
-                    const DepCountry = Result.segments[0]?.Origin.Airport.CountryName;
-                    const ArrCountry = Result.segments[0]?.Destination.Airport.CountryName;
-                    let farepolicy;
-                    let partialoption;
-                    if (DepCountry === 'BD' && ArrCountry === 'BD') {
-                        farepolicy = 'domestic';
-                        partialoption = false;
+            if (Results) {
+                const DepCountry = Results[0].segments[0]?.Origin.Airport.CountryName;
+                const ArrCountry = Results[0].segments[0]?.Destination.Airport.CountryName;
+                let farepolicy;
+                let partialoption;
+                if (DepCountry === 'BD' && ArrCountry === 'BD') {
+                    farepolicy = 'domestic';
+                    partialoption = false;
+                }
+                else if (DepCountry !== 'BD' && ArrCountry !== 'BD') {
+                    farepolicy = 'soto';
+                    partialoption = false;
+                }
+                else if (DepCountry !== 'BD' && ArrCountry === 'BD') {
+                    farepolicy = 'soti';
+                    partialoption = true;
+                }
+                else if (DepCountry === 'BD' && ArrCountry !== 'BD') {
+                    farepolicy = 'sito';
+                    partialoption = true;
+                }
+                if (Results[0].segments) {
+                    const AllSegments = Results[0].segments;
+                    let TripType;
+                    if (AllSegments.length === 1) {
+                        TripType = 'Oneway';
                     }
-                    else if (DepCountry !== 'BD' && ArrCountry !== 'BD') {
-                        farepolicy = 'soto';
-                        partialoption = false;
+                    else if (AllSegments.length > 1 &&
+                        AllSegments[0]?.Origin?.Airport?.AirportCode ===
+                            AllSegments[1]?.Destination?.Airport?.AirportCode) {
+                        TripType = 'Return';
                     }
-                    else if (DepCountry !== 'BD' && ArrCountry === 'BD') {
-                        farepolicy = 'soti';
-                        partialoption = true;
+                    else if (AllSegments.length > 1 &&
+                        AllSegments[0]?.Origin?.Airport?.AirportCode !==
+                            AllSegments[1]?.Destination?.Airport?.AirportCode) {
+                        TripType = 'Multicity';
                     }
-                    else if (DepCountry === 'BD' && ArrCountry !== 'BD') {
-                        farepolicy = 'sito';
-                        partialoption = true;
-                    }
-                    if (Result.segments) {
-                        const AllSegments = Result.segments;
-                        let TripType;
-                        if (AllSegments.length === 1) {
-                            TripType = 'Oneway';
-                        }
-                        else if (AllSegments.length > 1 &&
-                            AllSegments[0]?.Origin?.Airport?.AirportCode ===
-                                AllSegments[1]?.Destination?.Airport?.AirportCode) {
-                            TripType = 'Return';
-                        }
-                        else if (AllSegments.length > 1 &&
-                            AllSegments[0]?.Origin?.Airport?.AirportCode !==
-                                AllSegments[1]?.Destination?.Airport?.AirportCode) {
-                            TripType = 'Multicity';
-                        }
+                    for (const Result of Results) {
                         const ValidatingCarrier = Result.Validatingcarrier;
                         const airlineData = Result.segments[0].Airline;
                         const FareType = Result.FareType || 'Regular';
@@ -67,10 +67,11 @@ let FlyHubUtil = class FlyHubUtil {
                         const CarrierName = Result.segments[0].Airline.AirlineName || 'N/F';
                         const Instant_Payment = airlineData.instantPayment || false;
                         const IssuePermit = airlineData.issuePermit || false;
-                        const IsBookable = airlineData.bookable === '0' ? false : true;
+                        const IsBookable = Result?.HoldAllowed;
                         const equivalentAmount = AllPassenger[0]?.BaseFare || 0;
                         const Taxes = AllPassenger[0]?.Tax || 0;
                         let TotalFare = Result.TotalFare || 0;
+                        const extraService = Result?.ExtraServices || [];
                         const addAmount = airlineData.addAmount || 0;
                         const NetFare = equivalentAmount + addAmount + Taxes;
                         if (NetFare > TotalFare) {
@@ -88,9 +89,6 @@ let FlyHubUtil = class FlyHubUtil {
                         switch (cabinclass) {
                             case 'P':
                                 Class = 'First';
-                                break;
-                            case 'J':
-                                Class = 'Premium Business';
                                 break;
                             case 'C':
                                 Class = 'Business';
@@ -111,9 +109,7 @@ let FlyHubUtil = class FlyHubUtil {
                             const baggageDetails = AllSegments.map((segment) => {
                                 const allowance = segment.baggageDetails
                                     ?.filter((baggage) => PaxTypeMapping[PaxType] === baggage.PaxType)
-                                    .map((baggage) => baggage.Checkin);
-                                if (baggage.check)
-                                     || [];
+                                    .map((baggage) => baggage.Checkin) || [];
                                 return {
                                     Airline: ValidatingCarrier,
                                     Allowance: allowance,
@@ -126,15 +122,7 @@ let FlyHubUtil = class FlyHubUtil {
                                 TotalFare: PaxtotalFare,
                                 PaxCount: paxCount,
                                 Bag: baggageDetails,
-                                FareComponent: [
-                                    {
-                                        Origin: AllSegments[0].Origin.Airport.AirportCode,
-                                        Destination: AllSegments[0].Destination.Airport.AirportCode,
-                                        DepDate: AllSegments[0].Origin.DepTime,
-                                        FareBasisCode: cabinclass,
-                                        Carrier: ValidatingCarrier,
-                                    },
-                                ],
+                                FareComponent: "FareBasis"
                             };
                         });
                         const AllLegsInfo = [];
@@ -143,15 +131,18 @@ let FlyHubUtil = class FlyHubUtil {
                                 DepDate: segment.Origin.DepTime,
                                 DepFrom: segment.Origin.Airport.AirportCode,
                                 ArrTo: segment.Destination.Airport.AirportCode,
-                                Duration: segment.JourneyDuration,
+                                Duration: parseInt(segment.JourneyDuration),
                             };
+                            const bookingClass = segment.Airline?.BookingClass;
+                            const cabinClass = segment.Airline?.CabinClass;
+                            const seatsAvailable = Result.Availabilty;
                             const SingleSegments = {
                                 MarketingCarrier: segment.Airline.AirlineCode,
                                 MarketingCarrierName: segment.Airline.AirlineName,
-                                MarketingFlightNumber: segment.Airline.FlightNumber,
+                                MarketingFlightNumber: parseInt(segment.Airline.FlightNumber),
                                 OperatingCarrier: segment.Airline.OperatingCarrier,
-                                OperatingFlightNumber: segment.Airline.FlightNumber,
-                                OperatingCarrierName: segment.Airline.OperatingCarrier,
+                                OperatingFlightNumber: parseInt(segment.Airline.FlightNumber),
+                                OperatingCarrierName: segment.Airline.AirlineName,
                                 DepFrom: segment.Origin.Airport.AirportCode,
                                 DepAirPort: segment.Origin.Airport.AirportName,
                                 DepLocation: `${segment.Origin.Airport.CityName}, ${segment.Origin.Airport.CountryName}`,
@@ -162,23 +153,28 @@ let FlyHubUtil = class FlyHubUtil {
                                 ArrLocation: `${segment.Destination.Airport.CityName}, ${segment.Destination.Airport.CountryName}`,
                                 ArrDateAdjustment: 0,
                                 ArrTime: segment.Destination.ArrTime,
-                                OperatedBy: segment.Airline.OperatingCarrier,
+                                OperatedBy: segment.Airline.AirlineName,
                                 StopCount: segment.StopQuantity,
-                                Duration: segment.JourneyDuration,
+                                Duration: parseInt(segment.JourneyDuration),
                                 AircraftTypeName: segment.Equipment,
+                                Amenities: {},
                                 DepartureGate: segment.Origin.Airport.Terminal || 'TBA',
                                 ArrivalGate: segment.Destination.Airport.Terminal || 'TBA',
                                 HiddenStops: [],
                                 TotalMilesFlown: 0,
-                                SegmentCode: segment.Airline.FlightNumber,
+                                SegmentCode: {
+                                    bookingCode: bookingClass,
+                                    cabinCode: cabinClass,
+                                    seatsAvailable: seatsAvailable
+                                },
                             };
                             legInfo['Segments'] = [SingleSegments];
                             AllLegsInfo.push(legInfo);
                         }
                         FlightItenary.push({
+                            System: 'FLYHUB',
                             ResultId: Result.ResultID,
                             OfferId: SearchResponse?.SearchId,
-                            System: 'FLYHUB',
                             FarePolicy: farepolicy,
                             InstantPayment: Instant_Payment,
                             IssuePermit: IssuePermit,
@@ -196,6 +192,7 @@ let FlyHubUtil = class FlyHubUtil {
                             PartialFare: PartialAmount,
                             TimeLimit: TimeLimit,
                             Refundable: Refundable,
+                            ExtraService: extraService,
                             PriceBreakDown: PriceBreakDown,
                             AllLegsInfo: AllLegsInfo,
                         });

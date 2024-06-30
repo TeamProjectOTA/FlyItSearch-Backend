@@ -34,9 +34,8 @@ let FlightController = class FlightController {
         const result = await this.flyHubService.searchFlights(airSearchDto);
         return result;
     }
-    async searchFlightByDto(flightSearchModel) {
-        const result = await this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
-        return result;
+    async convertToFlyAirSearchDto(flightSearchModel) {
+        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
     }
     async auth() {
         return this.flyHubService.getToken();
@@ -79,12 +78,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlightsFlyhub", null);
 __decorate([
-    (0, common_1.Post)("/FLyHub"),
+    (0, common_1.Post)('/FLyHub11'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
     __metadata("design:returntype", Promise)
-], FlightController.prototype, "searchFlightByDto", null);
+], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
     (0, common_1.Post)('/auth'),
     __metadata("design:type", Function),

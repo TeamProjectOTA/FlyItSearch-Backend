@@ -31,14 +31,13 @@ export class FlyHubService {
       const response: AxiosResponse<any> = await axios.request(config);
 
       const token: string = response?.data?.TokenId;
-      console.log(response?.data);
       if (!token) {
         throw new HttpException(
           'Token not found in response',
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-
+       //console.log(token)
       return token;
     } catch (error) {
       console.error(
@@ -50,39 +49,7 @@ export class FlyHubService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-   async convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<FlyAirSearchDto> { //Work in progress
-    const cabinClassMapping = {
-      'Y': 'Economy',
-      'S': 'Premium_Economy',
-      'C': 'Business',
-      'P': 'First',
-    };
-  
-    const segments = flightSearchModel.segments.map(segment => ({
-      Origin: segment.depfrom,
-      Destination: segment.arrto,
-      CabinClass: cabinClassMapping[flightSearchModel.cabinclass],
-      DepartureDateTime: segment.depdate.toISOString(),
-    }));
-  
-    const tripType =
-      flightSearchModel.segments.length === 1 ? '1' :
-      flightSearchModel.segments.length === 2 ? '2' :
-      '3';
-  
-    const flyAirSearchDto = plainToClass(FlyAirSearchDto, {
-      AdultQuantity: flightSearchModel.adultcount,
-      ChildQuantity: flightSearchModel.childcount,
-      InfantQuantity: flightSearchModel.infantcount,
-      EndUserIp: "11",
-      JourneyType: tripType,
-      Segments: segments,
-    });
-    return await this.searchFlights(flyAirSearchDto);
-  }
-
-
+  } 
   async searchFlights(data: any): Promise<any> {
     try {
       const token = await this.getToken();
@@ -93,6 +60,7 @@ export class FlyHubService {
       });
 
       return this.flyHubUtil.restBFMParser(response.data);
+      
     } catch (error) {
       console.error(
         'Error searching flights:',
@@ -104,4 +72,41 @@ export class FlyHubService {
       );
     }
   }
+
+
+  async convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any> {
+    const segments = flightSearchModel.segments.map(segment => ({
+      Origin: segment.depfrom,
+      Destination: segment.arrto,
+      CabinClass: flightSearchModel.cabinclass,
+      DepartureDateTime: segment.depdate,
+    }));
+
+    const journeyType = this.determineJourneyType(segments);
+
+    const flyAirSearchDto = plainToClass(FlyAirSearchDto, {
+      AdultQuantity: flightSearchModel.adultcount,
+      ChildQuantity: flightSearchModel.childcount,
+      InfantQuantity: flightSearchModel.infantcount,
+      EndUserIp: '11',
+      JourneyType: journeyType,
+      Segments: segments,
+    });
+
+    return this.searchFlights(flyAirSearchDto);
+  }
+
+  private determineJourneyType(segments: any[]): string {
+    if (segments.length === 1) {
+      return '1';
+    }
+    if (segments.length === 2) {
+      if (segments[0].Destination === segments[1].Origin && segments[0].Origin === segments[1].Destination) {
+        return '2';
+      }
+      return '3';
+    }
+    return '3';
+  }
+  
 }

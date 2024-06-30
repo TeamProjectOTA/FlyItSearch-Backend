@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe());
-  //app.enableCors();
+  app.enableCors();
   //app.useStaticAssets(join(__dirname, '..', 'uploads'));
   /*
   const allowedIP = ('192.168.10.30')

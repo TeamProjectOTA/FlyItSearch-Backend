@@ -26,10 +26,9 @@ export class FlightController {
     return result;
   }
 
-  @Post("/FLyHub")
-  async searchFlightByDto(@Body()flightSearchModel:FlightSearchModel){
-    const result= await this.flyHubService.convertToFlyAirSearchDto(flightSearchModel)
-    return result
+  @Post('/FLyHub11')
+  async convertToFlyAirSearchDto(@Body() flightSearchModel: FlightSearchModel): Promise<any> {
+    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
   }
 
   @Post('/auth')

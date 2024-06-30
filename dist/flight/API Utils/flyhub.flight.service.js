@@ -39,7 +39,6 @@ let FlyHubService = class FlyHubService {
             };
             const response = await axios_1.default.request(config);
             const token = response?.data?.TokenId;
-            console.log(response?.data);
             if (!token) {
                 throw new common_1.HttpException('Token not found in response', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -49,32 +48,6 @@ let FlyHubService = class FlyHubService {
             console.error('Error fetching token:', error.response?.data || error.message);
             throw new common_1.HttpException('Failed to authenticate', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-    async convertToFlyAirSearchDto(flightSearchModel) {
-        const cabinClassMapping = {
-            'Y': 'Economy',
-            'S': 'Premium_Economy',
-            'C': 'Business',
-            'P': 'First',
-        };
-        const segments = flightSearchModel.segments.map(segment => ({
-            Origin: segment.depfrom,
-            Destination: segment.arrto,
-            CabinClass: cabinClassMapping[flightSearchModel.cabinclass],
-            DepartureDateTime: segment.depdate.toISOString(),
-        }));
-        const tripType = flightSearchModel.segments.length === 1 ? '1' :
-            flightSearchModel.segments.length === 2 ? '2' :
-                '3';
-        const flyAirSearchDto = (0, class_transformer_1.plainToClass)(flyhub_model_1.FlyAirSearchDto, {
-            AdultQuantity: flightSearchModel.adultcount,
-            ChildQuantity: flightSearchModel.childcount,
-            InfantQuantity: flightSearchModel.infantcount,
-            EndUserIp: "11",
-            JourneyType: tripType,
-            Segments: segments,
-        });
-        return await this.searchFlights(flyAirSearchDto);
     }
     async searchFlights(data) {
         try {
@@ -90,6 +63,36 @@ let FlyHubService = class FlyHubService {
             console.error('Error searching flights:', error.response?.data || error.message);
             throw new common_1.HttpException('Flight search failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    async convertToFlyAirSearchDto(flightSearchModel) {
+        const segments = flightSearchModel.segments.map(segment => ({
+            Origin: segment.depfrom,
+            Destination: segment.arrto,
+            CabinClass: flightSearchModel.cabinclass,
+            DepartureDateTime: segment.depdate,
+        }));
+        const journeyType = this.determineJourneyType(segments);
+        const flyAirSearchDto = (0, class_transformer_1.plainToClass)(flyhub_model_1.FlyAirSearchDto, {
+            AdultQuantity: flightSearchModel.adultcount,
+            ChildQuantity: flightSearchModel.childcount,
+            InfantQuantity: flightSearchModel.infantcount,
+            EndUserIp: '11',
+            JourneyType: journeyType,
+            Segments: segments,
+        });
+        return this.searchFlights(flyAirSearchDto);
+    }
+    determineJourneyType(segments) {
+        if (segments.length === 1) {
+            return '1';
+        }
+        if (segments.length === 2) {
+            if (segments[0].Destination === segments[1].Origin && segments[0].Origin === segments[1].Destination) {
+                return '2';
+            }
+            return '3';
+        }
+        return '3';
     }
 };
 exports.FlyHubService = FlyHubService;

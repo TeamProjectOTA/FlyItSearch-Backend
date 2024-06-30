@@ -9,41 +9,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FlyAirSearchDto = exports.SegmentDto = void 0;
-const class_transformer_1 = require("class-transformer");
-const class_validator_1 = require("class-validator");
-class SegmentDto {
-}
-exports.SegmentDto = SegmentDto;
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], SegmentDto.prototype, "Origin", void 0);
-__decorate([
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], SegmentDto.prototype, "Destination", void 0);
-__decorate([
-    (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1),
-    __metadata("design:type", Number)
-], SegmentDto.prototype, "CabinClass", void 0);
-__decorate([
-    (0, class_validator_1.IsDateString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
-], SegmentDto.prototype, "DepartureDateTime", void 0);
+exports.FlyAirSearchDto = void 0;
+const swagger_1 = require("@nestjs/swagger");
 class FlyAirSearchDto {
 }
 exports.FlyAirSearchDto = FlyAirSearchDto;
 __decorate([
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], FlyAirSearchDto.prototype, "JourneyType", void 0);
-__decorate([
-    (0, class_transformer_1.Type)(() => SegmentDto),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Array)
 ], FlyAirSearchDto.prototype, "Segments", void 0);
 //# sourceMappingURL=flyhub.model.js.map
