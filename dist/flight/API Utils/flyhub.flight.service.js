@@ -57,7 +57,8 @@ let FlyHubService = class FlyHubService {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            return this.flyHubUtil.restBFMParser(response.data);
+            let tripType = data.JourneyType;
+            return this.flyHubUtil.restBFMParser(response.data, tripType);
         }
         catch (error) {
             console.error('Error searching flights:', error.response?.data || error.message);

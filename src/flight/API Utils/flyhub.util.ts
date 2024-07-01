@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+
 
 @Injectable()
 export class FlyHubUtil {
   constructor() {}
-  async restBFMParser(SearchResponse: any): Promise<any[]> {
+  async restBFMParser(SearchResponse: any,journeyType:any): Promise<any[]> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -39,18 +39,15 @@ export class FlyHubUtil {
             const AllSegments = Results[0].segments;
 
             let TripType: string;
-            if (AllSegments.length === 1) {
+            if (journeyType === "1") {
               TripType = 'Oneway';
             } else if (
-              AllSegments.length > 1 &&
-              AllSegments[0]?.Origin?.Airport?.AirportCode ===
-                AllSegments[1]?.Destination?.Airport?.AirportCode
+              journeyType === "2"
+              
             ) {
               TripType = 'Return';
             } else if (
-              AllSegments.length > 1 &&
-              AllSegments[0]?.Origin?.Airport?.AirportCode !==
-                AllSegments[1]?.Destination?.Airport?.AirportCode
+              journeyType === "3"
             ) {
               TripType = 'Multicity';
             }
@@ -136,23 +133,19 @@ export class FlyHubUtil {
                   Allowance: allowance,
                 };
               });
-              // let i = 0; // 
-              // const FareBasis = allPassenger?.passengerInfo?.fareComponents?.map(
-              //   (fareComponent) => {
-              //     i++;
-              //     const farecompoRef = fareComponent?.ref;
-              //     const fareCompo = AllFareCompoDescs[farecompoRef - 1];
-              //     return {
-              //       Origin: fareComponent?.beginAirport,
-              //       Destination: fareComponent?.endAirport,
-              //       DepDate:
-              //         GroupLegDescs[i - 1]?.departureDate ||
-              //         GroupLegDescs[0]?.departureDate,
-              //       FareBasisCode: fareCompo.fareBasisCode,
-              //       Carrier: fareCompo.governingCarrier,
-              //     };
-              //   },
-              // );
+              let i = 0;
+const FareBasis = Result?.segments.map(
+  (fareComponent) => {
+    i++;
+    return {
+      Origin: fareComponent.Origin.Airport.AirportCode,
+      Destination: fareComponent.Destination.Airport.AirportCode,
+      DepDate: fareComponent[i - 1]?.departureDate || fareComponent[0]?.departureDate,
+      FareBasisCode: fareComponent.Airline.FareBasisCode,
+      Carrier: fareComponent.Airline.GoverningCarrier,
+    };
+  },
+);
 
               return {
                 PaxType: PaxType,
@@ -161,59 +154,66 @@ export class FlyHubUtil {
                 TotalFare: PaxtotalFare,
                 PaxCount: paxCount,
                 Bag: baggageDetails,
-                FareComponent: "FareBasis"
+                FareComponent: FareBasis
               };
             });
 
             const AllLegsInfo = [];
-            for (const segment of AllSegments) {
-              const legInfo = {
-                DepDate: segment.Origin.DepTime,
-                DepFrom: segment.Origin.Airport.AirportCode,
-                ArrTo: segment.Destination.Airport.AirportCode,
-                Duration: parseInt(segment.JourneyDuration),
-              };
-              const bookingClass=segment.Airline?.BookingClass
-              const cabinClass=segment.Airline?.CabinClass
-              const seatsAvailable=Result.Availabilty
+const segments = [];
 
-              const SingleSegments = {
-                MarketingCarrier: segment.Airline.AirlineCode,
-                MarketingCarrierName: segment.Airline.AirlineName,
-                MarketingFlightNumber: parseInt(segment.Airline.FlightNumber),
-                OperatingCarrier: segment.Airline.OperatingCarrier,
-                OperatingFlightNumber: parseInt(segment.Airline.FlightNumber),
-                OperatingCarrierName: segment.Airline.AirlineName,
-                DepFrom: segment.Origin.Airport.AirportCode,
-                DepAirPort: segment.Origin.Airport.AirportName,
-                DepLocation: `${segment.Origin.Airport.CityName}, ${segment.Origin.Airport.CountryName}`,
-                DepDateAdjustment: 0,
-                DepTime: segment.Origin.DepTime,
-                ArrTo: segment.Destination.Airport.AirportCode,
-                ArrAirPort: segment.Destination.Airport.AirportName,
-                ArrLocation: `${segment.Destination.Airport.CityName}, ${segment.Destination.Airport.CountryName}`,
-                ArrDateAdjustment: 0,
-                ArrTime: segment.Destination.ArrTime,
-                OperatedBy: segment.Airline.AirlineName,
-                StopCount: segment.StopQuantity,
-                Duration: parseInt(segment.JourneyDuration),
-                AircraftTypeName: segment.Equipment,
-                Amenities:{},
-                DepartureGate: segment.Origin.Airport.Terminal || 'TBA',
-                ArrivalGate: segment.Destination.Airport.Terminal || 'TBA',
-                HiddenStops: [],
-                TotalMilesFlown: 0,
-                
-                SegmentCode: {
-                  bookingCode:bookingClass,
-                  cabinCode: cabinClass,
-                  seatsAvailable: seatsAvailable
-                },
-              };
+const firstSegment = Result.segments[0];
+const lastSegment = Result.segments[Result.segments.length - 1];
 
-              legInfo['Segments'] = [SingleSegments];
-              AllLegsInfo.push(legInfo);
-            }
+const legInfo = {
+  DepDate: firstSegment.Origin.DepTime,
+  DepFrom: firstSegment.Origin.Airport.AirportCode,
+  ArrTo: lastSegment.Destination.Airport.AirportCode,
+  Duration: Result.segments.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0) // Sum of all durations
+};
+
+const bookingClass = firstSegment.Airline?.BookingClass;
+const cabinClass = firstSegment.Airline?.CabinClass;
+const seatsAvailable = Result.Availabilty;
+
+for (const segment of Result.segments) {
+  const SingleSegments = {
+    MarketingCarrier: segment.Airline.AirlineCode,
+    MarketingCarrierName: segment.Airline.AirlineName,
+    MarketingFlightNumber: parseInt(segment.Airline.FlightNumber),
+    OperatingCarrier: segment.Airline.OperatingCarrier,
+    OperatingFlightNumber: parseInt(segment.Airline.FlightNumber),
+    OperatingCarrierName: segment.Airline.AirlineName,
+    DepFrom: segment.Origin.Airport.AirportCode,
+    DepAirPort: segment.Origin.Airport.AirportName,
+    DepLocation: `${segment.Origin.Airport.CityName}, ${segment.Origin.Airport.CountryName}`,
+    DepDateAdjustment: 0,
+    DepTime: segment.Origin.DepTime,
+    ArrTo: segment.Destination.Airport.AirportCode,
+    ArrAirPort: segment.Destination.Airport.AirportName,
+    ArrLocation: `${segment.Destination.Airport.CityName}, ${segment.Destination.Airport.CountryName}`,
+    ArrDateAdjustment: 0,
+    ArrTime: segment.Destination.ArrTime,
+    OperatedBy: segment.Airline.AirlineName,
+    StopCount: segment.StopQuantity,
+    Duration: parseInt(segment.JourneyDuration),
+    AircraftTypeName: segment.Equipment,
+    Amenities: {},
+    DepartureGate: segment.Origin.Airport.Terminal || 'TBA',
+    ArrivalGate: segment.Destination.Airport.Terminal || 'TBA',
+    HiddenStops: [],
+    TotalMilesFlown: 0,
+    SegmentCode: {
+      bookingCode: bookingClass,
+      cabinCode: cabinClass,
+      seatsAvailable: seatsAvailable
+    }
+  };
+  segments.push(SingleSegments);
+}
+
+legInfo['Segments'] = segments;
+AllLegsInfo.push(legInfo);
+             
 
             FlightItenary.push({
               System: 'FLYHUB',

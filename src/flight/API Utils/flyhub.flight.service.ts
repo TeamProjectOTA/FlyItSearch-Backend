@@ -50,7 +50,7 @@ export class FlyHubService {
       );
     }
   } 
-  async searchFlights(data: any): Promise<any> {
+  async searchFlights(data: FlyAirSearchDto): Promise<any> {
     try {
       const token = await this.getToken();
       const response = await axios.post(`${this.apiUrl}/AirSearch`, data, {
@@ -58,8 +58,9 @@ export class FlyHubService {
           Authorization: `Bearer ${token}`,
         },
       });
+      let tripType=data.JourneyType
 
-      return this.flyHubUtil.restBFMParser(response.data);
+      return this.flyHubUtil.restBFMParser(response.data,tripType);
       
     } catch (error) {
       console.error(
