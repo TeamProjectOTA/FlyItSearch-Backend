@@ -35,22 +35,7 @@ export class FlyHubUtil {
             partialoption = true;
           }
 
-          if (Results[0].segments) {
-            const AllSegments = Results[0].segments;
-
-            let TripType: string;
-            if (journeyType === "1") {
-              TripType = 'Oneway';
-            } else if (
-              journeyType === "2"
-              
-            ) {
-              TripType = 'Return';
-            } else if (
-              journeyType === "3"
-            ) {
-              TripType = 'Multicity';
-            }
+         
            for(const Result of Results){
             const ValidatingCarrier: string = Result.Validatingcarrier;
             const airlineData: any = Result.segments[0].Airline;
@@ -59,16 +44,21 @@ export class FlyHubUtil {
             const CarrierName: string =
               Result.segments[0].Airline.AirlineName || 'N/F';
             const Instant_Payment: boolean =
-              airlineData.instantPayment || false;
+            Result.FareType=="InstantTicketing"?true: false;
             const IssuePermit: boolean = airlineData.issuePermit || false;
             const IsBookable: boolean =
               Result?.HoldAllowed;
+
+
+             ////Mark up ammount section
+
+             
+
             const equivalentAmount: number = AllPassenger[0]?.BaseFare || 0;
             const Taxes: number = AllPassenger[0]?.Tax || 0;
             let TotalFare: number = Result.TotalFare || 0;
-            const extraService: string=Result?.ExtraServices || []
-
-            const addAmount: number = airlineData.addAmount || 0;
+            const extraService:number=Result?.OtherCharges|| 0;
+            //const addAmount: number = Result?.ServiceFee || 0;
             // let ComissionPolicy: number = 0;
             // if (farepolicy === 'soti') {
             //   ComissionPolicy = airlineData.soti || 0;
@@ -80,11 +70,28 @@ export class FlyHubUtil {
             //   ComissionPolicy = airlineData.domestic || 0;
             // }
 
-            const NetFare = equivalentAmount + addAmount + Taxes;
+           
+            if (Results[0].segments) {
+              const AllSegments = Results[0].segments;
+  
+              let TripType: string;
+              if (journeyType === "1") {
+                TripType = 'Oneway';
+              } else if (
+                journeyType === "2" 
+              ) {
+                TripType = 'Return';
+              } else if (
+                journeyType === "3"
+              ) {
+                TripType = 'Multicity';
+              }
 
-            if (NetFare > TotalFare) {
-              TotalFare = NetFare;
-            }
+            const NetFare = equivalentAmount +Taxes+extraService;
+
+            // if (NetFare > TotalFare) {
+            //   TotalFare = NetFare;
+            // }
 
             const PartialAmount: number = NetFare * 0.3;
 
@@ -92,10 +99,11 @@ export class FlyHubUtil {
             let TimeLimit: string = null;
             if (Result.LastTicketDate) {
               const lastTicketDate: string = Result.LastTicketDate;
-              TimeLimit = `${lastTicketDate}T23:59:00`;//modification needed
+              TimeLimit = `${lastTicketDate}`;//modification needed
             }
+            
 
-            let cabinclass: string = AllSegments[0]?.Airline?.CabinClass || 'Y';
+            let cabinclass: string = AllSegments?.Airline?.CabinClass || 'Y';
             let Class: string;
             switch (cabinclass) {
               case 'P':
@@ -107,7 +115,7 @@ export class FlyHubUtil {
               case 'S':
                 Class = 'Premium Economy';
                 break;
-              case 'Y':
+              case 'Y'&&'M':
                 Class = 'Economy';
                 break;
             }
@@ -121,18 +129,15 @@ export class FlyHubUtil {
               
 
               const baggageDetails = AllSegments.map((segment) => {
-                const allowance =
-                  segment.baggageDetails
-                    ?.filter(
-                      (baggage) => PaxTypeMapping[PaxType] === baggage.PaxType,
-                    )
-                    .map((baggage) => baggage.Checkin) || [];
-
+                const allowance = segment.baggageDetails
+                    ?.filter((baggage) => PaxTypeMapping[PaxType] === baggage.PaxType)
+                    .map((baggage) => baggage.Checkin)[0] || ""; // Get the first element or an empty string if none
+            
                 return {
-                  Airline: ValidatingCarrier,
-                  Allowance: allowance,
+                    Airline: ValidatingCarrier,
+                    Allowance: allowance,
                 };
-              });
+            });
               let i = 0;
 const FareBasis = Result?.segments.map(
   (fareComponent) => {
@@ -168,7 +173,7 @@ const legInfo = {
   DepDate: firstSegment.Origin.DepTime,
   DepFrom: firstSegment.Origin.Airport.AirportCode,
   ArrTo: lastSegment.Destination.Airport.AirportCode,
-  Duration: Result.segments.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0) // Sum of all durations
+  Duration: Result.segments.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0) 
 };
 
 const bookingClass = firstSegment.Airline?.BookingClass;
@@ -176,6 +181,7 @@ const cabinClass = firstSegment.Airline?.CabinClass;
 const seatsAvailable = Result.Availabilty;
 
 for (const segment of Result.segments) {
+  // const seatsAvailable = segment.Availabilty;
   const SingleSegments = {
     MarketingCarrier: segment.Airline.AirlineCode,
     MarketingCarrierName: segment.Airline.AirlineName,
@@ -249,4 +255,5 @@ AllLegsInfo.push(legInfo);
     }
     return [];
   }
+ 
 }
