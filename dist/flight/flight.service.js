@@ -12,7 +12,7 @@ const class_transformer_1 = require("class-transformer");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 let FlightService = class FlightService {
     async convertToFlyAirSearchDto(flightSearchModel) {
-        const segments = flightSearchModel.segments.map(segment => ({
+        const segments = flightSearchModel.segments.map((segment) => ({
             Origin: segment.depfrom,
             Destination: segment.arrto,
             CabinClass: flightSearchModel.cabinclass,
@@ -34,7 +34,8 @@ let FlightService = class FlightService {
             return '1';
         }
         if (segments.length === 2) {
-            if (segments[0].Destination === segments[1].Origin && segments[0].Origin === segments[1].Destination) {
+            if (segments[0].Destination === segments[1].Origin &&
+                segments[0].Origin === segments[1].Destination) {
                 return '2';
             }
             return '3';

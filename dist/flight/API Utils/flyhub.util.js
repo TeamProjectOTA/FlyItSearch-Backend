@@ -49,7 +49,7 @@ let FlyHubUtil = class FlyHubUtil {
                     const FareType = Result.FareType || 'Regular';
                     const AllPassenger = Result.Fares || [];
                     const CarrierName = Result.segments[0].Airline.AirlineName || 'N/F';
-                    const Instant_Payment = Result.FareType == "InstantTicketing" ? true : false;
+                    const Instant_Payment = Result.FareType == 'InstantTicketing' ? true : false;
                     const IssuePermit = airlineData.issuePermit || false;
                     const IsBookable = Result?.HoldAllowed;
                     const equivalentAmount = AllPassenger[0]?.BaseFare || 0;
@@ -59,13 +59,13 @@ let FlyHubUtil = class FlyHubUtil {
                     if (Results[0].segments) {
                         const AllSegments = Results[0].segments;
                         let TripType;
-                        if (journeyType === "1") {
+                        if (journeyType === '1') {
                             TripType = 'Oneway';
                         }
-                        else if (journeyType === "2") {
+                        else if (journeyType === '2') {
                             TripType = 'Return';
                         }
-                        else if (journeyType === "3") {
+                        else if (journeyType === '3') {
                             TripType = 'Multicity';
                         }
                         const NetFare = equivalentAmount + Taxes + extraService;
@@ -101,7 +101,7 @@ let FlyHubUtil = class FlyHubUtil {
                             const baggageDetails = AllSegments.map((segment) => {
                                 const allowance = segment.baggageDetails
                                     ?.filter((baggage) => PaxTypeMapping[PaxType] === baggage.PaxType)
-                                    .map((baggage) => baggage.Checkin)[0] || "";
+                                    .map((baggage) => baggage.Checkin)[0] || '';
                                 return {
                                     Airline: ValidatingCarrier,
                                     Allowance: allowance,
@@ -113,7 +113,8 @@ let FlyHubUtil = class FlyHubUtil {
                                 return {
                                     Origin: fareComponent.Origin.Airport.AirportCode,
                                     Destination: fareComponent.Destination.Airport.AirportCode,
-                                    DepDate: fareComponent[i - 1]?.departureDate || fareComponent[0]?.departureDate,
+                                    DepDate: fareComponent[i - 1]?.departureDate ||
+                                        fareComponent[0]?.departureDate,
                                     FareBasisCode: fareComponent.Airline.FareBasisCode,
                                     Carrier: fareComponent.Airline.GoverningCarrier,
                                 };
@@ -125,7 +126,7 @@ let FlyHubUtil = class FlyHubUtil {
                                 TotalFare: PaxtotalFare,
                                 PaxCount: paxCount,
                                 Bag: baggageDetails,
-                                FareComponent: FareBasis
+                                FareComponent: FareBasis,
                             };
                         });
                         const AllLegsInfo = [];
@@ -135,8 +136,8 @@ let FlyHubUtil = class FlyHubUtil {
                         const legInfo = {
                             DepDate: firstSegment.Origin.DepTime,
                             DepFrom: firstSegment.Origin.Airport.AirportCode,
-                            ArrTo: lastSegment.Destination.Airport.AirportCode,
-                            Duration: Result.segments.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0)
+                            ArrTo: TripType == "Oneway" ? lastSegment.Destination.Airport.AirportCode : TripType == "Return" ? lastSegment.Origin.Airport.AirportCode : firstSegment.Origin.Airport.AirportCode,
+                            Duration: Result.segments.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0),
                         };
                         const bookingClass = firstSegment.Airline?.BookingClass;
                         const cabinClass = firstSegment.Airline?.CabinClass;
@@ -171,8 +172,8 @@ let FlyHubUtil = class FlyHubUtil {
                                 SegmentCode: {
                                     bookingCode: bookingClass,
                                     cabinCode: cabinClass,
-                                    seatsAvailable: seatsAvailable
-                                }
+                                    seatsAvailable: seatsAvailable,
+                                },
                             };
                             segments.push(SingleSegments);
                         }

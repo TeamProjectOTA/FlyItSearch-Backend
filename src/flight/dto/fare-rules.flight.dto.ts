@@ -32,3 +32,10 @@ export class FareRulesDto {
   @IsNotEmpty()
   FareBasisCode: string;
 }
+
+export class BookingID{
+  @ApiProperty({default:"22"})
+  @IsNotEmpty()
+  @IsString()
+  BookingID:string
+}

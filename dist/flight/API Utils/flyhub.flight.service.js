@@ -42,12 +42,31 @@ let FlyHubService = class FlyHubService {
             if (!token) {
                 throw new common_1.HttpException('Token not found in response', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
             }
+            console.log(token);
             return token;
         }
         catch (error) {
             console.error('Error fetching token:', error.response?.data || error.message);
             throw new common_1.HttpException('Failed to authenticate', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    async convertToFlyAirSearchDto(flightSearchModel) {
+        const segments = flightSearchModel.segments.map((segment) => ({
+            Origin: segment.depfrom,
+            Destination: segment.arrto,
+            CabinClass: flightSearchModel.cabinclass,
+            DepartureDateTime: segment.depdate,
+        }));
+        const journeyType = this.determineJourneyType(segments);
+        const flyAirSearchDto = (0, class_transformer_1.plainToClass)(flyhub_model_1.FlyAirSearchDto, {
+            AdultQuantity: flightSearchModel.adultcount,
+            ChildQuantity: flightSearchModel.childcount,
+            InfantQuantity: flightSearchModel.infantcount,
+            EndUserIp: '11',
+            JourneyType: journeyType,
+            Segments: segments,
+        });
+        return this.searchFlights(flyAirSearchDto);
     }
     async searchFlights(data) {
         try {
@@ -65,41 +84,40 @@ let FlyHubService = class FlyHubService {
             throw new common_1.HttpException('Flight search failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async convertToFlyAirSearchDto(flightSearchModel) {
-        const segments = flightSearchModel.segments.map(segment => ({
-            Origin: segment.depfrom,
-            Destination: segment.arrto,
-            CabinClass: flightSearchModel.cabinclass,
-            DepartureDateTime: segment.depdate,
-        }));
-        const journeyType = this.determineJourneyType(segments);
-        const flyAirSearchDto = (0, class_transformer_1.plainToClass)(flyhub_model_1.FlyAirSearchDto, {
-            AdultQuantity: flightSearchModel.adultcount,
-            ChildQuantity: flightSearchModel.childcount,
-            InfantQuantity: flightSearchModel.infantcount,
-            EndUserIp: '11',
-            JourneyType: journeyType,
-            Segments: segments,
-        });
-        return this.searchFlights(flyAirSearchDto);
-    }
     determineJourneyType(segments) {
         if (segments.length === 1) {
             return '1';
         }
         if (segments.length === 2) {
-            if (segments[0].Destination === segments[1].Origin && segments[0].Origin === segments[1].Destination) {
+            if (segments[0].Destination === segments[1].Origin &&
+                segments[0].Origin === segments[1].Destination) {
                 return '2';
             }
             return '3';
         }
         return '3';
     }
+    async airRetrive(BookingID) {
+        try {
+            const token = await this.getToken();
+            const response = await axios_1.default.post(`${this.apiUrl}/AirRetrieve`, BookingID, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(BookingID);
+            return response.data;
+        }
+        catch (error) {
+            console.error();
+        }
+    }
 };
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, common_1.Inject)(core_1.REQUEST)),
-    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil, Request])
+    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
+        Request])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

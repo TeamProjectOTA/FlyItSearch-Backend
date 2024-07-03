@@ -3,7 +3,7 @@ import { FlightService } from './flight.service';
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
 
-import { FareRulesDto } from './dto/fare-rules.flight.dto';
+import { BookingID, FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto } from './API Utils/Dto/bdfare.model';
@@ -27,8 +27,15 @@ export class FlightController {
   }
 
   @Post('/FLyHub11')
-  async convertToFlyAirSearchDto(@Body() flightSearchModel: FlightSearchModel): Promise<any> {
+  async convertToFlyAirSearchDto(
+    @Body() flightSearchModel: FlightSearchModel,
+  ): Promise<any> {
     return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
+  }
+  @Post("/airRetrive")
+  async airRetrive(@Body()bookingIdDto:BookingID):Promise<any>{
+   
+    return await this.flyHubService.airRetrive(bookingIdDto)
   }
 
   @Post('/auth')
