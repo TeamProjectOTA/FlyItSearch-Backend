@@ -42,7 +42,6 @@ let FlyHubService = class FlyHubService {
             if (!token) {
                 throw new common_1.HttpException('Token not found in response', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            console.log(token);
             return token;
         }
         catch (error) {
@@ -111,6 +110,24 @@ let FlyHubService = class FlyHubService {
         catch (error) {
             console.error();
         }
+    }
+    async aircancel(BookingID) {
+        try {
+            const token = await this.getToken();
+            const response = await axios_1.default.post(`${this.apiUrl}/AirCancel`, BookingID, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            console.log(BookingID);
+            return response.data;
+        }
+        catch (error) {
+            console.error();
+        }
+    }
+    async airbook() {
+        return 'This is the air book api';
     }
 };
 exports.FlyHubService = FlyHubService;

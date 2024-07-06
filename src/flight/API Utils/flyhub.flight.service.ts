@@ -40,7 +40,7 @@ export class FlyHubService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-      console.log(token)
+      //console.log(token)
       return token;
     } catch (error) {
       console.error(
@@ -132,7 +132,26 @@ export class FlyHubService {
     }
   }
 
-  
+  async aircancel(BookingID:BookingID):Promise<any>{
+    try {
+      const token = await this.getToken();
+      const response = await axios.post(`${this.apiUrl}/AirCancel`, BookingID, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      console.log(BookingID)
+      return response.data
+    } catch (error) {
+      console.error()
+    }
+  }
+
+
+  async airbook(){
+    return 'This is the air book api'
+  }
 
   
 }

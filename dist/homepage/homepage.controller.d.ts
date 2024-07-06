@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { HomepageService } from './homepage.service';
 import { Header } from './header.model';
 import { Response } from 'express';

@@ -20,13 +20,13 @@ export class FlightController {
     private readonly flyHubService: FlyHubService,
   ) {}
 
-  @Post('/flyhub')
-  async searchFlightsFlyhub(@Body() airSearchDto: FlyAirSearchDto) {
-    const result = await this.flyHubService.searchFlights(airSearchDto);
-    return result;
-  }
+  // @Post('/flyhub')
+  // async searchFlightsFlyhub(@Body() airSearchDto: FlyAirSearchDto) {
+  //   const result = await this.flyHubService.searchFlights(airSearchDto);
+  //   return result;
+  // }
 
-  @Post('/FLyHub11')
+  @Post('/air-search')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
   ): Promise<any> {
@@ -37,10 +37,15 @@ export class FlightController {
    
     return await this.flyHubService.airRetrive(bookingIdDto)
   }
+  @Post("/air-book")
+  async aircancel(){
+    return this.flyHubService.airbook()
+  }
 
-  @Post('/auth')
-  async auth() {
-    return this.flyHubService.getToken();
+  @Post('/cancel-ticket')
+  async aircanel(@Body()bookingIdDto:BookingID):Promise<any>{
+   
+    return this.flyHubService.aircancel(bookingIdDto)
   }
 
   @Post('/bdfare')

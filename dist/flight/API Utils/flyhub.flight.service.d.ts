@@ -14,4 +14,6 @@ export declare class FlyHubService {
     searchFlights(data: FlyAirSearchDto): Promise<any>;
     private determineJourneyType;
     airRetrive(BookingID: BookingID): Promise<any>;
+    aircancel(BookingID: BookingID): Promise<any>;
+    airbook(): Promise<string>;
 }

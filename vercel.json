@@ -1,0 +1,18 @@
+{
+    "version": 2,
+ 
+  
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/src/main.ts",
+        "methods":[
+            "GET",
+            "POST",
+            "DELETE",
+            "UPDATE",
+            "PUT"
+        ] 
+      }
+    ]
+  }

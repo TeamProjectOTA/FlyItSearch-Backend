@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { Header } from './header.model';
 import { Repository } from 'typeorm';
 export declare class HomepageService {

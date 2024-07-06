@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { BookService } from './book.service';
 import { File, ResponseDto } from './book.model';
 export declare class BookController {

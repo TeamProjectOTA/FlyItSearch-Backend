@@ -4,7 +4,6 @@ import { BookingID, FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto } from './API Utils/Dto/bdfare.model';
-import { FlyAirSearchDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 export declare class FlightController {
     private readonly flightService;
@@ -12,10 +11,10 @@ export declare class FlightController {
     private readonly bdFareService;
     private readonly flyHubService;
     constructor(flightService: FlightService, sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService);
-    searchFlightsFlyhub(airSearchDto: FlyAirSearchDto): Promise<any>;
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
     airRetrive(bookingIdDto: BookingID): Promise<any>;
-    auth(): Promise<string>;
+    aircancel(): Promise<string>;
+    aircanel(bookingIdDto: BookingID): Promise<any>;
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
     search(flightdto: FlightSearchModel): {

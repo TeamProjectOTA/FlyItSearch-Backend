@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { Repository } from 'typeorm';
 import { File } from './book.model';
 export declare class BookService {

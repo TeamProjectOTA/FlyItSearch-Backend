@@ -1,4 +1,3 @@
-/// <reference types="multer" />
 import { TourpackageService } from './tourpackage.service';
 import { Tourpackage, TourpackageDto } from './tourpackage.model';
 export declare class TourpackageController {
