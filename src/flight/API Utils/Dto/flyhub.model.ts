@@ -30,3 +30,10 @@ export class FlyAirSearchDto {
     DepartureDateTime: string;
   }[];
 }
+
+export class searchResultDto {
+  @ApiProperty()
+  SearchId: string;
+  @ApiProperty()
+  ResultID: string;
+}

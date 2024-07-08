@@ -11,3 +11,7 @@ export declare class FlyAirSearchDto {
         DepartureDateTime: string;
     }[];
 }
+export declare class searchResultDto {
+    SearchId: string;
+    ResultID: string;
+}

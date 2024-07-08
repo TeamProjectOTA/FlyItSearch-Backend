@@ -15,6 +15,7 @@ import { SabreUtils } from './API Utils/sabre.utils';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { FlyHubUtil } from './API Utils/flyhub.util';
+import { Test } from './API Utils/test.service';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { FlyHubUtil } from './API Utils/flyhub.util';
     BDFareService,
     FlyHubService,
     FlyHubUtil,
+    Test,
   ],
 })
 export class FlightModule {}

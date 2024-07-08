@@ -92,7 +92,7 @@ exports.AppModule = AppModule = __decorate([
                 useClass: throttler_1.ThrottlerGuard,
             },
         ],
-        controllers: [app_contoller_1.rootController]
+        controllers: [app_contoller_1.rootController],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

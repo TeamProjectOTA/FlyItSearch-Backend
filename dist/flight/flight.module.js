@@ -21,6 +21,7 @@ const sabre_utils_1 = require("./API Utils/sabre.utils");
 const sabre_flights_service_1 = require("./API Utils/sabre.flights.service");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const flyhub_util_1 = require("./API Utils/flyhub.util");
+const test_service_1 = require("./API Utils/test.service");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -41,6 +42,7 @@ exports.FlightModule = FlightModule = __decorate([
             bdfare_flights_service_1.BDFareService,
             flyhub_flight_service_1.FlyHubService,
             flyhub_util_1.FlyHubUtil,
+            test_service_1.Test,
         ],
     })
 ], FlightModule);

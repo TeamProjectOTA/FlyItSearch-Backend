@@ -3,7 +3,6 @@ import { Agents } from 'src/agents/entities/agents.entity';
 import { AirportsService } from 'src/airports/airports.service';
 import { parseString } from 'xml2js';
 import { v4 as uuidv4 } from 'uuid';
-
 import { AirlinesService } from 'src/airlines/airlines.service';
 import { airportsData } from '../data/airportsData';
 import { airlinesData } from '../data/airlinesData';

@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FlyAirSearchDto = void 0;
+exports.searchResultDto = exports.FlyAirSearchDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 class FlyAirSearchDto {
 }
@@ -18,4 +18,15 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Array)
 ], FlyAirSearchDto.prototype, "Segments", void 0);
+class searchResultDto {
+}
+exports.searchResultDto = searchResultDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], searchResultDto.prototype, "SearchId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], searchResultDto.prototype, "ResultID", void 0);
 //# sourceMappingURL=flyhub.model.js.map

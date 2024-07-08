@@ -7,5 +7,4 @@ export declare class UserController {
     create(createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
     update(header: Headers, updateUserDto: UpdateUserDto): Promise<import("./entities/user.entity").User>;
     findAllUser(header: Headers): Promise<import("./entities/user.entity").User[]>;
-    fileUpload(file: any): Promise<string>;
 }

@@ -38,21 +38,21 @@ export class UserController {
   findAllUser(@Headers() header: Headers) {
     return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
   }
-  @Post('/upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './src/user/upload',
-        filename: (req, file, cb) => {
-          cb(null, `${file.originalname}`);
-        },
-      }),
-    }),
-  )
-  async fileUpload(@UploadedFile() file) {
-    if (!file) {
-      throw new BadRequestException();
-    }
-    return 'successfully uploaded the file';
-  }
+  // @Post('/upload')
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     storage: diskStorage({
+  //       destination: './src/user/upload',
+  //       filename: (req, file, cb) => {
+  //         cb(null, `${file.originalname}`);
+  //       },
+  //     }),
+  //   }),
+  // )
+  // async fileUpload(@UploadedFile() file) {
+  //   if (!file) {
+  //     throw new BadRequestException();
+  //   }
+  //   return 'successfully uploaded the file';
+  // }
 }

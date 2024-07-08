@@ -18,8 +18,6 @@ const user_service_1 = require("./user.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
 const swagger_1 = require("@nestjs/swagger");
-const platform_express_1 = require("@nestjs/platform-express");
-const multer_1 = require("multer");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -32,12 +30,6 @@ let UserController = class UserController {
     }
     findAllUser(header) {
         return this.userService.allUser(header);
-    }
-    async fileUpload(file) {
-        if (!file) {
-            throw new common_1.BadRequestException();
-        }
-        return 'successfully uploaded the file';
     }
 };
 exports.UserController = UserController;
@@ -65,21 +57,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "findAllUser", null);
-__decorate([
-    (0, common_1.Post)('/upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: './src/user/upload',
-            filename: (req, file, cb) => {
-                cb(null, `${file.originalname}`);
-            },
-        }),
-    })),
-    __param(0, (0, common_1.UploadedFile)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UserController.prototype, "fileUpload", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User'),
     (0, common_1.Controller)('user'),

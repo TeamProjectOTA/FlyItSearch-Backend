@@ -7,8 +7,9 @@ import { BookingID, FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto } from './API Utils/Dto/bdfare.model';
-import { FlyAirSearchDto } from './API Utils/Dto/flyhub.model';
+import { FlyAirSearchDto, searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
+import { Test } from './API Utils/test.service';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -18,6 +19,7 @@ export class FlightController {
     private readonly sabreService: SabreService,
     private readonly bdFareService: BDFareService,
     private readonly flyHubService: FlyHubService,
+    private readonly testservice: Test,
   ) {}
 
   // @Post('/flyhub')
@@ -32,20 +34,18 @@ export class FlightController {
   ): Promise<any> {
     return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
   }
-  @Post("/airRetrive")
-  async airRetrive(@Body()bookingIdDto:BookingID):Promise<any>{
-   
-    return await this.flyHubService.airRetrive(bookingIdDto)
+  @Post('/airRetrive')
+  async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
+    return await this.flyHubService.airRetrive(bookingIdDto);
   }
-  @Post("/air-book")
-  async aircancel(){
-    return this.flyHubService.airbook()
+  @Post('/air-book')
+  async aircancel(@Body() data: any) {
+    return this.flyHubService.airbook(data);
   }
 
   @Post('/cancel-ticket')
-  async aircanel(@Body()bookingIdDto:BookingID):Promise<any>{
-   
-    return this.flyHubService.aircancel(bookingIdDto)
+  async aircanel(@Body() bookingIdDto: BookingID): Promise<any> {
+    return this.flyHubService.aircancel(bookingIdDto);
   }
 
   @Post('/bdfare')
@@ -93,4 +93,14 @@ export class FlightController {
   // async filterFlights(@Body() filter: flightModel): Promise<Flight[]> {
   //   return await this.flightService.filterFlights(filter);
   // }
+
+  @Post('/price-check')
+  test(@Body() data: searchResultDto) {
+    return this.flyHubService.airPrice(data);
+  }
+
+  @Post('/bookingPolicy')
+  async miniRules(@Body() data: searchResultDto): Promise<any> {
+    return await this.flyHubService.bookingRules(data);
+  }
 }

@@ -8,9 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubService = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,11 +15,11 @@ const axios_1 = require("axios");
 const flyhub_util_1 = require("./flyhub.util");
 const class_transformer_1 = require("class-transformer");
 const flyhub_model_1 = require("./Dto/flyhub.model");
-const core_1 = require("@nestjs/core");
+const test_service_1 = require("./test.service");
 let FlyHubService = class FlyHubService {
-    constructor(flyHubUtil, request) {
+    constructor(flyHubUtil, testutil) {
         this.flyHubUtil = flyHubUtil;
-        this.request = request;
+        this.testutil = testutil;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
@@ -49,6 +46,106 @@ let FlyHubService = class FlyHubService {
             throw new common_1.HttpException('Failed to authenticate', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    async searchFlights(reqBody) {
+        const token = await this.getToken();
+        const shoppingrequest = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirSearch`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            data: reqBody
+        };
+        try {
+            const response = await axios_1.default.request(shoppingrequest);
+            return this.flyHubUtil.restBFMParser(response.data);
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
+    async aircancel(BookingID) {
+        const token = await this.getToken();
+        const ticketCancel = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirCancel`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            data: BookingID
+        };
+        try {
+            const response = await axios_1.default.request(ticketCancel);
+            return response.data;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
+    async airRetrive(BookingID) {
+        const token = await this.getToken();
+        const ticketCancel = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirRetrieve`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            data: BookingID
+        };
+        try {
+            const response = await axios_1.default.request(ticketCancel);
+            return response.data;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
+    async bookingRules(data) {
+        const token = await this.getToken();
+        const ticketCancel = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirMiniRules`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            data: data
+        };
+        try {
+            const response = await axios_1.default.request(ticketCancel);
+            return response.data;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
+    async airPrice(data) {
+        const token = await this.getToken();
+        const ticketCancel = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirPrice`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            data: data
+        };
+        try {
+            const response = await axios_1.default.request(ticketCancel);
+            return response.data;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
     async convertToFlyAirSearchDto(flightSearchModel) {
         const segments = flightSearchModel.segments.map((segment) => ({
             Origin: segment.depfrom,
@@ -67,22 +164,6 @@ let FlyHubService = class FlyHubService {
         });
         return this.searchFlights(flyAirSearchDto);
     }
-    async searchFlights(data) {
-        try {
-            const token = await this.getToken();
-            const response = await axios_1.default.post(`${this.apiUrl}/AirSearch`, data, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            let tripType = data.JourneyType;
-            return this.flyHubUtil.restBFMParser(response.data, tripType);
-        }
-        catch (error) {
-            console.error('Error searching flights:', error.response?.data || error.message);
-            throw new common_1.HttpException('Flight search failed', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     determineJourneyType(segments) {
         if (segments.length === 1) {
             return '1';
@@ -96,45 +177,11 @@ let FlyHubService = class FlyHubService {
         }
         return '3';
     }
-    async airRetrive(BookingID) {
-        try {
-            const token = await this.getToken();
-            const response = await axios_1.default.post(`${this.apiUrl}/AirRetrieve`, BookingID, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log(BookingID);
-            return response.data;
-        }
-        catch (error) {
-            console.error();
-        }
-    }
-    async aircancel(BookingID) {
-        try {
-            const token = await this.getToken();
-            const response = await axios_1.default.post(`${this.apiUrl}/AirCancel`, BookingID, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log(BookingID);
-            return response.data;
-        }
-        catch (error) {
-            console.error();
-        }
-    }
-    async airbook() {
-        return 'This is the air book api';
-    }
+    async airbook(data) { }
 };
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, common_1.Inject)(core_1.REQUEST)),
-    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
-        Request])
+    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil, test_service_1.Test])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

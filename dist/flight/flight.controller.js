@@ -21,13 +21,16 @@ const fare_rules_flight_dto_1 = require("./dto/fare-rules.flight.dto");
 const sabre_flights_service_1 = require("./API Utils/sabre.flights.service");
 const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
 const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
+const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
+const test_service_1 = require("./API Utils/test.service");
 let FlightController = class FlightController {
-    constructor(flightService, sabreService, bdFareService, flyHubService) {
+    constructor(flightService, sabreService, bdFareService, flyHubService, testservice) {
         this.flightService = flightService;
         this.sabreService = sabreService;
         this.bdFareService = bdFareService;
         this.flyHubService = flyHubService;
+        this.testservice = testservice;
     }
     async convertToFlyAirSearchDto(flightSearchModel) {
         return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
@@ -35,8 +38,8 @@ let FlightController = class FlightController {
     async airRetrive(bookingIdDto) {
         return await this.flyHubService.airRetrive(bookingIdDto);
     }
-    async aircancel() {
-        return this.flyHubService.airbook();
+    async aircancel(data) {
+        return this.flyHubService.airbook(data);
     }
     async aircanel(bookingIdDto) {
         return this.flyHubService.aircancel(bookingIdDto);
@@ -69,6 +72,12 @@ let FlightController = class FlightController {
     airretrieve(pnr) {
         return this.sabreService.airretrieve(pnr);
     }
+    test(data) {
+        return this.flyHubService.airPrice(data);
+    }
+    async miniRules(data) {
+        return await this.flyHubService.bookingRules(data);
+    }
 };
 exports.FlightController = FlightController;
 __decorate([
@@ -79,16 +88,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
-    (0, common_1.Post)("/airRetrive"),
+    (0, common_1.Post)('/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRetrive", null);
 __decorate([
-    (0, common_1.Post)("/air-book"),
+    (0, common_1.Post)('/air-book'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "aircancel", null);
 __decorate([
@@ -154,12 +164,27 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "airretrieve", null);
+__decorate([
+    (0, common_1.Post)('/price-check'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
+    __metadata("design:returntype", void 0)
+], FlightController.prototype, "test", null);
+__decorate([
+    (0, common_1.Post)('/bookingPolicy'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "miniRules", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
     __metadata("design:paramtypes", [flight_service_1.FlightService,
         sabre_flights_service_1.SabreService,
         bdfare_flights_service_1.BDFareService,
-        flyhub_flight_service_1.FlyHubService])
+        flyhub_flight_service_1.FlyHubService,
+        test_service_1.Test])
 ], FlightController);
 //# sourceMappingURL=flight.controller.js.map

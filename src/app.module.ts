@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  RequestMethod,
-  ValidationPipe,
-} from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -92,7 +87,7 @@ require('dotenv').config();
       useClass: ThrottlerGuard,
     },
   ],
-  controllers:[rootController]
+  controllers: [rootController],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
