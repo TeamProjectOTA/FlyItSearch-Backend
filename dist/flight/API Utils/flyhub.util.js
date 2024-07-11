@@ -39,16 +39,15 @@ let FlyHubUtil = class FlyHubUtil {
             }
             for (const Result of Results) {
                 const ValidatingCarrier = Result.Validatingcarrier;
-                const airlineData = Result.segments[0].Airline;
                 const FareType = Result.FareType || 'Regular';
                 const AllPassenger = Result.Fares || [];
                 const CarrierName = Result.segments[0].Airline.AirlineName || 'N/F';
                 const Instant_Payment = Result.FareType === 'InstantTicketing';
-                const IssuePermit = airlineData.issuePermit || false;
                 const IsBookable = Result?.HoldAllowed;
-                const equivalentAmount = AllPassenger[0]?.BaseFare || 0;
-                const Taxes = AllPassenger[0]?.Tax || 0;
-                let TotalFare = Result.TotalFareWithAgentMarkup || 0;
+                const equivalentAmount = AllPassenger.reduce((sum, passenger) => sum + (passenger.BaseFare * passenger.PassengerCount || 0), 0);
+                const Taxes = AllPassenger.reduce((sum, passenger) => sum + (passenger.Tax * passenger.PassengerCount || 0), 0);
+                const discount = Result.Discount * 0.2;
+                let TotalFare = Result.TotalFareWithAgentMarkup + discount || 0;
                 const extraService = Result?.OtherCharges || 0;
                 if (Result.segments) {
                     const AllSegments = Result.segments;
@@ -173,7 +172,6 @@ let FlyHubUtil = class FlyHubUtil {
                         ResultId: Result.ResultID,
                         OfferId: SearchResponse?.SearchId,
                         InstantPayment: Instant_Payment,
-                        IssuePermit: IssuePermit,
                         IsBookable: IsBookable,
                         TripType: TripType,
                         FareType: FareType,
@@ -183,7 +181,7 @@ let FlyHubUtil = class FlyHubUtil {
                         BaseFare: equivalentAmount,
                         Taxes: Taxes,
                         NetFare: NetFare,
-                        GrossFare: TotalFare,
+                        GrossFare: Math.ceil(TotalFare),
                         PartialOption: partialoption,
                         PartialFare: PartialAmount,
                         TimeLimit: TimeLimit,

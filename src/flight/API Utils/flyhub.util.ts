@@ -29,17 +29,21 @@ export class FlyHubUtil {
   
       for (const Result of Results) {
         const ValidatingCarrier: string = Result.Validatingcarrier;
-        const airlineData: any = Result.segments[0].Airline;
         const FareType: string = Result.FareType || 'Regular';
         const AllPassenger: any[] = Result.Fares || [];
         const CarrierName: string = Result.segments[0].Airline.AirlineName || 'N/F';
         const Instant_Payment: boolean = Result.FareType === 'InstantTicketing';
-        const IssuePermit: boolean = airlineData.issuePermit || false;
         const IsBookable: boolean = Result?.HoldAllowed;
   
-        const equivalentAmount: number = AllPassenger[0]?.BaseFare || 0;
-        const Taxes: number = AllPassenger[0]?.Tax || 0;
-        let TotalFare: number = Result.TotalFareWithAgentMarkup || 0;
+
+
+
+        const equivalentAmount: number = AllPassenger.reduce((sum, passenger) => sum + (passenger.BaseFare * passenger.PassengerCount || 0), 0);
+        const Taxes: number = AllPassenger.reduce((sum, passenger) => sum + (passenger.Tax * passenger.PassengerCount || 0), 0);
+        const discount:number=Result.Discount*0.2
+
+
+        let TotalFare: number = Result.TotalFareWithAgentMarkup +discount || 0;
         const extraService: number = Result?.OtherCharges || 0;
   
         if (Result.segments) {
@@ -184,7 +188,6 @@ export class FlyHubUtil {
             ResultId: Result.ResultID,
             OfferId: SearchResponse?.SearchId,
             InstantPayment: Instant_Payment,
-            IssuePermit: IssuePermit,
             IsBookable: IsBookable,
             TripType: TripType,
             FareType: FareType,
@@ -193,8 +196,8 @@ export class FlyHubUtil {
             Cabinclass: Cabinclass,
             BaseFare: equivalentAmount,
             Taxes: Taxes,
-            NetFare: NetFare,
-            GrossFare: TotalFare,
+            NetFare:NetFare,//change this before deploy
+            GrossFare:Math.ceil(TotalFare) ,
             PartialOption: partialoption,
             PartialFare: PartialAmount,
             TimeLimit: TimeLimit,
