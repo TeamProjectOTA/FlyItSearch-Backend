@@ -54,18 +54,14 @@ export class FlightSearchModel {
   @IsInt()
   infantcount: number;
 
-  @ApiProperty({ default: 2 })
-  @IsOptional()
-  connection: string = '2';
-
-  @ApiProperty({ default: 'Y' })
+  @ApiProperty({ default: '1' })
   @IsString()
   @Length(1, 1)
   cabinclass: string;
 
   @ApiProperty({ type: [SegmentDto] })
   @ArrayMinSize(1)
-  @ArrayMaxSize(4)
+  @ArrayMaxSize(6)
   segments: SegmentDto[];
 }
 @Entity()

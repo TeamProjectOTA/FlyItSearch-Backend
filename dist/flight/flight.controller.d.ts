@@ -14,20 +14,17 @@ export declare class FlightController {
     private readonly flyHubService;
     private readonly testservice;
     constructor(flightService: FlightService, sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: Test);
-    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
-    airRetrive(bookingIdDto: BookingID): Promise<any>;
-    aircancel(data: any): Promise<void>;
-    aircanel(bookingIdDto: BookingID): Promise<any>;
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
-    search(flightdto: FlightSearchModel): {
-        BdFare: Promise<any>;
-    };
     getpnr(pnr: string): Promise<any>;
     airvoid(pnr: string): Promise<any>;
     get_ticket(pnr: string): Promise<any>;
     airfarerules(fareRulesDto: FareRulesDto): Promise<any>;
     airretrieve(pnr: string): Promise<any>;
-    test(data: searchResultDto): Promise<any>;
+    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
+    airRetrive(bookingIdDto: BookingID): Promise<any>;
+    aircancel(data: any): Promise<void>;
+    aircanel(bookingIdDto: BookingID): Promise<any>;
+    test(data: searchResultDto): Promise<import("axios").AxiosResponse<any, any>>;
     miniRules(data: searchResultDto): Promise<any>;
 }

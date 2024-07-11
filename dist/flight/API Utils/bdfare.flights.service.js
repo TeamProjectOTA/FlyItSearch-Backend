@@ -96,6 +96,9 @@ let BDFareService = class BDFareService {
                     'X-API-KEY': this.apiKey,
                 },
             }));
+            if (!response.data) {
+                return 'Api failed';
+            }
             return response.data;
         }
         catch (error) {

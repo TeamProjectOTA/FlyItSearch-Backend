@@ -13,7 +13,7 @@ exports.FlyHubUtil = void 0;
 const common_1 = require("@nestjs/common");
 let FlyHubUtil = class FlyHubUtil {
     constructor() { }
-    async restBFMParser(SearchResponse) {
+    async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -21,7 +21,6 @@ let FlyHubUtil = class FlyHubUtil {
             Child: 2,
             Infant: 3,
         };
-        const journeyType = '1';
         if (Results) {
             const DepCountry = Results?.[0]?.segments[0]?.Origin.Airport.CountryName;
             const ArrCountry = Results?.[0]?.segments[0]?.Destination.Airport.CountryName;
@@ -49,7 +48,7 @@ let FlyHubUtil = class FlyHubUtil {
                 const IsBookable = Result?.HoldAllowed;
                 const equivalentAmount = AllPassenger[0]?.BaseFare || 0;
                 const Taxes = AllPassenger[0]?.Tax || 0;
-                let TotalFare = Result.TotalFare || 0;
+                let TotalFare = Result.TotalFareWithAgentMarkup || 0;
                 const extraService = Result?.OtherCharges || 0;
                 if (Result.segments) {
                     const AllSegments = Result.segments;
@@ -108,8 +107,6 @@ let FlyHubUtil = class FlyHubUtil {
                             FareComponent: FareBasis,
                         };
                     });
-                    const inboundSegments = Result.segments.filter(segment => segment.TripIndicator === 'InBound');
-                    const outboundSegments = Result.segments.filter(segment => segment.TripIndicator === 'OutBound');
                     const processSegments = (segmentsList) => {
                         if (segmentsList.length === 0)
                             return null;
@@ -124,7 +121,7 @@ let FlyHubUtil = class FlyHubUtil {
                         const bookingClass = firstSegment.Airline?.BookingClass;
                         const cabinClass = firstSegment.Airline?.CabinClass;
                         const seatsAvailable = Result.Availabilty;
-                        const segments = segmentsList.map(segment => ({
+                        const segments = segmentsList.map((segment) => ({
                             MarketingCarrier: segment.Airline.AirlineCode,
                             MarketingCarrierName: segment.Airline.AirlineName,
                             MarketingFlightNumber: parseInt(segment.Airline.FlightNumber),
@@ -159,14 +156,17 @@ let FlyHubUtil = class FlyHubUtil {
                         legInfo['Segments'] = segments;
                         return legInfo;
                     };
+                    const groupedSegments = AllSegments.reduce((acc, segment) => {
+                        (acc[segment.SegmentGroup] = acc[segment.SegmentGroup] || []).push(segment);
+                        return acc;
+                    }, {});
                     const AllLegsInfo = [];
-                    const outboundLegInfo = processSegments(outboundSegments);
-                    if (outboundLegInfo) {
-                        AllLegsInfo.push(outboundLegInfo);
-                    }
-                    const inboundLegInfo = processSegments(inboundSegments);
-                    if (inboundLegInfo) {
-                        AllLegsInfo.push(inboundLegInfo);
+                    for (const key in groupedSegments) {
+                        const groupSegments = groupedSegments[key];
+                        const legInfo = processSegments(groupSegments);
+                        if (legInfo) {
+                            AllLegsInfo.push(legInfo);
+                        }
                     }
                     FlightItenary.push({
                         System: 'FLYHUB',

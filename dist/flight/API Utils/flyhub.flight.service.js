@@ -54,13 +54,13 @@ let FlyHubService = class FlyHubService {
             url: `${this.apiUrl}/AirSearch`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            data: reqBody
+            data: reqBody,
         };
         try {
             const response = await axios_1.default.request(shoppingrequest);
-            return this.flyHubUtil.restBFMParser(response.data);
+            return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
         }
         catch (error) {
             throw error?.response?.data;
@@ -74,9 +74,9 @@ let FlyHubService = class FlyHubService {
             url: `${this.apiUrl}/AirCancel`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            data: BookingID
+            data: BookingID,
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
@@ -94,9 +94,9 @@ let FlyHubService = class FlyHubService {
             url: `${this.apiUrl}/AirRetrieve`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            data: BookingID
+            data: BookingID,
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
@@ -114,9 +114,9 @@ let FlyHubService = class FlyHubService {
             url: `${this.apiUrl}/AirMiniRules`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            data: data
+            data: data,
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
@@ -134,13 +134,13 @@ let FlyHubService = class FlyHubService {
             url: `${this.apiUrl}/AirPrice`,
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
-            data: data
+            data: data,
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
-            return response.data;
+            return response;
         }
         catch (error) {
             throw error?.response?.data;
@@ -182,6 +182,7 @@ let FlyHubService = class FlyHubService {
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil, test_service_1.Test])
+    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
+        test_service_1.Test])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

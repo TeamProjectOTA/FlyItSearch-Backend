@@ -12,7 +12,9 @@ export class FlyHubService {
   private readonly username: string = process.env.FLYHUB_UserName;
   private readonly apiKey: string = process.env.FLYHUB_ApiKey;
   private readonly apiUrl: string = process.env.FLyHub_Url;
-  constructor(private readonly flyHubUtil: FlyHubUtil,private readonly testutil:Test
+  constructor(
+    private readonly flyHubUtil: FlyHubUtil,
+    private readonly testutil: Test,
   ) {}
 
   async getToken(): Promise<string> {
@@ -50,53 +52,42 @@ export class FlyHubService {
   }
 
   async searchFlights(reqBody: FlyAirSearchDto): Promise<any> {
-
-    
-
     const token = await this.getToken();
     const shoppingrequest = {
       method: 'post',
       maxBodyLength: Infinity,
       url: `${this.apiUrl}/AirSearch`,
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${token}`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      data : reqBody
+      data: reqBody,
     };
 
-    
-    
     try {
       const response = await axios.request(shoppingrequest);
-      return this.flyHubUtil.restBFMParser(response.data)
-
+      return this.flyHubUtil.restBFMParser(response.data,reqBody.JourneyType);
     } catch (error) {
       throw error?.response?.data;
     }
-
   }
 
   async aircancel(BookingID: BookingID): Promise<any> {
-   
     const token = await this.getToken();
     const ticketCancel = {
       method: 'post',
       maxBodyLength: Infinity,
-      url:`${this.apiUrl}/AirCancel`, 
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${token}`,
+      url: `${this.apiUrl}/AirCancel`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      data : BookingID
+      data: BookingID,
     };
 
-    
-    
     try {
       const response = await axios.request(ticketCancel);
-      return response.data
-
+      return response.data;
     } catch (error) {
       throw error?.response?.data;
     }
@@ -106,20 +97,17 @@ export class FlyHubService {
     const ticketCancel = {
       method: 'post',
       maxBodyLength: Infinity,
-      url:`${this.apiUrl}/AirRetrieve`,
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${token}`,
+      url: `${this.apiUrl}/AirRetrieve`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      data : BookingID
+      data: BookingID,
     };
 
-    
-    
     try {
       const response = await axios.request(ticketCancel);
-      return response.data
-
+      return response.data;
     } catch (error) {
       throw error?.response?.data;
     }
@@ -129,20 +117,17 @@ export class FlyHubService {
     const ticketCancel = {
       method: 'post',
       maxBodyLength: Infinity,
-      url:`${this.apiUrl}/AirMiniRules` ,
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${token}`,
+      url: `${this.apiUrl}/AirMiniRules`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      data : data
+      data: data,
     };
 
-    
-    
     try {
       const response = await axios.request(ticketCancel);
-      return response.data
-
+      return response.data;
     } catch (error) {
       throw error?.response?.data;
     }
@@ -153,20 +138,17 @@ export class FlyHubService {
     const ticketCancel = {
       method: 'post',
       maxBodyLength: Infinity,
-      url:`${this.apiUrl}/AirPrice`, 
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': `Bearer ${token}`,
+      url: `${this.apiUrl}/AirPrice`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
-      data : data
+      data: data,
     };
 
-    
-    
     try {
       const response = await axios.request(ticketCancel);
-      return response.data
-
+      return response;
     } catch (error) {
       throw error?.response?.data;
     }

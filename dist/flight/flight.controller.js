@@ -32,30 +32,11 @@ let FlightController = class FlightController {
         this.flyHubService = flyHubService;
         this.testservice = testservice;
     }
-    async convertToFlyAirSearchDto(flightSearchModel) {
-        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
-    }
-    async airRetrive(bookingIdDto) {
-        return await this.flyHubService.airRetrive(bookingIdDto);
-    }
-    async aircancel(data) {
-        return this.flyHubService.airbook(data);
-    }
-    async aircanel(bookingIdDto) {
-        return this.flyHubService.aircancel(bookingIdDto);
-    }
     async getApiResponse(bdfaredto) {
         return await this.bdFareService.processApi(bdfaredto);
     }
     async searchFlights(flightSearchModel) {
         return this.bdFareService.airShopping(flightSearchModel);
-    }
-    search(flightdto) {
-        const sabre = this.sabreService.shoppingBranded(flightdto);
-        const BDFare = this.bdFareService.airShopping(flightdto);
-        return {
-            BdFare: BDFare,
-        };
     }
     getpnr(pnr) {
         return this.sabreService.checkpnr(pnr);
@@ -72,6 +53,18 @@ let FlightController = class FlightController {
     airretrieve(pnr) {
         return this.sabreService.airretrieve(pnr);
     }
+    async convertToFlyAirSearchDto(flightSearchModel) {
+        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
+    }
+    async airRetrive(bookingIdDto) {
+        return await this.flyHubService.airRetrive(bookingIdDto);
+    }
+    async aircancel(data) {
+        return this.flyHubService.airbook(data);
+    }
+    async aircanel(bookingIdDto) {
+        return this.flyHubService.aircancel(bookingIdDto);
+    }
     test(data) {
         return this.flyHubService.airPrice(data);
     }
@@ -80,34 +73,6 @@ let FlightController = class FlightController {
     }
 };
 exports.FlightController = FlightController;
-__decorate([
-    (0, common_1.Post)('/air-search'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "convertToFlyAirSearchDto", null);
-__decorate([
-    (0, common_1.Post)('/airRetrive'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "airRetrive", null);
-__decorate([
-    (0, common_1.Post)('/air-book'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "aircancel", null);
-__decorate([
-    (0, common_1.Post)('/cancel-ticket'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "aircanel", null);
 __decorate([
     (0, common_1.Post)('/bdfare'),
     __param(0, (0, common_1.Body)()),
@@ -122,13 +87,6 @@ __decorate([
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlights", null);
-__decorate([
-    (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
-    __metadata("design:returntype", void 0)
-], FlightController.prototype, "search", null);
 __decorate([
     (0, common_1.Get)('/:pnr'),
     __param(0, (0, common_1.Param)('pnr')),
@@ -165,14 +123,42 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "airretrieve", null);
 __decorate([
-    (0, common_1.Post)('/price-check'),
+    (0, common_1.Post)('fhb/air-search'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "convertToFlyAirSearchDto", null);
+__decorate([
+    (0, common_1.Post)('flh/airRetrive'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "airRetrive", null);
+__decorate([
+    (0, common_1.Post)('flh/air-book'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "aircancel", null);
+__decorate([
+    (0, common_1.Post)('flh/cancel-ticket'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "aircanel", null);
+__decorate([
+    (0, common_1.Post)('flh/price-check'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "test", null);
 __decorate([
-    (0, common_1.Post)('/bookingPolicy'),
+    (0, common_1.Post)('flh/bookingPolicy'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),

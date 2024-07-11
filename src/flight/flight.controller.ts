@@ -28,25 +28,7 @@ export class FlightController {
   //   return result;
   // }
 
-  @Post('/air-search')
-  async convertToFlyAirSearchDto(
-    @Body() flightSearchModel: FlightSearchModel,
-  ): Promise<any> {
-    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
-  }
-  @Post('/airRetrive')
-  async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
-    return await this.flyHubService.airRetrive(bookingIdDto);
-  }
-  @Post('/air-book')
-  async aircancel(@Body() data: any) {
-    return this.flyHubService.airbook(data);
-  }
 
-  @Post('/cancel-ticket')
-  async aircanel(@Body() bookingIdDto: BookingID): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto);
-  }
 
   @Post('/bdfare')
   async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
@@ -60,14 +42,15 @@ export class FlightController {
     return this.bdFareService.airShopping(flightSearchModel);
   }
 
-  @Post()
-  search(@Body() flightdto: FlightSearchModel) {
-    const sabre = this.sabreService.shoppingBranded(flightdto);
-    const BDFare = this.bdFareService.airShopping(flightdto);
-    return {
-      BdFare: BDFare,
-    };
-  }
+  
+  // @Post()
+  // search(@Body() flightdto: FlightSearchModel) {
+  //   const sabre = this.sabreService.shoppingBranded(flightdto);
+  //   const BDFare = this.bdFareService.airShopping(flightdto);
+  //   return {
+  //     BdFare: BDFare,
+  //   };
+  // }
   @Get('/:pnr')
   getpnr(@Param('pnr') pnr: string) {
     return this.sabreService.checkpnr(pnr);
@@ -89,17 +72,32 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
 
-  // @Post('filter')
-  // async filterFlights(@Body() filter: flightModel): Promise<Flight[]> {
-  //   return await this.flightService.filterFlights(filter);
-  // }
+  @Post('fhb/air-search')
+  async convertToFlyAirSearchDto(
+    @Body() flightSearchModel: FlightSearchModel,
+  ): Promise<any> {
+    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
+  }
+  @Post('flh/airRetrive')
+  async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
+    return await this.flyHubService.airRetrive(bookingIdDto);
+  }
+  @Post('flh/air-book')
+  async aircancel(@Body() data: any) {
+    return this.flyHubService.airbook(data);
+  }
 
-  @Post('/price-check')
+  @Post('flh/cancel-ticket')
+  async aircanel(@Body() bookingIdDto: BookingID): Promise<any> {
+    return this.flyHubService.aircancel(bookingIdDto);
+  }
+
+  @Post('flh/price-check')
   test(@Body() data: searchResultDto) {
     return this.flyHubService.airPrice(data);
   }
 
-  @Post('/bookingPolicy')
+  @Post('flh/bookingPolicy')
   async miniRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.bookingRules(data);
   }

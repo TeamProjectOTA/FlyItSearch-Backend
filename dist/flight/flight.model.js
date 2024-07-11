@@ -40,9 +40,6 @@ __decorate([
     __metadata("design:type", Date)
 ], SegmentDto.prototype, "depdate", void 0);
 class FlightSearchModel {
-    constructor() {
-        this.connection = '2';
-    }
 }
 exports.FlightSearchModel = FlightSearchModel;
 __decorate([
@@ -62,12 +59,7 @@ __decorate([
     __metadata("design:type", Number)
 ], FlightSearchModel.prototype, "infantcount", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: 2 }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], FlightSearchModel.prototype, "connection", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: 'Y' }),
+    (0, swagger_1.ApiProperty)({ default: '1' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Length)(1, 1),
     __metadata("design:type", String)
@@ -75,7 +67,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ type: [SegmentDto] }),
     (0, class_validator_1.ArrayMinSize)(1),
-    (0, class_validator_1.ArrayMaxSize)(4),
+    (0, class_validator_1.ArrayMaxSize)(6),
     __metadata("design:type", Array)
 ], FlightSearchModel.prototype, "segments", void 0);
 let Flight = class Flight {
