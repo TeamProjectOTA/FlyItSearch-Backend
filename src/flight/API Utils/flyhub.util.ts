@@ -235,8 +235,9 @@ export class FlyHubUtil {
             Cabinclass: Cabinclass,
             BaseFare: equivalentAmount,
             Taxes: Taxes,
-            NetFare: NetFare, //change this before deploy
-            GrossFare: Math.ceil(TotalFare),
+            SerViceFee:extraService+servicefee || 0,
+            NetFare:Math.ceil(TotalFare), //change this before deploy
+            GrossFare:  NetFare,
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
             TimeLimit: TimeLimit,
