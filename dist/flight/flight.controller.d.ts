@@ -1,4 +1,3 @@
-import { FlightService } from './flight.service';
 import { FlightSearchModel } from './flight.model';
 import { BookingID, FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
@@ -8,12 +7,11 @@ import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { Test } from './API Utils/test.service';
 export declare class FlightController {
-    private readonly flightService;
     private readonly sabreService;
     private readonly bdFareService;
     private readonly flyHubService;
     private readonly testservice;
-    constructor(flightService: FlightService, sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: Test);
+    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: Test);
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
     getpnr(pnr: string): Promise<any>;
@@ -23,8 +21,9 @@ export declare class FlightController {
     airretrieve(pnr: string): Promise<any>;
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
     airRetrive(bookingIdDto: BookingID): Promise<any>;
-    aircancel(data: any): Promise<void>;
+    aircancel(data: any): Promise<any>;
     aircanel(bookingIdDto: BookingID): Promise<any>;
-    test(data: searchResultDto): Promise<import("axios").AxiosResponse<any, any>>;
+    test(data: searchResultDto): Promise<any[]>;
     miniRules(data: searchResultDto): Promise<any>;
+    airRules(data: searchResultDto): Promise<any>;
 }

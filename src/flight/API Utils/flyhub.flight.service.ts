@@ -2,7 +2,11 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { FlyHubUtil } from './flyhub.util';
 import { plainToClass } from 'class-transformer';
-import { FlyAirSearchDto, searchResultDto } from './Dto/flyhub.model';
+import {
+  FlbFlightSearchDto,
+  FlyAirSearchDto,
+  searchResultDto,
+} from './Dto/flyhub.model';
 import { FlightSearchModel, JourneyType } from '../flight.model';
 import { BookingID } from '../dto/fare-rules.flight.dto';
 import { Test } from './test.service';
@@ -37,7 +41,7 @@ export class FlyHubService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-      //console.log(token)
+      // console.log(token);
       return token;
     } catch (error) {
       console.error(
@@ -66,7 +70,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(shoppingrequest);
-      return this.flyHubUtil.restBFMParser(response.data,reqBody.JourneyType);
+      return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
     } catch (error) {
       throw error?.response?.data;
     }
@@ -135,7 +139,7 @@ export class FlyHubService {
 
   async airPrice(data: searchResultDto) {
     const token = await this.getToken();
-    const ticketCancel = {
+    const Price = {
       method: 'post',
       maxBodyLength: Infinity,
       url: `${this.apiUrl}/AirPrice`,
@@ -147,8 +151,71 @@ export class FlyHubService {
     };
 
     try {
-      const response = await axios.request(ticketCancel);
-      return response;
+      const response = await axios.request(Price);
+      return this.flyHubUtil.restBFMParser(response.data);
+    } catch (error) {
+      throw error?.response?.data;
+    }
+  }
+  async airRules(data: searchResultDto) {
+    const token = await this.getToken();
+    const seeRules = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${this.apiUrl}/AirRules`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+    try {
+      const response = await axios.request(seeRules);
+      return response.data;
+    } catch (error) {
+      throw error?.response?.data;
+    }
+  }
+
+  async airbook(data: FlbFlightSearchDto) {
+    const token = await this.getToken();
+
+    const Price = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${this.apiUrl}/AirPrice`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+
+    const PreBookticket = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${this.apiUrl}/AirPreBook`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+    const Bookticket = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${this.apiUrl}/AirBook`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+    try {
+      const response0 = await axios.request(Price);
+      const response1 = await axios.request(PreBookticket);
+      const response = await axios.request(Bookticket);
+      return response.data;
     } catch (error) {
       throw error?.response?.data;
     }
@@ -193,6 +260,4 @@ export class FlyHubService {
     }
     return '3';
   }
-
-  async airbook(data: searchResultDto) {}
 }

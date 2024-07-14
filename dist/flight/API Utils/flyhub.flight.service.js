@@ -128,7 +128,7 @@ let FlyHubService = class FlyHubService {
     }
     async airPrice(data) {
         const token = await this.getToken();
-        const ticketCancel = {
+        const Price = {
             method: 'post',
             maxBodyLength: Infinity,
             url: `${this.apiUrl}/AirPrice`,
@@ -139,8 +139,70 @@ let FlyHubService = class FlyHubService {
             data: data,
         };
         try {
-            const response = await axios_1.default.request(ticketCancel);
-            return response;
+            const response = await axios_1.default.request(Price);
+            return this.flyHubUtil.restBFMParser(response.data);
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
+    async airRules(data) {
+        const token = await this.getToken();
+        const seeRules = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirRules`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: data,
+        };
+        try {
+            const response = await axios_1.default.request(seeRules);
+            return response.data;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
+    async airbook(data) {
+        const token = await this.getToken();
+        const Price = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirPrice`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: data,
+        };
+        const PreBookticket = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirPreBook`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: data,
+        };
+        const Bookticket = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirBook`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: data,
+        };
+        try {
+            const response0 = await axios_1.default.request(Price);
+            const response1 = await axios_1.default.request(PreBookticket);
+            const response = await axios_1.default.request(Bookticket);
+            return response.data;
         }
         catch (error) {
             throw error?.response?.data;
@@ -177,7 +239,6 @@ let FlyHubService = class FlyHubService {
         }
         return '3';
     }
-    async airbook(data) { }
 };
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([

@@ -364,15 +364,8 @@ export class Test {
   //     }
   //     return FlightItenary;
   // }
-
-
-
-
-
-//Real 11-7-2024 BFM parcher for one way
-
-
-   // async restBFMParser(SearchResponse: any, ): Promise<any[]> {
+  //Real 11-7-2024 BFM parcher for one way
+  // async restBFMParser(SearchResponse: any, ): Promise<any[]> {
   //   const FlightItenary = [];
   //   const { Results } = SearchResponse;
   //   const PaxTypeMapping = {
@@ -386,22 +379,16 @@ export class Test {
   //       const DepCountry = Results?.[0]?.segments[0]?.Origin.Airport.CountryName;
   //       const ArrCountry =
   //         Results?.[0]?.segments[0]?.Destination.Airport.CountryName;
-
   //       let partialoption: boolean;
   //       if (DepCountry === 'BD' && ArrCountry === 'BD') {
-
   //         partialoption = false;
   //       } else if (DepCountry !== 'BD' && ArrCountry !== 'BD') {
-
   //         partialoption = false;
   //       } else if (DepCountry !== 'BD' && ArrCountry === 'BD') {
-
   //         partialoption = true;
   //       } else if (DepCountry === 'BD' && ArrCountry !== 'BD') {
-
   //         partialoption = true;
   //       }
-
   //       for (const Result of Results) {
   //         const ValidatingCarrier: string = Result.Validatingcarrier;
   //         const airlineData: any = Result.segments[0].Airline;
@@ -413,17 +400,13 @@ export class Test {
   //           Result.FareType == 'InstantTicketing' ? true : false;
   //         const IssuePermit: boolean = airlineData.issuePermit || false;
   //         const IsBookable: boolean = Result?.HoldAllowed;
-
   //         ////Mark up ammount section
-
   //         const equivalentAmount: number = AllPassenger[0]?.BaseFare || 0;
   //         const Taxes: number = AllPassenger[0]?.Tax || 0;
   //         let TotalFare: number = Result.TotalFare || 0;
   //         const extraService: number = Result?.OtherCharges || 0;
-
   //         if (Results[0].segments) {
   //           const AllSegments = Results[0].segments;
-
   //           let TripType: string;
   //           if (journeyType === '1') {
   //             TripType = 'Oneway';
@@ -432,22 +415,17 @@ export class Test {
   //           } else if (journeyType === '3') {
   //             TripType = 'Multicity';
   //           }
-
   //           const NetFare = equivalentAmount + Taxes + extraService;
-
   //           // if (NetFare > TotalFare) {
   //           //   TotalFare = NetFare;
   //           // }
-
   //           const PartialAmount: number = NetFare * 0.3;
-
   //           const Refundable: boolean = Result.IsRefundable;
   //           let TimeLimit: string = null;
   //           if (Result.LastTicketDate) {
   //             const lastTicketDate: string = Result.LastTicketDate;
   //             TimeLimit = `${lastTicketDate}`; //modification needed
   //           }
-
   //           let cabinclass: string = AllSegments?.Airline?.CabinClass || 'Y';
   //           let Class: string;
   //           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
@@ -456,7 +434,6 @@ export class Test {
   //             const PaxtotalFare = allPassenger.BaseFare + allPassenger.Tax;
   //             const totalTaxAmount = allPassenger.Tax;
   //             const PaxequivalentAmount = allPassenger.BaseFare;
-
   //             const baggageDetails = AllSegments.map((segment) => {
   //               const allowance =
   //                 segment.baggageDetails
@@ -464,7 +441,6 @@ export class Test {
   //                     (baggage) => PaxTypeMapping[PaxType] === baggage.PaxType,
   //                   )
   //                   .map((baggage) => baggage.Checkin)[0] || ''; // Get the first element or an empty string if none
-
   //               return {
   //                 Airline: ValidatingCarrier,
   //                 Allowance: allowance,
@@ -483,7 +459,6 @@ export class Test {
   //                 Carrier: fareComponent.Airline.GoverningCarrier,
   //               };
   //             });
-
   //             return {
   //               PaxType: PaxType,
   //               BaseFare: PaxequivalentAmount,
@@ -494,16 +469,11 @@ export class Test {
   //               FareComponent: FareBasis,
   //             };
   //           });
-
   //           const AllLegsInfo = [];
-
   //           const segments = [];
   //           if (Result?.segments[0].TripIndicator){} //make the loop with inbound and outbound
-
   //           const firstSegment = Result.segments[0];
-
   //           const lastSegment = Result.segments[Result.segments.length - 1];
-
   //           const legInfo = {
   //             DepDate: firstSegment.Origin.DepTime,
   //             DepFrom: firstSegment.Origin.Airport.AirportCode,
@@ -513,11 +483,9 @@ export class Test {
   //               0,
   //             ),
   //           };
-
   //           const bookingClass = firstSegment.Airline?.BookingClass;
   //           const cabinClass = firstSegment.Airline?.CabinClass;
   //           const seatsAvailable = Result.Availabilty;
-
   //           for (const segment of Result.segments) {
   //             // const seatsAvailable = segment.Availabilty;
   //             const SingleSegments = {
@@ -554,10 +522,8 @@ export class Test {
   //             };
   //             segments.push(SingleSegments);
   //           }
-
   //           legInfo['Segments'] = segments;
   //           AllLegsInfo.push(legInfo);
-
   //           FlightItenary.push({
   //             System: 'FLYHUB',
   //             ResultId: Result.ResultID,
@@ -586,12 +552,8 @@ export class Test {
   //         }
   //       }
   //     }
-
   //     return FlightItenary;
   //   }
   //   return [];
   // }
-
-
-
 }

@@ -1,6 +1,5 @@
-import { AxiosResponse } from 'axios';
 import { FlyHubUtil } from './flyhub.util';
-import { FlyAirSearchDto, searchResultDto } from './Dto/flyhub.model';
+import { FlbFlightSearchDto, FlyAirSearchDto, searchResultDto } from './Dto/flyhub.model';
 import { FlightSearchModel } from '../flight.model';
 import { BookingID } from '../dto/fare-rules.flight.dto';
 import { Test } from './test.service';
@@ -16,8 +15,9 @@ export declare class FlyHubService {
     aircancel(BookingID: BookingID): Promise<any>;
     airRetrive(BookingID: BookingID): Promise<any>;
     bookingRules(data: searchResultDto): Promise<any>;
-    airPrice(data: searchResultDto): Promise<AxiosResponse<any, any>>;
+    airPrice(data: searchResultDto): Promise<any[]>;
+    airRules(data: searchResultDto): Promise<any>;
+    airbook(data: FlbFlightSearchDto): Promise<any>;
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
     private determineJourneyType;
-    airbook(data: searchResultDto): Promise<void>;
 }

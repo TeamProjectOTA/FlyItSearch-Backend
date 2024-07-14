@@ -14,7 +14,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlightController = void 0;
 const common_1 = require("@nestjs/common");
-const flight_service_1 = require("./flight.service");
 const flight_model_1 = require("./flight.model");
 const swagger_1 = require("@nestjs/swagger");
 const fare_rules_flight_dto_1 = require("./dto/fare-rules.flight.dto");
@@ -25,8 +24,7 @@ const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const test_service_1 = require("./API Utils/test.service");
 let FlightController = class FlightController {
-    constructor(flightService, sabreService, bdFareService, flyHubService, testservice) {
-        this.flightService = flightService;
+    constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
         this.bdFareService = bdFareService;
         this.flyHubService = flyHubService;
@@ -71,6 +69,9 @@ let FlightController = class FlightController {
     async miniRules(data) {
         return await this.flyHubService.bookingRules(data);
     }
+    async airRules(data) {
+        return await this.flyHubService.airRules(data);
+    }
 };
 exports.FlightController = FlightController;
 __decorate([
@@ -109,7 +110,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "get_ticket", null);
 __decorate([
-    (0, common_1.Post)('/fair-rules'),
+    (0, common_1.Post)('sbr/fair-rules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [fare_rules_flight_dto_1.FareRulesDto]),
@@ -164,11 +165,17 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "miniRules", null);
+__decorate([
+    (0, common_1.Post)('flh/airRules'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "airRules", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
-    __metadata("design:paramtypes", [flight_service_1.FlightService,
-        sabre_flights_service_1.SabreService,
+    __metadata("design:paramtypes", [sabre_flights_service_1.SabreService,
         bdfare_flights_service_1.BDFareService,
         flyhub_flight_service_1.FlyHubService,
         test_service_1.Test])

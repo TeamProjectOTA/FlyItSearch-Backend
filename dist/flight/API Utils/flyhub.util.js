@@ -44,11 +44,17 @@ let FlyHubUtil = class FlyHubUtil {
                 const CarrierName = Result.segments[0].Airline.AirlineName || 'N/F';
                 const Instant_Payment = Result.FareType === 'InstantTicketing';
                 const IsBookable = Result?.HoldAllowed;
+                let discount = Result.Discount * 0.2;
+                let addAmount = 0;
+                if (discount < 100) {
+                    addAmount = Result.TotalFareWithAgentMarkup * 0.015;
+                }
                 const equivalentAmount = AllPassenger.reduce((sum, passenger) => sum + (passenger.BaseFare * passenger.PassengerCount || 0), 0);
+                let equivalentAmount1 = equivalentAmount + addAmount;
                 const Taxes = AllPassenger.reduce((sum, passenger) => sum + (passenger.Tax * passenger.PassengerCount || 0), 0);
-                const discount = Result.Discount * 0.2;
-                let TotalFare = Result.TotalFareWithAgentMarkup + discount || 0;
-                const extraService = Result?.OtherCharges || 0;
+                const extraService = AllPassenger.reduce((sum, passenger) => sum + (passenger.OtherCharges * passenger.PassengerCount || 0), 0);
+                const servicefee = AllPassenger.reduce((sum, passenger) => sum + (passenger.ServiceFee * passenger.PassengerCount || 0), 0);
+                let TotalFare = Result.TotalFareWithAgentMarkup + addAmount + discount || 0;
                 if (Result.segments) {
                     const AllSegments = Result.segments;
                     let Cabinclass = AllSegments?.Airline?.CabinClass;
@@ -62,7 +68,7 @@ let FlyHubUtil = class FlyHubUtil {
                     else if (journeyType === '3') {
                         TripType = 'Multicity';
                     }
-                    const NetFare = equivalentAmount + Taxes + extraService;
+                    const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
                     const PartialAmount = NetFare * 0.3;
                     const Refundable = Result.IsRefundable;
                     let TimeLimit = null;
@@ -73,16 +79,18 @@ let FlyHubUtil = class FlyHubUtil {
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
                         const PaxType = allPassenger.PaxType;
                         const paxCount = allPassenger.PassengerCount;
-                        const PaxtotalFare = allPassenger.BaseFare + allPassenger.Tax;
+                        let basefare = allPassenger.BaseFare + addAmount;
+                        const servicefee = allPassenger.ServiceFee;
                         const totalTaxAmount = allPassenger.Tax;
-                        const PaxequivalentAmount = allPassenger.BaseFare;
+                        const PaxtotalFare = basefare + totalTaxAmount + servicefee;
+                        const PaxequivalentAmount = basefare;
                         const baggageDetails = AllSegments.map((segment) => {
                             const allowance = segment.baggageDetails
                                 ?.filter((baggage) => PaxTypeMapping[PaxType] === baggage.PaxType)
                                 .map((baggage) => baggage.Checkin)[0] || '';
                             return {
                                 Airline: ValidatingCarrier,
-                                Allowance: allowance,
+                                Allowance: allowance || 'SB',
                             };
                         });
                         let i = 0;
@@ -100,6 +108,7 @@ let FlyHubUtil = class FlyHubUtil {
                             PaxType: PaxType,
                             BaseFare: PaxequivalentAmount,
                             Taxes: totalTaxAmount,
+                            ServiceFee: servicefee,
                             TotalFare: PaxtotalFare,
                             PaxCount: paxCount,
                             Bag: baggageDetails,
@@ -115,7 +124,7 @@ let FlyHubUtil = class FlyHubUtil {
                             DepDate: firstSegment.Origin.DepTime,
                             DepFrom: firstSegment.Origin.Airport.AirportCode,
                             ArrTo: lastSegment.Destination.Airport.AirportCode,
-                            Duration: segmentsList.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0),
+                            TotalFlightDuration: segmentsList.reduce((acc, segment) => acc + parseInt(segment.JourneyDuration), 0),
                         };
                         const bookingClass = firstSegment.Airline?.BookingClass;
                         const cabinClass = firstSegment.Airline?.CabinClass;
@@ -170,10 +179,11 @@ let FlyHubUtil = class FlyHubUtil {
                     FlightItenary.push({
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
-                        OfferId: SearchResponse?.SearchId,
+                        SearchId: SearchResponse?.SearchId,
+                        PassportMadatory: Result?.PassportMadatory || 'Book to see this data ',
                         InstantPayment: Instant_Payment,
                         IsBookable: IsBookable,
-                        TripType: TripType,
+                        TripType: TripType || [],
                         FareType: FareType,
                         Carrier: ValidatingCarrier,
                         CarrierName: CarrierName,
@@ -183,10 +193,10 @@ let FlyHubUtil = class FlyHubUtil {
                         NetFare: NetFare,
                         GrossFare: Math.ceil(TotalFare),
                         PartialOption: partialoption,
-                        PartialFare: PartialAmount,
+                        PartialFare: Math.ceil(PartialAmount),
                         TimeLimit: TimeLimit,
                         Refundable: Refundable,
-                        ExtraService: extraService,
+                        ExtraService: Result?.ExtraServices || null,
                         PriceBreakDown: PriceBreakDown,
                         AllLegsInfo: AllLegsInfo,
                     });

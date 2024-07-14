@@ -119,11 +119,10 @@ export class BDFareService {
           },
         }),
       );
-      if(!response.data){
-        return 'Api failed'
+      if (!response.data) {
+        return 'Api failed';
       }
       return response.data;
-      
     } catch (error) {
       console.error('Error calling external API', error);
       throw new HttpException(

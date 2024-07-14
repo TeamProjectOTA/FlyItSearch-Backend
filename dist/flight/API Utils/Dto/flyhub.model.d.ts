@@ -15,3 +15,37 @@ export declare class searchResultDto {
     SearchId: string;
     ResultID: string;
 }
+export declare class BaggageDto {
+    BaggageID: string;
+}
+export declare class MealDto {
+    MealID: string;
+}
+export declare class PassengerDto {
+    Title: string;
+    FirstName: string;
+    LastName: string;
+    PaxType: string;
+    DateOfBirth: Date;
+    Gender: string;
+    PassportNumber?: string;
+    PassportExpiryDate?: Date;
+    PassportNationality?: string;
+    Address1: string;
+    Address2?: string;
+    CountryCode: string;
+    Nationality: string;
+    ContactNumber: string;
+    Email: string;
+    IsLeadPassenger: boolean;
+    FFAirline?: string;
+    FFNumber?: string;
+    Baggage?: BaggageDto[];
+    Meal?: MealDto[];
+}
+export declare class FlbFlightSearchDto {
+    SearchID: string;
+    ResultID: string;
+    Passengers: PassengerDto[];
+    PromotionCode?: string;
+}

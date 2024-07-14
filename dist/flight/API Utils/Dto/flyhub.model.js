@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchResultDto = exports.FlyAirSearchDto = void 0;
+exports.FlbFlightSearchDto = exports.PassengerDto = exports.MealDto = exports.BaggageDto = exports.searchResultDto = exports.FlyAirSearchDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 class FlyAirSearchDto {
 }
 exports.FlyAirSearchDto = FlyAirSearchDto;
@@ -29,4 +30,72 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], searchResultDto.prototype, "ResultID", void 0);
+class BaggageDto {
+}
+exports.BaggageDto = BaggageDto;
+class MealDto {
+}
+exports.MealDto = MealDto;
+class PassengerDto {
+}
+exports.PassengerDto = PassengerDto;
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "Title", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "FirstName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "LastName", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "PaxType", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "Gender", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "PassportNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "Address1", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "Address2", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "CountryCode", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "Nationality", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "ContactNumber", void 0);
+__decorate([
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "Email", void 0);
+__decorate([
+    (0, class_validator_1.IsBoolean)(),
+    __metadata("design:type", Boolean)
+], PassengerDto.prototype, "IsLeadPassenger", void 0);
+class FlbFlightSearchDto {
+}
+exports.FlbFlightSearchDto = FlbFlightSearchDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], FlbFlightSearchDto.prototype, "SearchID", void 0);
 //# sourceMappingURL=flyhub.model.js.map

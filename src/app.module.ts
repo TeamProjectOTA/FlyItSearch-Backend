@@ -102,7 +102,7 @@ export class AppModule {
         { path: 'payment/:passengerId', method: RequestMethod.GET },
       )
       .forRoutes(
-        // { path: '*', method: RequestMethod.POST },
+        //{ path: '*', method: RequestMethod.ALL },
         { path: '/tour-packages', method: RequestMethod.ALL },
       );
   }
