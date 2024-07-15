@@ -8,7 +8,7 @@ import {
   searchResultDto,
 } from './Dto/flyhub.model';
 import { FlightSearchModel, JourneyType } from '../flight.model';
-import { BookingID } from '../dto/fare-rules.flight.dto';
+import { BookingID } from 'src/book/book.model';
 import { Test } from './test.service';
 
 @Injectable()
@@ -91,7 +91,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketCancel);
-      return response.data;
+      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
     } catch (error) {
       throw error?.response?.data;
     }
@@ -111,7 +111,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketCancel);
-      return response.data;
+      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
     } catch (error) {
       throw error?.response?.data;
     }
@@ -177,6 +177,13 @@ export class FlyHubService {
     }
   }
 
+
+
+
+
+
+
+
   async airbook(data: FlbFlightSearchDto) {
     const token = await this.getToken();
 
@@ -215,11 +222,20 @@ export class FlyHubService {
       const response0 = await axios.request(Price);
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
-      return response.data;
+      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
     } catch (error) {
       throw error?.response?.data;
     }
   }
+
+
+
+
+
+
+
+
+
 
   async convertToFlyAirSearchDto(
     flightSearchModel: FlightSearchModel,

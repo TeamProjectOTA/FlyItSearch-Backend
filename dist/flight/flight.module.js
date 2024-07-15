@@ -44,6 +44,7 @@ exports.FlightModule = FlightModule = __decorate([
             flyhub_util_1.FlyHubUtil,
             test_service_1.Test,
         ],
+        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, test_service_1.Test],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

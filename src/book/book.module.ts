@@ -3,10 +3,12 @@ import { BookController } from './book.controller';
 import { BookService } from './book.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { File } from './book.model';
+import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
+import { FlightModule } from 'src/flight/flight.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([File])],
+  imports: [TypeOrmModule.forFeature([File]), FlightModule],
   controllers: [BookController],
-  providers: [BookService],
+  providers: [BookService, FlyHubService],
 })
 export class BookModule {}

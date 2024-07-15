@@ -27,10 +27,6 @@ require('dotenv').config();
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: '.env',
-      isGlobal: true,
-    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60,
@@ -48,21 +44,18 @@ require('dotenv').config();
     //   synchronize: true ,
     //   logging: true,
     // }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('FLYIT_URL'),
-        port: 3306,
-        username: configService.get<string>('FLYIT_DB_USERNAME'),
-        password: configService.get<string>('FLYIT_DB_PASSWORD'),
-        database: configService.get<string>('FLYIT_DB_NAME'),
-        autoLoadEntities: true,
-        synchronize: false,
-        logging: true,
-      }),
-      inject: [ConfigService],
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.FLYIT_URL,
+      port: 3306,
+      username: process.env.FLYIT_DB_USERNAME,
+      password: process.env.FLYIT_DB_PASSWORD,
+      database: process.env.FLYIT_DB_NAME,
+      autoLoadEntities: true,
+      synchronize: false,
+      logging: true,
     }),
+
     AdminModule,
     UserModule,
     AuthModule,

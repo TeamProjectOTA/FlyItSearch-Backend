@@ -9,30 +9,10 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.File = exports.SsrType = exports.Ssr = exports.UserDetails = exports.ResponseDto = exports.Designation = void 0;
+exports.BookingID = exports.File = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
-var Designation;
-(function (Designation) {
-    Designation["Mr"] = "Mr";
-    Designation["MRS"] = "MRS";
-})(Designation || (exports.Designation = Designation = {}));
-class ResponseDto {
-}
-exports.ResponseDto = ResponseDto;
-class UserDetails {
-}
-exports.UserDetails = UserDetails;
-__decorate([
-    (0, class_validator_1.IsEnum)(Designation),
-    __metadata("design:type", String)
-], UserDetails.prototype, "designation", void 0);
-class Ssr {
-}
-exports.Ssr = Ssr;
-class SsrType {
-}
-exports.SsrType = SsrType;
 let File = class File {
 };
 exports.File = File;
@@ -59,4 +39,13 @@ __decorate([
 exports.File = File = __decorate([
     (0, typeorm_1.Entity)()
 ], File);
+class BookingID {
+}
+exports.BookingID = BookingID;
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: '22' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], BookingID.prototype, "BookingID", void 0);
 //# sourceMappingURL=book.model.js.map

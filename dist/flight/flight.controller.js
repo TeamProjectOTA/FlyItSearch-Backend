@@ -54,17 +54,8 @@ let FlightController = class FlightController {
     async convertToFlyAirSearchDto(flightSearchModel) {
         return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
     }
-    async airRetrive(bookingIdDto) {
-        return await this.flyHubService.airRetrive(bookingIdDto);
-    }
-    async aircancel(data) {
-        return this.flyHubService.airbook(data);
-    }
-    async aircanel(bookingIdDto) {
-        return this.flyHubService.aircancel(bookingIdDto);
-    }
-    test(data) {
-        return this.flyHubService.airPrice(data);
+    async airPrice(data) {
+        return await this.flyHubService.airPrice(data);
     }
     async miniRules(data) {
         return await this.flyHubService.bookingRules(data);
@@ -131,42 +122,21 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
-    (0, common_1.Post)('flh/airRetrive'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "airRetrive", null);
-__decorate([
-    (0, common_1.Post)('flh/air-book'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "aircancel", null);
-__decorate([
-    (0, common_1.Post)('flh/cancel-ticket'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [fare_rules_flight_dto_1.BookingID]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "aircanel", null);
-__decorate([
     (0, common_1.Post)('flh/price-check'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
-    __metadata("design:returntype", void 0)
-], FlightController.prototype, "test", null);
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "airPrice", null);
 __decorate([
-    (0, common_1.Post)('flh/bookingPolicy'),
+    (0, common_1.Post)('flh/booking-policy'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "miniRules", null);
 __decorate([
-    (0, common_1.Post)('flh/airRules'),
+    (0, common_1.Post)('flh/air-rules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),

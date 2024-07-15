@@ -1,7 +1,7 @@
 import { FlyHubUtil } from './flyhub.util';
 import { FlbFlightSearchDto, FlyAirSearchDto, searchResultDto } from './Dto/flyhub.model';
 import { FlightSearchModel } from '../flight.model';
-import { BookingID } from '../dto/fare-rules.flight.dto';
+import { BookingID } from 'src/book/book.model';
 import { Test } from './test.service';
 export declare class FlyHubService {
     private readonly flyHubUtil;
@@ -17,7 +17,7 @@ export declare class FlyHubService {
     bookingRules(data: searchResultDto): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
     airRules(data: searchResultDto): Promise<any>;
-    airbook(data: FlbFlightSearchDto): Promise<any>;
+    airbook(data: FlbFlightSearchDto): Promise<any[]>;
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
     private determineJourneyType;
 }

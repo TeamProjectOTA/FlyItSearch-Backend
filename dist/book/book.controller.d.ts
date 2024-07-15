@@ -1,8 +1,15 @@
 import { BookService } from './book.service';
-import { File, ResponseDto } from './book.model';
+import { BookingID } from './book.model';
+import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
+import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
+import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
 export declare class BookController {
     private readonly fileupload;
-    constructor(fileupload: BookService);
-    uploadFile(file: Express.Multer.File): Promise<File>;
-    getUserInfo(): ResponseDto;
+    private readonly flyHubService;
+    private readonly flyHubUtil;
+    constructor(fileupload: BookService, flyHubService: FlyHubService, flyHubUtil: FlyHubUtil);
+    airbook(data: FlbFlightSearchDto): Promise<any[]>;
+    aircanel(bookingIdDto: BookingID): Promise<any>;
+    airRetrive(bookingIdDto: BookingID): Promise<any>;
+    bookingtest(data: any): Promise<any>;
 }

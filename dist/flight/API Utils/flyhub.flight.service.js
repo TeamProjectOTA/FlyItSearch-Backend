@@ -80,7 +80,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
-            return response.data;
+            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
         }
         catch (error) {
             throw error?.response?.data;
@@ -100,7 +100,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
-            return response.data;
+            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
         }
         catch (error) {
             throw error?.response?.data;
@@ -202,7 +202,7 @@ let FlyHubService = class FlyHubService {
             const response0 = await axios_1.default.request(Price);
             const response1 = await axios_1.default.request(PreBookticket);
             const response = await axios_1.default.request(Bookticket);
-            return response.data;
+            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
         }
         catch (error) {
             throw error?.response?.data;

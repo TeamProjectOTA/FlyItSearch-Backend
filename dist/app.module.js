@@ -10,7 +10,6 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const throttler_1 = require("@nestjs/throttler");
 const typeorm_1 = require("@nestjs/typeorm");
-const config_1 = require("@nestjs/config");
 const user_module_1 = require("./user/user.module");
 const admin_module_1 = require("./admin/admin.module");
 const auth_module_1 = require("./auth/auth.module");
@@ -44,30 +43,22 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({
-                envFilePath: '.env',
-                isGlobal: true,
-            }),
             throttler_1.ThrottlerModule.forRoot([
                 {
                     ttl: 60,
                     limit: 15,
                 },
             ]),
-            typeorm_1.TypeOrmModule.forRootAsync({
-                imports: [config_1.ConfigModule],
-                useFactory: (configService) => ({
-                    type: 'mysql',
-                    host: configService.get('FLYIT_URL'),
-                    port: 3306,
-                    username: configService.get('FLYIT_DB_USERNAME'),
-                    password: configService.get('FLYIT_DB_PASSWORD'),
-                    database: configService.get('FLYIT_DB_NAME'),
-                    autoLoadEntities: true,
-                    synchronize: false,
-                    logging: true,
-                }),
-                inject: [config_1.ConfigService],
+            typeorm_1.TypeOrmModule.forRoot({
+                type: 'mysql',
+                host: process.env.FLYIT_URL,
+                port: 3306,
+                username: process.env.FLYIT_DB_USERNAME,
+                password: process.env.FLYIT_DB_PASSWORD,
+                database: process.env.FLYIT_DB_NAME,
+                autoLoadEntities: true,
+                synchronize: false,
+                logging: true,
             }),
             admin_module_1.AdminModule,
             user_module_1.UserModule,

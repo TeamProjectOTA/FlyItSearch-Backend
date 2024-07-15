@@ -3,13 +3,14 @@ import { FlightService } from './flight.service';
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BookingID, FareRulesDto } from './dto/fare-rules.flight.dto';
+import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { Test } from './API Utils/test.service';
+import { BookingID } from 'src/book/book.model';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -74,30 +75,18 @@ export class FlightController {
   ): Promise<any> {
     return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
   }
-  @Post('flh/airRetrive')
-  async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
-    return await this.flyHubService.airRetrive(bookingIdDto);
-  }
-  @Post('flh/air-book')
-  async aircancel(@Body() data: any) {
-    return this.flyHubService.airbook(data);
-  }
 
-  @Post('flh/cancel-ticket')
-  async aircanel(@Body() bookingIdDto: BookingID): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto);
-  }
 
   @Post('flh/price-check')
-  test(@Body() data: searchResultDto) {
-    return this.flyHubService.airPrice(data);
+  async airPrice(@Body() data: searchResultDto) {
+    return await this.flyHubService.airPrice(data);
   }
 
-  @Post('flh/bookingPolicy')
+  @Post('flh/booking-policy')
   async miniRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.bookingRules(data);
   }
-  @Post('flh/airRules')
+  @Post('flh/air-rules')
   async airRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.airRules(data);
   }

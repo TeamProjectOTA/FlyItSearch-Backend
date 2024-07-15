@@ -12,14 +12,16 @@ const book_controller_1 = require("./book.controller");
 const book_service_1 = require("./book.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const book_model_1 = require("./book.model");
+const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.service");
+const flight_module_1 = require("../flight/flight.module");
 let BookModule = class BookModule {
 };
 exports.BookModule = BookModule;
 exports.BookModule = BookModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([book_model_1.File])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([book_model_1.File]), flight_module_1.FlightModule],
         controllers: [book_controller_1.BookController],
-        providers: [book_service_1.BookService],
+        providers: [book_service_1.BookService, flyhub_flight_service_1.FlyHubService],
     })
 ], BookModule);
 //# sourceMappingURL=book.module.js.map

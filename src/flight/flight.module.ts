@@ -35,5 +35,7 @@ import { Test } from './API Utils/test.service';
     FlyHubUtil,
     Test,
   ],
+
+  exports: [FlyHubService, FlyHubUtil, Test],
 })
 export class FlightModule {}
