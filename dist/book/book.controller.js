@@ -38,6 +38,9 @@ let BookController = class BookController {
     async bookingtest(data) {
         return await this.flyHubUtil.bookingDataTransformerFlyhb(data);
     }
+    async test(data) {
+        return await this.flyHubUtil.restBFMParser(data);
+    }
 };
 exports.BookController = BookController;
 __decorate([
@@ -68,6 +71,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], BookController.prototype, "bookingtest", null);
+__decorate([
+    (0, common_1.Post)('one/testBooking'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BookController.prototype, "test", null);
 exports.BookController = BookController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('book'),

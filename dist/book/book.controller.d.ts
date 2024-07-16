@@ -12,4 +12,5 @@ export declare class BookController {
     aircanel(bookingIdDto: BookingID): Promise<any>;
     airRetrive(bookingIdDto: BookingID): Promise<any>;
     bookingtest(data: any): Promise<any>;
+    test(data: any): Promise<any>;
 }

@@ -1,4 +1,5 @@
 import { FlightSearchModel } from './flight.model';
+import { Request } from 'express';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
@@ -19,8 +20,9 @@ export declare class FlightController {
     get_ticket(pnr: string): Promise<any>;
     airfarerules(fareRulesDto: FareRulesDto): Promise<any>;
     airretrieve(pnr: string): Promise<any>;
-    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel): Promise<any>;
+    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, request: Request): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
     miniRules(data: searchResultDto): Promise<any>;
     airRules(data: searchResultDto): Promise<any>;
+    Test(): Promise<string>;
 }

@@ -1,8 +1,8 @@
-import { Controller, Post, Body, Param, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, Get, Req } from '@nestjs/common';
 import { FlightService } from './flight.service';
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
-
+import { Request } from 'express';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
@@ -72,10 +72,15 @@ export class FlightController {
   @Post('fhb/air-search')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
+    @Req() request: Request
   ): Promise<any> {
-    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
-  }
+    let userIp = request.ip;
+    if (userIp.startsWith('::ffff:')) {
+      userIp = userIp.split(':').pop();
+    }
 
+    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel,userIp);
+  }
 
   @Post('flh/price-check')
   async airPrice(@Body() data: searchResultDto) {
@@ -89,5 +94,11 @@ export class FlightController {
   @Post('flh/air-rules')
   async airRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.airRules(data);
+  }
+
+
+  @Get()
+  async Test(){
+    return this.flyHubService.convertToAirBookDto()
   }
 }

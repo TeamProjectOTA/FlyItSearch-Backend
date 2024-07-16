@@ -51,8 +51,12 @@ let FlightController = class FlightController {
     airretrieve(pnr) {
         return this.sabreService.airretrieve(pnr);
     }
-    async convertToFlyAirSearchDto(flightSearchModel) {
-        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel);
+    async convertToFlyAirSearchDto(flightSearchModel, request) {
+        let userIp = request.ip;
+        if (userIp.startsWith('::ffff:')) {
+            userIp = userIp.split(':').pop();
+        }
+        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel, userIp);
     }
     async airPrice(data) {
         return await this.flyHubService.airPrice(data);
@@ -62,6 +66,9 @@ let FlightController = class FlightController {
     }
     async airRules(data) {
         return await this.flyHubService.airRules(data);
+    }
+    async Test() {
+        return this.flyHubService.convertToAirBookDto();
     }
 };
 exports.FlightController = FlightController;
@@ -117,8 +124,9 @@ __decorate([
 __decorate([
     (0, common_1.Post)('fhb/air-search'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel, Object]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
@@ -142,6 +150,12 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRules", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "Test", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),

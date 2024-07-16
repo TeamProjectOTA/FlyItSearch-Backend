@@ -177,13 +177,6 @@ export class FlyHubService {
     }
   }
 
-
-
-
-
-
-
-
   async airbook(data: FlbFlightSearchDto) {
     const token = await this.getToken();
 
@@ -228,17 +221,8 @@ export class FlyHubService {
     }
   }
 
-
-
-
-
-
-
-
-
-
   async convertToFlyAirSearchDto(
-    flightSearchModel: FlightSearchModel,
+    flightSearchModel: FlightSearchModel,userIp:string
   ): Promise<any> {
     const segments = flightSearchModel.segments.map((segment) => ({
       Origin: segment.depfrom,
@@ -253,11 +237,11 @@ export class FlyHubService {
       AdultQuantity: flightSearchModel.adultcount,
       ChildQuantity: flightSearchModel.childcount,
       InfantQuantity: flightSearchModel.infantcount,
-      EndUserIp: '11',
+      EndUserIp: userIp,
       JourneyType: journeyType,
       Segments: segments,
     });
-
+    //console.log(flyAirSearchDto)
     return this.searchFlights(flyAirSearchDto);
   }
 
@@ -276,4 +260,25 @@ export class FlyHubService {
     }
     return '3';
   }
+
+
+ async convertToAirBookDto(){
+  let data='Bangladesh (BD)'
+
+  const regex = /^(.+)\((.+)\)$/;
+
+  const matches = data.match(regex);
+
+  
+  let country: string = "";
+  let countryCode: string = "";
+
+  
+  if (matches && matches.length === 3) {
+     
+      country = matches[1].trim();
+      countryCode = matches[2].trim();
+  }
+  return  `Country:${country}, CountryCode: ${countryCode}`
+ }
 }

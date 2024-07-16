@@ -21,7 +21,7 @@ export class BookController {
   constructor(
     private readonly fileupload: BookService,
     private readonly flyHubService: FlyHubService,
-    private readonly flyHubUtil:FlyHubUtil,
+    private readonly flyHubUtil: FlyHubUtil,
   ) {}
   // @Post('/passportcopy')
   // @UseInterceptors(
@@ -52,8 +52,11 @@ export class BookController {
     return await this.flyHubService.airRetrive(bookingIdDto);
   }
   @Post('testBooking')
-  async bookingtest(@Body() data:any):Promise<any>{
-    return await this.flyHubUtil.bookingDataTransformerFlyhb(data)
-
+  async bookingtest(@Body() data: any): Promise<any> {
+    return await this.flyHubUtil.bookingDataTransformerFlyhb(data);
+  }
+  @Post('one/testBooking')
+  async test(@Body() data: any): Promise<any> {
+    return await this.flyHubUtil.restBFMParser(data);
   }
 }
