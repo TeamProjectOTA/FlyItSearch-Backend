@@ -239,18 +239,6 @@ let FlyHubService = class FlyHubService {
         }
         return '3';
     }
-    async convertToAirBookDto() {
-        let data = 'Bangladesh (BD)';
-        const regex = /^(.+)\((.+)\)$/;
-        const matches = data.match(regex);
-        let country = "";
-        let countryCode = "";
-        if (matches && matches.length === 3) {
-            country = matches[1].trim();
-            countryCode = matches[2].trim();
-        }
-        return `Country:${country}, CountryCode: ${countryCode}`;
-    }
 };
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([

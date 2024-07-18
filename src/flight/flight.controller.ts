@@ -97,8 +97,5 @@ export class FlightController {
   }
 
 
-  @Get()
-  async Test(){
-    return this.flyHubService.convertToAirBookDto()
-  }
+ 
 }
