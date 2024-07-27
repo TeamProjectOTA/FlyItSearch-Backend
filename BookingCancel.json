@@ -1,156 +1,225 @@
-{
-    "BookingID": "FHB2407151367735",
-    "Results": [
-        {
-            "ExtraServices": null,
-            "ResultID": "b61287e3-2882-4093-9071-552dd2ce1653",
-            "IsRefundable": false,
-            "Fares": [
-                {
-                    "BaseFare": 61222,
-                    "Tax": 10987,
-                    "Currency": "BDT",
-                    "OtherCharges": 0,
-                    "Discount": 4286,
-                    "AgentMarkUp": 0,
-                    "PaxType": "Adult",
-                    "PassengerCount": 1,
-                    "ServiceFee": 217
-                }
-            ],
-            "Discount": 4286,
-            "Validatingcarrier": "EK",
-            "LastTicketDate": "2024-07-16T06:52:45",
-            "segments": [
-                {
-                    "TripIndicator": "OutBound",
-                    "Origin": {
-                        "Airport": {
-                            "AirportCode": "DAC",
-                            "AirportName": "Hazrat Shahjalal International Airport",
-                            "Terminal": "",
-                            "CityCode": "DAC",
-                            "CityName": "Dhaka",
-                            "CountryCode": "BD",
-                            "CountryName": "Bangladesh"
-                        },
-                        "DepTime": "2024-12-20T01:00:00"
-                    },
-                    "Destination": {
-                        "Airport": {
-                            "AirportCode": "DXB",
-                            "AirportName": "Dubai International Airport",
-                            "Terminal": "",
-                            "CityCode": "DXB",
-                            "CityName": "Dubai",
-                            "CountryCode": "AE",
-                            "CountryName": "United Arab Emirates"
-                        },
-                        "ArrTime": "2024-12-20T04:25:00"
-                    },
-                    "Airline": {
-                        "AirlineCode": "EK",
-                        "AirlineName": "Emirates",
-                        "FlightNumber": "585",
-                        "BookingClass": "L",
-                        "CabinClass": "Y",
-                        "OperatingCarrier": "EK"
-                    },
-                    "Baggage": "ADT-25kg",
-                    "JourneyDuration": "325",
-                    "StopQuantity": "0",
-                    "Equipment": "77W",
-                    "baggageDetails": [
-                        {
-                            "IsAllPax": false,
-                            "PaxType": 1,
-                            "Cabin": "SB",
-                            "Checkin": "25kg"
+[
+    {
+        "System": "FLYHUB",
+        "ResultId": "417799ad-151a-4285-acd1-fe182cc8fa4e",
+        "BookingId": "FHB2407181373190",
+        "BookingStatus": "Cancelled",
+        "InstantPayment": false,
+        "IsBookable": false,
+        "FareType": "NET",
+        "Carrier": "EK",
+        "CarrierName": "Emirates",
+        "BaseFare": 119023,
+        "Taxes": 29064,
+        "SerViceFee": 447,
+        "NetFare": 141869,
+        "GrossFare": 148534,
+        "PartialOption": false,
+        "PartialFare": 44561,
+        "TimeLimit": "2024-07-18T22:47:26",
+        "Refundable": false,
+        "ExtraService": null,
+        "PriceBreakDown": [
+            {
+                "PaxType": "Adult",
+                "BaseFare": 41640,
+                "Taxes": 9450,
+                "ServiceFee": 154,
+                "OtherCharges": 0,
+                "TotalFare": 51244,
+                "PaxCount": 2,
+                "Bag": [
+                    {
+                        "Airline": "EK",
+                        "Allowance": "40kg"
+                    }
+                ],
+                "FareComponent": [
+                    {
+                        "Origin": "DAC",
+                        "Destination": "DXB",
+                        "DepDate": "2024-08-19T10:15:00",
+                        "FareBasisCode": "Q",
+                        "Carrier": "EK"
+                    }
+                ]
+            },
+            {
+                "PaxType": "Child",
+                "BaseFare": 31260,
+                "Taxes": 7450,
+                "ServiceFee": 117,
+                "OtherCharges": 0,
+                "TotalFare": 38827,
+                "PaxCount": 1,
+                "Bag": [
+                    {
+                        "Airline": "EK",
+                        "Allowance": "40kg"
+                    }
+                ],
+                "FareComponent": [
+                    {
+                        "Origin": "DAC",
+                        "Destination": "DXB",
+                        "DepDate": "2024-08-19T10:15:00",
+                        "FareBasisCode": "Q",
+                        "Carrier": "EK"
+                    }
+                ]
+            },
+            {
+                "PaxType": "Infant",
+                "BaseFare": 4483,
+                "Taxes": 2714,
+                "ServiceFee": 22,
+                "OtherCharges": 0,
+                "TotalFare": 7219,
+                "PaxCount": 1,
+                "Bag": [
+                    {
+                        "Airline": "EK",
+                        "Allowance": "10kg"
+                    }
+                ],
+                "FareComponent": [
+                    {
+                        "Origin": "DAC",
+                        "Destination": "DXB",
+                        "DepDate": "2024-08-19T10:15:00",
+                        "FareBasisCode": "Q",
+                        "Carrier": "EK"
+                    }
+                ]
+            }
+        ],
+        "AllLegsInfo": [
+            {
+                "DepDate": "2024-08-19T10:15:00",
+                "DepFrom": "DAC",
+                "ArrTo": "DXB",
+                "TotalFlightDuration": 300,
+                "Segments": [
+                    {
+                        "MarketingCarrier": "EK",
+                        "MarketingCarrierName": "Emirates",
+                        "MarketingFlightNumber": 583,
+                        "OperatingCarrier": "EK",
+                        "OperatingFlightNumber": 583,
+                        "OperatingCarrierName": "Emirates",
+                        "DepFrom": "DAC",
+                        "DepAirPort": "Hazrat Shahjalal International Airport",
+                        "DepLocation": "Dhaka, Bangladesh",
+                        "DepDateAdjustment": 0,
+                        "DepTime": "2024-08-19T10:15:00",
+                        "ArrTo": "DXB",
+                        "ArrAirPort": "Dubai International Airport",
+                        "ArrLocation": "Dubai, United Arab Emirates",
+                        "ArrDateAdjustment": 0,
+                        "ArrTime": "2024-08-19T13:15:00",
+                        "OperatedBy": "Emirates",
+                        "StopCount": "0",
+                        "Duration": 300,
+                        "AircraftTypeName": "77W",
+                        "Amenities": {},
+                        "DepartureGate": "TBA",
+                        "ArrivalGate": "TBA",
+                        "HiddenStops": [],
+                        "TotalMilesFlown": 0,
+                        "SegmentCode": {
+                            "bookingCode": "Q",
+                            "cabinCode": "Y",
+                            "seatsAvailable": 0
                         }
-                    ],
-                    "SegmentGroup": 0
-                },
-                {
-                    "TripIndicator": "OutBound",
-                    "Origin": {
-                        "Airport": {
-                            "AirportCode": "DXB",
-                            "AirportName": "Dubai International Airport",
-                            "Terminal": "",
-                            "CityCode": "DXB",
-                            "CityName": "Dubai",
-                            "CountryCode": "AE",
-                            "CountryName": "United Arab Emirates"
-                        },
-                        "DepTime": "2024-12-20T17:45:00"
-                    },
-                    "Destination": {
-                        "Airport": {
-                            "AirportCode": "RUH",
-                            "AirportName": "King Khaled International Airport",
-                            "Terminal": "",
-                            "CityCode": "RUH",
-                            "CityName": "Riyadh",
-                            "CountryCode": "SA",
-                            "CountryName": "Saudi Arabia"
-                        },
-                        "ArrTime": "2024-12-20T18:50:00"
-                    },
-                    "Airline": {
-                        "AirlineCode": "EK",
-                        "AirlineName": "Emirates",
-                        "FlightNumber": "817",
-                        "BookingClass": "L",
-                        "CabinClass": "Y",
-                        "OperatingCarrier": "EK"
-                    },
-                    "Baggage": "ADT-25kg",
-                    "JourneyDuration": "125",
-                    "StopQuantity": "0",
-                    "Equipment": "77W",
-                    "baggageDetails": [
-                        {
-                            "IsAllPax": false,
-                            "PaxType": 1,
-                            "Cabin": "SB",
-                            "Checkin": "25kg"
-                        }
-                    ],
-                    "SegmentGroup": 0
-                }
-            ],
-            "TotalFare": 68140,
-            "TotalFareWithAgentMarkup": 68140,
-            "Currency": "BDT",
-            "Availabilty": 0,
-            "FareType": "NET",
-            "isMiniRulesAvailable": false,
-            "HoldAllowed": false
-        }
-    ],
-    "Passengers": [
-        {
-            "PaxIndex": "P2126118",
-            "Title": "MR",
-            "FirstName": "JOHN",
-            "LastName": "DOE",
-            "PaxType": "Adult",
-            "DateOfBirth": "1980-01-01T00:00:00",
-            "Gender": "Male",
-            "PassportNumber": "A12345678",
-            "PassportExpiryDate": "2030-01-01T00:00:00",
-            "PassportNationality": null,
-            "Address1": "123 Main St",
-            "Address2": "",
-            "CountryCode": "US",
-            "Nationality": null,
-            "ContactNumber": "+1234567890",
-            "Email": "john.doe@example.com",
-            "FFAirline": null,
-            "FFNumber": "",
-            "Ticket": null
-        }
-    ],
-    "BookingStatus": "Cancelled",
-    "Error": null
-}
+                    }
+                ]
+            }
+        ],
+        "PassengerList": [
+            {
+                "PaxIndex": "P2134729",
+                "Title": "MS",
+                "FirstName": "JANE",
+                "LastName": "DOE",
+                "PaxType": "Adult",
+                "DateOfBirth": "1985-02-15T00:00:00",
+                "Gender": "Female",
+                "PassportNumber": "B98765432",
+                "PassportExpiryDate": "2032-02-15T00:00:00",
+                "PassportNationality": null,
+                "Address1": "123 Main St",
+                "Address2": "",
+                "CountryCode": "US",
+                "Nationality": null,
+                "ContactNumber": "+1234567891",
+                "Email": "jane.doe@example.com",
+                "FFAirline": null,
+                "FFNumber": "",
+                "Ticket": null
+            },
+            {
+                "PaxIndex": "P2134730",
+                "Title": "MR",
+                "FirstName": "JOHN",
+                "LastName": "DOE",
+                "PaxType": "Adult",
+                "DateOfBirth": "1980-01-01T00:00:00",
+                "Gender": "Male",
+                "PassportNumber": "A12345678",
+                "PassportExpiryDate": "2030-01-01T00:00:00",
+                "PassportNationality": null,
+                "Address1": "123 Main St",
+                "Address2": "",
+                "CountryCode": "US",
+                "Nationality": null,
+                "ContactNumber": "+1234567891",
+                "Email": "jane.doe@example.com",
+                "FFAirline": null,
+                "FFNumber": "",
+                "Ticket": null
+            },
+            {
+                "PaxIndex": "P2134731",
+                "Title": "MSTR",
+                "FirstName": "TOM",
+                "LastName": "DOE",
+                "PaxType": "Child",
+                "DateOfBirth": "2015-07-20T00:00:00",
+                "Gender": "Male",
+                "PassportNumber": "C12345678",
+                "PassportExpiryDate": "2025-07-20T00:00:00",
+                "PassportNationality": null,
+                "Address1": "123 Main St",
+                "Address2": "",
+                "CountryCode": "US",
+                "Nationality": null,
+                "ContactNumber": "+1234567891",
+                "Email": "jane.doe@example.com",
+                "FFAirline": null,
+                "FFNumber": "",
+                "Ticket": null
+            },
+            {
+                "PaxIndex": "P2134732",
+                "Title": "MISS",
+                "FirstName": "LUCY",
+                "LastName": "DOE",
+                "PaxType": "Infant",
+                "DateOfBirth": "2023-05-10T00:00:00",
+                "Gender": "Female",
+                "PassportNumber": "D87654321",
+                "PassportExpiryDate": "2028-05-10T00:00:00",
+                "PassportNationality": null,
+                "Address1": "123 Main St",
+                "Address2": "",
+                "CountryCode": "US",
+                "Nationality": null,
+                "ContactNumber": "+1234567891",
+                "Email": "jane.doe@example.com",
+                "FFAirline": null,
+                "FFNumber": "",
+                "Ticket": null
+            }
+        ]
+    }
+]

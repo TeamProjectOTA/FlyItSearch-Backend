@@ -67,9 +67,6 @@ let FlightController = class FlightController {
     async airRules(data) {
         return await this.flyHubService.airRules(data);
     }
-    async Test() {
-        return this.flyHubService.convertToAirBookDto();
-    }
 };
 exports.FlightController = FlightController;
 __decorate([
@@ -150,12 +147,6 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRules", null);
-__decorate([
-    (0, common_1.Get)(),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "Test", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
