@@ -70,7 +70,9 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(shoppingrequest);
+      //console.log(response.data)
       return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
+     //return response.data
     } catch (error) {
       throw error?.response?.data;
     }
