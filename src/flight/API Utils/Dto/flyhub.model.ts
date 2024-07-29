@@ -35,7 +35,7 @@ export class searchResultDto {
   @ApiProperty()
   SearchId: string;
   @ApiProperty()
-  ResultID: string;
+  ResultId: string;
 }
 
 //Booking dto

@@ -10,6 +10,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PdfService = void 0;
 const common_1 = require("@nestjs/common");
 const puppeteer = require("puppeteer");
+const path = require("path");
+const Handlebars = require("handlebars");
+const fs = require("fs");
 let PdfService = PdfService_1 = class PdfService {
     constructor() {
         this.logger = new common_1.Logger(PdfService_1.name);
@@ -41,6 +44,17 @@ let PdfService = PdfService_1 = class PdfService {
                 await browser.close();
             }
         }
+    }
+    async generatePdf(data) {
+        const templateHtml = fs.readFileSync(path.join(__dirname, '../../src/pdf/pdf.html'), 'utf8');
+        const template = Handlebars.compile(templateHtml);
+        const html = template(data[0]);
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        const pdfBuffer = await page.pdf({ format: 'A4' });
+        await browser.close();
+        return pdfBuffer;
     }
 };
 exports.PdfService = PdfService;

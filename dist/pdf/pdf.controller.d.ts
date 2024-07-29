@@ -6,4 +6,5 @@ export declare class PdfController {
     constructor(pdfservice: PdfService);
     generatePdf(jsonData: ReportDto, res: Response): Promise<void>;
     private convertJsonToHtml;
+    getPdf(res: Response): Promise<void>;
 }

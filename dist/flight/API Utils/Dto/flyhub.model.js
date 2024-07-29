@@ -29,7 +29,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
-], searchResultDto.prototype, "ResultID", void 0);
+], searchResultDto.prototype, "ResultId", void 0);
 class BaggageDto {
 }
 exports.BaggageDto = BaggageDto;

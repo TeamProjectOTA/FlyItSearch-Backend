@@ -13,7 +13,7 @@ export declare class FlyAirSearchDto {
 }
 export declare class searchResultDto {
     SearchId: string;
-    ResultID: string;
+    ResultId: string;
 }
 export declare class BaggageDto {
     BaggageID: string;

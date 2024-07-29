@@ -242,7 +242,7 @@ export class FlyHubService {
       JourneyType: journeyType,
       Segments: segments,
     });
-    //console.log(flyAirSearchDto)
+    console.log(flyAirSearchDto)
     return this.searchFlights(flyAirSearchDto);
   }
 

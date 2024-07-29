@@ -1,38 +1,26 @@
-# 1. Base image
-FROM node:18-alpine  
-# Use a Node.js 18 image with Alpine Linux
+# Use a newer Node.js image
+FROM node:18
 
-# 2. Working directory
-WORKDIR /app 
- # Set the working directory within the container
+# Set the working directory
+WORKDIR /app
 
-# 3. Copy package.json and package-lock.json
-COPY package*.json ./ 
- # Copy these files for dependency management
+# Copy the package.json and package-lock.json files
+COPY package*.json ./
 
-# 4. Install dependencies
-RUN npm install  
-# Install dependencies using npm
+# Install the project dependencies
+RUN npm install
 
-# 5. Copy project files
-COPY . . 
-COPY .env .
-ENV DB_HOST=192.168.10.91
-ENV DB_PORT=3306
-ENV DB_NAME=flyitsearch
-ENV DB_USERNAME=root
-ENV DB_PASSWORD=admin
-ENV DATABASE_NAME=test
+# Copy the .env file (if needed)
+COPY .env ./
 
- # Copy all project files to the working directory
+# Copy the rest of the application code
+COPY . .
 
-# 6. Build the NestJS application (adjust if needed)
+# Build the NestJS application
 RUN npm run build
 
-# 7. Expose port (adjust if needed)
-EXPOSE 3000  
-# Expose the port where your NestJS app listens (usually 3000)
+# Expose the port the app runs on
+EXPOSE 3000
 
-# 8. Start command
-CMD [ "node", "dist/main.js" ] 
- # Command to run the application
+# Command to run the application
+CMD ["npm", "run", "start:prod"]

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flight Ticket</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { width: 600px; margin: 0 auto; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .section { margin-bottom: 20px; }
+    .section h2 { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+    .section p { margin: 5px 0; }
+    .passenger, .price, .flight { margin-left: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Flight Ticket</h1>
+    </div>
+    <div class="section">
+      <h2>Booking Information</h2>
+      <p><strong>PNR:</strong> {{PNR}}</p>
+      <p><strong>Booking Status:</strong> {{BookingStatus}}</p>
+      <p><strong>BookingId:</strong>{{BookingId}}</p>
+      <p><strong>Carrier:</strong> {{CarrierName}} ({{Carrier}})</p>
+    </div>
+    <div class="section">
+      <h2>Passenger Details</h2>
+      {{#each PassengerList}}
+        <div class="passenger">
+          <p><strong>Name:</strong> {{Title}} {{FirstName}} {{LastName}}</p>
+          <p><strong>Type:</strong> {{PaxType}}</p>
+        </div>
+      {{/each}}
+    </div>
+    <div class="section">
+      <h2>Price Breakdown</h2>
+      {{#each PriceBreakDown}}
+        <div class="price">
+          <p><strong>Type:</strong> {{PaxType}}</p>
+          <p><strong>Total Fare:</strong> {{TotalFare}}</p>
+        </div>
+      {{/each}}
+    </div>
+    <div class="section">
+      <h2>Flight Details</h2>
+      {{#each AllLegsInfo}}
+        <div class="flight">
+          <p><strong>From:</strong> {{DepFrom}} <br>
+            <strong>To:</strong> {{ArrTo}}</p>
+          <p><strong>Departure:</strong> {{DepDate}}</p>
+          {{#each Segments}}
+          <p><strong>Arrival:</strong> {{ArrTime}}</p>
+          {{/each}}
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</body>
+</html>
