@@ -4,6 +4,7 @@ import {
   Logger,
   NotAcceptableException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,6 +19,7 @@ import { Overview } from './entities/overview.model';
 import { MulterFile } from './mutlar/multer-file.interface';
 import { MainImage } from './entities/mainImage.model';
 import { VisitPlace } from './entities/visitPlace.model';
+import { Admin } from 'src/admin/entities/admin.entity';
 
 @Injectable()
 export class TourPackageService {
@@ -33,6 +35,8 @@ export class TourPackageService {
     private readonly mainImageRepository: Repository<MainImage>,
     @InjectRepository(VisitPlace)
     private readonly visitPlaceRepository: Repository<VisitPlace>,
+    @InjectRepository(Admin)
+    private readonly adminRepository:Repository<Admin>
   ) {}
 
   async createIntorduction(
@@ -127,7 +131,12 @@ export class TourPackageService {
     return this.tourPackageRepository.save(tourPackage);
   }
 
-  async findAll(): Promise<TourPackage[]> {
+  async findAll(uuid:string): Promise<any> {
+    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    if(!findadmin){
+      throw new UnauthorizedException()
+    }
+   
     const tourPackages = await this.tourPackageRepository.find({
       relations: [
         'introduction',

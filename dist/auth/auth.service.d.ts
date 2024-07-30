@@ -7,9 +7,7 @@ export declare class AuthService {
     private readonly userRepository;
     private readonly jwtservice;
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService);
-    signInAdmin(uuid: string, pass: string): Promise<{
-        access_token: string;
-    }>;
+    signInAdmin(uuid: string, pass: string): Promise<any>;
     verifyAdminToken(header: any): Promise<Admin>;
     signInUser(email: string, pass: string): Promise<{
         access_token: string;

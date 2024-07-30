@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -38,14 +39,14 @@ export class BookController {
   //   return await this.fileupload.saveFile(file);
   // }
 
-  @Post('flh/air-book')
-  async airbook(@Body() data: FlbFlightSearchDto) {
-    return this.flyHubService.airbook(data);
+  @Post('flh/air-book/:uuid')
+  async airbook(@Body() data: FlbFlightSearchDto,@Param('uuid')uuid:string) {
+    return this.flyHubService.airbook(data,uuid);
   }
 
-  @Post('flh/cancel-ticket')
-  async aircanel(@Body() bookingIdDto: BookingID): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto);
+  @Post('flh/cancel-ticket/:uuid')
+  async aircanel(@Body() bookingIdDto: BookingID,@Param('uuid')uuid:string): Promise<any> {
+    return this.flyHubService.aircancel(bookingIdDto,uuid);
   }
   @Post('flh/air-retrive')
   async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {

@@ -19,7 +19,7 @@ export class AuthService {
   async signInAdmin(
     uuid: string,
     pass: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<any> {
     const admin = await this.adminRepository.findOne({
       where: { uuid: uuid },
     });
@@ -29,7 +29,8 @@ export class AuthService {
     }
 
     const payload = { sub: admin.uuid };
-    return { access_token: await this.jwtservice.signAsync(payload) };
+    const token= await this.jwtservice.signAsync(payload)
+    return token  ;
   }
 
   async verifyAdminToken(header: any) {
@@ -128,4 +129,5 @@ export class AuthService {
     const decoded = decodedToken.sub;
     return decoded;
   }
+
 }

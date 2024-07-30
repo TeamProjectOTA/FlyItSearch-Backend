@@ -99,9 +99,9 @@ export class TourPackageController {
     return createdPackages;
   }
 
-  @Get()
-  async findAll() {
-    const tourpackage = await this.tourPackageService.findAll();
+  @Get(":uuid")
+  async findAll(@Param('uuid')uuid:string) {
+    const tourpackage = await this.tourPackageService.findAll(uuid);
     return tourpackage;
   }
   @Delete(':id')

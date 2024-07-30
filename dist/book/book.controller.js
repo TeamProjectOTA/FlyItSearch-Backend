@@ -26,11 +26,11 @@ let BookController = class BookController {
         this.flyHubService = flyHubService;
         this.flyHubUtil = flyHubUtil;
     }
-    async airbook(data) {
-        return this.flyHubService.airbook(data);
+    async airbook(data, uuid) {
+        return this.flyHubService.airbook(data, uuid);
     }
-    async aircanel(bookingIdDto) {
-        return this.flyHubService.aircancel(bookingIdDto);
+    async aircanel(bookingIdDto, uuid) {
+        return this.flyHubService.aircancel(bookingIdDto, uuid);
     }
     async airRetrive(bookingIdDto) {
         return await this.flyHubService.airRetrive(bookingIdDto);
@@ -44,17 +44,19 @@ let BookController = class BookController {
 };
 exports.BookController = BookController;
 __decorate([
-    (0, common_1.Post)('flh/air-book'),
+    (0, common_1.Post)('flh/air-book/:uuid'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Param)('uuid')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto]),
+    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, String]),
     __metadata("design:returntype", Promise)
 ], BookController.prototype, "airbook", null);
 __decorate([
-    (0, common_1.Post)('flh/cancel-ticket'),
+    (0, common_1.Post)('flh/cancel-ticket/:uuid'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Param)('uuid')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [book_model_1.BookingID]),
+    __metadata("design:paramtypes", [book_model_1.BookingID, String]),
     __metadata("design:returntype", Promise)
 ], BookController.prototype, "aircanel", null);
 __decorate([

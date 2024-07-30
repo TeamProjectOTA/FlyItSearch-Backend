@@ -4,7 +4,7 @@ import { UpdateAdminDto } from './dto/update-admin.dto';
 export declare class AdminController {
     private readonly adminService;
     constructor(adminService: AdminService);
-    create(createAdminDto: CreateAdminDto): Promise<import("./entities/admin.entity").Admin>;
+    create(createAdminDto: CreateAdminDto, header: Headers): Promise<import("./entities/admin.entity").Admin>;
     findOne(header: Headers, adminId: string): Promise<import("./entities/admin.entity").Admin>;
     update(header: Headers, updateAdminDto: UpdateAdminDto): Promise<import("./entities/admin.entity").Admin>;
     remove(header: Headers, adminId: string): Promise<any>;

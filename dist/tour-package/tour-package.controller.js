@@ -63,8 +63,8 @@ let TourPackageController = TourPackageController_1 = class TourPackageControlle
         }
         return createdPackages;
     }
-    async findAll() {
-        const tourpackage = await this.tourPackageService.findAll();
+    async findAll(uuid) {
+        const tourpackage = await this.tourPackageService.findAll(uuid);
         return tourpackage;
     }
     async delete(id) {
@@ -128,9 +128,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], TourPackageController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)(":uuid"),
+    __param(0, (0, common_1.Param)('uuid')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], TourPackageController.prototype, "findAll", null);
 __decorate([

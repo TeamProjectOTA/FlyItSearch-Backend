@@ -11,7 +11,7 @@ export declare class TourPackageController {
     uploadPicturesmain(files: MulterFile[]): Promise<any>;
     uploadPicturesVisit(files: MulterFile[]): Promise<any>;
     create(createTourPackageDtoArray: CreateTourPackageDto[]): Promise<any>;
-    findAll(): Promise<TourPackage[]>;
+    findAll(uuid: string): Promise<any>;
     delete(id: number): Promise<any>;
     findAllByCriteria(mainTitle?: string, countryName?: string, cityName?: string, metaKeywords?: string, startDate?: string): Promise<TourPackage[]>;
 }

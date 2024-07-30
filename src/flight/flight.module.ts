@@ -16,13 +16,17 @@ import { SabreService } from './API Utils/sabre.flights.service';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { FlyHubUtil } from './API Utils/flyhub.util';
 import { Test } from './API Utils/test.service';
+import { Admin } from 'src/admin/entities/admin.entity';
+import { AdminModule } from 'src/admin/admin.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Flight, Segment]),
+    TypeOrmModule.forFeature([Flight, Segment,Admin]),
     HttpModule,
     AirportsModule,
     AirlinesModule,
+ 
+    
   ],
   controllers: [FlightController],
   providers: [
@@ -34,6 +38,8 @@ import { Test } from './API Utils/test.service';
     FlyHubService,
     FlyHubUtil,
     Test,
+  
+   
   ],
 
   exports: [FlyHubService, FlyHubUtil, Test],

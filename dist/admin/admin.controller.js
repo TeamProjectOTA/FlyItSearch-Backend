@@ -22,8 +22,8 @@ let AdminController = class AdminController {
     constructor(adminService) {
         this.adminService = adminService;
     }
-    create(createAdminDto) {
-        return this.adminService.create(createAdminDto);
+    create(createAdminDto, header) {
+        return this.adminService.create(createAdminDto, header);
     }
     findOne(header, adminId) {
         return this.adminService.findOne(header, adminId);
@@ -48,8 +48,9 @@ exports.AdminController = AdminController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_admin_dto_1.CreateAdminDto]),
+    __metadata("design:paramtypes", [create_admin_dto_1.CreateAdminDto, Object]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "create", null);
 __decorate([
@@ -71,6 +72,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "update", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Delete)(':adminId'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Param)('adminId')),
@@ -95,6 +97,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "findUser", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Delete)('/user/:passengerId'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Param)('passengerId')),

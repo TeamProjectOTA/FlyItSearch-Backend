@@ -19,6 +19,7 @@ const mainImage_model_1 = require("./entities/mainImage.model");
 const visitPlace_model_1 = require("./entities/visitPlace.model");
 const objective_model_1 = require("./entities/objective.model");
 const tourPlan_Model_1 = require("./entities/tourPlan.Model");
+const admin_entity_1 = require("../admin/entities/admin.entity");
 let TourPackageModule = class TourPackageModule {
 };
 exports.TourPackageModule = TourPackageModule;
@@ -34,6 +35,7 @@ exports.TourPackageModule = TourPackageModule = __decorate([
                 tourPlan_Model_1.TourPlan,
                 objective_model_1.Objectives,
                 metaInfo_model_1.MetaInfo,
+                admin_entity_1.Admin
             ]),
         ],
         controllers: [tour_package_controller_1.TourPackageController],

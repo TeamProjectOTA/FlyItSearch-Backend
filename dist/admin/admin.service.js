@@ -28,7 +28,11 @@ let AdminService = class AdminService {
         this.agentRepository = agentRepository;
         this.authservice = authservice;
     }
-    async create(createAdminDto) {
+    async create(createAdminDto, header) {
+        const verifyAdmin = await this.authservice.verifyAdminToken(header);
+        if (!verifyAdmin) {
+            throw new common_1.UnauthorizedException();
+        }
         const adminAllReadyExisted = await this.adminRepository.findOne({
             where: { email: createAdminDto.email },
         });

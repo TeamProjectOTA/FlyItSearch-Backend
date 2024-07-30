@@ -34,7 +34,8 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid UUID or password');
         }
         const payload = { sub: admin.uuid };
-        return { access_token: await this.jwtservice.signAsync(payload) };
+        const token = await this.jwtservice.signAsync(payload);
+        return token;
     }
     async verifyAdminToken(header) {
         try {

@@ -11,7 +11,7 @@ export declare class AdminService {
     private readonly agentRepository;
     private readonly authservice;
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, agentRepository: Repository<Agents>, authservice: AuthService);
-    create(createAdminDto: CreateAdminDto): Promise<Admin>;
+    create(createAdminDto: CreateAdminDto, header: any): Promise<Admin>;
     findAll(header: any): Promise<Admin[]>;
     findOne(header: any, adminId: string): Promise<Admin>;
     findOneUser(passengerId: string, header: any): Promise<User>;

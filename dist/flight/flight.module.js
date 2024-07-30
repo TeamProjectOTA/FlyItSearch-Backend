@@ -22,13 +22,14 @@ const sabre_flights_service_1 = require("./API Utils/sabre.flights.service");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const flyhub_util_1 = require("./API Utils/flyhub.util");
 const test_service_1 = require("./API Utils/test.service");
+const admin_entity_1 = require("../admin/entities/admin.entity");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
 exports.FlightModule = FlightModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([flight_model_1.Flight, flight_model_1.Segment]),
+            typeorm_1.TypeOrmModule.forFeature([flight_model_1.Flight, flight_model_1.Segment, admin_entity_1.Admin]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,
             airlines_module_1.AirlinesModule,

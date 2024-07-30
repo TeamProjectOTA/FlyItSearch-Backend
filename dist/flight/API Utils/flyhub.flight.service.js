@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubService = void 0;
 const common_1 = require("@nestjs/common");
@@ -15,11 +18,13 @@ const axios_1 = require("axios");
 const flyhub_util_1 = require("./flyhub.util");
 const class_transformer_1 = require("class-transformer");
 const flyhub_model_1 = require("./Dto/flyhub.model");
-const test_service_1 = require("./test.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const admin_entity_1 = require("../../admin/entities/admin.entity");
+const typeorm_2 = require("typeorm");
 let FlyHubService = class FlyHubService {
-    constructor(flyHubUtil, testutil) {
+    constructor(flyHubUtil, adminRepository) {
         this.flyHubUtil = flyHubUtil;
-        this.testutil = testutil;
+        this.adminRepository = adminRepository;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
@@ -66,7 +71,11 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async aircancel(BookingID) {
+    async aircancel(BookingID, uuid) {
+        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+        if (!findadmin) {
+            throw new common_1.UnauthorizedException();
+        }
         const token = await this.getToken();
         const ticketCancel = {
             method: 'post',
@@ -166,7 +175,11 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data) {
+    async airbook(data, uuid) {
+        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+        if (!findadmin) {
+            throw new common_1.UnauthorizedException();
+        }
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -208,7 +221,11 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async convertToFlyAirSearchDto(flightSearchModel, userIp) {
+    async convertToFlyAirSearchDto(flightSearchModel, userIp, uuid) {
+        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+        if (!findadmin) {
+            throw new common_1.UnauthorizedException();
+        }
         const segments = flightSearchModel.segments.map((segment) => ({
             Origin: segment.depfrom,
             Destination: segment.arrto,
@@ -224,7 +241,6 @@ let FlyHubService = class FlyHubService {
             JourneyType: journeyType,
             Segments: segments,
         });
-        console.log(flyAirSearchDto);
         return this.searchFlights(flyAirSearchDto);
     }
     determineJourneyType(segments) {
@@ -244,7 +260,8 @@ let FlyHubService = class FlyHubService {
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
+    __param(1, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
-        test_service_1.Test])
+        typeorm_2.Repository])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

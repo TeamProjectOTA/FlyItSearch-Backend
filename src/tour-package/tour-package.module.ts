@@ -10,6 +10,8 @@ import { MainImage } from './entities/mainImage.model';
 import { VisitPlace } from './entities/visitPlace.model';
 import { Objectives } from './entities/objective.model';
 import { TourPlan } from './entities/tourPlan.Model';
+import { AdminModule } from 'src/admin/admin.module';
+import { Admin } from 'src/admin/entities/admin.entity';
 
 @Module({
   imports: [
@@ -22,7 +24,10 @@ import { TourPlan } from './entities/tourPlan.Model';
       TourPlan,
       Objectives,
       MetaInfo,
+      Admin
+      
     ]),
+   
   ],
   controllers: [TourPackageController],
   providers: [TourPackageService],

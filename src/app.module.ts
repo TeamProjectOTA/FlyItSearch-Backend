@@ -21,7 +21,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { TourPackageModule } from './tour-package/tour-package.module';
 import { AirportsModule } from './airports/airports.module';
 import { AirlinesModule } from './airlines/airlines.module';
-import { rootController } from './app.contoller';
+
 
 require('dotenv').config();
 
@@ -53,7 +53,8 @@ require('dotenv').config();
       database: process.env.FLYIT_DB_NAME,
       autoLoadEntities: true,
       synchronize: false,
-      logging: true,
+      connectTimeout: 60000
+      
     }),
 
     AdminModule,
@@ -80,7 +81,7 @@ require('dotenv').config();
       useClass: ThrottlerGuard,
     },
   ],
-  controllers: [rootController],
+  controllers: [],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

@@ -19,8 +19,8 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Post()
-  create(@Body() createAdminDto: CreateAdminDto) {
-    return this.adminService.create(createAdminDto);
+  create(@Body() createAdminDto: CreateAdminDto,@Headers() header: Headers,) {
+    return this.adminService.create(createAdminDto,header);
   }
   @ApiBearerAuth('access_token')
   @Get(':adminId')
@@ -33,6 +33,7 @@ export class AdminController {
     return this.adminService.update(header, updateAdminDto);
   }
 
+  @ApiBearerAuth('access_token')
   @Delete(':adminId')
   remove(@Headers() header: Headers, @Param('adminId') adminId: string) {
     return this.adminService.remove(header, adminId);
@@ -51,6 +52,7 @@ export class AdminController {
   ) {
     return this.adminService.findOneUser(passengerId, header);
   }
+  @ApiBearerAuth('access_token')
   @Delete('/user/:passengerId')
   removeuser(
     @Headers() header: Headers,

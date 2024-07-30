@@ -19,8 +19,11 @@ COPY . .
 # Build the NestJS application
 RUN npm run build
 
-# Expose the port the app runs on
+# Expose port 3000
 EXPOSE 3000
+
+# Set the PORT environment variable to 3000
+ENV PORT 3000
 
 # Command to run the application
 CMD ["npm", "run", "start:prod"]

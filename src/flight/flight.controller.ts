@@ -69,9 +69,10 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
 
-  @Post('fhb/air-search')
+  @Post('fhb/air-search/:uuid')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
+    @Param('uuid')uuid: string,
     @Req() request: Request
   ): Promise<any> {
     let userIp = request.ip;
@@ -79,7 +80,7 @@ export class FlightController {
       userIp = userIp.split(':').pop();
     }
 
-    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel,userIp);
+    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel,userIp,uuid);
   }
 
   @Post('flh/price-check')

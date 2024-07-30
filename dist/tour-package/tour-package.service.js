@@ -21,13 +21,15 @@ const Introduction_model_1 = require("./entities/Introduction.model");
 const overview_model_1 = require("./entities/overview.model");
 const mainImage_model_1 = require("./entities/mainImage.model");
 const visitPlace_model_1 = require("./entities/visitPlace.model");
+const admin_entity_1 = require("../admin/entities/admin.entity");
 let TourPackageService = class TourPackageService {
-    constructor(tourPackageRepository, introductionRepository, overviewRepository, mainImageRepository, visitPlaceRepository) {
+    constructor(tourPackageRepository, introductionRepository, overviewRepository, mainImageRepository, visitPlaceRepository, adminRepository) {
         this.tourPackageRepository = tourPackageRepository;
         this.introductionRepository = introductionRepository;
         this.overviewRepository = overviewRepository;
         this.mainImageRepository = mainImageRepository;
         this.visitPlaceRepository = visitPlaceRepository;
+        this.adminRepository = adminRepository;
     }
     async createIntorduction(createIntroductionDto) {
         const add2 = await this.introductionRepository.findOne({
@@ -106,7 +108,11 @@ let TourPackageService = class TourPackageService {
         const tourPackage = this.tourPackageRepository.create(createTourPackageDto);
         return this.tourPackageRepository.save(tourPackage);
     }
-    async findAll() {
+    async findAll(uuid) {
+        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+        if (!findadmin) {
+            throw new common_1.UnauthorizedException();
+        }
         const tourPackages = await this.tourPackageRepository.find({
             relations: [
                 'introduction',
@@ -179,7 +185,9 @@ exports.TourPackageService = TourPackageService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(overview_model_1.Overview)),
     __param(3, (0, typeorm_1.InjectRepository)(mainImage_model_1.MainImage)),
     __param(4, (0, typeorm_1.InjectRepository)(visitPlace_model_1.VisitPlace)),
+    __param(5, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

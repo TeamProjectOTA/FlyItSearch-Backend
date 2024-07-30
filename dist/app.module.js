@@ -29,7 +29,6 @@ const core_1 = require("@nestjs/core");
 const tour_package_module_1 = require("./tour-package/tour-package.module");
 const airports_module_1 = require("./airports/airports.module");
 const airlines_module_1 = require("./airlines/airlines.module");
-const app_contoller_1 = require("./app.contoller");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -58,7 +57,7 @@ exports.AppModule = AppModule = __decorate([
                 database: process.env.FLYIT_DB_NAME,
                 autoLoadEntities: true,
                 synchronize: false,
-                logging: true,
+                connectTimeout: 60000
             }),
             admin_module_1.AdminModule,
             user_module_1.UserModule,
@@ -83,7 +82,7 @@ exports.AppModule = AppModule = __decorate([
                 useClass: throttler_1.ThrottlerGuard,
             },
         ],
-        controllers: [app_contoller_1.rootController],
+        controllers: [],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

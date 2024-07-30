@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { FlyHubUtil } from './flyhub.util';
 import { plainToClass } from 'class-transformer';
@@ -10,6 +10,9 @@ import {
 import { FlightSearchModel, JourneyType } from '../flight.model';
 import { BookingID } from 'src/book/book.model';
 import { Test } from './test.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Admin } from 'src/admin/entities/admin.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FlyHubService {
@@ -18,7 +21,8 @@ export class FlyHubService {
   private readonly apiUrl: string = process.env.FLyHub_Url;
   constructor(
     private readonly flyHubUtil: FlyHubUtil,
-    private readonly testutil: Test,
+    @InjectRepository(Admin)
+    private readonly adminRepository: Repository<Admin>,
   ) {}
 
   async getToken(): Promise<string> {
@@ -78,7 +82,11 @@ export class FlyHubService {
     }
   }
 
-  async aircancel(BookingID: BookingID): Promise<any> {
+  async aircancel(BookingID: BookingID,uuid:string): Promise<any> {
+    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    if(!findadmin){
+      throw new UnauthorizedException()
+    }
     const token = await this.getToken();
     const ticketCancel = {
       method: 'post',
@@ -179,7 +187,11 @@ export class FlyHubService {
     }
   }
 
-  async airbook(data: FlbFlightSearchDto) {
+  async airbook(data: FlbFlightSearchDto,uuid:string) {
+    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    if(!findadmin){
+      throw new UnauthorizedException()
+    }
     const token = await this.getToken();
 
     const Price = {
@@ -225,8 +237,12 @@ export class FlyHubService {
   }
 
   async convertToFlyAirSearchDto(
-    flightSearchModel: FlightSearchModel,userIp:string
+    flightSearchModel: FlightSearchModel,userIp:string,uuid:string
   ): Promise<any> {
+    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    if(!findadmin){
+      throw new UnauthorizedException()
+    }
     const segments = flightSearchModel.segments.map((segment) => ({
       Origin: segment.depfrom,
       Destination: segment.arrto,
@@ -244,7 +260,7 @@ export class FlyHubService {
       JourneyType: journeyType,
       Segments: segments,
     });
-    console.log(flyAirSearchDto)
+    //console.log(flyAirSearchDto)
     return this.searchFlights(flyAirSearchDto);
   }
 

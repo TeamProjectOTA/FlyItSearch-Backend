@@ -14,12 +14,13 @@ const typeorm_1 = require("@nestjs/typeorm");
 const book_model_1 = require("./book.model");
 const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.service");
 const flight_module_1 = require("../flight/flight.module");
+const admin_entity_1 = require("../admin/entities/admin.entity");
 let BookModule = class BookModule {
 };
 exports.BookModule = BookModule;
 exports.BookModule = BookModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([book_model_1.File]), flight_module_1.FlightModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([book_model_1.File, admin_entity_1.Admin]), flight_module_1.FlightModule],
         controllers: [book_controller_1.BookController],
         providers: [book_service_1.BookService, flyhub_flight_service_1.FlyHubService],
     })

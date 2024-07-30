@@ -8,8 +8,8 @@ export declare class BookController {
     private readonly flyHubService;
     private readonly flyHubUtil;
     constructor(fileupload: BookService, flyHubService: FlyHubService, flyHubUtil: FlyHubUtil);
-    airbook(data: FlbFlightSearchDto): Promise<any[]>;
-    aircanel(bookingIdDto: BookingID): Promise<any>;
+    airbook(data: FlbFlightSearchDto, uuid: string): Promise<any[]>;
+    aircanel(bookingIdDto: BookingID, uuid: string): Promise<any>;
     airRetrive(bookingIdDto: BookingID): Promise<any>;
     bookingtest(data: any): Promise<any>;
     test(data: any): Promise<any>;

@@ -20,7 +20,7 @@ export declare class FlightController {
     get_ticket(pnr: string): Promise<any>;
     airfarerules(fareRulesDto: FareRulesDto): Promise<any>;
     airretrieve(pnr: string): Promise<any>;
-    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, request: Request): Promise<any>;
+    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, uuid: string, request: Request): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
     miniRules(data: searchResultDto): Promise<any>;
     airRules(data: searchResultDto): Promise<any>;
