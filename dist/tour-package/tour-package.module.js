@@ -35,7 +35,7 @@ exports.TourPackageModule = TourPackageModule = __decorate([
                 tourPlan_Model_1.TourPlan,
                 objective_model_1.Objectives,
                 metaInfo_model_1.MetaInfo,
-                admin_entity_1.Admin
+                admin_entity_1.Admin,
             ]),
         ],
         controllers: [tour_package_controller_1.TourPackageController],

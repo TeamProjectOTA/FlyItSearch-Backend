@@ -1,3 +1,4 @@
+import { SaveBooking } from 'src/book/book.model';
 export declare class User {
     id: number;
     passengerId: string;
@@ -6,4 +7,5 @@ export declare class User {
     email: string;
     password: string;
     role: string;
+    saveBookings: SaveBooking[];
 }

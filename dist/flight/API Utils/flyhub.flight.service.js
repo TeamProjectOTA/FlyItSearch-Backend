@@ -21,10 +21,12 @@ const flyhub_model_1 = require("./Dto/flyhub.model");
 const typeorm_1 = require("@nestjs/typeorm");
 const admin_entity_1 = require("../../admin/entities/admin.entity");
 const typeorm_2 = require("typeorm");
+const auth_service_1 = require("../../auth/auth.service");
 let FlyHubService = class FlyHubService {
-    constructor(flyHubUtil, adminRepository) {
+    constructor(flyHubUtil, adminRepository, authService) {
         this.flyHubUtil = flyHubUtil;
         this.adminRepository = adminRepository;
+        this.authService = authService;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
@@ -68,14 +70,11 @@ let FlyHubService = class FlyHubService {
             return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
         }
         catch (error) {
-            throw error?.response?.data;
+            console.error(error);
+            throw error;
         }
     }
     async aircancel(BookingID, uuid) {
-        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-        if (!findadmin) {
-            throw new common_1.UnauthorizedException();
-        }
         const token = await this.getToken();
         const ticketCancel = {
             method: 'post',
@@ -97,7 +96,7 @@ let FlyHubService = class FlyHubService {
     }
     async airRetrive(BookingID) {
         const token = await this.getToken();
-        const ticketCancel = {
+        const ticketRetrive = {
             method: 'post',
             maxBodyLength: Infinity,
             url: `${this.apiUrl}/AirRetrieve`,
@@ -108,7 +107,7 @@ let FlyHubService = class FlyHubService {
             data: BookingID,
         };
         try {
-            const response = await axios_1.default.request(ticketCancel);
+            const response = await axios_1.default.request(ticketRetrive);
             return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
         }
         catch (error) {
@@ -175,11 +174,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data, uuid) {
-        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-        if (!findadmin) {
-            throw new common_1.UnauthorizedException();
-        }
+    async airbook(data, uuid, currentTimestamp) {
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -215,13 +210,17 @@ let FlyHubService = class FlyHubService {
             const response0 = await axios_1.default.request(Price);
             const response1 = await axios_1.default.request(PreBookticket);
             const response = await axios_1.default.request(Bookticket);
-            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, currentTimestamp);
         }
         catch (error) {
             throw error?.response?.data;
         }
     }
-    async convertToFlyAirSearchDto(flightSearchModel, userIp, uuid) {
+    async convertToFlyAirSearchDto(flightSearchModel, userIp, uuid, header) {
+        const authenticate = this.authService.verifyAdminToken(header);
+        if (!authenticate) {
+            throw new common_1.UnauthorizedException();
+        }
         const findadmin = await this.adminRepository.findOne({ where: { uuid } });
         if (!findadmin) {
             throw new common_1.UnauthorizedException();
@@ -241,7 +240,12 @@ let FlyHubService = class FlyHubService {
             JourneyType: journeyType,
             Segments: segments,
         });
-        return this.searchFlights(flyAirSearchDto);
+        try {
+            return this.searchFlights(flyAirSearchDto);
+        }
+        catch (error) {
+            return error;
+        }
     }
     determineJourneyType(segments) {
         if (segments.length === 1) {
@@ -262,6 +266,7 @@ exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        auth_service_1.AuthService])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

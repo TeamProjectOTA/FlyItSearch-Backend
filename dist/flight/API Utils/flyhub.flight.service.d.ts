@@ -4,13 +4,15 @@ import { FlightSearchModel } from '../flight.model';
 import { BookingID } from 'src/book/book.model';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { Repository } from 'typeorm';
+import { AuthService } from 'src/auth/auth.service';
 export declare class FlyHubService {
     private readonly flyHubUtil;
     private readonly adminRepository;
+    private readonly authService;
     private readonly username;
     private readonly apiKey;
     private readonly apiUrl;
-    constructor(flyHubUtil: FlyHubUtil, adminRepository: Repository<Admin>);
+    constructor(flyHubUtil: FlyHubUtil, adminRepository: Repository<Admin>, authService: AuthService);
     getToken(): Promise<string>;
     searchFlights(reqBody: FlyAirSearchDto): Promise<any>;
     aircancel(BookingID: BookingID, uuid: string): Promise<any>;
@@ -18,7 +20,7 @@ export declare class FlyHubService {
     bookingRules(data: searchResultDto): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
     airRules(data: searchResultDto): Promise<any>;
-    airbook(data: FlbFlightSearchDto, uuid: string): Promise<any[]>;
-    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, userIp: string, uuid: string): Promise<any>;
+    airbook(data: FlbFlightSearchDto, uuid: string, currentTimestamp?: Date): Promise<any[]>;
+    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, userIp: string, uuid: string, header: any): Promise<any>;
     private determineJourneyType;
 }

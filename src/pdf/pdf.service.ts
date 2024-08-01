@@ -38,9 +38,11 @@ export class PdfService {
     }
   }
 
-
   async generatePdf(data: any): Promise<Buffer> {
-    const templateHtml = fs.readFileSync(path.join(__dirname, '../../src/pdf/pdf.html'), 'utf8');
+    const templateHtml = fs.readFileSync(
+      path.join(__dirname, '../../src/pdf/pdf.html'),
+      'utf8',
+    );
     const template = Handlebars.compile(templateHtml);
     const html = template(data[0]);
 

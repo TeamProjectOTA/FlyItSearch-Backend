@@ -22,7 +22,7 @@ const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
 const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
-const test_service_1 = require("./API Utils/test.service");
+const flyhub_util_1 = require("./API Utils/flyhub.util");
 let FlightController = class FlightController {
     constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
@@ -51,12 +51,12 @@ let FlightController = class FlightController {
     airretrieve(pnr) {
         return this.sabreService.airretrieve(pnr);
     }
-    async convertToFlyAirSearchDto(flightSearchModel, uuid, request) {
+    async convertToFlyAirSearchDto(flightSearchModel, uuid, request, header) {
         let userIp = request.ip;
         if (userIp.startsWith('::ffff:')) {
             userIp = userIp.split(':').pop();
         }
-        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel, userIp, uuid);
+        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel, userIp, uuid, header);
     }
     async airPrice(data) {
         return await this.flyHubService.airPrice(data);
@@ -66,6 +66,9 @@ let FlightController = class FlightController {
     }
     async airRules(data) {
         return await this.flyHubService.airRules(data);
+    }
+    async apicheck(SearchResponse) {
+        return await this.testservice.bookingDataTransformerFlyhb(SearchResponse);
     }
 };
 exports.FlightController = FlightController;
@@ -123,8 +126,9 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('uuid')),
     __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel, String, Object]),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
@@ -148,12 +152,19 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRules", null);
+__decorate([
+    (0, common_1.Post)('apicheck'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "apicheck", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
     __metadata("design:paramtypes", [sabre_flights_service_1.SabreService,
         bdfare_flights_service_1.BDFareService,
         flyhub_flight_service_1.FlyHubService,
-        test_service_1.Test])
+        flyhub_util_1.FlyHubUtil])
 ], FlightController);
 //# sourceMappingURL=flight.controller.js.map

@@ -110,10 +110,21 @@ let AuthService = class AuthService {
         return this.adminRepository.findOne({ where: { uuid: uuid } });
     }
     async decodeToken(header) {
-        const token = header['authorization'].replace('Bearer ', '');
-        const decodedToken = await this.jwtservice.verifyAsync(token);
-        const decoded = decodedToken.sub;
-        return decoded;
+        if (!header || !header.authorization) {
+            throw new common_1.NotFoundException('Authorization header not found');
+        }
+        const token = header.authorization.replace('Bearer ', '');
+        let decodedToken;
+        try {
+            decodedToken = await this.jwtservice.verifyAsync(token);
+        }
+        catch (error) {
+            throw new common_1.NotFoundException('Invalid token');
+        }
+        if (!decodedToken || !decodedToken.sub2) {
+            throw new common_1.NotFoundException('Invalid token payload');
+        }
+        return decodedToken.sub;
     }
 };
 exports.AuthService = AuthService;

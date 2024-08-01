@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { FlyHubUtil } from './flyhub.util';
 import { plainToClass } from 'class-transformer';
@@ -13,6 +19,7 @@ import { Test } from './test.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { Repository } from 'typeorm';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class FlyHubService {
@@ -23,6 +30,7 @@ export class FlyHubService {
     private readonly flyHubUtil: FlyHubUtil,
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
+    private readonly authService:AuthService
   ) {}
 
   async getToken(): Promise<string> {
@@ -60,6 +68,8 @@ export class FlyHubService {
   }
 
   async searchFlights(reqBody: FlyAirSearchDto): Promise<any> {
+    
+    
     const token = await this.getToken();
     const shoppingrequest = {
       method: 'post',
@@ -74,19 +84,20 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(shoppingrequest);
-      //console.log(response.data)
+      
       return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
-     //return response.data
-    } catch (error) {
-      throw error?.response?.data;
+      //return response.data
+    }catch (error) {
+      console.error(error);
+      throw error;
     }
   }
 
-  async aircancel(BookingID: BookingID,uuid:string): Promise<any> {
-    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if(!findadmin){
-      throw new UnauthorizedException()
-    }
+  async aircancel(BookingID: BookingID, uuid: string): Promise<any> {
+    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    // if (!findadmin) {
+    //   throw new UnauthorizedException();
+    // }
     const token = await this.getToken();
     const ticketCancel = {
       method: 'post',
@@ -102,13 +113,14 @@ export class FlyHubService {
     try {
       const response = await axios.request(ticketCancel);
       return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+      //return response.data
     } catch (error) {
       throw error?.response?.data;
     }
   }
   async airRetrive(BookingID: BookingID): Promise<any> {
     const token = await this.getToken();
-    const ticketCancel = {
+    const ticketRetrive = {
       method: 'post',
       maxBodyLength: Infinity,
       url: `${this.apiUrl}/AirRetrieve`,
@@ -120,8 +132,9 @@ export class FlyHubService {
     };
 
     try {
-      const response = await axios.request(ticketCancel);
+      const response = await axios.request(ticketRetrive);
       return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+      //return response.data
     } catch (error) {
       throw error?.response?.data;
     }
@@ -187,11 +200,11 @@ export class FlyHubService {
     }
   }
 
-  async airbook(data: FlbFlightSearchDto,uuid:string) {
-    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if(!findadmin){
-      throw new UnauthorizedException()
-    }
+  async airbook(data: FlbFlightSearchDto, uuid: string,currentTimestamp?:Date) {
+    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    // if (!findadmin) {
+    //   throw new UnauthorizedException();
+    // }
     const token = await this.getToken();
 
     const Price = {
@@ -229,19 +242,25 @@ export class FlyHubService {
       const response0 = await axios.request(Price);
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
-      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data,currentTimestamp);
     } catch (error) {
       throw error?.response?.data;
- 
     }
   }
 
   async convertToFlyAirSearchDto(
-    flightSearchModel: FlightSearchModel,userIp:string,uuid:string
+    flightSearchModel: FlightSearchModel,
+    userIp: string,
+    uuid: string,
+    header:any
   ): Promise<any> {
-    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if(!findadmin){
+    const authenticate=this.authService.verifyAdminToken(header)
+    if(!authenticate){
       throw new UnauthorizedException()
+    }
+    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    if (!findadmin) {
+      throw new UnauthorizedException();
     }
     const segments = flightSearchModel.segments.map((segment) => ({
       Origin: segment.depfrom,
@@ -261,7 +280,11 @@ export class FlyHubService {
       Segments: segments,
     });
     //console.log(flyAirSearchDto)
-    return this.searchFlights(flyAirSearchDto);
+    try{return this.searchFlights(flyAirSearchDto);}
+    catch(error){
+      return error
+    }
+    
   }
 
   private determineJourneyType(segments: any[]): string {
@@ -279,5 +302,4 @@ export class FlyHubService {
     }
     return '3';
   }
-
 }

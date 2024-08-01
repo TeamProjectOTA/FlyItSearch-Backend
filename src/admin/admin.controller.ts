@@ -19,8 +19,8 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
   @Post()
-  create(@Body() createAdminDto: CreateAdminDto,@Headers() header: Headers,) {
-    return this.adminService.create(createAdminDto,header);
+  create(@Body() createAdminDto: CreateAdminDto, @Headers() header: Headers) {
+    return this.adminService.create(createAdminDto, header);
   }
   @ApiBearerAuth('access_token')
   @Get(':adminId')

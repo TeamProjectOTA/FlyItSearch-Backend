@@ -21,8 +21,8 @@ const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.servi
 const flyhub_model_1 = require("../flight/API Utils/Dto/flyhub.model");
 const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
 let BookController = class BookController {
-    constructor(fileupload, flyHubService, flyHubUtil) {
-        this.fileupload = fileupload;
+    constructor(bookingService, flyHubService, flyHubUtil) {
+        this.bookingService = bookingService;
         this.flyHubService = flyHubService;
         this.flyHubUtil = flyHubUtil;
     }
@@ -35,11 +35,14 @@ let BookController = class BookController {
     async airRetrive(bookingIdDto) {
         return await this.flyHubService.airRetrive(bookingIdDto);
     }
-    async bookingtest(data) {
-        return await this.flyHubUtil.bookingDataTransformerFlyhb(data);
+    async bookingtest(data, header) {
+        return await this.flyHubUtil.saveBookingData(data, header);
     }
     async test(data) {
         return await this.flyHubUtil.restBFMParser(data);
+    }
+    async SaveBooking(createSaveBookingDto, header) {
+        return this.bookingService.saveBooking(createSaveBookingDto, header);
     }
 };
 exports.BookController = BookController;
@@ -70,7 +73,7 @@ __decorate([
     (0, common_1.Post)('testBooking'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], BookController.prototype, "bookingtest", null);
 __decorate([
@@ -80,6 +83,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], BookController.prototype, "test", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Post)('/save-booking'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [book_model_1.CreateSaveBookingDto, Object]),
+    __metadata("design:returntype", Promise)
+], BookController.prototype, "SaveBooking", null);
 exports.BookController = BookController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('book'),

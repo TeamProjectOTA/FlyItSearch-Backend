@@ -1,4 +1,5 @@
 [
+[
     {
         "System": "FLYHUB",
         "ResultId": "417799ad-151a-4285-acd1-fe182cc8fa4e",
@@ -223,4 +224,120 @@
             }
         ]
     }
+],
+[
+    {
+        "System": "FLYHUB",
+        "ResultId": "7e5e5a0e-e377-40cf-8496-be93409cf135",
+        "BookingId": "FHB2407311384651",
+        "BookingDate": "2024-08-01T09:30:37.548Z",
+        "BookingStatus": "Cancelled",
+        "InstantPayment": false,
+        "IsBookable": false,
+        "FareType": "NET",
+        "Carrier": "EK",
+        "CarrierName": "Emirates",
+        "BaseFare": 38101,
+        "Taxes": 9450,
+        "SerViceFee": 143,
+        "NetFare": 45561,
+        "GrossFare": 47694,
+        "PartialOption": false,
+        "PartialFare": 14309,
+        "TimeLimit": "2024-08-21T16:00:00",
+        "Refundable": true,
+        "ExtraService": null,
+        "PriceBreakDown": [
+            {
+                "PaxType": "Adult",
+                "BaseFare": 38101,
+                "Taxes": 9450,
+                "ServiceFee": 143,
+                "OtherCharges": 0,
+                "TotalFare": 47694,
+                "PaxCount": 1,
+                "Bag": [
+                    {
+                        "Airline": "EK",
+                        "Allowance": "40K"
+                    }
+                ],
+                "FareComponent": [
+                    {
+                        "Origin": "DAC",
+                        "Destination": "DXB",
+                        "DepDate": "2024-12-01T18:45:00",
+                        "FareBasisCode": "L",
+                        "Carrier": "EK"
+                    }
+                ]
+            }
+        ],
+        "AllLegsInfo": [
+            {
+                "DepDate": "2024-12-01T18:45:00",
+                "DepFrom": "DAC",
+                "ArrTo": "DXB",
+                "TotalFlightDuration": 330,
+                "Segments": [
+                    {
+                        "MarketingCarrier": "EK",
+                        "MarketingCarrierName": "Emirates",
+                        "MarketingFlightNumber": 587,
+                        "OperatingCarrier": "EK",
+                        "OperatingFlightNumber": 587,
+                        "OperatingCarrierName": "Emirates",
+                        "DepFrom": "DAC",
+                        "DepAirPort": "Hazrat Shahjalal International Airport",
+                        "DepLocation": "Dhaka, Bangladesh",
+                        "DepDateAdjustment": 0,
+                        "DepTime": "2024-12-01T18:45:00",
+                        "ArrTo": "DXB",
+                        "ArrAirPort": "Dubai International Airport",
+                        "ArrLocation": "Dubai, United Arab Emirates",
+                        "ArrDateAdjustment": 0,
+                        "ArrTime": "2024-12-01T22:15:00",
+                        "OperatedBy": "Emirates",
+                        "StopCount": "0",
+                        "Duration": 330,
+                        "AircraftTypeName": "77W",
+                        "Amenities": {},
+                        "DepartureGate": "1",
+                        "ArrivalGate": "3",
+                        "HiddenStops": [],
+                        "TotalMilesFlown": 0,
+                        "SegmentCode": {
+                            "bookingCode": "L",
+                            "cabinCode": "M",
+                            "seatsAvailable": 0
+                        }
+                    }
+                ]
+            }
+        ],
+        "PassengerList": [
+            {
+                "PaxIndex": "P2151832",
+                "Title": "MS",
+                "FirstName": "JANE",
+                "LastName": "DOE",
+                "PaxType": "Adult",
+                "DateOfBirth": "1985-02-15T00:00:00",
+                "Gender": "Female",
+                "PassportNumber": "B98765432",
+                "PassportExpiryDate": "2032-02-15T00:00:00",
+                "PassportNationality": null,
+                "Address1": "123 Main St",
+                "Address2": "",
+                "CountryCode": "US",
+                "Nationality": null,
+                "ContactNumber": "+1234567891",
+                "Email": "jane.doe@example.com",
+                "FFAirline": null,
+                "FFNumber": "",
+                "Ticket": null
+            }
+        ]
+    }
+]
 ]

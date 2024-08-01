@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { SaveBooking } from 'src/book/book.model';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -16,4 +17,6 @@ export class User {
   password: string;
   @Column({ default: 'registered' })
   role: string;
+  @OneToMany(() => SaveBooking, (saveBooking) => saveBooking.user)
+  saveBookings: SaveBooking[];
 }

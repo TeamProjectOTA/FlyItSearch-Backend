@@ -9,7 +9,9 @@ export class Authdto {
   password: string;
 }
 export class Userauthdto {
+  @ApiProperty()
   @IsEmail()
   email: string;
+  @ApiProperty()
   password: string;
 }

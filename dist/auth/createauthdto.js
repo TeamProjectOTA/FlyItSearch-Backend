@@ -28,7 +28,12 @@ class Userauthdto {
 }
 exports.Userauthdto = Userauthdto;
 __decorate([
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], Userauthdto.prototype, "email", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], Userauthdto.prototype, "password", void 0);
 //# sourceMappingURL=createauthdto.js.map

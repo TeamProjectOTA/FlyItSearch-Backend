@@ -18,14 +18,19 @@ import { FlyHubUtil } from './API Utils/flyhub.util';
 import { Test } from './API Utils/test.service';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { AdminModule } from 'src/admin/admin.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { BookModule } from 'src/book/book.module';
+import { BookService } from 'src/book/book.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Flight, Segment,Admin]),
+    TypeOrmModule.forFeature([Flight, Segment, Admin]),
     HttpModule,
     AirportsModule,
     AirlinesModule,
- 
+    AuthModule,
+    
+  
     
   ],
   controllers: [FlightController],
@@ -38,8 +43,8 @@ import { AdminModule } from 'src/admin/admin.module';
     FlyHubService,
     FlyHubUtil,
     Test,
-  
-   
+ 
+ 
   ],
 
   exports: [FlyHubService, FlyHubUtil, Test],

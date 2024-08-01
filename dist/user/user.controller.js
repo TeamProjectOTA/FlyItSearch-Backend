@@ -31,6 +31,12 @@ let UserController = class UserController {
     findAllUser(header) {
         return this.userService.allUser(header);
     }
+    async findUserWithBookings(header) {
+        return this.userService.findUserWithBookings(header);
+    }
+    async findAllUserWithBookings() {
+        return this.userService.findAllUserWithBookings();
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -42,7 +48,7 @@ __decorate([
 ], UserController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Patch)(':header'),
+    (0, common_1.Patch)("/update-user-profile"),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -57,6 +63,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "findAllUser", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Get)('/bookings'),
+    __param(0, (0, common_1.Headers)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "findUserWithBookings", null);
+__decorate([
+    (0, common_1.Get)('admin/bookings'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "findAllUserWithBookings", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User'),
     (0, common_1.Controller)('user'),

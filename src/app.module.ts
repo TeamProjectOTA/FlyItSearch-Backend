@@ -22,7 +22,6 @@ import { TourPackageModule } from './tour-package/tour-package.module';
 import { AirportsModule } from './airports/airports.module';
 import { AirlinesModule } from './airlines/airlines.module';
 
-
 require('dotenv').config();
 
 @Module({
@@ -33,29 +32,29 @@ require('dotenv').config();
         limit: 15,
       },
     ]),
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: process.env.DB_USERNAME,
-    //   password: process.env.DB_PASSWORD,
-    //   database: process.env.DB_NAME,
-    //   autoLoadEntities: true,
-    //   synchronize: true ,
-    //   logging: true,
-    // }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.FLYIT_URL,
+      host: 'localhost',
       port: 3306,
-      username: process.env.FLYIT_DB_USERNAME,
-      password: process.env.FLYIT_DB_PASSWORD,
-      database: process.env.FLYIT_DB_NAME,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: false,
-      connectTimeout: 60000
-      
+      synchronize: true,
+      logging: true,
     }),
+    // TypeOrmModule.forRoot({
+    //   type: 'mysql',
+    //   host: process.env.FLYIT_URL,
+    //   port: 3306,
+    //   username: process.env.FLYIT_DB_USERNAME,
+    //   password: process.env.FLYIT_DB_PASSWORD,
+    //   database: process.env.FLYIT_DB_NAME,
+    //   autoLoadEntities: true,
+    //   synchronize: false,
+    //   connectTimeout: 60000
+
+    // }),
 
     AdminModule,
     UserModule,

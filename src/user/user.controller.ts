@@ -17,6 +17,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { User } from './entities/user.entity';
 
 @ApiTags('User')
 @Controller('user')
@@ -28,7 +29,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
   @ApiBearerAuth('access_token')
-  @Patch(':header')
+  @Patch("/update-user-profile")
   update(@Headers() header: Headers, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(header, updateUserDto);
   }
@@ -38,6 +39,16 @@ export class UserController {
   findAllUser(@Headers() header: Headers) {
     return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
   }
+  @ApiBearerAuth('access_token')
+  @Get('/bookings')
+  async findUserWithBookings(@Headers() header: Headers): Promise<User> {
+    return this.userService.findUserWithBookings(header);
+  }
+  @Get('admin/bookings')
+  async findAllUserWithBookings(): Promise<any> {
+    return this.userService.findAllUserWithBookings();
+  }
+
   // @Post('/upload')
   // @UseInterceptors(
   //   FileInterceptor('file', {

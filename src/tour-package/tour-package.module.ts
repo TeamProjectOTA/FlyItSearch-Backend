@@ -24,10 +24,8 @@ import { Admin } from 'src/admin/entities/admin.entity';
       TourPlan,
       Objectives,
       MetaInfo,
-      Admin
-      
+      Admin,
     ]),
-   
   ],
   controllers: [TourPackageController],
   providers: [TourPackageService],

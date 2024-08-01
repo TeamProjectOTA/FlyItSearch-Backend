@@ -216,7 +216,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async bookingDataTransformerFlyhb(SearchResponse) {
+    async bookingDataTransformerFlyhb(SearchResponse, currentTimestamp) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -377,6 +377,7 @@ let FlyHubUtil = class FlyHubUtil {
                         ResultId: Result.ResultID,
                         BookingId: SearchResponse?.BookingID,
                         PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
+                        BookingDate: currentTimestamp,
                         SearchId: SearchResponse?.SearchId,
                         BookingStatus: SearchResponse?.BookingStatus,
                         InstantPayment: Instant_Payment,
@@ -403,6 +404,51 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         return FlightItenary;
+    }
+    async saveBookingData(SearchResponse, header) {
+        const booking = SearchResponse[0];
+        if (booking) {
+            const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
+            let tripType;
+            if (booking.AllLegsInfo.length === 1) {
+                tripType = 'OneWay';
+            }
+            else if (booking.AllLegsInfo.length === 2) {
+                if (booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
+                    booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo) {
+                    tripType = 'Return';
+                }
+                else {
+                    tripType = 'Multicity';
+                }
+            }
+            else {
+                tripType = 'Multicity';
+            }
+            const paxCount = booking.PriceBreakDown.reduce((sum, breakdown) => sum + breakdown.PaxCount, 0);
+            const convertedData = {
+                system: booking?.System,
+                bookingId: booking?.BookingId,
+                paxCount: paxCount,
+                Curriername: booking?.CarrierName,
+                CurrierCode: booking?.Carrier,
+                flightNumber: flightNumber.toString(),
+                isRefundable: booking?.Refundable,
+                bookingDate: booking?.BookingDate,
+                expireDate: booking?.TimeLimit,
+                bookingStatus: booking?.BookingStatus,
+                TripType: tripType,
+                laginfo: booking.AllLegsInfo.map((leg) => ({
+                    DepDate: leg?.DepDate,
+                    DepFrom: leg?.DepFrom,
+                    ArrTo: leg?.ArrTo
+                }))
+            };
+            return convertedData;
+        }
+        else {
+            return 'Booking data is unvalid';
+        }
     }
 };
 exports.FlyHubUtil = FlyHubUtil;

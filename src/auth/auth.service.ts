@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from 'src/admin/entities/admin.entity';
@@ -16,10 +20,7 @@ export class AuthService {
     private readonly jwtservice: JwtService,
   ) {}
 
-  async signInAdmin(
-    uuid: string,
-    pass: string,
-  ): Promise<any> {
+  async signInAdmin(uuid: string, pass: string): Promise<any> {
     const admin = await this.adminRepository.findOne({
       where: { uuid: uuid },
     });
@@ -29,8 +30,8 @@ export class AuthService {
     }
 
     const payload = { sub: admin.uuid };
-    const token= await this.jwtservice.signAsync(payload)
-    return token  ;
+    const token = await this.jwtservice.signAsync(payload);
+    return token;
   }
 
   async verifyAdminToken(header: any) {
@@ -123,11 +124,23 @@ export class AuthService {
     return this.adminRepository.findOne({ where: { uuid: uuid } });
   }
 
-  async decodeToken(header: any) {
-    const token = header['authorization'].replace('Bearer ', '');
-    const decodedToken = await this.jwtservice.verifyAsync(token);
-    const decoded = decodedToken.sub;
-    return decoded;
-  }
+  async decodeToken(header: any): Promise<string> {
+    if (!header || !header.authorization) {
+      throw new NotFoundException('Authorization header not found');
+    }
 
+    const token = header.authorization.replace('Bearer ', '');
+    let decodedToken: any;
+    try {
+      decodedToken = await this.jwtservice.verifyAsync(token);
+    } catch (error) {
+      throw new NotFoundException('Invalid token');
+    }
+
+    if (!decodedToken || !decodedToken.sub2) {
+      throw new NotFoundException('Invalid token payload');
+    }
+
+    return decodedToken.sub;
+  }
 }

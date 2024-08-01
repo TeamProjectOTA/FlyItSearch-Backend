@@ -12,7 +12,7 @@ import { User } from 'src/user/entities/user.entity';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '600s' },
+      signOptions: { expiresIn: '18000s' },
     }),
   ],
   providers: [AuthService],

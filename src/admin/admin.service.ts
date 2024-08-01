@@ -28,7 +28,7 @@ export class AdminService {
     private readonly authservice: AuthService,
   ) {}
 
-  async create(createAdminDto: CreateAdminDto,header: any): Promise<Admin> {
+  async create(createAdminDto: CreateAdminDto, header: any): Promise<Admin> {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();

@@ -1,0 +1,116 @@
+[
+    {
+        "System": "FLYHUB",
+        "ResultId": "777b3c69-4cda-45ce-812c-790ec5aa1236",
+        "BookingId": "FHB2408011386730",
+        "PNR": "06YLDV",
+        "BookingDate": "2024-08-01T08:29:38.239Z",
+        "BookingStatus": "Booked",
+        "InstantPayment": false,
+        "IsBookable": true,
+        "FareType": "NET",
+        "Carrier": "BS",
+        "CarrierName": "US-Bangla Airlines",
+        "BaseFare": 23003,
+        "Taxes": 9450,
+        "SerViceFee": 98,
+        "NetFare": 29975,
+        "GrossFare": 32551,
+        "PartialOption": false,
+        "PartialFare": 9766,
+        "TimeLimit": "2024-08-03T06:34:41",
+        "Refundable": true,
+        "ExtraService": null,
+        "PriceBreakDown": [
+            {
+                "PaxType": "Adult",
+                "BaseFare": 23003,
+                "Taxes": 9450,
+                "ServiceFee": 98,
+                "OtherCharges": 0,
+                "TotalFare": 32551,
+                "PaxCount": 1,
+                "Bag": [
+                    {
+                        "Airline": "BS",
+                        "Allowance": "30Kg"
+                    }
+                ],
+                "FareComponent": [
+                    {
+                        "Origin": "DAC",
+                        "Destination": "DXB",
+                        "DepDate": "2024-12-11T06:40:00",
+                        "FareBasisCode": "E",
+                        "Carrier": "BS"
+                    }
+                ]
+            }
+        ],
+        "AllLegsInfo": [
+            {
+                "DepDate": "2024-12-11T06:40:00",
+                "DepFrom": "DAC",
+                "ArrTo": "DXB",
+                "TotalFlightDuration": 435,
+                "Segments": [
+                    {
+                        "MarketingCarrier": "BS",
+                        "MarketingCarrierName": "US-Bangla Airlines",
+                        "MarketingFlightNumber": 343,
+                        "OperatingCarrier": "BS",
+                        "OperatingFlightNumber": 343,
+                        "OperatingCarrierName": "US-Bangla Airlines",
+                        "DepFrom": "DAC",
+                        "DepAirPort": "Hazrat Shahjalal International Airport",
+                        "DepLocation": "Dhaka, Bangladesh",
+                        "DepDateAdjustment": 0,
+                        "DepTime": "2024-12-11T06:40:00",
+                        "ArrTo": "DXB",
+                        "ArrAirPort": "Dubai International Airport",
+                        "ArrLocation": "Dubai, United Arab Emirates",
+                        "ArrDateAdjustment": 0,
+                        "ArrTime": "2024-12-11T11:55:00",
+                        "OperatedBy": "US-Bangla Airlines",
+                        "StopCount": "",
+                        "Duration": 435,
+                        "AircraftTypeName": "738",
+                        "Amenities": {},
+                        "DepartureGate": "TBA",
+                        "ArrivalGate": "TBA",
+                        "HiddenStops": [],
+                        "TotalMilesFlown": 0,
+                        "SegmentCode": {
+                            "bookingCode": "E",
+                            "cabinCode": "Y",
+                            "seatsAvailable": 0
+                        }
+                    }
+                ]
+            }
+        ],
+        "PassengerList": [
+            {
+                "PaxIndex": "P2154980",
+                "Title": "MR",
+                "FirstName": "JOHN",
+                "LastName": "SMITH",
+                "PaxType": "Adult",
+                "DateOfBirth": "2012-11-22T00:00:00",
+                "Gender": "Male",
+                "PassportNumber": "C12345678",
+                "PassportExpiryDate": "2030-11-22T00:00:00",
+                "PassportNationality": null,
+                "Address1": "456 Elm St",
+                "Address2": "",
+                "CountryCode": "CA",
+                "Nationality": null,
+                "ContactNumber": "+1987654321",
+                "Email": "john.smith@example.com",
+                "FFAirline": null,
+                "FFNumber": "",
+                "Ticket": null
+            }
+        ]
+    }
+]

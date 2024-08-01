@@ -36,7 +36,7 @@ export class TourPackageService {
     @InjectRepository(VisitPlace)
     private readonly visitPlaceRepository: Repository<VisitPlace>,
     @InjectRepository(Admin)
-    private readonly adminRepository:Repository<Admin>
+    private readonly adminRepository: Repository<Admin>,
   ) {}
 
   async createIntorduction(
@@ -131,12 +131,12 @@ export class TourPackageService {
     return this.tourPackageRepository.save(tourPackage);
   }
 
-  async findAll(uuid:string): Promise<any> {
+  async findAll(uuid: string): Promise<any> {
     const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if(!findadmin){
-      throw new UnauthorizedException()
+    if (!findadmin) {
+      throw new UnauthorizedException();
     }
-   
+
     const tourPackages = await this.tourPackageRepository.find({
       relations: [
         'introduction',

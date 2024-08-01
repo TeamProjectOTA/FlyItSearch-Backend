@@ -6,13 +6,13 @@ import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
-import { Test } from './API Utils/test.service';
+import { FlyHubUtil } from './API Utils/flyhub.util';
 export declare class FlightController {
     private readonly sabreService;
     private readonly bdFareService;
     private readonly flyHubService;
     private readonly testservice;
-    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: Test);
+    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: FlyHubUtil);
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
     getpnr(pnr: string): Promise<any>;
@@ -20,8 +20,9 @@ export declare class FlightController {
     get_ticket(pnr: string): Promise<any>;
     airfarerules(fareRulesDto: FareRulesDto): Promise<any>;
     airretrieve(pnr: string): Promise<any>;
-    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, uuid: string, request: Request): Promise<any>;
+    convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, uuid: string, request: Request, header: Headers): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
     miniRules(data: searchResultDto): Promise<any>;
     airRules(data: searchResultDto): Promise<any>;
+    apicheck(SearchResponse: any): Promise<any>;
 }

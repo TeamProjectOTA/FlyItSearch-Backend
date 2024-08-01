@@ -1,5 +1,4 @@
-import { Controller, Post, Body, Param, Get, Req } from '@nestjs/common';
-import { FlightService } from './flight.service';
+import { Controller, Post, Body, Param, Get, Req, Headers, } from '@nestjs/common';
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -11,6 +10,7 @@ import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { Test } from './API Utils/test.service';
 import { BookingID } from 'src/book/book.model';
+import { FlyHubUtil } from './API Utils/flyhub.util';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -19,7 +19,7 @@ export class FlightController {
     private readonly sabreService: SabreService,
     private readonly bdFareService: BDFareService,
     private readonly flyHubService: FlyHubService,
-    private readonly testservice: Test,
+    private readonly testservice: FlyHubUtil,
   ) {}
 
   // @Post('/flyhub')
@@ -72,15 +72,21 @@ export class FlightController {
   @Post('fhb/air-search/:uuid')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
-    @Param('uuid')uuid: string,
-    @Req() request: Request
+    @Param('uuid') uuid: string,
+    @Req() request: Request,
+    @Headers() header: Headers
   ): Promise<any> {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
     }
 
-    return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel,userIp,uuid);
+    return this.flyHubService.convertToFlyAirSearchDto(
+      flightSearchModel,
+      userIp,
+      uuid,
+      header
+    );
   }
 
   @Post('flh/price-check')
@@ -97,6 +103,8 @@ export class FlightController {
     return await this.flyHubService.airRules(data);
   }
 
-
- 
+  @Post('apicheck')
+  async apicheck(@Body() SearchResponse: any): Promise<any> {
+    return await this.testservice.bookingDataTransformerFlyhb(SearchResponse);
+  }
 }

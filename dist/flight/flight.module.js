@@ -23,6 +23,7 @@ const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const flyhub_util_1 = require("./API Utils/flyhub.util");
 const test_service_1 = require("./API Utils/test.service");
 const admin_entity_1 = require("../admin/entities/admin.entity");
+const auth_module_1 = require("../auth/auth.module");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -33,6 +34,7 @@ exports.FlightModule = FlightModule = __decorate([
             axios_1.HttpModule,
             airports_module_1.AirportsModule,
             airlines_module_1.AirlinesModule,
+            auth_module_1.AuthModule,
         ],
         controllers: [flight_controller_1.FlightController],
         providers: [

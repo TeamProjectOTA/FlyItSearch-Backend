@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+const book_model_1 = require("../../book/book.model");
 const typeorm_1 = require("typeorm");
 let User = class User {
 };
@@ -42,6 +43,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: 'registered' }),
     __metadata("design:type", String)
 ], User.prototype, "role", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => book_model_1.SaveBooking, (saveBooking) => saveBooking.user),
+    __metadata("design:type", Array)
+], User.prototype, "saveBookings", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

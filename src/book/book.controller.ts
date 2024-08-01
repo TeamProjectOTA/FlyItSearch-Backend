@@ -4,13 +4,14 @@ import {
   Get,
   Param,
   Post,
+  Headers,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { BookService } from './book.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { BookingID, File } from './book.model';
-import { ApiTags } from '@nestjs/swagger';
+import { BookingID, CreateSaveBookingDto, File } from './book.model';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
@@ -20,7 +21,7 @@ import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
 @Controller('book')
 export class BookController {
   constructor(
-    private readonly fileupload: BookService,
+    private readonly bookingService: BookService,
     private readonly flyHubService: FlyHubService,
     private readonly flyHubUtil: FlyHubUtil,
   ) {}
@@ -36,28 +37,41 @@ export class BookController {
   //   }),
   // )
   // async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<File> {
-  //   return await this.fileupload.saveFile(file);
+  //   return await this.bookingService.saveFile(file);
   // }
 
   @Post('flh/air-book/:uuid')
-  async airbook(@Body() data: FlbFlightSearchDto,@Param('uuid')uuid:string) {
-    return this.flyHubService.airbook(data,uuid);
+  async airbook(@Body() data: FlbFlightSearchDto, @Param('uuid') uuid: string) {
+    return this.flyHubService.airbook(data, uuid);
   }
 
   @Post('flh/cancel-ticket/:uuid')
-  async aircanel(@Body() bookingIdDto: BookingID,@Param('uuid')uuid:string): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto,uuid);
+  async aircanel(
+    @Body() bookingIdDto: BookingID,
+    @Param('uuid') uuid: string,
+  ): Promise<any> {
+    return this.flyHubService.aircancel(bookingIdDto, uuid);
   }
   @Post('flh/air-retrive')
   async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto);
   }
   @Post('testBooking')
-  async bookingtest(@Body() data: any): Promise<any> {
-    return await this.flyHubUtil.bookingDataTransformerFlyhb(data);
+  async bookingtest(@Body() data: any,header:any): Promise<any> {
+    
+    
+    return await this.flyHubUtil.saveBookingData(data,header);
   }
   @Post('one/testBooking')
   async test(@Body() data: any): Promise<any> {
     return await this.flyHubUtil.restBFMParser(data);
+  }
+  @ApiBearerAuth('access_token')
+  @Post('/save-booking')
+  async SaveBooking(
+    @Body() createSaveBookingDto: CreateSaveBookingDto,
+    @Headers() header: Headers,
+  ) {
+    return this.bookingService.saveBooking(createSaveBookingDto, header);
   }
 }

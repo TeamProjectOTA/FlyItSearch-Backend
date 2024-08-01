@@ -89,6 +89,24 @@ let UserService = class UserService {
         }
         return await this.userRepository.find();
     }
+    async findUserWithBookings(header) {
+        const email = await this.authservice.decodeToken(header);
+        const updateUser = await this.userRepository.findOne({
+            where: { email: email },
+        });
+        if (!updateUser) {
+            throw new common_1.NotFoundException('No Booking data Avilable for the user');
+        }
+        return this.userRepository.findOne({
+            where: { email },
+            relations: ['saveBookings', 'saveBookings.laginfo'],
+        });
+    }
+    async findAllUserWithBookings() {
+        return this.userRepository.find({
+            relations: ['saveBookings', 'saveBookings.laginfo'],
+        });
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
