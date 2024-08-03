@@ -9,38 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateSaveBookingDto = exports.BookingID = exports.LagInfo = exports.SaveBooking = exports.File = void 0;
+exports.CreateSaveBookingDto = exports.BookingID = exports.LagInfo = exports.SaveBooking = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
-let File = class File {
-};
-exports.File = File;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], File.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], File.prototype, "filename", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: 'DEFAULT_PATH' }),
-    __metadata("design:type", String)
-], File.prototype, "path", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], File.prototype, "size", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], File.prototype, "mimetype", void 0);
-exports.File = File = __decorate([
-    (0, typeorm_1.Entity)()
-], File);
 let SaveBooking = class SaveBooking {
 };
 exports.SaveBooking = SaveBooking;

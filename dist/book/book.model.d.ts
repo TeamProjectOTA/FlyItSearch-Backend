@@ -1,11 +1,4 @@
 import { User } from 'src/user/entities/user.entity';
-export declare class File {
-    id: number;
-    filename: string;
-    path: string;
-    size: number;
-    mimetype: string;
-}
 export declare class SaveBooking {
     id: number;
     system: string;

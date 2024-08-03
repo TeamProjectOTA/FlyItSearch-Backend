@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
   Inject,
@@ -30,7 +31,7 @@ export class FlyHubService {
     private readonly flyHubUtil: FlyHubUtil,
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
-    private readonly authService:AuthService
+    private readonly authService: AuthService,
   ) {}
 
   async getToken(): Promise<string> {
@@ -68,8 +69,6 @@ export class FlyHubService {
   }
 
   async searchFlights(reqBody: FlyAirSearchDto): Promise<any> {
-    
-    
     const token = await this.getToken();
     const shoppingrequest = {
       method: 'post',
@@ -84,10 +83,10 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(shoppingrequest);
-      
+
       return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
       //return response.data
-    }catch (error) {
+    } catch (error) {
       console.error(error);
       throw error;
     }
@@ -112,7 +111,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketCancel);
-      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+      return this.flyHubUtil.dataTransformer(response.data);
       //return response.data
     } catch (error) {
       throw error?.response?.data;
@@ -133,7 +132,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketRetrive);
-      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+      return this.flyHubUtil.dataTransformer(response.data);
       //return response.data
     } catch (error) {
       throw error?.response?.data;
@@ -200,11 +199,20 @@ export class FlyHubService {
     }
   }
 
-  async airbook(data: FlbFlightSearchDto, uuid: string,currentTimestamp?:Date) {
-    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    // if (!findadmin) {
-    //   throw new UnauthorizedException();
-    // }
+  async airbook(
+    data: FlbFlightSearchDto,
+    uuid: string,
+    currentTimestamp?: Date,
+    header?:any
+  ) {
+    const authenticate = this.authService.verifyUserToken(header);
+    if (!authenticate) {
+      throw new UnauthorizedException();
+    }
+    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    if (!findadmin) {
+      throw new UnauthorizedException();
+    }
     const token = await this.getToken();
 
     const Price = {
@@ -242,7 +250,11 @@ export class FlyHubService {
       const response0 = await axios.request(Price);
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
-      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data,currentTimestamp);
+      return this.flyHubUtil.bookingDataTransformerFlyhb(
+        response.data,
+        currentTimestamp,
+        header
+      );
     } catch (error) {
       throw error?.response?.data;
     }
@@ -252,16 +264,16 @@ export class FlyHubService {
     flightSearchModel: FlightSearchModel,
     userIp: string,
     uuid: string,
-    header:any
+    header: any,
   ): Promise<any> {
-    const authenticate=this.authService.verifyAdminToken(header)
-    if(!authenticate){
-      throw new UnauthorizedException()
-    }
-    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if (!findadmin) {
-      throw new UnauthorizedException();
-    }
+    // const authenticate = this.authService.verifyAdminToken(header);
+    // if (!authenticate) {
+    //   throw new UnauthorizedException();
+    // }
+    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    // if (!findadmin) {
+    //   throw new UnauthorizedException();
+    // }
     const segments = flightSearchModel.segments.map((segment) => ({
       Origin: segment.depfrom,
       Destination: segment.arrto,
@@ -280,11 +292,11 @@ export class FlyHubService {
       Segments: segments,
     });
     //console.log(flyAirSearchDto)
-    try{return this.searchFlights(flyAirSearchDto);}
-    catch(error){
-      return error
+    try {
+      return this.searchFlights(flyAirSearchDto);
+    } catch (error) {
+      return error;
     }
-    
   }
 
   private determineJourneyType(segments: any[]): string {

@@ -20,26 +20,10 @@ const book_model_1 = require("./book.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
 let BookService = class BookService {
-    constructor(fileRepository, saveBookingRepository, userRepository, authservice) {
-        this.fileRepository = fileRepository;
+    constructor(saveBookingRepository, userRepository, authservice) {
         this.saveBookingRepository = saveBookingRepository;
         this.userRepository = userRepository;
         this.authservice = authservice;
-    }
-    async saveFile(file) {
-        try {
-            const newFile = this.fileRepository.create({
-                filename: 'FLYT' + file.originalname,
-                path: file.path,
-                size: file.size,
-                mimetype: file.mimetype,
-            });
-            return this.fileRepository.save(newFile);
-        }
-        catch (error) {
-            console.log(error);
-            throw new common_1.NotFoundException();
-        }
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
@@ -59,11 +43,9 @@ let BookService = class BookService {
 exports.BookService = BookService;
 exports.BookService = BookService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(book_model_1.File)),
-    __param(1, (0, typeorm_1.InjectRepository)(book_model_1.SaveBooking)),
-    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(0, (0, typeorm_1.InjectRepository)(book_model_1.SaveBooking)),
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository,
         typeorm_2.Repository,
         auth_service_1.AuthService])
 ], BookService);

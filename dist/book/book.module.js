@@ -18,20 +18,21 @@ const admin_entity_1 = require("../admin/entities/admin.entity");
 const user_module_1 = require("../user/user.module");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_module_1 = require("../auth/auth.module");
+const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
 let BookModule = class BookModule {
 };
 exports.BookModule = BookModule;
 exports.BookModule = BookModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([book_model_1.File, admin_entity_1.Admin, book_model_1.SaveBooking, user_entity_1.User, book_model_1.LagInfo]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, book_model_1.SaveBooking, user_entity_1.User, book_model_1.LagInfo]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
-            flight_module_1.FlightModule
+            flight_module_1.FlightModule,
         ],
         controllers: [book_controller_1.BookController],
-        providers: [book_service_1.BookService, flyhub_flight_service_1.FlyHubService],
-        exports: [book_service_1.BookService]
+        providers: [book_service_1.BookService, flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil],
+        exports: [book_service_1.BookService],
     })
 ], BookModule);
 //# sourceMappingURL=book.module.js.map

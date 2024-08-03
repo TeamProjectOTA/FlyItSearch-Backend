@@ -29,7 +29,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
   @ApiBearerAuth('access_token')
-  @Patch("/update-user-profile")
+  @Patch('/update-user-profile')
   update(@Headers() header: Headers, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(header, updateUserDto);
   }

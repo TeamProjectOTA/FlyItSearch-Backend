@@ -102,12 +102,12 @@ export class UserService {
     }
     return this.userRepository.findOne({
       where: { email },
-      relations: ['saveBookings','saveBookings.laginfo'],
+      relations: ['saveBookings', 'saveBookings.laginfo'],
     });
   }
   async findAllUserWithBookings(): Promise<any> {
     return this.userRepository.find({
-      relations: ['saveBookings','saveBookings.laginfo'],
+      relations: ['saveBookings', 'saveBookings.laginfo'],
     });
   }
 }

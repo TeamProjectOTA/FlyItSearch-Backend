@@ -26,8 +26,9 @@ let BookController = class BookController {
         this.flyHubService = flyHubService;
         this.flyHubUtil = flyHubUtil;
     }
-    async airbook(data, uuid) {
-        return this.flyHubService.airbook(data, uuid);
+    async airbook(data, uuid, header) {
+        const currentTimestamp = new Date();
+        return this.flyHubService.airbook(data, uuid, currentTimestamp, header);
     }
     async aircanel(bookingIdDto, uuid) {
         return this.flyHubService.aircancel(bookingIdDto, uuid);
@@ -50,8 +51,9 @@ __decorate([
     (0, common_1.Post)('flh/air-book/:uuid'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('uuid')),
+    __param(2, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, String]),
+    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, String, Object]),
     __metadata("design:returntype", Promise)
 ], BookController.prototype, "airbook", null);
 __decorate([

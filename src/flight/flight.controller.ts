@@ -1,4 +1,12 @@
-import { Controller, Post, Body, Param, Get, Req, Headers, } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Param,
+  Get,
+  Req,
+  Headers,
+} from '@nestjs/common';
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -74,7 +82,7 @@ export class FlightController {
     @Body() flightSearchModel: FlightSearchModel,
     @Param('uuid') uuid: string,
     @Req() request: Request,
-    @Headers() header: Headers
+    @Headers() header: Headers,
   ): Promise<any> {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
@@ -85,7 +93,7 @@ export class FlightController {
       flightSearchModel,
       userIp,
       uuid,
-      header
+      header,
     );
   }
 
@@ -102,9 +110,11 @@ export class FlightController {
   async airRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.airRules(data);
   }
+  
 
   @Post('apicheck')
-  async apicheck(@Body() SearchResponse: any): Promise<any> {
-    return await this.testservice.bookingDataTransformerFlyhb(SearchResponse);
+  async apicheck(@Body() SearchResponse: any,@Headers() header: Headers,): Promise<any> {
+    const currentTimestamp=new Date()
+    return await this.testservice.bookingDataTransformerFlyhb(SearchResponse,currentTimestamp,header);
   }
 }

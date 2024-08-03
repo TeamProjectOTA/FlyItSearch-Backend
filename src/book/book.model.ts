@@ -12,27 +12,21 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity()
-export class File {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  filename: string;
-  @Column({ default: 'DEFAULT_PATH' })
-  path: string;
-  @Column()
-  size: number;
-  @Column()
-  mimetype: string;
-}
+
 @Entity()
 export class SaveBooking {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
-  system:string;
+  system: string;
 
   @Column()
   bookingId: string;
@@ -106,7 +100,7 @@ class CreateLagInfoDto {
 
 export class CreateSaveBookingDto {
   @IsString()
-  system:string
+  system: string;
   @IsString()
   bookingId: string;
 
@@ -126,11 +120,9 @@ export class CreateSaveBookingDto {
   isRefundable: boolean;
 
   @IsString()
-  
   bookingDate: string;
 
   @IsString()
- 
   expireDate: string;
 
   @IsString()

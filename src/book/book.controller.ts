@@ -1,18 +1,13 @@
 import {
   Body,
   Controller,
-  Get,
   Param,
   Post,
   Headers,
-  UploadedFile,
-  UseInterceptors,
 } from '@nestjs/common';
 import { BookService } from './book.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { BookingID, CreateSaveBookingDto, File } from './book.model';
+import { BookingID, CreateSaveBookingDto,  } from './book.model';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
@@ -41,8 +36,9 @@ export class BookController {
   // }
 
   @Post('flh/air-book/:uuid')
-  async airbook(@Body() data: FlbFlightSearchDto, @Param('uuid') uuid: string) {
-    return this.flyHubService.airbook(data, uuid);
+  async airbook(@Body() data: FlbFlightSearchDto, @Param('uuid') uuid: string,@Headers() header: Headers) {
+    const currentTimestamp=new Date()
+    return this.flyHubService.airbook(data, uuid,currentTimestamp,header);
   }
 
   @Post('flh/cancel-ticket/:uuid')
@@ -57,10 +53,8 @@ export class BookController {
     return await this.flyHubService.airRetrive(bookingIdDto);
   }
   @Post('testBooking')
-  async bookingtest(@Body() data: any,header:any): Promise<any> {
-    
-    
-    return await this.flyHubUtil.saveBookingData(data,header);
+  async bookingtest(@Body() data: any, header: any): Promise<any> {
+    return await this.flyHubUtil.saveBookingData(data, header);
   }
   @Post('one/testBooking')
   async test(@Body() data: any): Promise<any> {

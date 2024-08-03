@@ -88,7 +88,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
-            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+            return this.flyHubUtil.dataTransformer(response.data);
         }
         catch (error) {
             throw error?.response?.data;
@@ -108,7 +108,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketRetrive);
-            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data);
+            return this.flyHubUtil.dataTransformer(response.data);
         }
         catch (error) {
             throw error?.response?.data;
@@ -174,7 +174,15 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data, uuid, currentTimestamp) {
+    async airbook(data, uuid, currentTimestamp, header) {
+        const authenticate = this.authService.verifyUserToken(header);
+        if (!authenticate) {
+            throw new common_1.UnauthorizedException();
+        }
+        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+        if (!findadmin) {
+            throw new common_1.UnauthorizedException();
+        }
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -210,21 +218,13 @@ let FlyHubService = class FlyHubService {
             const response0 = await axios_1.default.request(Price);
             const response1 = await axios_1.default.request(PreBookticket);
             const response = await axios_1.default.request(Bookticket);
-            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, currentTimestamp);
+            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, currentTimestamp, header);
         }
         catch (error) {
             throw error?.response?.data;
         }
     }
     async convertToFlyAirSearchDto(flightSearchModel, userIp, uuid, header) {
-        const authenticate = this.authService.verifyAdminToken(header);
-        if (!authenticate) {
-            throw new common_1.UnauthorizedException();
-        }
-        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-        if (!findadmin) {
-            throw new common_1.UnauthorizedException();
-        }
         const segments = flightSearchModel.segments.map((segment) => ({
             Origin: segment.depfrom,
             Destination: segment.arrto,
