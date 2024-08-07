@@ -31,12 +31,16 @@ export class AuthService {
 
     const payload = { sub: admin.uuid };
     const token = await this.jwtservice.signAsync(payload);
-    return token;
+    return {access_token: token};
   }
 
   async verifyAdminToken(header: any) {
     try {
-      const token = header['authorization'].replace('Bearer ', '');
+      const authHeader = header['authorization'];
+      if (!authHeader) {
+        throw new UnauthorizedException('No token provided.');
+      }
+      const token = authHeader.replace('Bearer ', '');
 
       if (!token) {
         throw new UnauthorizedException();
@@ -50,7 +54,7 @@ export class AuthService {
       });
 
       if (!adminData) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('Admin not found.');
       }
 
       return adminData;
@@ -63,10 +67,11 @@ export class AuthService {
     }
   }
 
+
   async signInUser(
     email: string,
     pass: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
@@ -82,17 +87,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
     const payload = { sub: user.email, sub2: user.passengerId };
+    const token=await this.jwtservice.signAsync(payload)
     return {
-      access_token: await this.jwtservice.signAsync(payload),
+      access_token:token 
     };
   }
   async verifyUserToken(header: any) {
     try {
-      const token = header['authorization'].replace('Bearer ', '');
-
-      if (!token) {
-        throw new UnauthorizedException();
+      const authHeader = header['authorization'];
+      if (!authHeader) {
+        throw new UnauthorizedException('No token provided.');
       }
+      const token = authHeader.replace('Bearer ', '');
 
       const decodedToken = await this.jwtservice.verifyAsync(token);
       const email = decodedToken.sub;
@@ -102,7 +108,7 @@ export class AuthService {
       });
 
       if (!userData) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('User not found.');
       }
 
       return userData;
@@ -142,5 +148,30 @@ export class AuthService {
     }
 
     return decodedToken.sub;
+  }
+
+
+
+  async verifyBothToken(header:any):Promise<any>{
+    let isUserTokenValid = false;
+    let isAdminTokenValid = false;
+  
+    try {
+      await this.verifyUserToken(header);
+      isUserTokenValid = true;
+    } catch (error) {
+     console.log(error)
+    }
+  
+    try {
+      await this.verifyAdminToken(header);
+      isAdminTokenValid = true;
+    } catch (error) {
+     
+    }
+  
+    if (!isUserTokenValid && !isAdminTokenValid) {
+      throw new UnauthorizedException();
+    }
   }
 }
