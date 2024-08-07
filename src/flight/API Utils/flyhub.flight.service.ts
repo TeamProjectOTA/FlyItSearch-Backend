@@ -1,8 +1,6 @@
 import {
-  forwardRef,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';

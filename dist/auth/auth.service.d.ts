@@ -9,11 +9,10 @@ export declare class AuthService {
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService);
     signInAdmin(uuid: string, pass: string): Promise<any>;
     verifyAdminToken(header: any): Promise<Admin>;
-    signInUser(email: string, pass: string): Promise<{
-        access_token: string;
-    }>;
+    signInUser(email: string, pass: string): Promise<any>;
     verifyUserToken(header: any): Promise<User>;
     getUserByEmail(email: string): Promise<User>;
     getAdminByUUID(uuid: string): Promise<Admin>;
     decodeToken(header: any): Promise<string>;
+    verifyBothToken(header: any): Promise<any>;
 }

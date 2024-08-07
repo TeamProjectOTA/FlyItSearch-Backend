@@ -55,7 +55,7 @@ export class UserService {
   }
 
   async update(header: any, updateUserDto: UpdateUserDto) {
-    // const verifyAdminToken = await this.authservice.verifyUserToken(header);
+    
     const verifyUserToken = await this.authservice.verifyUserToken(header);
     if (!verifyUserToken) {
       throw new UnauthorizedException();
@@ -84,15 +84,27 @@ export class UserService {
     return await this.userRepository.save(updateUser);
   }
 
+
+
+
+
   async allUser(header: any): Promise<User[]> {
-    const verifyUser = await this.authservice.verifyUserToken(header);
-    // const verifyAdmin = await this.authservice.verifyAdminToken(header);
-    if (!verifyUser) {
+    const verifyAdmin = await this.authservice.verifyAdminToken(header);
+    if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
     return await this.userRepository.find();
   }
+
+
+
+
+
   async findUserWithBookings(header: any): Promise<User> {
+    const verifyUser = await this.authservice.verifyUserToken(header);
+    if (!verifyUser) {
+      throw new UnauthorizedException();
+    }
     const email = await this.authservice.decodeToken(header);
     const updateUser = await this.userRepository.findOne({
       where: { email: email },
@@ -105,7 +117,14 @@ export class UserService {
       relations: ['saveBookings', 'saveBookings.laginfo'],
     });
   }
-  async findAllUserWithBookings(): Promise<any> {
+
+
+  
+  async findAllUserWithBookings(header:any): Promise<any> {
+    const verifyAdmin = await this.authservice.verifyAdminToken(header);
+    if (!verifyAdmin) {
+      throw new UnauthorizedException();
+    }
     return this.userRepository.find({
       relations: ['saveBookings', 'saveBookings.laginfo'],
     });

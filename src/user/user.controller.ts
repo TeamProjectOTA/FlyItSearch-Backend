@@ -35,7 +35,7 @@ export class UserController {
   }
 
   @ApiBearerAuth('access_token')
-  @Get()
+  @Get('/admin/all-user')
   findAllUser(@Headers() header: Headers) {
     return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
   }
@@ -44,9 +44,10 @@ export class UserController {
   async findUserWithBookings(@Headers() header: Headers): Promise<User> {
     return this.userService.findUserWithBookings(header);
   }
-  @Get('admin/bookings')
-  async findAllUserWithBookings(): Promise<any> {
-    return this.userService.findAllUserWithBookings();
+  @ApiBearerAuth('access_token')
+  @Get('admin/all-user-bookings')
+  async findAllUserWithBookings(@Headers() header: Headers): Promise<any> {
+    return this.userService.findAllUserWithBookings(header);
   }
 
   // @Post('/upload')

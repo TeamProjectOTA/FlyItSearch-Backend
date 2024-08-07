@@ -35,11 +35,15 @@ let AuthService = class AuthService {
         }
         const payload = { sub: admin.uuid };
         const token = await this.jwtservice.signAsync(payload);
-        return token;
+        return { access_token: token };
     }
     async verifyAdminToken(header) {
         try {
-            const token = header['authorization'].replace('Bearer ', '');
+            const authHeader = header['authorization'];
+            if (!authHeader) {
+                throw new common_1.UnauthorizedException('No token provided.');
+            }
+            const token = authHeader.replace('Bearer ', '');
             if (!token) {
                 throw new common_1.UnauthorizedException();
             }
@@ -49,7 +53,7 @@ let AuthService = class AuthService {
                 where: { uuid: uuid },
             });
             if (!adminData) {
-                throw new common_1.UnauthorizedException();
+                throw new common_1.UnauthorizedException('Admin not found.');
             }
             return adminData;
         }
@@ -74,23 +78,25 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Invalid email or password');
         }
         const payload = { sub: user.email, sub2: user.passengerId };
+        const token = await this.jwtservice.signAsync(payload);
         return {
-            access_token: await this.jwtservice.signAsync(payload),
+            access_token: token
         };
     }
     async verifyUserToken(header) {
         try {
-            const token = header['authorization'].replace('Bearer ', '');
-            if (!token) {
-                throw new common_1.UnauthorizedException();
+            const authHeader = header['authorization'];
+            if (!authHeader) {
+                throw new common_1.UnauthorizedException('No token provided.');
             }
+            const token = authHeader.replace('Bearer ', '');
             const decodedToken = await this.jwtservice.verifyAsync(token);
             const email = decodedToken.sub;
             const userData = await this.userRepository.findOne({
                 where: { email: email },
             });
             if (!userData) {
-                throw new common_1.UnauthorizedException();
+                throw new common_1.UnauthorizedException('User not found.');
             }
             return userData;
         }
@@ -125,6 +131,26 @@ let AuthService = class AuthService {
             throw new common_1.NotFoundException('Invalid token payload');
         }
         return decodedToken.sub;
+    }
+    async verifyBothToken(header) {
+        let isUserTokenValid = false;
+        let isAdminTokenValid = false;
+        try {
+            await this.verifyUserToken(header);
+            isUserTokenValid = true;
+        }
+        catch (error) {
+            console.log(error);
+        }
+        try {
+            await this.verifyAdminToken(header);
+            isAdminTokenValid = true;
+        }
+        catch (error) {
+        }
+        if (!isUserTokenValid && !isAdminTokenValid) {
+            throw new common_1.UnauthorizedException();
+        }
     }
 };
 exports.AuthService = AuthService;

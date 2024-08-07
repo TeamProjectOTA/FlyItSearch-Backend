@@ -83,13 +83,17 @@ let UserService = class UserService {
         return await this.userRepository.save(updateUser);
     }
     async allUser(header) {
-        const verifyUser = await this.authservice.verifyUserToken(header);
-        if (!verifyUser) {
+        const verifyAdmin = await this.authservice.verifyAdminToken(header);
+        if (!verifyAdmin) {
             throw new common_1.UnauthorizedException();
         }
         return await this.userRepository.find();
     }
     async findUserWithBookings(header) {
+        const verifyUser = await this.authservice.verifyUserToken(header);
+        if (!verifyUser) {
+            throw new common_1.UnauthorizedException();
+        }
         const email = await this.authservice.decodeToken(header);
         const updateUser = await this.userRepository.findOne({
             where: { email: email },
@@ -102,7 +106,11 @@ let UserService = class UserService {
             relations: ['saveBookings', 'saveBookings.laginfo'],
         });
     }
-    async findAllUserWithBookings() {
+    async findAllUserWithBookings(header) {
+        const verifyAdmin = await this.authservice.verifyAdminToken(header);
+        if (!verifyAdmin) {
+            throw new common_1.UnauthorizedException();
+        }
         return this.userRepository.find({
             relations: ['saveBookings', 'saveBookings.laginfo'],
         });

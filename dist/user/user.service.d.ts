@@ -11,5 +11,5 @@ export declare class UserService {
     update(header: any, updateUserDto: UpdateUserDto): Promise<User>;
     allUser(header: any): Promise<User[]>;
     findUserWithBookings(header: any): Promise<User>;
-    findAllUserWithBookings(): Promise<any>;
+    findAllUserWithBookings(header: any): Promise<any>;
 }
