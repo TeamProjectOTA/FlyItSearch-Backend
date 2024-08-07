@@ -17,7 +17,7 @@ td, th {
   padding: 8px;
 }
 
-tr:nth-child(even){background-color: #f2f2f2;}
+tr:nth-child(even) {background-color: #f2f2f2;}
 
 tr:hover {background-color: #ddd;}
 
@@ -28,13 +28,12 @@ th {
   background-color: #DEDEDE;
   color: white;
 }
-.date{
- text-align: right;
-   
-
+.date {
+  text-align: right;
 }
-.ticket{
-    background-color: aqua;
+
+.ticket {
+  background-color: aqua;
 }
 </style>
 </head>
@@ -45,50 +44,39 @@ th {
 <p>Email: support@exopmiae.com</p>
 <p>Phone: 0451548154</p>
 
-<h3 class="ticket">e-Ticket #789542</h3>
+<h3 class="ticket">e-Ticket #{{BookingId}}</h3>
 <div class="date">
-<p>Date: 31 May 2022</p>
-<p>PNR: {{PNR}}</p>
+  <p>Date: {{TimeLimit}}</p>
+  <p>PNR: {{PNR}}</p>
 </div>
 
-<h3>FLIGHT ITNERARIES</h3>
+<h3>FLIGHT ITINERARIES</h3>
 <table>
   <tr>
     <th>Flight Segment</th>
     <th>Flight</th>
-    <th>Career name</th>
+    <th>Carrier Name</th>
     <th>Departure</th>
     <th>Arrival</th>
     <th>Arrival Terminal</th>
     <th>Class</th>
   </tr>
+
+  {{#each AllLegsInfo}}
   <tr>
-    <td>Dhaka-Dellhi</td>
-    <td>BS341</td>
-    <td>Biman Bangladesh</td>
-    <td>01-sep-22<br>18:15</td>
-    <td>01-sep-22<br>18:15</td>
-    <td>Terminal</td>
-    <td>Economy</td>
+    <td>{{DepFrom}}-{{ArrTo}}</td>
+    {{#each Segments}}
+    <td>{{MarketingCarrier}}{{MarketingFlightNumber}}</td>
+    <td>{{MarketingCarrierName}}</td>
+
+    <td>{{DepTime}}</td>
+    <td>{{ArrTime}}</td>
+    <td>{{DepartureGate}}</td>
+
+    <td>{{SegmentCode.cabinCode}}</td>
+    {{/each}}
   </tr>
-  <tr>
-    <td>Delhi-Istanbul</td>
-    <td>BS341</td>
-    <td>Turkey Airlines</td>
-    <td>01-sep-22<br>18:15</td>
-    <td>01-sep-22<br>18:15</td>
-    <td>Terminal</td>
-    <td>Economy</td>
-  </tr>
-  <tr>
-    <td>Istanbul-Dubai</td>
-    <td>BS341</td>
-    <td>Turkey Airlines</td>
-    <td>01-sep-22<br>18:15</td>
-    <td>01-sep-22<br>18:15</td>
-    <td>Terminal</td>
-    <td>Economy</td>
-  </tr>
+  {{/each}}
 </table>
 
 <h3>PASSENGER DETAILS</h3>
@@ -98,11 +86,19 @@ th {
     <th>Pax Type</th>
     <th>Bag Allowance</th>
   </tr>
+  {{#each PassengerList}}
   <tr>
-    <td>Mr. XYZ</td>
-    <td>Adult</td>
-    <td>30kg</td>
+    <td>{{Title}} {{FirstName}} {{LastName}}</td>
+    <td>{{PaxType}}</td>
+    <td>
+      {{#each ../PriceBreakDown}}
+        {{#each Bag}}
+          {{Allowance}}<br>
+        {{/each}}
+      {{/each}}
+    </td>
   </tr>
+  {{/each}}
 </table>
 
 <p>Baggage allowances apply to each passenger in your booking.</p>
@@ -110,40 +106,37 @@ th {
 <h3>PRICE BREAKDOWN</h3>
 <table>
   <tr>
-    <th>Рак Туре</th>
+    <th>Pax Type</th>
     <th>Base Fare</th>
     <th>Tax</th>
     <th>Count</th>
     <th>Total Fare</th>
   </tr>
+  {{#each PriceBreakDown}}
   <tr>
-    <td>Adult</td>
-    <td>90,000</td>
-    <td>4,500</td>
-    <td>1</td>
-    <td>10,500</td>
+    <td>{{PaxType}}</td>
+    <td>{{BaseFare}}</td>
+    <td>{{Taxes}}</td>
+    <td>{{PaxCount}}</td>
+    <td>{{TotalFare}}</td>
   </tr>
-  <tr>
-    <td>Child</td>
-    <td>90,000</td>
-    <td>4,500</td>
-    <td>1</td>
-    <td>10,500</td>
-  </tr>
+  {{/each}}
 </table>
 
-<p>TOTAL AMOUNT 104,500 BDT</p>
+<p>TOTAL AMOUNT {{GrossFare}} BDT</p>
 
-<p>Base fare total amount 94,500 BDT</p>
-<p>Discount 8,500 BDT</p>
-<p>Tax 94,500 BDT</p>
-<p>AIT & VAT 8,500 BDT</p>
-<p>Total Ticket fare Amount 104,500 BDT</p>
+<p>Base fare total amount {{BaseFare}} BDT</p>
+<p>Discount {{SerViceFee}} BDT</p>
+<p>Tax {{Taxes}} BDT</p>
+<p>AIT & VAT {{SerViceFee}} BDT</p>
+<p>Total Ticket fare Amount {{GrossFare}} BDT</p>
 
 <p>In words: Three thousand one hundred and seventy-eight</p>
 
 <p><b>Note:</b></p>
-<p>All payment should be made in favor of. This Invoice will not be recognized as paid unless supported by Company Official Receipt. 3% Bank Charge will be add on total bill amount, if the bill Paid/settled by Debit/Credit Card</p>
+<p>All payment should be made in favor of. This Invoice will not be recognized as paid unless supported by Company Official Receipt. 3% Bank Charge will be added on total bill amount, if the bill is paid/settled by Debit/Credit Card.</p>
+
+
 
 </body>
 </html>
