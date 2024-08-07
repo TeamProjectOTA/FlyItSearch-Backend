@@ -109,10 +109,6 @@ let TourPackageService = class TourPackageService {
         return this.tourPackageRepository.save(tourPackage);
     }
     async findAll(uuid) {
-        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-        if (!findadmin) {
-            throw new common_1.UnauthorizedException();
-        }
         const tourPackages = await this.tourPackageRepository.find({
             relations: [
                 'introduction',

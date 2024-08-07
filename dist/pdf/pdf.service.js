@@ -46,7 +46,7 @@ let PdfService = PdfService_1 = class PdfService {
         }
     }
     async generatePdf(data) {
-        const templateHtml = fs.readFileSync(path.join(__dirname, '../../src/pdf/pdf.html'), 'utf8');
+        const templateHtml = fs.readFileSync(path.join(__dirname, '../../src/pdf/pdf2.html'), 'utf8');
         const template = Handlebars.compile(templateHtml);
         const html = template(data[0]);
         const browser = await puppeteer.launch();

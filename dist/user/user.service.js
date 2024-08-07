@@ -89,22 +89,26 @@ let UserService = class UserService {
         }
         return await this.userRepository.find();
     }
-    async findUserWithBookings(header) {
+    async findUserWithBookings(header, bookingStatus) {
         const verifyUser = await this.authservice.verifyUserToken(header);
         if (!verifyUser) {
             throw new common_1.UnauthorizedException();
         }
         const email = await this.authservice.decodeToken(header);
-        const updateUser = await this.userRepository.findOne({
-            where: { email: email },
-        });
-        if (!updateUser) {
-            throw new common_1.NotFoundException('No Booking data Avilable for the user');
+        const user = await this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.saveBookings', 'saveBooking')
+            .leftJoinAndSelect('saveBooking.laginfo', 'laginfo')
+            .where('user.email = :email', { email })
+            .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', { bookingStatus })
+            .getOne();
+        if (!user) {
+            throw new common_1.NotFoundException('No Booking data Available for the user');
         }
-        return this.userRepository.findOne({
-            where: { email },
-            relations: ['saveBookings', 'saveBookings.laginfo'],
-        });
+        return {
+            name: user.fullName,
+            email: user.email,
+            saveBookings: user.saveBookings,
+        };
     }
     async findAllUserWithBookings(header) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);

@@ -44,12 +44,19 @@ export class BookService {
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
     }
-
-    const saveBooking = this.saveBookingRepository.create({
-      ...createSaveBookingDto,
-      user,
+    let saveBooking = await this.saveBookingRepository.findOne({
+      where: { bookingId: createSaveBookingDto.bookingId, user },
     });
-
+  
+    if (saveBooking) {
+      saveBooking.bookingStatus = createSaveBookingDto.bookingStatus;
+    } else {
+      saveBooking = this.saveBookingRepository.create({
+        ...createSaveBookingDto,
+        user,
+      });
+    }
+  
     return this.saveBookingRepository.save(saveBooking);
   }
 }

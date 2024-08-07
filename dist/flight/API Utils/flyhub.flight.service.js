@@ -74,7 +74,7 @@ let FlyHubService = class FlyHubService {
             throw error;
         }
     }
-    async aircancel(BookingID, uuid) {
+    async aircancel(BookingID, uuid, header) {
         const token = await this.getToken();
         const ticketCancel = {
             method: 'post',
@@ -88,7 +88,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
-            return this.flyHubUtil.dataTransformer(response.data);
+            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header);
         }
         catch (error) {
             throw error?.response?.data;

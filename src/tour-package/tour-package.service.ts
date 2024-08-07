@@ -39,6 +39,8 @@ export class TourPackageService {
     private readonly adminRepository: Repository<Admin>,
   ) {}
 
+
+
   async createIntorduction(
     createIntroductionDto: CreateIntroductionDto,
   ): Promise<Introduction> {
@@ -132,10 +134,10 @@ export class TourPackageService {
   }
 
   async findAll(uuid: string): Promise<any> {
-    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if (!findadmin) {
-      throw new UnauthorizedException();
-    }
+    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
+    // if (!findadmin) {
+    //   throw new UnauthorizedException();
+    // }
 
     const tourPackages = await this.tourPackageRepository.find({
       relations: [

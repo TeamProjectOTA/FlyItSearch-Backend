@@ -58,9 +58,9 @@ export class SaveBooking {
   @Column()
   TripType: string;
 
-  @OneToMany(() => LagInfo, (lagInfo) => lagInfo.saveBooking, { cascade: true })
+  @OneToMany(() => LagInfo, (lagInfo) => lagInfo.saveBooking, { onDelete: 'CASCADE' })
   laginfo: LagInfo[];
-  @ManyToOne(() => User, (user) => user.saveBookings)
+  @ManyToOne(() => User, (user) => user.saveBookings, { onDelete: 'CASCADE' })
   user: User;
 }
 @Entity()
@@ -77,7 +77,7 @@ export class LagInfo {
   @Column()
   ArrTo: string;
 
-  @ManyToOne(() => SaveBooking, (saveBooking) => saveBooking.laginfo)
+  @ManyToOne(() => SaveBooking, (saveBooking) => saveBooking.laginfo, { onDelete: 'CASCADE' })
   saveBooking: SaveBooking;
 }
 

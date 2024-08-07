@@ -67,11 +67,11 @@ __decorate([
     __metadata("design:type", String)
 ], SaveBooking.prototype, "TripType", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => LagInfo, (lagInfo) => lagInfo.saveBooking, { cascade: true }),
+    (0, typeorm_1.OneToMany)(() => LagInfo, (lagInfo) => lagInfo.saveBooking, { onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
 ], SaveBooking.prototype, "laginfo", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.saveBookings),
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.saveBookings, { onDelete: 'CASCADE' }),
     __metadata("design:type", user_entity_1.User)
 ], SaveBooking.prototype, "user", void 0);
 exports.SaveBooking = SaveBooking = __decorate([
@@ -97,7 +97,7 @@ __decorate([
     __metadata("design:type", String)
 ], LagInfo.prototype, "ArrTo", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => SaveBooking, (saveBooking) => saveBooking.laginfo),
+    (0, typeorm_1.ManyToOne)(() => SaveBooking, (saveBooking) => saveBooking.laginfo, { onDelete: 'CASCADE' }),
     __metadata("design:type", SaveBooking)
 ], LagInfo.prototype, "saveBooking", void 0);
 exports.LagInfo = LagInfo = __decorate([

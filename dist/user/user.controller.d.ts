@@ -8,6 +8,6 @@ export declare class UserController {
     create(createUserDto: CreateUserDto): Promise<User>;
     update(header: Headers, updateUserDto: UpdateUserDto): Promise<User>;
     findAllUser(header: Headers): Promise<User[]>;
-    findUserWithBookings(header: Headers): Promise<User>;
+    findUserWithBookings(header: Headers, bookingStatus: string): Promise<Partial<User>>;
     findAllUserWithBookings(header: Headers): Promise<any>;
 }

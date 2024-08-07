@@ -45,8 +45,9 @@ export class BookController {
   async aircanel(
     @Body() bookingIdDto: BookingID,
     @Param('uuid') uuid: string,
+    @Headers() header: Headers
   ): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto, uuid);
+    return this.flyHubService.aircancel(bookingIdDto, uuid,header);
   }
   @Post('flh/air-retrive')
   async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {

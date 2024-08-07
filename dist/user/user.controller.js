@@ -31,8 +31,8 @@ let UserController = class UserController {
     findAllUser(header) {
         return this.userService.allUser(header);
     }
-    async findUserWithBookings(header) {
-        return this.userService.findUserWithBookings(header);
+    async findUserWithBookings(header, bookingStatus) {
+        return this.userService.findUserWithBookings(header, bookingStatus);
     }
     async findAllUserWithBookings(header) {
         return this.userService.findAllUserWithBookings(header);
@@ -67,8 +67,9 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)('/bookings'),
     __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Query)('bookingStatus')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findUserWithBookings", null);
 __decorate([

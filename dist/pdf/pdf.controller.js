@@ -287,12 +287,13 @@ let PdfController = class PdfController {
             },
         ];
         const buffer = await this.pdfservice.generatePdf(jsonData);
+        const bookingId = jsonData[0].BookingId;
         res.set({
             'Content-Type': 'application/pdf',
-            'Content-Disposition': 'attachment; filename=flight_ticket.pdf',
+            'Content-Disposition': `attachment; filename=Traveler_BookingId:${bookingId}.pdf`,
             'Content-Length': buffer.length,
         });
-        res.end(buffer);
+        res.send(buffer);
     }
 };
 exports.PdfController = PdfController;

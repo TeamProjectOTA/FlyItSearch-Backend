@@ -90,7 +90,7 @@ export class FlyHubService {
     }
   }
 
-  async aircancel(BookingID: BookingID, uuid: string): Promise<any> {
+  async aircancel(BookingID: BookingID, uuid: string,header?:any): Promise<any> {
     // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
     // if (!findadmin) {
     //   throw new UnauthorizedException();
@@ -109,7 +109,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketCancel);
-      return this.flyHubUtil.dataTransformer(response.data);
+      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data,header);
       //return response.data
     } catch (error) {
       throw error?.response?.data;

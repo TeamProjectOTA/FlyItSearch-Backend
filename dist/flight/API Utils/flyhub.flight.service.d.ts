@@ -15,7 +15,7 @@ export declare class FlyHubService {
     constructor(flyHubUtil: FlyHubUtil, adminRepository: Repository<Admin>, authService: AuthService);
     getToken(): Promise<string>;
     searchFlights(reqBody: FlyAirSearchDto): Promise<any>;
-    aircancel(BookingID: BookingID, uuid: string): Promise<any>;
+    aircancel(BookingID: BookingID, uuid: string, header?: any): Promise<any>;
     airRetrive(BookingID: BookingID): Promise<any>;
     bookingRules(data: searchResultDto): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
