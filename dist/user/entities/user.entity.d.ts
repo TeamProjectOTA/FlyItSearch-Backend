@@ -1,4 +1,5 @@
-import { SaveBooking } from 'src/book/book.model';
+import { SaveBooking } from 'src/book/booking.model';
+import { ProfilePicture } from 'src/uploads/uploads.model';
 export declare class User {
     id: number;
     passengerId: string;
@@ -7,5 +8,6 @@ export declare class User {
     email: string;
     password: string;
     role: string;
+    profilePicture: ProfilePicture;
     saveBookings: SaveBooking[];
 }

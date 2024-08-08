@@ -1765,7 +1765,7 @@ let SabreService = class SabreService {
 exports.SabreService = SabreService;
 exports.SabreService = SabreService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [booking_service_1.BookingService,
+    __metadata("design:paramtypes", [booking_service_1.BookingServicesbr,
         sabre_utils_1.SabreUtils])
 ], SabreService);
 //# sourceMappingURL=sabre.flights.service.js.map

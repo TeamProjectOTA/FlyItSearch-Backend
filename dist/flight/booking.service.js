@@ -9,17 +9,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BookingService = void 0;
+exports.BookingServicesbr = void 0;
 const common_1 = require("@nestjs/common");
-let BookingService = class BookingService {
+let BookingServicesbr = class BookingServicesbr {
     constructor() { }
     async createBooking(agentdata, path, bookingDto, priceCheckResult) {
         return { success: true, agentdata };
     }
 };
-exports.BookingService = BookingService;
-exports.BookingService = BookingService = __decorate([
+exports.BookingServicesbr = BookingServicesbr;
+exports.BookingServicesbr = BookingServicesbr = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [])
-], BookingService);
+], BookingServicesbr);
 //# sourceMappingURL=booking.service.js.map

@@ -31,7 +31,7 @@ export class AuthService {
 
     const payload = { sub: admin.uuid };
     const token = await this.jwtservice.signAsync(payload);
-    return {access_token: token};
+    return { access_token: token };
   }
 
   async verifyAdminToken(header: any) {
@@ -67,11 +67,7 @@ export class AuthService {
     }
   }
 
-
-  async signInUser(
-    email: string,
-    pass: string,
-  ): Promise<any> {
+  async signInUser(email: string, pass: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
@@ -87,9 +83,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
     const payload = { sub: user.email, sub2: user.passengerId };
-    const token=await this.jwtservice.signAsync(payload)
+    const token = await this.jwtservice.signAsync(payload);
     return {
-      access_token:token 
+      access_token: token,
     };
   }
   async verifyUserToken(header: any) {
@@ -150,26 +146,22 @@ export class AuthService {
     return decodedToken.sub;
   }
 
-
-
-  async verifyBothToken(header:any):Promise<any>{
+  async verifyBothToken(header: any): Promise<any> {
     let isUserTokenValid = false;
     let isAdminTokenValid = false;
-  
+
     try {
       await this.verifyUserToken(header);
       isUserTokenValid = true;
     } catch (error) {
-     console.log(error)
+      console.log(error);
     }
-  
+
     try {
       await this.verifyAdminToken(header);
       isAdminTokenValid = true;
-    } catch (error) {
-     
-    }
-  
+    } catch (error) {}
+
     if (!isUserTokenValid && !isAdminTokenValid) {
       throw new UnauthorizedException();
     }

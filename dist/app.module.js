@@ -18,10 +18,8 @@ const agents_module_1 = require("./agents/agents.module");
 const payment_module_1 = require("./payment/payment.module");
 const flight_module_1 = require("./flight/flight.module");
 const google_outh_module_1 = require("./google-outh/google-outh.module");
-const book_module_1 = require("./book/book.module");
 const homepage_module_1 = require("./homepage/homepage.module");
 const pdf_module_1 = require("./pdf/pdf.module");
-const tourpackage_module_1 = require("./homepage/tourpackage/tourpackage.module");
 const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
 const ip_module_1 = require("./ip/ip.module");
@@ -29,6 +27,9 @@ const core_1 = require("@nestjs/core");
 const tour_package_module_1 = require("./tour-package/tour-package.module");
 const airports_module_1 = require("./airports/airports.module");
 const airlines_module_1 = require("./airlines/airlines.module");
+const booking_module_1 = require("./book/booking.module");
+const uploads_module_1 = require("./uploads/uploads.module");
+const hotdeals_module_1 = require("./homepage/hotdeals/hotdeals.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -58,6 +59,7 @@ exports.AppModule = AppModule = __decorate([
                 autoLoadEntities: true,
                 synchronize: true,
                 logging: false,
+                timezone: 'Z',
             }),
             admin_module_1.AdminModule,
             user_module_1.UserModule,
@@ -67,14 +69,15 @@ exports.AppModule = AppModule = __decorate([
             payment_module_1.PaymentModule,
             flight_module_1.FlightModule,
             google_outh_module_1.GoogleOuthModule,
-            book_module_1.BookModule,
+            booking_module_1.BookingModule,
             homepage_module_1.HomepageModule,
             pdf_module_1.PdfModule,
-            tourpackage_module_1.TourpackageModule,
+            hotdeals_module_1.HotDealsModule,
             ip_module_1.IpModule,
             tour_package_module_1.TourPackageModule,
             airlines_module_1.AirlinesModule,
             airports_module_1.AirportsModule,
+            uploads_module_1.UploadsModule,
         ],
         providers: [
             {

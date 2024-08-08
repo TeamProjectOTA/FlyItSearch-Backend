@@ -17,7 +17,7 @@ import { RequestDto } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { Test } from './API Utils/test.service';
-import { BookingID } from 'src/book/book.model';
+
 import { FlyHubUtil } from './API Utils/flyhub.util';
 
 @ApiTags('Flight-filters')
@@ -110,11 +110,17 @@ export class FlightController {
   async airRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.airRules(data);
   }
-  
 
   @Post('apicheck')
-  async apicheck(@Body() SearchResponse: any,@Headers() header: Headers,): Promise<any> {
-    const currentTimestamp=new Date()
-    return await this.testservice.bookingDataTransformerFlyhb(SearchResponse,currentTimestamp,header);
+  async apicheck(
+    @Body() SearchResponse: any,
+    @Headers() header: Headers,
+  ): Promise<any> {
+    const currentTimestamp = new Date();
+    return await this.testservice.bookingDataTransformerFlyhb(
+      SearchResponse,
+      currentTimestamp,
+      header,
+    );
   }
 }

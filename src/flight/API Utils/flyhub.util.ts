@@ -1,15 +1,9 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BookService } from 'src/book/book.service';
-
-
-
-
+import { BookingService } from 'src/book/booking.service';
 
 @Injectable()
 export class FlyHubUtil {
-  constructor( 
-  private readonly BookService:BookService
-  ) {}
+  constructor(private readonly BookService: BookingService) {}
   async restBFMParser(
     SearchResponse: any,
     journeyType?: string,
@@ -98,7 +92,7 @@ export class FlyHubUtil {
           } else if (journeyType === '3') {
             TripType = 'Multicity';
           }
-         
+
           const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
@@ -268,7 +262,7 @@ export class FlyHubUtil {
 
     return FlightItenary;
   }
-  async dataTransformer(SearchResponse: any,): Promise<any[]> {
+  async dataTransformer(SearchResponse: any): Promise<any[]> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -483,7 +477,7 @@ export class FlyHubUtil {
             ResultId: Result.ResultID,
             BookingId: SearchResponse?.BookingID,
             PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
-            
+
             SearchId: SearchResponse?.SearchId,
             BookingStatus: SearchResponse?.BookingStatus,
             InstantPayment: Instant_Payment,
@@ -509,11 +503,15 @@ export class FlyHubUtil {
         }
       }
     }
-   
+
     return FlightItenary;
   }
 
-  async bookingDataTransformerFlyhb(SearchResponse: any,currentTimestamp?:any,header?:any): Promise<any[]> {
+  async bookingDataTransformerFlyhb(
+    SearchResponse: any,
+    currentTimestamp?: any,
+    header?: any,
+  ): Promise<any[]> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -728,7 +726,7 @@ export class FlyHubUtil {
             ResultId: Result.ResultID,
             BookingId: SearchResponse?.BookingID,
             PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
-            BookingDate:currentTimestamp,
+            BookingDate: currentTimestamp,
             SearchId: SearchResponse?.SearchId,
             BookingStatus: SearchResponse?.BookingStatus,
             InstantPayment: Instant_Payment,
@@ -754,63 +752,59 @@ export class FlyHubUtil {
         }
       }
     }
-    const response=this.saveBookingData(FlightItenary,header)
+    const response = this.saveBookingData(FlightItenary, header);
     return FlightItenary;
   }
 
-
-
-
-
-
-  async saveBookingData(SearchResponse: any,header?:any): Promise<any> {
-    
+  async saveBookingData(SearchResponse: any, header?: any): Promise<any> {
     const booking = SearchResponse[0];
-    if (booking){
-    const flightNumber=booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber
-    let tripType: string;
-    if (booking.AllLegsInfo.length === 1) {
+    if (booking) {
+      const flightNumber =
+        booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
+      let tripType: string;
+      if (booking.AllLegsInfo.length === 1) {
         tripType = 'OneWay';
-    } else if (booking.AllLegsInfo.length === 2) {
+      } else if (booking.AllLegsInfo.length === 2) {
         if (
-            booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
-            booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo
+          booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
+          booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo
         ) {
-            tripType = 'Return';
+          tripType = 'Return';
         } else {
-            tripType = 'Multicity';
+          tripType = 'Multicity';
         }
-    } else {
+      } else {
         tripType = 'Multicity';
-    }
-    const paxCount = booking.PriceBreakDown.reduce((sum: number, breakdown: any) => sum + breakdown.PaxCount, 0);
-    
-    const convertedData = {
-        system :booking?.System,
+      }
+      const paxCount = booking.PriceBreakDown.reduce(
+        (sum: number, breakdown: any) => sum + breakdown.PaxCount,
+        0,
+      );
+
+      const convertedData = {
+        system: booking?.System,
         bookingId: booking?.BookingId,
-        paxCount: paxCount, 
+        paxCount: paxCount,
         Curriername: booking?.CarrierName,
         CurrierCode: booking?.Carrier,
-        flightNumber:flightNumber.toString(),
+        flightNumber: flightNumber.toString(),
         isRefundable: booking?.Refundable,
         bookingDate: booking?.BookingDate,
         expireDate: booking?.TimeLimit,
         bookingStatus: booking?.BookingStatus,
-        TripType: tripType, 
-       
+        TripType: tripType,
+
         laginfo: booking.AllLegsInfo.map((leg: any) => ({
-          
           DepDate: leg?.DepDate,
           DepFrom: leg?.DepFrom,
-          ArrTo: leg?.ArrTo
-        }))
-    };
+          ArrTo: leg?.ArrTo,
+        })),
+      };
 
-    console.log(convertedData)
-    return await this.BookService.saveBooking(convertedData,header);
+      console.log(convertedData);
+      return await this.BookService.saveBooking(convertedData, header);
+    } else {
+      return 'Booking data is unvalid';
+    }
   }
-  else{
-    return 'Booking data is unvalid'
-  }
-}
 }

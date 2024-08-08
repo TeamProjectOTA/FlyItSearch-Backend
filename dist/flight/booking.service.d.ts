@@ -5,7 +5,7 @@ interface AgentData {
 interface PriceCheckResult {
     IsBookable: boolean;
 }
-export declare class BookingService {
+export declare class BookingServicesbr {
     constructor();
     createBooking(agentdata: AgentData[], path: string, bookingDto: any, priceCheckResult: PriceCheckResult): Promise<any>;
 }

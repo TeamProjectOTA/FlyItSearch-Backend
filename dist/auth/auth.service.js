@@ -80,7 +80,7 @@ let AuthService = class AuthService {
         const payload = { sub: user.email, sub2: user.passengerId };
         const token = await this.jwtservice.signAsync(payload);
         return {
-            access_token: token
+            access_token: token,
         };
     }
     async verifyUserToken(header) {
@@ -146,8 +146,7 @@ let AuthService = class AuthService {
             await this.verifyAdminToken(header);
             isAdminTokenValid = true;
         }
-        catch (error) {
-        }
+        catch (error) { }
         if (!isUserTokenValid && !isAdminTokenValid) {
             throw new common_1.UnauthorizedException();
         }

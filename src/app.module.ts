@@ -10,10 +10,8 @@ import { AgentsModule } from './agents/agents.module';
 import { PaymentModule } from './payment/payment.module';
 import { FlightModule } from './flight/flight.module';
 import { GoogleOuthModule } from './google-outh/google-outh.module';
-import { BookModule } from './book/book.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { PdfModule } from './pdf/pdf.module';
-import { TourpackageModule } from './homepage/tourpackage/tourpackage.module';
 import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 import { IpModule } from './ip/ip.module';
@@ -21,6 +19,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { TourPackageModule } from './tour-package/tour-package.module';
 import { AirportsModule } from './airports/airports.module';
 import { AirlinesModule } from './airlines/airlines.module';
+import { BookingModule } from './book/booking.module';
+import { UploadsModule } from './uploads/uploads.module';
+import { HotDealsModule } from './homepage/hotdeals/hotdeals.module';
 
 require('dotenv').config();
 
@@ -42,6 +43,7 @@ require('dotenv').config();
       autoLoadEntities: true,
       synchronize: true,
       logging: false,
+      timezone: 'Z',
     }),
     // TypeOrmModule.forRoot({
     //   type: 'mysql',
@@ -64,14 +66,15 @@ require('dotenv').config();
     PaymentModule,
     FlightModule,
     GoogleOuthModule,
-    BookModule,
+    BookingModule,
     HomepageModule,
     PdfModule,
-    TourpackageModule,
+    HotDealsModule,
     IpModule,
     TourPackageModule,
     AirlinesModule,
     AirportsModule,
+    UploadsModule,
   ],
 
   providers: [

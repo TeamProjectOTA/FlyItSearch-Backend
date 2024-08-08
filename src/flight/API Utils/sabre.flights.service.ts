@@ -6,7 +6,7 @@ import * as dotenv from 'dotenv';
 import { SabreUtils } from './sabre.utils';
 import { FlightSearchModel } from '../flight.model';
 import { FareRulesDto } from '../dto/fare-rules.flight.dto';
-import { BookingService } from '../booking.service';
+import { BookingServicesbr } from '../booking.service';
 
 dotenv.config();
 
@@ -24,7 +24,7 @@ interface PriceCheckResult {
 @Injectable()
 export class SabreService {
   constructor(
-    private readonly bookingService: BookingService,
+    private readonly bookingService: BookingServicesbr,
     private readonly sabreUtils: SabreUtils,
   ) {}
 

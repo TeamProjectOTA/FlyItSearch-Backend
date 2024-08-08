@@ -55,7 +55,6 @@ export class UserService {
   }
 
   async update(header: any, updateUserDto: UpdateUserDto) {
-    
     const verifyUserToken = await this.authservice.verifyUserToken(header);
     if (!verifyUserToken) {
       throw new UnauthorizedException();
@@ -92,22 +91,23 @@ export class UserService {
     return await this.userRepository.find();
   }
 
-
   async findUserWithBookings(header: any, bookingStatus: string): Promise<any> {
-   
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
     const email = await this.authservice.decodeToken(header);
 
-    const user = await this.userRepository.createQueryBuilder('user')
+    const user = await this.userRepository
+      .createQueryBuilder('user')
       .leftJoinAndSelect('user.saveBookings', 'saveBooking')
       .leftJoinAndSelect('saveBooking.laginfo', 'laginfo')
       .where('user.email = :email', { email })
-      .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', { bookingStatus })
+      .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', {
+        bookingStatus,
+      })
       .getOne();
-  
+
     if (!user) {
       throw new NotFoundException('No Booking data Available for the user');
     }
@@ -117,9 +117,8 @@ export class UserService {
       saveBookings: user.saveBookings,
     };
   }
-  
-  
-  async findAllUserWithBookings(header:any): Promise<any> {
+
+  async findAllUserWithBookings(header: any): Promise<any> {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();

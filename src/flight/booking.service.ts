@@ -9,7 +9,7 @@ interface PriceCheckResult {
 }
 
 @Injectable()
-export class BookingService {
+export class BookingServicesbr {
   constructor() {}
 
   async createBooking(

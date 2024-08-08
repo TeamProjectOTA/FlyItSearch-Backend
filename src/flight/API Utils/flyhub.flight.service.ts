@@ -13,12 +13,13 @@ import {
   searchResultDto,
 } from './Dto/flyhub.model';
 import { FlightSearchModel, JourneyType } from '../flight.model';
-import { BookingID } from 'src/book/book.model';
+
 import { Test } from './test.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { BookingID } from 'src/book/booking.model';
 
 @Injectable()
 export class FlyHubService {
@@ -90,7 +91,11 @@ export class FlyHubService {
     }
   }
 
-  async aircancel(BookingID: BookingID, uuid: string,header?:any): Promise<any> {
+  async aircancel(
+    BookingID: BookingID,
+    uuid: string,
+    header?: any,
+  ): Promise<any> {
     // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
     // if (!findadmin) {
     //   throw new UnauthorizedException();
@@ -109,7 +114,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketCancel);
-      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data,header);
+      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header);
       //return response.data
     } catch (error) {
       throw error?.response?.data;
@@ -201,7 +206,7 @@ export class FlyHubService {
     data: FlbFlightSearchDto,
     uuid: string,
     currentTimestamp?: Date,
-    header?:any
+    header?: any,
   ) {
     const authenticate = this.authService.verifyUserToken(header);
     if (!authenticate) {
@@ -251,7 +256,7 @@ export class FlyHubService {
       return this.flyHubUtil.bookingDataTransformerFlyhb(
         response.data,
         currentTimestamp,
-        header
+        header,
       );
     } catch (error) {
       throw error?.response?.data;

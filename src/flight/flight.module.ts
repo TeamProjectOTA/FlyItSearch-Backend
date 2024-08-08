@@ -3,7 +3,6 @@ import { FlightController } from './flight.controller';
 import { FlightService } from './flight.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Flight, Segment } from './flight.model';
-import { BookingService } from './booking.service';
 import { AirportsModule } from 'src/airports/airports.module';
 import { AirlinesModule } from 'src/airlines/airlines.module';
 import { HttpModule } from '@nestjs/axios';
@@ -15,32 +14,37 @@ import { FlyHubUtil } from './API Utils/flyhub.util';
 import { Test } from './API Utils/test.service';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { AuthModule } from 'src/auth/auth.module';
-import { BookService } from 'src/book/book.service';
-import { LagInfo, SaveBooking } from 'src/book/book.model';
 import { User } from 'src/user/entities/user.entity';
+import { LagInfo, SaveBooking } from 'src/book/booking.model';
+import { BookingService } from 'src/book/booking.service';
+import { BookingServicesbr } from './booking.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Flight, Segment, Admin, SaveBooking, User, LagInfo]),
+    TypeOrmModule.forFeature([
+      Flight,
+      Segment,
+      Admin,
+      SaveBooking,
+      User,
+      LagInfo,
+    ]),
     HttpModule,
     AirportsModule,
     AirlinesModule,
     AuthModule,
-   
-    
-    
   ],
   controllers: [FlightController],
   providers: [
     FlyHubUtil,
     FlightService,
     SabreService,
-    BookingService,
+    BookingServicesbr,
     SabreUtils,
     BDFareService,
     FlyHubService,
     Test,
-    BookService
+    BookingService,
   ],
 
   exports: [FlyHubService, FlyHubUtil, Test],

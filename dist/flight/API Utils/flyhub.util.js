@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubUtil = void 0;
 const common_1 = require("@nestjs/common");
-const book_service_1 = require("../../book/book.service");
+const booking_service_1 = require("../../book/booking.service");
 let FlyHubUtil = class FlyHubUtil {
     constructor(BookService) {
         this.BookService = BookService;
@@ -633,8 +633,8 @@ let FlyHubUtil = class FlyHubUtil {
                 laginfo: booking.AllLegsInfo.map((leg) => ({
                     DepDate: leg?.DepDate,
                     DepFrom: leg?.DepFrom,
-                    ArrTo: leg?.ArrTo
-                }))
+                    ArrTo: leg?.ArrTo,
+                })),
             };
             console.log(convertedData);
             return await this.BookService.saveBooking(convertedData, header);
@@ -647,6 +647,6 @@ let FlyHubUtil = class FlyHubUtil {
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [book_service_1.BookService])
+    __metadata("design:paramtypes", [booking_service_1.BookingService])
 ], FlyHubUtil);
 //# sourceMappingURL=flyhub.util.js.map

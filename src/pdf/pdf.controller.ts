@@ -14,10 +14,8 @@ export class PdfController {
     @Res() res: Response,
   ): Promise<void> {
     try {
-      
       const htmlContent = this.convertJsonToHtml(jsonData);
       const pdfBuffer = await this.pdfservice.generatePdfFromHtml(htmlContent);
-      
 
       res.set({
         'Content-Type': 'application/pdf',
@@ -296,10 +294,8 @@ export class PdfController {
       'Content-Disposition': `attachment; filename=Traveler_BookingId:${bookingId}.pdf`,
       'Content-Length': buffer.length,
     });
-  
+
     // Send the PDF buffer
     res.send(buffer);
-
-    
   }
 }

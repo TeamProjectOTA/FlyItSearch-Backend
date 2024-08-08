@@ -1,10 +1,10 @@
 import { FlyHubUtil } from './flyhub.util';
 import { FlbFlightSearchDto, FlyAirSearchDto, searchResultDto } from './Dto/flyhub.model';
 import { FlightSearchModel } from '../flight.model';
-import { BookingID } from 'src/book/book.model';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { BookingID } from 'src/book/booking.model';
 export declare class FlyHubService {
     private readonly flyHubUtil;
     private readonly adminRepository;

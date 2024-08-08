@@ -95,11 +95,14 @@ let UserService = class UserService {
             throw new common_1.UnauthorizedException();
         }
         const email = await this.authservice.decodeToken(header);
-        const user = await this.userRepository.createQueryBuilder('user')
+        const user = await this.userRepository
+            .createQueryBuilder('user')
             .leftJoinAndSelect('user.saveBookings', 'saveBooking')
             .leftJoinAndSelect('saveBooking.laginfo', 'laginfo')
             .where('user.email = :email', { email })
-            .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', { bookingStatus })
+            .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', {
+            bookingStatus,
+        })
             .getOne();
         if (!user) {
             throw new common_1.NotFoundException('No Booking data Available for the user');
