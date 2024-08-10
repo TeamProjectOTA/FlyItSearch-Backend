@@ -6,6 +6,7 @@ export declare class AuthService {
     private readonly adminRepository;
     private readonly userRepository;
     private readonly jwtservice;
+    authservice: any;
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService);
     signInAdmin(uuid: string, pass: string): Promise<any>;
     verifyAdminToken(header: any): Promise<Admin>;
@@ -15,4 +16,6 @@ export declare class AuthService {
     getAdminByUUID(uuid: string): Promise<Admin>;
     decodeToken(header: any): Promise<string>;
     verifyBothToken(header: any): Promise<any>;
+    sendVerificationEmail(email: string, token: string): Promise<void>;
+    findByVerificationToken(token: string): Promise<any>;
 }

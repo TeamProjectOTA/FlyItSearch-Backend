@@ -65,7 +65,6 @@ export class PassengerDto {
   PassportNumber?: string;
   PassportExpiryDate?: Date;
   PassportNationality?: string;
-
   @IsString()
   Address1: string;
   @IsString()

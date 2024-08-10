@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,11 +8,14 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class AuthService {
+  authservice: any;
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
@@ -82,6 +86,9 @@ export class AuthService {
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid email or password');
     }
+    if(user.emailVerified==false){
+      throw new UnauthorizedException('Email is not verified')
+    }
     const payload = { sub: user.email, sub2: user.passengerId };
     const token = await this.jwtservice.signAsync(payload);
     return {
@@ -102,6 +109,7 @@ export class AuthService {
       const userData = await this.userRepository.findOne({
         where: { email: email },
       });
+      
 
       if (!userData) {
         throw new UnauthorizedException('User not found.');
@@ -166,4 +174,100 @@ export class AuthService {
       throw new UnauthorizedException();
     }
   }
+
+
+
+
+
+  async sendVerificationEmail(email: string, token: string): Promise<void> {
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT, 10),
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_CC,
+      to: email,
+      subject: 'Email Verification',
+      text: `Your varification code : ${token}`,
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw new Error('Failed to send verification email.');
+    }
+}
+  async findByVerificationToken(token: string): Promise<any> {
+   
+    return  this.userRepository.findOne({ where: { verificationToken: token } });
+    
+  }
+
+
+  // async resetPassword(resetToken: string, newPassword: string): Promise<void> {
+  //   const user = await this.userRepository.findOne({
+  //     where: {
+  //       resetPasswordToken: resetToken,
+  //       resetPasswordExpires: MoreThan(new Date()),
+  //     },
+  //   });
+  
+  //   if (!user) {
+  //     throw new BadRequestException('Invalid or expired reset token');
+  //   }
+  
+  //   const hashedPassword = await bcrypt.hash(newPassword, 10);
+  //   user.password = hashedPassword;
+  //   user.resetPasswordToken = null;
+  //   user.resetPasswordExpires = null;
+  
+  //   await this.userRepository.save(user);
+  // }
+  // async sendPasswordResetEmail(email: string): Promise<void> {
+  //   const user = await this.userRepository.findOne({ where: { email } });
+  //   if (!user) {
+  //     throw new NotFoundException('User with this email does not exist');
+  //   }
+  
+  //   const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+  //   user.resetPasswordToken = resetToken;
+  //   user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour expiry
+  
+  //   await this.userRepository.save(user);
+  
+  //   await this.authservice.sendResetPasswordEmail(user.email, resetToken);
+  // }
+  // async sendResetPasswordEmail(email: string, token: string): Promise<void> {
+  //   const transporter = nodemailer.createTransport({
+  //     host: process.env.EMAIL_HOST,
+  //     port: parseInt(process.env.EMAIL_PORT, 10),
+  //     secure: false, // true for 465, false for other ports
+  //     auth: {
+  //       user: process.env.EMAIL_USERNAME,
+  //       pass: process.env.EMAIL_PASSWORD,
+  //     },
+  //   });
+
+  //   const mailOptions = {
+  //     from: process.env.EMAIL_CC,
+  //     to: email,
+  //     subject: 'Email Verification',
+  //     text: `Your varification code : ${token}`,
+  //   };
+
+  //   try {
+  //       await transporter.sendMail(mailOptions);
+  //   } catch (error) {
+  //       console.error('Error sending verification email:', error);
+  //       throw new Error('Failed to send verification email.');
+  //   }
+  // }
+
 }

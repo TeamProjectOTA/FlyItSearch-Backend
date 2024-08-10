@@ -90,6 +90,7 @@ th {
   <tr>
     <td>{{Title}} {{FirstName}} {{LastName}}</td>
     <td>{{PaxType}}</td>
+    {{/each}}
     <td>
       {{#each ../PriceBreakDown}}
         {{#each Bag}}
@@ -98,7 +99,7 @@ th {
       {{/each}}
     </td>
   </tr>
-  {{/each}}
+  
 </table>
 
 <p>Baggage allowances apply to each passenger in your booking.</p>

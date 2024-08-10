@@ -46,6 +46,7 @@ let AdminController = class AdminController {
 };
 exports.AdminController = AdminController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
@@ -89,6 +90,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "findAll", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)('/user/:passengerId'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Param)('passengerId')),

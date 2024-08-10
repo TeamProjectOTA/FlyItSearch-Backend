@@ -20,6 +20,7 @@ const admin_entity_1 = require("../admin/entities/admin.entity");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_2 = require("typeorm");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
 let AuthService = class AuthService {
     constructor(adminRepository, userRepository, jwtservice) {
         this.adminRepository = adminRepository;
@@ -76,6 +77,9 @@ let AuthService = class AuthService {
         const passwordMatch = await bcrypt.compare(pass, user.password);
         if (!passwordMatch) {
             throw new common_1.UnauthorizedException('Invalid email or password');
+        }
+        if (user.emailVerified == false) {
+            throw new common_1.UnauthorizedException('Email is not verified');
         }
         const payload = { sub: user.email, sub2: user.passengerId };
         const token = await this.jwtservice.signAsync(payload);
@@ -150,6 +154,33 @@ let AuthService = class AuthService {
         if (!isUserTokenValid && !isAdminTokenValid) {
             throw new common_1.UnauthorizedException();
         }
+    }
+    async sendVerificationEmail(email, token) {
+        const transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: parseInt(process.env.EMAIL_PORT, 10),
+            secure: false,
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+        const mailOptions = {
+            from: process.env.EMAIL_CC,
+            to: email,
+            subject: 'Email Verification',
+            text: `Your varification code : ${token}`,
+        };
+        try {
+            await transporter.sendMail(mailOptions);
+        }
+        catch (error) {
+            console.error('Error sending verification email:', error);
+            throw new Error('Failed to send verification email.');
+        }
+    }
+    async findByVerificationToken(token) {
+        return this.userRepository.findOne({ where: { verificationToken: token } });
     }
 };
 exports.AuthService = AuthService;

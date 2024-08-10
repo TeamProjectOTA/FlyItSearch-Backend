@@ -6,6 +6,7 @@ import { Admin } from 'src/admin/entities/admin.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './jwt.constaints';
 import { User } from 'src/user/entities/user.entity';
+import { UserService } from 'src/user/user.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Admin, User]),
@@ -15,7 +16,7 @@ import { User } from 'src/user/entities/user.entity';
       signOptions: { expiresIn: '18000s' },
     }),
   ],
-  providers: [AuthService],
+  providers: [AuthService,UserService],
   controllers: [AuthController],
   exports: [AuthService],
 })

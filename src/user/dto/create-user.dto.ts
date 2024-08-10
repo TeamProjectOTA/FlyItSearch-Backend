@@ -10,4 +10,12 @@ export class CreateUserDto {
   email: string;
   @ApiProperty({ default: '1234' })
   password: string;
+  @ApiProperty()
+  dob?:string
+  @ApiProperty()
+  gender?:string
+  @ApiProperty()
+  nationility?:string
+  @ApiProperty()
+  passport?:string
 }

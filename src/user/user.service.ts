@@ -13,6 +13,8 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcryptjs';
+import { v4 as uuidv4 } from 'uuid';
+import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class UserService {
@@ -20,17 +22,20 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly authservice: AuthService,
   ) {}
+
+
   async create(createUserDto: CreateUserDto): Promise<User> {
     let add: User = new User();
-
-    //find the database for the email address extence
+  
+    
     const userAlreadyExisted = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
     if (userAlreadyExisted) {
-      throw new HttpException('User already existed', HttpStatus.BAD_REQUEST);
+      throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
-
+  
+   
     const passenger = await this.userRepository.find({
       order: { id: 'DESC' },
       take: 1,
@@ -43,16 +48,31 @@ export class UserService {
     } else {
       passengerId = 'FLYITP1000';
     }
+  
+    
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+  
+    
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+  
+    
     add.passengerId = passengerId;
     add.fullName = createUserDto.fullName.toUpperCase();
     add.phone = createUserDto.phone;
     add.email = createUserDto.email;
     add.role = 'registered';
     add.password = hashedPassword;
-
-    return this.userRepository.save(add);
+    add.verificationToken = verificationToken;  
+   
+    const user = await this.userRepository.save(add);
+  
+    await this.authservice.sendVerificationEmail(user.email, verificationToken);
+  
+    return user;
   }
+  
+  
+
 
   async update(header: any, updateUserDto: UpdateUserDto) {
     const verifyUserToken = await this.authservice.verifyUserToken(header);
@@ -78,10 +98,38 @@ export class UserService {
         throw new ConflictException('Email already existed');
       }
     }
-    updateUser.fullName = updateUserDto.fullName;
-    updateUser.email = updateUserDto.email;
+    const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== updateUser.email;
+
+    let hashedPassword : string 
+    if(updateUserDto?.password){
+      hashedPassword = await bcrypt.hash(updateUserDto?.password, 10);
+    
+    }
+    const password=hashedPassword ||updateUser.password
+
+    Object.assign(updateUser, {
+      fullName: updateUserDto?.fullName?.toUpperCase() || updateUser.fullName,
+      email: updateUserDto?.email || updateUser.email,
+      dob: updateUserDto?.dob || updateUser.dob,
+      gender: updateUserDto?.gender || updateUser.gender,
+      nationility: updateUserDto?.nationility || updateUser.nationility,
+      passport: updateUserDto?.passport || updateUser.passport,
+      password:password
+    });
+    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+    if (isEmailUpdated) {
+      updateUser.verificationToken = verificationToken
+      updateUser.emailVerified=false
+      await this.authservice.sendVerificationEmail(updateUser.email, verificationToken)
+    }
     return await this.userRepository.save(updateUser);
   }
+
+
+ 
+
+
+
 
   async allUser(header: any): Promise<User[]> {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
@@ -126,5 +174,19 @@ export class UserService {
     return this.userRepository.find({
       relations: ['saveBookings', 'saveBookings.laginfo'],
     });
+  }
+
+  async findOneUser(header:any):Promise<User>{
+    const verifyUser = await this.authservice.verifyUserToken(header);
+    if (!verifyUser) {
+      throw new UnauthorizedException();
+    }
+    const email = await this.authservice.decodeToken(header);
+    const user= this.userRepository.findOne({where:{email:email},relations:['profilePicture']})
+    if ((await user).dob==null) {
+      throw new NotFoundException('Update your profile');
+    }
+    return user
+
   }
 }

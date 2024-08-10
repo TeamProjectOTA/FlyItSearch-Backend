@@ -17,15 +17,29 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const auth_service_1 = require("./auth.service");
 const createauthdto_1 = require("./createauthdto");
+const typeorm_1 = require("@nestjs/typeorm");
+const user_entity_1 = require("../user/entities/user.entity");
+const typeorm_2 = require("typeorm");
 let AuthController = class AuthController {
-    constructor(authservice) {
+    constructor(authservice, userRepository) {
         this.authservice = authservice;
+        this.userRepository = userRepository;
     }
     signIn(signIndto) {
         return this.authservice.signInAdmin(signIndto.uuid, signIndto.password);
     }
     signInUser(signIndto) {
         return this.authservice.signInUser(signIndto.email, signIndto.password);
+    }
+    async verifyEmail(token) {
+        const user = await this.authservice.findByVerificationToken(token);
+        if (!user) {
+            throw new common_1.NotFoundException('Invalid verification token');
+        }
+        user.emailVerified = true;
+        user.verificationToken = null;
+        await this.userRepository.update(user.id, user);
+        return { message: 'Email verified successfully' };
     }
 };
 exports.AuthController = AuthController;
@@ -45,9 +59,18 @@ __decorate([
     __metadata("design:paramtypes", [createauthdto_1.Userauthdto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signInUser", null);
+__decorate([
+    (0, common_1.Get)('verify-email'),
+    __param(0, (0, common_1.Query)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyEmail", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        typeorm_2.Repository])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

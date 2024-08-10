@@ -53,7 +53,7 @@ export class FlyHubService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-      //console.log(token);
+     // console.log(token);
       return token;
     } catch (error) {
       console.error(

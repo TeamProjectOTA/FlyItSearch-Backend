@@ -47,4 +47,6 @@ export class MailService {
       console.log('Error: ', error);
     }
   }
+
+  
 }

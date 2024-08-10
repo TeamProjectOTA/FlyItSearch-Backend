@@ -15,6 +15,7 @@ const admin_entity_1 = require("../admin/entities/admin.entity");
 const jwt_1 = require("@nestjs/jwt");
 const jwt_constaints_1 = require("./jwt.constaints");
 const user_entity_1 = require("../user/entities/user.entity");
+const user_service_1 = require("../user/user.service");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
@@ -28,7 +29,7 @@ exports.AuthModule = AuthModule = __decorate([
                 signOptions: { expiresIn: '18000s' },
             }),
         ],
-        providers: [auth_service_1.AuthService],
+        providers: [auth_service_1.AuthService, user_service_1.UserService],
         controllers: [auth_controller_1.AuthController],
         exports: [auth_service_1.AuthService],
     })

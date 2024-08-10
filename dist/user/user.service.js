@@ -30,7 +30,7 @@ let UserService = class UserService {
             where: { email: createUserDto.email },
         });
         if (userAlreadyExisted) {
-            throw new common_1.HttpException('User already existed', common_1.HttpStatus.BAD_REQUEST);
+            throw new common_1.HttpException('User already exists', common_1.HttpStatus.BAD_REQUEST);
         }
         const passenger = await this.userRepository.find({
             order: { id: 'DESC' },
@@ -46,13 +46,17 @@ let UserService = class UserService {
             passengerId = 'FLYITP1000';
         }
         const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
         add.passengerId = passengerId;
         add.fullName = createUserDto.fullName.toUpperCase();
         add.phone = createUserDto.phone;
         add.email = createUserDto.email;
         add.role = 'registered';
         add.password = hashedPassword;
-        return this.userRepository.save(add);
+        add.verificationToken = verificationToken;
+        const user = await this.userRepository.save(add);
+        await this.authservice.sendVerificationEmail(user.email, verificationToken);
+        return user;
     }
     async update(header, updateUserDto) {
         const verifyUserToken = await this.authservice.verifyUserToken(header);
@@ -78,8 +82,27 @@ let UserService = class UserService {
                 throw new common_1.ConflictException('Email already existed');
             }
         }
-        updateUser.fullName = updateUserDto.fullName;
-        updateUser.email = updateUserDto.email;
+        const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== updateUser.email;
+        let hashedPassword;
+        if (updateUserDto?.password) {
+            hashedPassword = await bcrypt.hash(updateUserDto?.password, 10);
+        }
+        const password = hashedPassword || updateUser.password;
+        Object.assign(updateUser, {
+            fullName: updateUserDto?.fullName?.toUpperCase() || updateUser.fullName,
+            email: updateUserDto?.email || updateUser.email,
+            dob: updateUserDto?.dob || updateUser.dob,
+            gender: updateUserDto?.gender || updateUser.gender,
+            nationility: updateUserDto?.nationility || updateUser.nationility,
+            passport: updateUserDto?.passport || updateUser.passport,
+            password: password
+        });
+        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+        if (isEmailUpdated) {
+            updateUser.verificationToken = verificationToken;
+            updateUser.emailVerified = false;
+            await this.authservice.sendVerificationEmail(updateUser.email, verificationToken);
+        }
         return await this.userRepository.save(updateUser);
     }
     async allUser(header) {
@@ -121,6 +144,18 @@ let UserService = class UserService {
         return this.userRepository.find({
             relations: ['saveBookings', 'saveBookings.laginfo'],
         });
+    }
+    async findOneUser(header) {
+        const verifyUser = await this.authservice.verifyUserToken(header);
+        if (!verifyUser) {
+            throw new common_1.UnauthorizedException();
+        }
+        const email = await this.authservice.decodeToken(header);
+        const user = this.userRepository.findOne({ where: { email: email }, relations: ['profilePicture'] });
+        if ((await user).dob == null) {
+            throw new common_1.NotFoundException('Update your profile');
+        }
+        return user;
     }
 };
 exports.UserService = UserService;

@@ -22,8 +22,26 @@ export class User {
   email: string;
   @Column()
   password: string;
+  @Column({ nullable: true })
+  dob:string
+  @Column({ nullable: true })
+  gender:string
+  @Column({ nullable: true })
+  nationility:string
+  @Column({ nullable: true })
+  passport:string
   @Column({ default: 'registered' })
   role: string;
+  @Column({ nullable: true })
+  verificationToken?: string;  // Add this field
+  @Column({ default: false })
+  emailVerified: boolean; 
+  @Column({ nullable: true })
+  resetPasswordToken: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date;
+
   @OneToOne(() => ProfilePicture, (profilePicture) => profilePicture.user)
   profilePicture: ProfilePicture;
   @OneToMany(() => SaveBooking, (saveBooking) => saveBooking.user)

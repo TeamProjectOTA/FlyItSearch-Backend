@@ -7,7 +7,15 @@ export declare class User {
     phone: string;
     email: string;
     password: string;
+    dob: string;
+    gender: string;
+    nationility: string;
+    passport: string;
     role: string;
+    verificationToken?: string;
+    emailVerified: boolean;
+    resetPasswordToken: string;
+    resetPasswordExpires: Date;
     profilePicture: ProfilePicture;
     saveBookings: SaveBooking[];
 }

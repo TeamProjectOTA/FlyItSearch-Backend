@@ -30,4 +30,20 @@ __decorate([
     (0, swagger_1.ApiProperty)({ default: '1234' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "dob", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "nationility", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "passport", void 0);
 //# sourceMappingURL=create-user.dto.js.map

@@ -209,6 +209,7 @@ let FlyHubUtil = class FlyHubUtil {
                         PartialOption: partialoption,
                         PartialFare: Math.ceil(PartialAmount),
                         TimeLimit: TimeLimit,
+                        RePriceStatus: SearchResponse?.RePriceStatus,
                         Refundable: Refundable,
                         ExtraService: Result?.ExtraServices || null,
                         PriceBreakDown: PriceBreakDown,

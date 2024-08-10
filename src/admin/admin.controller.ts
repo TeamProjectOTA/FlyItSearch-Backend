@@ -17,7 +17,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 @Controller('admin')
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}
-
+  @ApiBearerAuth('access_token')
   @Post()
   create(@Body() createAdminDto: CreateAdminDto, @Headers() header: Headers) {
     return this.adminService.create(createAdminDto, header);
@@ -44,7 +44,7 @@ export class AdminController {
   findAll(@Headers() header: Headers) {
     return this.adminService.findAll(header);
   }
-
+  @ApiBearerAuth('access_token')
   @Get('/user/:passengerId')
   findUser(
     @Headers() header: Headers,

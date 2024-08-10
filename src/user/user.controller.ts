@@ -46,12 +46,16 @@ export class UserController {
     @Headers() header: Headers,
     @Param('bookingStatus') bookingStatus: string,
   ): Promise<Partial<User>> {
-    console.log(bookingStatus);
     return this.userService.findUserWithBookings(header, bookingStatus);
   }
   @ApiBearerAuth('access_token')
   @Get('admin/all-user-bookings')
   async findAllUserWithBookings(@Headers() header: Headers): Promise<any> {
     return this.userService.findAllUserWithBookings(header);
+  }
+  @ApiBearerAuth('access_token')
+  @Get("/userUpdate")
+  async findOneUser(@Headers() header: Headers): Promise<any>{
+    return this.userService.findOneUser(header)
   }
 }
