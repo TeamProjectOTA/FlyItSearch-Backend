@@ -27,6 +27,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const booking_model_1 = require("../book/booking.model");
 const booking_service_1 = require("../book/booking.service");
 const booking_service_2 = require("./booking.service");
+const mail_service_1 = require("../mail/mail.service");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -57,6 +58,7 @@ exports.FlightModule = FlightModule = __decorate([
             flyhub_flight_service_1.FlyHubService,
             test_service_1.Test,
             booking_service_1.BookingService,
+            mail_service_1.MailService,
         ],
         exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, test_service_1.Test],
     })

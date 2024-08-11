@@ -11,6 +11,7 @@ import { User } from 'src/user/entities/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
 import { BookingController } from './booking.controller';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { BookingController } from './booking.controller';
     FlightModule,
   ],
   controllers: [BookingController],
-  providers: [BookingService, FlyHubService, FlyHubUtil],
+  providers: [BookingService, FlyHubService, FlyHubUtil,MailService],
   exports: [BookingService],
 })
 export class BookingModule {}

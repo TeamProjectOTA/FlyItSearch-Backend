@@ -12,9 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubUtil = void 0;
 const common_1 = require("@nestjs/common");
 const booking_service_1 = require("../../book/booking.service");
+const mail_service_1 = require("../../mail/mail.service");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService) {
+    constructor(BookService, mailService) {
         this.BookService = BookService;
+        this.mailService = mailService;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -600,6 +602,7 @@ let FlyHubUtil = class FlyHubUtil {
     }
     async saveBookingData(SearchResponse, header) {
         const booking = SearchResponse[0];
+        const mail = this.mailService.sendMail(booking, header);
         if (booking) {
             const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
             let tripType;
@@ -637,7 +640,6 @@ let FlyHubUtil = class FlyHubUtil {
                     ArrTo: leg?.ArrTo,
                 })),
             };
-            console.log(convertedData);
             return await this.BookService.saveBooking(convertedData, header);
         }
         else {
@@ -648,6 +650,6 @@ let FlyHubUtil = class FlyHubUtil {
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [booking_service_1.BookingService])
+    __metadata("design:paramtypes", [booking_service_1.BookingService, mail_service_1.MailService])
 ], FlyHubUtil);
 //# sourceMappingURL=flyhub.util.js.map

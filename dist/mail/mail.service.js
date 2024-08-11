@@ -11,55 +11,70 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MailService = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
 const nodemailer = require("nodemailer");
+const fs = require("fs");
+const path = require("path");
+const handlebars = require("handlebars");
 const auth_service_1 = require("../auth/auth.service");
 let MailService = class MailService {
-    constructor(config, authService) {
-        this.config = config;
+    constructor(authService) {
         this.authService = authService;
-    }
-    MailTransport() {
-        const transporter = nodemailer.createTransport({
-            host: this.config.get('EMAIL_HOST'),
-            port: this.config.get('EMAIL_PORT'),
+        this.transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: parseInt(process.env.EMAIL_PORT, 10),
             secure: false,
             auth: {
-                user: this.config.get('EMAIL_USERNAME'),
-                pass: this.config.get('EMAIL_PASSWORD'),
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
             },
         });
-        return transporter;
+        handlebars.registerHelper('formatTime', function (datetime) {
+            return new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        });
+        handlebars.registerHelper('formatDate', function (datetime) {
+            return new Date(datetime).toLocaleDateString();
+        });
+        handlebars.registerHelper('formatDuration', function (duration) {
+            const hours = Math.floor(duration / 60);
+            const minutes = duration % 60;
+            return `${hours}h ${minutes}m`;
+        });
     }
-    async sendMail(maildto, header) {
-        const verifyAdmin = await this.authService.verifyAdminToken(header);
-        if (!verifyAdmin) {
-            throw new common_1.UnauthorizedException();
-        }
-        const { from, recipeants, subject, html } = maildto;
-        const transport = this.MailTransport();
-        const options = {
-            from: from ?? {
-                name: this.config.get('EMAIL_CC'),
-                address: this.config.get('APP_NAME'),
-            },
-            to: recipeants,
-            subject,
+    async compileTemplate(templateName, data) {
+        const filePath = path.join(process.cwd(), 'src', 'mail', `${templateName}.hbs`);
+        const template = fs.readFileSync(filePath, 'utf-8');
+        const compiledTemplate = handlebars.compile(template);
+        return compiledTemplate(data);
+    }
+    async sendMail(data, header) {
+        const email = await this.authService.decodeToken(header);
+        const html = await this.compileTemplate('booking', {
+            BookingStatus: data.BookingStatus === "Booked" ? "Confirmed" : data.BookingStatus === "Cancelled" ? "Cancellation" : "",
+            BookingId: data.BookingId,
+            CarrierName: data.CarrierName,
+            NetFare: data.NetFare,
+            AllLegsInfo: data.AllLegsInfo,
+            PassengerList: data.PassengerList,
+            flightUrl: 'https://flyitsearch.netlify.app/',
+        });
+        const mailOptions = {
+            from: process.env.EMAIL_CC,
+            to: email,
+            subject: `Flight ${data.BookingStatus} confirmation`,
             html,
         };
         try {
-            const result = await transport.sendMail(options);
-            return result;
+            const info = await this.transporter.sendMail(mailOptions);
+            return info;
         }
         catch (error) {
-            console.log('Error: ', error);
+            throw error;
         }
     }
 };
 exports.MailService = MailService;
 exports.MailService = MailService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService,
-        auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], MailService);
 //# sourceMappingURL=mail.service.js.map

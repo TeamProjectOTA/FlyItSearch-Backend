@@ -182,6 +182,59 @@ let AuthService = class AuthService {
     async findByVerificationToken(token) {
         return this.userRepository.findOne({ where: { verificationToken: token } });
     }
+    async resetPassword(resetToken, newPassword) {
+        const user = await this.userRepository.findOne({
+            where: {
+                resetPasswordToken: resetToken,
+                resetPasswordExpires: (0, typeorm_2.MoreThan)(new Date()),
+            },
+        });
+        if (!user) {
+            throw new common_1.BadRequestException('Invalid or expired reset token');
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+        await this.userRepository.save(user);
+        return { message: `Thank you ${user.fullName}.Your password has been reseted` };
+    }
+    async sendPasswordResetEmail(email) {
+        const user = await this.userRepository.findOne({ where: { email } });
+        if (!user) {
+            throw new common_1.NotFoundException('User with this email does not exist');
+        }
+        const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = new Date(Date.now() + 300000);
+        await this.userRepository.save(user);
+        await this.sendResetPasswordEmail(user.email, resetToken);
+        return { message: `Your password reset code has been sent to ${email}` };
+    }
+    async sendResetPasswordEmail(email, token) {
+        const transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: parseInt(process.env.EMAIL_PORT, 10),
+            secure: false,
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+        const mailOptions = {
+            from: process.env.EMAIL_CC,
+            to: email,
+            subject: 'Password Verification',
+            text: `Your varification code : ${token}`,
+        };
+        try {
+            await transporter.sendMail(mailOptions);
+        }
+        catch (error) {
+            console.error('Error sending verification email:', error);
+            throw new Error('Failed to send verification email.');
+        }
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

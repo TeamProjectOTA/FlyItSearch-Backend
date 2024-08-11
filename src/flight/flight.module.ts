@@ -18,6 +18,7 @@ import { User } from 'src/user/entities/user.entity';
 import { LagInfo, SaveBooking } from 'src/book/booking.model';
 import { BookingService } from 'src/book/booking.service';
 import { BookingServicesbr } from './booking.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { BookingServicesbr } from './booking.service';
     AirportsModule,
     AirlinesModule,
     AuthModule,
+    
   ],
   controllers: [FlightController],
   providers: [
@@ -45,6 +47,7 @@ import { BookingServicesbr } from './booking.service';
     FlyHubService,
     Test,
     BookingService,
+    MailService,
   ],
 
   exports: [FlyHubService, FlyHubUtil, Test],

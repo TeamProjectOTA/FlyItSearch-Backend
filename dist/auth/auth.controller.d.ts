@@ -11,4 +11,6 @@ export declare class AuthController {
     verifyEmail(token: string): Promise<{
         message: string;
     }>;
+    forgotPassword(email: string): Promise<any>;
+    resetPassword(token: string, newPassword: string): Promise<any>;
 }

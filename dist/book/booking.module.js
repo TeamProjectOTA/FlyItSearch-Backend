@@ -19,6 +19,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const auth_module_1 = require("../auth/auth.module");
 const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
 const booking_controller_1 = require("./booking.controller");
+const mail_service_1 = require("../mail/mail.service");
 let BookingModule = class BookingModule {
 };
 exports.BookingModule = BookingModule;
@@ -31,7 +32,7 @@ exports.BookingModule = BookingModule = __decorate([
             flight_module_1.FlightModule,
         ],
         controllers: [booking_controller_1.BookingController],
-        providers: [booking_service_1.BookingService, flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil],
+        providers: [booking_service_1.BookingService, flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, mail_service_1.MailService],
         exports: [booking_service_1.BookingService],
     })
 ], BookingModule);

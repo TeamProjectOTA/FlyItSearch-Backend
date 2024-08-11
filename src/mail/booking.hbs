@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        <style>body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            color: #333333;
+        }
+
+        .email-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            text-align: left;
+            color: #333333;
+        }
+
+        .email-header h1 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .email-header p {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .email-header a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .email-body {
+            padding-top: 20px;
+            border-top: 1px solid #dddddd;
+        }
+
+        .flight-info {
+            margin-bottom: 20px;
+        }
+
+        .flight-info h2 {
+            font-size: 16px;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+
+        .flight-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .flight-details div {
+            text-align: center;
+        }
+
+        .flight-details div p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .flight-details .flight-duration {
+            font-size: 12px;
+            color: #888888;
+        }
+
+        .traveler-info {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .traveler-info p {
+            margin: 5px 0;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .view-flight-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <p>Your Booking is {{BookingStatus}}.</p>
+            <p>You’re Booking Number: {{BookingId}}</p>
+            <p>Thank you for booking with FlyitSearch.</p>
+        </div>
+        <div class="email-body">
+            {{#each AllLegsInfo}}
+            <div class="flight-info">
+                <h2>{{CarrierName}}</h2>
+                {{#each Segments}}
+                <div class="flight-details">
+                    <div>
+                        <p><strong>{{DepFrom}} {{formatTime DepTime}}</strong></p>
+                        <p>{{formatDate DepTime}}</p>
+                    </div>
+                    <div>
+                        <img src="https://www.iconsdb.com/icons/preview/orange/airplane-takeoff-xxl.png"
+                            alt="Plane Icon" style="width:20px;">
+                        <p class="flight-duration">{{formatDuration Duration}}</p>
+                    </div>
+                    <div>
+                        <p><strong>{{ArrTo}} {{formatTime ArrTime}}</strong></p>
+                        <p>{{formatDate ArrTime}}</p>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <p>Operated by: {{OperatingCarrierName}}</p>
+                    <p>{{OperatingCarrier}} {{MarketingFlightNumber}}-{{AircraftTypeName}}</p>
+                    
+                </div>
+                {{/each}}
+            </div>
+            {{/each}}
+            <div class="traveler-info">
+                {{#each PassengerList}}
+                <p><strong>{{Title}} {{FirstName}} {{LastName}}:</strong> {{PaxType}}</p>
+                {{/each}}
+                <p><strong>Total Fare:</strong> BDT-{{NetFare}}</p>
+                <p><strong>Booking ID:</strong> {{BookingId}}</p>
+            </div>
+            <div class="button-container">
+                <a href="{{flightUrl}}" class="view-flight-button">View Flight</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

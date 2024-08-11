@@ -18,4 +18,7 @@ export declare class AuthService {
     verifyBothToken(header: any): Promise<any>;
     sendVerificationEmail(email: string, token: string): Promise<void>;
     findByVerificationToken(token: string): Promise<any>;
+    resetPassword(resetToken: string, newPassword: string): Promise<any>;
+    sendPasswordResetEmail(email: string): Promise<any>;
+    sendResetPasswordEmail(email: string, token: string): Promise<void>;
 }

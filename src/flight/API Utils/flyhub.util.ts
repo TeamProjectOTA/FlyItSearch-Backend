@@ -1,9 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BookingService } from 'src/book/booking.service';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class FlyHubUtil {
-  constructor(private readonly BookService: BookingService) {}
+  constructor(private readonly BookService: BookingService,private readonly mailService:MailService) {}
   async restBFMParser(
     SearchResponse: any,
     journeyType?: string,
@@ -753,12 +754,16 @@ export class FlyHubUtil {
         }
       }
     }
+    
+    
+    
     const response = this.saveBookingData(FlightItenary, header);
     return FlightItenary;
   }
 
   async saveBookingData(SearchResponse: any, header?: any): Promise<any> {
     const booking = SearchResponse[0];
+    const mail= this.mailService.sendMail(booking, header)
     if (booking) {
       const flightNumber =
         booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
@@ -802,7 +807,7 @@ export class FlyHubUtil {
         })),
       };
 
-      console.log(convertedData);
+      //console.log(convertedData);
       return await this.BookService.saveBooking(convertedData, header);
     } else {
       return 'Booking data is unvalid';

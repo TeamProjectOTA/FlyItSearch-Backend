@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Authdto, Userauthdto } from './createauthdto';
 import { UserService } from 'src/user/user.service';
@@ -34,22 +34,22 @@ export class AuthController {
     }
 
     user.emailVerified = true;
-    user.verificationToken = null;  // Remove the token after verification
+    user.verificationToken = null;  
     await this.userRepository.update(user.id, user);
 
     return { message: 'Email verified successfully' };
   }
 
-  // @Post('forgot-password')
-  // async forgotPassword(@Body('email') email: string): Promise<void> {
-  //   await this.authservice.sendPasswordResetEmail(email);
-  // }
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string): Promise<any> {
+     return await this.authservice.sendPasswordResetEmail(email);
+  }
 
-  // @Post('reset-password')
-  // async resetPassword(
-  //   @Body('token') token: string,
-  //   @Body('newPassword') newPassword: string,
-  // ): Promise<void> {
-  //   await this.authservice.resetPassword(token, newPassword);
-  // }
+  @Post('reset-password')
+  async resetPassword(
+    @Body('token') token: string,
+    @Body('newPassword') newPassword: string,
+  ): Promise<any> {
+    return await this.authservice.resetPassword(token, newPassword);
+  }
 }
