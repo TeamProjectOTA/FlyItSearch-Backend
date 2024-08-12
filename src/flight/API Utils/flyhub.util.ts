@@ -167,10 +167,27 @@ export class FlyHubUtil {
             const firstSegment = segmentsList[0];
             const lastSegment = segmentsList[segmentsList.length - 1];
 
+            //trying to calculate the transittime
+            let arivalTime=new Date(firstSegment.Destination.ArrTime).getTime()
+            let deptureTime=new Date(lastSegment.Origin.DepTime).getTime()
+            const totalduration=deptureTime-arivalTime
+            let totalDurationInMinutes = Math.floor(totalduration / (1000 * 60));
+            if (totalDurationInMinutes < 0) {
+              totalDurationInMinutes = 0; // or handle it differently as per your logic
+            }
+
+
+
             const legInfo = {
               DepDate: firstSegment?.Origin?.DepTime,
               DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
               ArrTo: lastSegment.Destination?.Airport?.AirportCode,
+
+
+              //trying to calculate the transittime
+              test:totalDurationInMinutes,
+
+
               Duration: segmentsList?.reduce(
                 (acc, segment) => acc + parseInt(segment?.JourneyDuration),
                 0,
