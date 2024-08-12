@@ -23,6 +23,7 @@ const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const flyhub_util_1 = require("./API Utils/flyhub.util");
+const both_tokens_guard_1 = require("../auth/both-tokens.guard");
 let FlightController = class FlightController {
     constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
@@ -51,12 +52,12 @@ let FlightController = class FlightController {
     airretrieve(pnr) {
         return this.sabreService.airretrieve(pnr);
     }
-    async convertToFlyAirSearchDto(flightSearchModel, uuid, request, header) {
+    async convertToFlyAirSearchDto(flightSearchModel, request) {
         let userIp = request.ip;
         if (userIp.startsWith('::ffff:')) {
             userIp = userIp.split(':').pop();
         }
-        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel, userIp, uuid, header);
+        return this.flyHubService.convertToFlyAirSearchDto(flightSearchModel, userIp);
     }
     async airPrice(data) {
         return await this.flyHubService.airPrice(data);
@@ -123,16 +124,15 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "airretrieve", null);
 __decorate([
-    (0, common_1.Post)('fhb/air-search/:uuid'),
+    (0, common_1.Post)('fhb/air-search/'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Param)('uuid')),
-    __param(2, (0, common_1.Req)()),
-    __param(3, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel, String, Object, Object]),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel, Object]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
+    (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
     (0, common_1.Post)('flh/price-check'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

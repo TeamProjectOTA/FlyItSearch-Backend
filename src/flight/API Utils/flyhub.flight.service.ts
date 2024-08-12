@@ -204,18 +204,10 @@ export class FlyHubService {
 
   async airbook(
     data: FlbFlightSearchDto,
-    uuid: string,
     currentTimestamp?: Date,
     header?: any,
   ) {
-    const authenticate = this.authService.verifyUserToken(header);
-    if (!authenticate) {
-      throw new UnauthorizedException();
-    }
-    const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    if (!findadmin) {
-      throw new UnauthorizedException();
-    }
+ 
     const token = await this.getToken();
 
     const Price = {
@@ -265,18 +257,8 @@ export class FlyHubService {
 
   async convertToFlyAirSearchDto(
     flightSearchModel: FlightSearchModel,
-    userIp: string,
-    uuid: string,
-    header: any,
+    userIp: string, 
   ): Promise<any> {
-    // const authenticate = this.authService.verifyAdminToken(header);
-    // if (!authenticate) {
-    //   throw new UnauthorizedException();
-    // }
-    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    // if (!findadmin) {
-    //   throw new UnauthorizedException();
-    // }
     const segments = flightSearchModel.segments.map((segment) => ({
       Origin: segment.depfrom,
       Destination: segment.arrto,

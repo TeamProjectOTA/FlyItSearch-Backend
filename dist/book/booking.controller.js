@@ -20,15 +20,18 @@ const swagger_1 = require("@nestjs/swagger");
 const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.service");
 const flyhub_model_1 = require("../flight/API Utils/Dto/flyhub.model");
 const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
+const auth_service_1 = require("../auth/auth.service");
 let BookingController = class BookingController {
-    constructor(bookingService, flyHubService, flyHubUtil) {
+    constructor(bookingService, flyHubService, flyHubUtil, authService) {
         this.bookingService = bookingService;
         this.flyHubService = flyHubService;
         this.flyHubUtil = flyHubUtil;
+        this.authService = authService;
     }
-    async airbook(data, uuid, header) {
+    async airbook(data, header) {
+        await this.authService.verifyBothToken(header);
         const currentTimestamp = new Date();
-        return this.flyHubService.airbook(data, uuid, currentTimestamp, header);
+        return currentTimestamp;
     }
     async aircanel(bookingIdDto, uuid, header) {
         return this.flyHubService.aircancel(bookingIdDto, uuid, header);
@@ -48,12 +51,12 @@ let BookingController = class BookingController {
 };
 exports.BookingController = BookingController;
 __decorate([
-    (0, common_1.Post)('flh/air-book/:uuid'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Post)('flh/air-book/'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Param)('uuid')),
-    __param(2, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, String, Object]),
+    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airbook", null);
 __decorate([
@@ -100,6 +103,7 @@ exports.BookingController = BookingController = __decorate([
     (0, common_1.Controller)('booking'),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
         flyhub_flight_service_1.FlyHubService,
-        flyhub_util_1.FlyHubUtil])
+        flyhub_util_1.FlyHubUtil,
+        auth_service_1.AuthService])
 ], BookingController);
 //# sourceMappingURL=booking.controller.js.map

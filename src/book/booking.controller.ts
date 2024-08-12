@@ -1,10 +1,11 @@
-import { Body, Controller, Param, Post, Headers } from '@nestjs/common';
+import { Body, Controller, Param, Post, Headers, UnauthorizedException } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingID, CreateSaveBookingDto } from './booking.model';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
+import { AuthService } from 'src/auth/auth.service';
 
 @ApiTags('Booking-Details')
 @Controller('booking')
@@ -13,30 +14,19 @@ export class BookingController {
     private readonly bookingService: BookingService,
     private readonly flyHubService: FlyHubService,
     private readonly flyHubUtil: FlyHubUtil,
+    private readonly authService:AuthService
   ) {}
-  // @Post('/passportcopy')
-  // @UseInterceptors(
-  //   FileInterceptor('file', {
-  //     storage: diskStorage({
-  //       destination: './src/AllFile',
-  //       filename: (req, file, cb) => {
-  //         cb(null, `${file.originalname}`);
-  //       },
-  //     }),
-  //   }),
-  // )
-  // async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<File> {
-  //   return await this.bookingService.saveFile(file);
-  // }
 
-  @Post('flh/air-book/:uuid')
+  @ApiBearerAuth('access_token')
+  @Post('flh/air-book/')
   async airbook(
-    @Body() data: FlbFlightSearchDto,
-    @Param('uuid') uuid: string,
+     @Body() data: FlbFlightSearchDto,
     @Headers() header: Headers,
   ) {
+   await this.authService.verifyBothToken(header)
     const currentTimestamp = new Date();
-    return this.flyHubService.airbook(data, uuid, currentTimestamp, header);
+    return currentTimestamp
+    //return await this.flyHubService.airbook(data, currentTimestamp, header);
   }
 
   @Post('flh/cancel-ticket/:uuid')

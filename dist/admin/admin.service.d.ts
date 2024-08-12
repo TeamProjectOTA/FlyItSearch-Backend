@@ -13,10 +13,10 @@ export declare class AdminService {
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, agentRepository: Repository<Agents>, authservice: AuthService);
     create(createAdminDto: CreateAdminDto, header: any): Promise<Admin>;
     findAll(header: any): Promise<Admin[]>;
-    findOne(header: any, adminId: string): Promise<Admin>;
+    findOne(header: any, uuid: string): Promise<Admin>;
     findOneUser(passengerId: string, header: any): Promise<User>;
-    update(header: any, updateAdminDto: UpdateAdminDto): Promise<Admin>;
-    remove(header: any, adminId: string): Promise<any>;
+    update(header: any, updateAdminDto: UpdateAdminDto, uuid: any): Promise<Admin>;
+    remove(header: any, uuid: string): Promise<any>;
     removeUser(passengerId: string, header: any): Promise<{
         userToFind: User;
         userToDelete: import("typeorm").DeleteResult;

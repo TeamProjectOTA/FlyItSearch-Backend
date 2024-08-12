@@ -109,6 +109,7 @@ export class UserService {
 
     Object.assign(updateUser, {
       fullName: updateUserDto?.fullName?.toUpperCase() || updateUser.fullName,
+      phone:updateUserDto?.phone||updateUser.phone,
       email: updateUserDto?.email || updateUser.email,
       dob: updateUserDto?.dob || updateUser.dob,
       gender: updateUserDto?.gender || updateUser.gender,

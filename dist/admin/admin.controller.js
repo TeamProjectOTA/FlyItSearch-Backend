@@ -25,14 +25,14 @@ let AdminController = class AdminController {
     create(createAdminDto, header) {
         return this.adminService.create(createAdminDto, header);
     }
-    findOne(header, adminId) {
-        return this.adminService.findOne(header, adminId);
+    findOne(header, uuid) {
+        return this.adminService.findOne(header, uuid);
     }
-    update(header, updateAdminDto) {
-        return this.adminService.update(header, updateAdminDto);
+    async update(header, updateAdminDto, uuid) {
+        return await this.adminService.update(header, updateAdminDto, uuid);
     }
-    remove(header, adminId) {
-        return this.adminService.remove(header, adminId);
+    remove(header, uuid) {
+        return this.adminService.remove(header, uuid);
     }
     findAll(header) {
         return this.adminService.findAll(header);
@@ -56,27 +56,28 @@ __decorate([
 ], AdminController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)(':adminId'),
+    (0, common_1.Get)(':uuid'),
     __param(0, (0, common_1.Headers)()),
-    __param(1, (0, common_1.Param)('adminId')),
+    __param(1, (0, common_1.Param)('uuid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], AdminController.prototype, "findOne", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Patch)(':adminId'),
+    (0, common_1.Patch)(':uuid'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Param)('uuid')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, update_admin_dto_1.UpdateAdminDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, update_admin_dto_1.UpdateAdminDto, String]),
+    __metadata("design:returntype", Promise)
 ], AdminController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Delete)(':adminId'),
+    (0, common_1.Delete)(':uuid'),
     __param(0, (0, common_1.Headers)()),
-    __param(1, (0, common_1.Param)('adminId')),
+    __param(1, (0, common_1.Param)('uuid')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)

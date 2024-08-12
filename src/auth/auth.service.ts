@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -32,8 +33,13 @@ export class AuthService {
     if (!admin || admin.password !== pass) {
       throw new UnauthorizedException('Invalid UUID or password');
     }
+    if(admin.status!="ACTIVE"){
+      
+        throw new ServiceUnavailableException(`Active Your Account ${admin.firstName} ${admin.lastName}`)
+      
+    }
 
-    const payload = { sub: admin.uuid };
+    const payload = { sub: admin.uuid ,sub2:admin.status};
     const token = await this.jwtservice.signAsync(payload);
     return { access_token: token };
   }
@@ -56,6 +62,7 @@ export class AuthService {
       const adminData = await this.adminRepository.findOne({
         where: { uuid: uuid },
       });
+      
 
       if (!adminData) {
         throw new UnauthorizedException('Admin not found.');
@@ -140,17 +147,19 @@ export class AuthService {
     }
 
     const token = header.authorization.replace('Bearer ', '');
+    
     let decodedToken: any;
     try {
       decodedToken = await this.jwtservice.verifyAsync(token);
+      
     } catch (error) {
       throw new NotFoundException('Invalid token');
     }
 
-    if (!decodedToken || !decodedToken.sub2) {
-      throw new NotFoundException('Invalid token payload');
-    }
-
+    // if (!decodedToken || !decodedToken.sub2) {
+    //   throw new NotFoundException('Invalid token payload');
+    // }
+    
     return decodedToken.sub;
   }
 
@@ -162,7 +171,7 @@ export class AuthService {
       await this.verifyUserToken(header);
       isUserTokenValid = true;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
 
     try {
@@ -247,7 +256,7 @@ export class AuthService {
   
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = new Date(Date.now() + 300000); // 1 hour expiry
+    user.resetPasswordExpires = new Date(Date.now() + 1800000); // 1 hour expiry
   
     await this.userRepository.save(user);
   

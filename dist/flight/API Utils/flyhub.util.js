@@ -135,10 +135,18 @@ let FlyHubUtil = class FlyHubUtil {
                             return null;
                         const firstSegment = segmentsList[0];
                         const lastSegment = segmentsList[segmentsList.length - 1];
+                        let arivalTime = new Date(firstSegment.Destination.ArrTime).getTime();
+                        let deptureTime = new Date(lastSegment.Origin.DepTime).getTime();
+                        const totalduration = deptureTime - arivalTime;
+                        let totalDurationInMinutes = Math.floor(totalduration / (1000 * 60));
+                        if (totalDurationInMinutes < 0) {
+                            totalDurationInMinutes = 0;
+                        }
                         const legInfo = {
                             DepDate: firstSegment?.Origin?.DepTime,
                             DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
                             ArrTo: lastSegment.Destination?.Airport?.AirportCode,
+                            test: totalDurationInMinutes,
                             Duration: segmentsList?.reduce((acc, segment) => acc + parseInt(segment?.JourneyDuration), 0),
                         };
                         const bookingClass = firstSegment?.Airline?.BookingClass;

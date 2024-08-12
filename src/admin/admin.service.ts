@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateAdminDto } from './dto/create-admin.dto';
@@ -75,13 +76,13 @@ export class AdminService {
     return await this.adminRepository.find();
   }
 
-  async findOne(header: any, adminId: string) {
+  async findOne(header: any, uuid: string) {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
     let findAdmin = await this.adminRepository.findOne({
-      where: { adminid: adminId },
+      where: { uuid: uuid },
     });
     if (!findAdmin) {
       throw new NotFoundException();
@@ -104,19 +105,20 @@ export class AdminService {
     return finduser;
   }
 
-  async update(header: any, updateAdminDto: UpdateAdminDto) {
+  async update(header: any, updateAdminDto: UpdateAdminDto,uuid:any) {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
-    const uuid = await this.authservice.decodeToken(header);
+    
     const updateAdmin = await this.adminRepository.findOne({
       where: { uuid: uuid },
     });
+    
     if (!updateAdmin) {
       throw new NotFoundException();
     }
-    if (updateAdminDto.email !== updateAdmin.email) {
+    if (updateAdminDto.email && updateAdminDto.email !== updateAdmin.email) {
       const emailExisted = await this.adminRepository.findOne({
         where: { email: updateAdminDto.email },
       });
@@ -128,26 +130,31 @@ export class AdminService {
     }
     updateAdmin.firstName = updateAdminDto.firstName;
     updateAdmin.lastName = updateAdminDto.lastName;
-    updateAdmin.email = updateAdminDto.email;
+    updateAdmin.email=updateAdminDto.email
     updateAdmin.phone = updateAdminDto.phone;
     updateAdmin.password = updateAdminDto.password;
     updateAdmin.status = updateAdminDto.status;
     updateAdmin.updated_at = new Date();
-    console.log(uuid);
+    
     return await this.adminRepository.save(updateAdmin);
   }
 
-  async remove(header: any, adminId: string): Promise<any> {
+  async remove(header: any, uuid: string): Promise<any> {
     const verifyAdminId = await this.authservice.verifyAdminToken(header);
 
     if (!verifyAdminId) {
       throw new UnauthorizedException();
     }
+    const decodedToken=await this.authservice.decodeToken(header)
+    if(uuid==decodedToken){
+      throw new UnauthorizedException('You can not delete your self')
+    }
     const adminToFind = await this.adminRepository.findOne({
-      where: { adminid: adminId },
+      where: { uuid: uuid },
     });
+    
     const adminToDelete = await this.adminRepository.delete({
-      adminid: adminId,
+      uuid: uuid,
     }); //This is the solution for  truncation
 
     return { adminToFind, adminToDelete };

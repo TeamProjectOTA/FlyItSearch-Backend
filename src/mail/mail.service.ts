@@ -64,7 +64,7 @@ export class MailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      return info;
+      return {message:'The email was delivered'};
     } catch (error) {
       throw error;
     }

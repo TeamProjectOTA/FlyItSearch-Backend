@@ -23,20 +23,21 @@ export class AdminController {
     return this.adminService.create(createAdminDto, header);
   }
   @ApiBearerAuth('access_token')
-  @Get(':adminId')
-  findOne(@Headers() header: Headers, @Param('adminId') adminId: string) {
-    return this.adminService.findOne(header, adminId);
+  @Get(':uuid')
+  findOne(@Headers() header: Headers, @Param('uuid') uuid: string) {
+    return this.adminService.findOne(header, uuid);
   }
   @ApiBearerAuth('access_token')
-  @Patch(':adminId')
-  update(@Headers() header: Headers, @Body() updateAdminDto: UpdateAdminDto) {
-    return this.adminService.update(header, updateAdminDto);
+  @Patch(':uuid')
+  async update(@Headers() header: Headers, @Body() updateAdminDto: UpdateAdminDto,@Param('uuid') uuid:string) {
+    
+    return await this.adminService.update(header, updateAdminDto,uuid);
   }
 
   @ApiBearerAuth('access_token')
-  @Delete(':adminId')
-  remove(@Headers() header: Headers, @Param('adminId') adminId: string) {
-    return this.adminService.remove(header, adminId);
+  @Delete(':uuid')
+  remove(@Headers() header: Headers, @Param('uuid') uuid: string) {
+    return this.adminService.remove(header, uuid);
   }
 
   @ApiBearerAuth('access_token')

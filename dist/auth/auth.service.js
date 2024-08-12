@@ -34,7 +34,10 @@ let AuthService = class AuthService {
         if (!admin || admin.password !== pass) {
             throw new common_1.UnauthorizedException('Invalid UUID or password');
         }
-        const payload = { sub: admin.uuid };
+        if (admin.status != "ACTIVE") {
+            throw new common_1.ServiceUnavailableException(`Active Your Account ${admin.firstName} ${admin.lastName}`);
+        }
+        const payload = { sub: admin.uuid, sub2: admin.status };
         const token = await this.jwtservice.signAsync(payload);
         return { access_token: token };
     }
@@ -131,9 +134,6 @@ let AuthService = class AuthService {
         catch (error) {
             throw new common_1.NotFoundException('Invalid token');
         }
-        if (!decodedToken || !decodedToken.sub2) {
-            throw new common_1.NotFoundException('Invalid token payload');
-        }
         return decodedToken.sub;
     }
     async verifyBothToken(header) {
@@ -144,7 +144,6 @@ let AuthService = class AuthService {
             isUserTokenValid = true;
         }
         catch (error) {
-            console.log(error);
         }
         try {
             await this.verifyAdminToken(header);
@@ -206,7 +205,7 @@ let AuthService = class AuthService {
         }
         const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
         user.resetPasswordToken = resetToken;
-        user.resetPasswordExpires = new Date(Date.now() + 300000);
+        user.resetPasswordExpires = new Date(Date.now() + 1800000);
         await this.userRepository.save(user);
         await this.sendResetPasswordEmail(user.email, resetToken);
         return { message: `Your password reset code has been sent to ${email}` };

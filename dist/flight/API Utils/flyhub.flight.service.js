@@ -174,15 +174,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data, uuid, currentTimestamp, header) {
-        const authenticate = this.authService.verifyUserToken(header);
-        if (!authenticate) {
-            throw new common_1.UnauthorizedException();
-        }
-        const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-        if (!findadmin) {
-            throw new common_1.UnauthorizedException();
-        }
+    async airbook(data, currentTimestamp, header) {
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -224,7 +216,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async convertToFlyAirSearchDto(flightSearchModel, userIp, uuid, header) {
+    async convertToFlyAirSearchDto(flightSearchModel, userIp) {
         const segments = flightSearchModel.segments.map((segment) => ({
             Origin: segment.depfrom,
             Destination: segment.arrto,

@@ -6,6 +6,7 @@ import {
   Get,
   Req,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiTags } from '@nestjs/swagger';
@@ -19,6 +20,8 @@ import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { Test } from './API Utils/test.service';
 
 import { FlyHubUtil } from './API Utils/flyhub.util';
+import { AuthService } from 'src/auth/auth.service';
+import { BothTokensGuard } from 'src/auth/both-tokens.guard';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -77,12 +80,10 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
 
-  @Post('fhb/air-search/:uuid')
+  @Post('fhb/air-search/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
-    @Param('uuid') uuid: string,
     @Req() request: Request,
-    @Headers() header: Headers,
   ): Promise<any> {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
@@ -92,13 +93,12 @@ export class FlightController {
     return this.flyHubService.convertToFlyAirSearchDto(
       flightSearchModel,
       userIp,
-      uuid,
-      header,
     );
   }
-
+ @UseGuards(BothTokensGuard)
   @Post('flh/price-check')
   async airPrice(@Body() data: searchResultDto) {
+    
     return await this.flyHubService.airPrice(data);
   }
 

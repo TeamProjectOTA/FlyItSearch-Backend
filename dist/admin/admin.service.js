@@ -73,13 +73,13 @@ let AdminService = class AdminService {
         }
         return await this.adminRepository.find();
     }
-    async findOne(header, adminId) {
+    async findOne(header, uuid) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);
         if (!verifyAdmin) {
             throw new common_1.UnauthorizedException();
         }
         let findAdmin = await this.adminRepository.findOne({
-            where: { adminid: adminId },
+            where: { uuid: uuid },
         });
         if (!findAdmin) {
             throw new common_1.NotFoundException();
@@ -99,19 +99,18 @@ let AdminService = class AdminService {
         }
         return finduser;
     }
-    async update(header, updateAdminDto) {
+    async update(header, updateAdminDto, uuid) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);
         if (!verifyAdmin) {
             throw new common_1.UnauthorizedException();
         }
-        const uuid = await this.authservice.decodeToken(header);
         const updateAdmin = await this.adminRepository.findOne({
             where: { uuid: uuid },
         });
         if (!updateAdmin) {
             throw new common_1.NotFoundException();
         }
-        if (updateAdminDto.email !== updateAdmin.email) {
+        if (updateAdminDto.email && updateAdminDto.email !== updateAdmin.email) {
             const emailExisted = await this.adminRepository.findOne({
                 where: { email: updateAdminDto.email },
             });
@@ -126,19 +125,22 @@ let AdminService = class AdminService {
         updateAdmin.password = updateAdminDto.password;
         updateAdmin.status = updateAdminDto.status;
         updateAdmin.updated_at = new Date();
-        console.log(uuid);
         return await this.adminRepository.save(updateAdmin);
     }
-    async remove(header, adminId) {
+    async remove(header, uuid) {
         const verifyAdminId = await this.authservice.verifyAdminToken(header);
         if (!verifyAdminId) {
             throw new common_1.UnauthorizedException();
         }
+        const decodedToken = await this.authservice.decodeToken(header);
+        if (uuid == decodedToken) {
+            throw new common_1.UnauthorizedException('You can not delete your self');
+        }
         const adminToFind = await this.adminRepository.findOne({
-            where: { adminid: adminId },
+            where: { uuid: uuid },
         });
         const adminToDelete = await this.adminRepository.delete({
-            adminid: adminId,
+            uuid: uuid,
         });
         return { adminToFind, adminToDelete };
     }
