@@ -184,9 +184,9 @@ export class UserService {
     }
     const email = await this.authservice.decodeToken(header);
     const user= this.userRepository.findOne({where:{email:email},relations:['profilePicture']})
-    if ((await user).dob==null) {
-      throw new NotFoundException('Update your profile');
-    }
+    // if ((await user).dob==null) {
+    //   throw new NotFoundException('Update your profile');
+    // }
     return user
 
   }

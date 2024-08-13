@@ -153,9 +153,6 @@ let UserService = class UserService {
         }
         const email = await this.authservice.decodeToken(header);
         const user = this.userRepository.findOne({ where: { email: email }, relations: ['profilePicture'] });
-        if ((await user).dob == null) {
-            throw new common_1.NotFoundException('Update your profile');
-        }
         return user;
     }
 };

@@ -58,7 +58,7 @@ exports.AppModule = AppModule = __decorate([
                 database: process.env.DB_NAME,
                 autoLoadEntities: true,
                 synchronize: true,
-                logging: false,
+                logging: true,
                 timezone: 'Z',
             }),
             admin_module_1.AdminModule,

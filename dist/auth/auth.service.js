@@ -75,19 +75,26 @@ let AuthService = class AuthService {
             where: { email: email },
         });
         if (!user) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
+            throw new common_1.UnauthorizedException('Invalid email ');
         }
         const passwordMatch = await bcrypt.compare(pass, user.password);
         if (!passwordMatch) {
-            throw new common_1.UnauthorizedException('Invalid email or password');
+            throw new common_1.UnauthorizedException('Invalid password');
         }
         if (user.emailVerified == false) {
             throw new common_1.UnauthorizedException('Email is not verified');
         }
         const payload = { sub: user.email, sub2: user.passengerId };
         const token = await this.jwtservice.signAsync(payload);
+        const userData = {
+            name: user.fullName,
+            email: user.email,
+            phone: user.phone
+        };
         return {
             access_token: token,
+            message: "Log In Successfull",
+            userData
         };
     }
     async verifyUserToken(header) {
@@ -168,7 +175,7 @@ let AuthService = class AuthService {
             from: process.env.EMAIL_CC,
             to: email,
             subject: 'Email Verification',
-            text: `Your varification code : ${token}`,
+            html: `<h1>Your varification code :<strong> ${token}</strong></h1>`,
         };
         try {
             await transporter.sendMail(mailOptions);

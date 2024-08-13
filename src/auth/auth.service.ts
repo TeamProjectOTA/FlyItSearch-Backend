@@ -84,22 +84,29 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid email ');
     }
 
     // Compare hashed password with user-provided password
     const passwordMatch = await bcrypt.compare(pass, user.password);
 
     if (!passwordMatch) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Invalid password');
     }
     if(user.emailVerified==false){
       throw new UnauthorizedException('Email is not verified')
     }
     const payload = { sub: user.email, sub2: user.passengerId };
     const token = await this.jwtservice.signAsync(payload);
+    const userData={
+      name:user.fullName,
+      email: user.email,
+      phone:user.phone
+    }
     return {
       access_token: token,
+      message:"Log In Successfull",
+      userData
     };
   }
   async verifyUserToken(header: any) {
@@ -203,7 +210,7 @@ export class AuthService {
       from: process.env.EMAIL_CC,
       to: email,
       subject: 'Email Verification',
-      text: `Your varification code : ${token}`,
+      html: `<h1>Your varification code :<strong> ${token}</strong></h1>`,
     };
 
     try {

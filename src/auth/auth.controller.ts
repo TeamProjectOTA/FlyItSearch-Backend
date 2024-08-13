@@ -15,13 +15,13 @@ export class AuthController {
     private readonly userRepository: Repository<User>
   ) {}
   @HttpCode(HttpStatus.OK)
-  @Post('sign-in-admin')
+  @Post('signInAdmin')
   signIn(@Body() signIndto: Authdto) {
     return this.authservice.signInAdmin(signIndto.uuid, signIndto.password);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Post('sign-in-user')
+  @Post('signInUser')
   signInUser(@Body() signIndto: Userauthdto) {
     return this.authservice.signInUser(signIndto.email, signIndto.password);
   }

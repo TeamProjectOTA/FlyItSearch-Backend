@@ -51,7 +51,7 @@ let AuthController = class AuthController {
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, common_1.Post)('sign-in-admin'),
+    (0, common_1.Post)('signInAdmin'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [createauthdto_1.Authdto]),
@@ -59,7 +59,7 @@ __decorate([
 ], AuthController.prototype, "signIn", null);
 __decorate([
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, common_1.Post)('sign-in-user'),
+    (0, common_1.Post)('signInUser'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [createauthdto_1.Userauthdto]),
