@@ -13,8 +13,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcryptjs';
-import { v4 as uuidv4 } from 'uuid';
-import * as nodemailer from 'nodemailer';
+
 
 @Injectable()
 export class UserService {
@@ -24,13 +23,14 @@ export class UserService {
   ) {}
 
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<any> {
     let add: User = new User();
   
     
     const userAlreadyExisted = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
+    
     if (userAlreadyExisted) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
@@ -68,7 +68,12 @@ export class UserService {
   
     await this.authservice.sendVerificationEmail(user.email, verificationToken);
   
-    return user;
+    return {
+      fullName:user.fullName,
+      phone:user.phone,
+      email:user.email,
+      message:`Please verify your email. An varification mail code has been sent to ${user.email}`      
+    };
   }
   
   
@@ -177,17 +182,40 @@ export class UserService {
     });
   }
 
-  async findOneUser(header:any):Promise<User>{
+  async findOneUser(header:any):Promise<any>{
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
     const email = await this.authservice.decodeToken(header);
-    const user= this.userRepository.findOne({where:{email:email},relations:['profilePicture']})
-    // if ((await user).dob==null) {
-    //   throw new NotFoundException('Update your profile');
-    // }
-    return user
+    const user= await this.userRepository.findOne({where:{email:email},relations:['profilePicture']})
+     
+  const nameParts = user.fullName.split(' ');
+
+  let firstName = '';
+  let lastName = '';
+
+  if (nameParts.length > 0) {
+    firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+  }
+  if (nameParts.length > 1) {
+    lastName = nameParts.slice(1).join(' ').charAt(0).toUpperCase() + nameParts.slice(1).join(' ').slice(1);
+  }
+
+    
+
+    return {
+      firstName:firstName,
+      lastName:lastName,
+      gender:user.gender,
+      dob:user.dob,
+      nationality:user.nationility,
+      passport:user.passport,
+      passportExpiryDate:user.passportexp,
+      email:user.email,
+      phone:user.phone,
+      profilePicture:user.profilePicture
+    }
 
   }
 }

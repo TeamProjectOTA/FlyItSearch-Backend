@@ -103,6 +103,7 @@ export class AppModule {
         //{ path: '*', method: RequestMethod.ALL },
         // include all the path that uses this middleware
         { path: '/tour-packages', method: RequestMethod.ALL },
+        // {path:'/flights/fhb',method:RequestMethod.ALL}
       );
   }
 }

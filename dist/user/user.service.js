@@ -56,7 +56,12 @@ let UserService = class UserService {
         add.verificationToken = verificationToken;
         const user = await this.userRepository.save(add);
         await this.authservice.sendVerificationEmail(user.email, verificationToken);
-        return user;
+        return {
+            fullName: user.fullName,
+            phone: user.phone,
+            email: user.email,
+            message: `Please verify your email. An varification mail code has been sent to ${user.email}`
+        };
     }
     async update(header, updateUserDto) {
         const verifyUserToken = await this.authservice.verifyUserToken(header);
@@ -152,8 +157,28 @@ let UserService = class UserService {
             throw new common_1.UnauthorizedException();
         }
         const email = await this.authservice.decodeToken(header);
-        const user = this.userRepository.findOne({ where: { email: email }, relations: ['profilePicture'] });
-        return user;
+        const user = await this.userRepository.findOne({ where: { email: email }, relations: ['profilePicture'] });
+        const nameParts = user.fullName.split(' ');
+        let firstName = '';
+        let lastName = '';
+        if (nameParts.length > 0) {
+            firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+        }
+        if (nameParts.length > 1) {
+            lastName = nameParts.slice(1).join(' ').charAt(0).toUpperCase() + nameParts.slice(1).join(' ').slice(1);
+        }
+        return {
+            firstName: firstName,
+            lastName: lastName,
+            gender: user.gender,
+            dob: user.dob,
+            nationality: user.nationility,
+            passport: user.passport,
+            passportExpiryDate: user.passportexp,
+            email: user.email,
+            phone: user.phone,
+            profilePicture: user.profilePicture
+        };
     }
 };
 exports.UserService = UserService;

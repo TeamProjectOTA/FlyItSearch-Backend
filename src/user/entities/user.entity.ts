@@ -34,6 +34,8 @@ export class User {
   role: string;
   @Column({ nullable: true })
   verificationToken?: string;  // Add this field
+  @Column({ nullable: true })
+  passportexp:string
   @Column({ default: false })
   emailVerified: boolean; 
   @Column({ nullable: true })

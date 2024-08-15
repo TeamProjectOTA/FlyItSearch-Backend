@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 class CreateUserDto {
 }
 exports.CreateUserDto = CreateUserDto;
@@ -27,23 +28,25 @@ __decorate([
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "email", void 0);
 __decorate([
+    (0, class_validator_1.MaxLength)(8),
+    (0, class_validator_1.MinLength)(6),
     (0, swagger_1.ApiProperty)({ default: '1234' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: '1-2-1998' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "dob", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: 'Male' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "gender", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: 'Bangladeshi' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "nationility", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ default: "Q14596723" }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "passport", void 0);
 //# sourceMappingURL=create-user.dto.js.map

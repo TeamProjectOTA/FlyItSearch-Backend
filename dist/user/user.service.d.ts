@@ -7,10 +7,10 @@ export declare class UserService {
     private readonly userRepository;
     private readonly authservice;
     constructor(userRepository: Repository<User>, authservice: AuthService);
-    create(createUserDto: CreateUserDto): Promise<User>;
+    create(createUserDto: CreateUserDto): Promise<any>;
     update(header: any, updateUserDto: UpdateUserDto): Promise<User>;
     allUser(header: any): Promise<User[]>;
     findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
     findAllUserWithBookings(header: any): Promise<any>;
-    findOneUser(header: any): Promise<User>;
+    findOneUser(header: any): Promise<any>;
 }

@@ -13,6 +13,7 @@ export declare class User {
     passport: string;
     role: string;
     verificationToken?: string;
+    passportexp: string;
     emailVerified: boolean;
     resetPasswordToken: string;
     resetPasswordExpires: Date;

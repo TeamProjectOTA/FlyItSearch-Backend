@@ -11,6 +11,7 @@ import {
   BadRequestException,
   UsePipes,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -53,8 +54,9 @@ export class UserController {
   async findAllUserWithBookings(@Headers() header: Headers): Promise<any> {
     return this.userService.findAllUserWithBookings(header);
   }
+  
   @ApiBearerAuth('access_token')
-  @Get("/userUpdate")
+  @Get("/profileInfo")
   async findOneUser(@Headers() header: Headers): Promise<any>{
     return this.userService.findOneUser(header)
   }

@@ -5,7 +5,7 @@ import { User } from './entities/user.entity';
 export declare class UserController {
     private readonly userService;
     constructor(userService: UserService);
-    create(createUserDto: CreateUserDto): Promise<User>;
+    create(createUserDto: CreateUserDto): Promise<any>;
     update(header: Headers, updateUserDto: UpdateUserDto): Promise<User>;
     findAllUser(header: Headers): Promise<User[]>;
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<Partial<User>>;
