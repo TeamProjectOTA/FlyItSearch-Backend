@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateSaveBookingDto, SaveBooking } from './booking.model';
+import { CreateSaveBookingDto, LagInfo, SaveBooking } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -13,6 +13,8 @@ export class BookingService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly authservice: AuthService,
+    @InjectRepository(LagInfo)
+    private lagInfoRepository: Repository<LagInfo>,
   ) {}
 
   // async saveFile(file: Express.Multer.File): Promise<File> {
@@ -35,7 +37,7 @@ export class BookingService {
     header: any,
   ): Promise<SaveBooking> {
     const email = await this.authservice.decodeToken(header);
-
+    console.log(createSaveBookingDto)
     const user = await this.userRepository.findOne({
       where: { email },
     });
@@ -55,7 +57,7 @@ export class BookingService {
         user,
       });
     }
-
-    return this.saveBookingRepository.save(saveBooking);
+    
+    return await this.saveBookingRepository.save(saveBooking);
   }
 }

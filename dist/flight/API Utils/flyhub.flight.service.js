@@ -8,9 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubService = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,15 +15,9 @@ const axios_1 = require("axios");
 const flyhub_util_1 = require("./flyhub.util");
 const class_transformer_1 = require("class-transformer");
 const flyhub_model_1 = require("./Dto/flyhub.model");
-const typeorm_1 = require("@nestjs/typeorm");
-const admin_entity_1 = require("../../admin/entities/admin.entity");
-const typeorm_2 = require("typeorm");
-const auth_service_1 = require("../../auth/auth.service");
 let FlyHubService = class FlyHubService {
-    constructor(flyHubUtil, adminRepository, authService) {
+    constructor(flyHubUtil) {
         this.flyHubUtil = flyHubUtil;
-        this.adminRepository = adminRepository;
-        this.authService = authService;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
@@ -74,7 +65,7 @@ let FlyHubService = class FlyHubService {
             throw error;
         }
     }
-    async aircancel(BookingID, uuid, header) {
+    async aircancel(BookingID, header) {
         const token = await this.getToken();
         const ticketCancel = {
             method: 'post',
@@ -108,7 +99,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketRetrive);
-            return this.flyHubUtil.dataTransformer(response.data);
+            return this.flyHubUtil.airRetriveDataTransformer(response?.data);
         }
         catch (error) {
             throw error?.response?.data;
@@ -174,7 +165,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data, currentTimestamp, header) {
+    async airbook(data, header, currentTimestamp) {
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -210,7 +201,10 @@ let FlyHubService = class FlyHubService {
             const response0 = await axios_1.default.request(Price);
             const response1 = await axios_1.default.request(PreBookticket);
             const response = await axios_1.default.request(Bookticket);
-            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, currentTimestamp, header);
+            return {
+                updatedData: await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp),
+                rawData: response.data
+            };
         }
         catch (error) {
             throw error?.response?.data;
@@ -256,9 +250,6 @@ let FlyHubService = class FlyHubService {
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
-    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
-        typeorm_2.Repository,
-        auth_service_1.AuthService])
+    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

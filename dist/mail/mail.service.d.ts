@@ -4,7 +4,8 @@ export declare class MailService {
     private transporter;
     constructor(authService: AuthService);
     private compileTemplate;
-    sendMail(data: any, header: any): Promise<{
+    sendMail(data: any): Promise<{
         message: string;
+        info: any;
     }>;
 }

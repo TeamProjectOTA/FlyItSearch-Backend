@@ -70,7 +70,7 @@ let FlightController = class FlightController {
     }
     async apicheck(SearchResponse, header) {
         const currentTimestamp = new Date();
-        return await this.testservice.bookingDataTransformerFlyhb(SearchResponse, currentTimestamp, header);
+        return await this.testservice.bookingDataTransformerFlyhb(SearchResponse, header);
     }
 };
 exports.FlightController = FlightController;

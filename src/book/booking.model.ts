@@ -45,8 +45,8 @@ export class SaveBooking {
   @Column()
   isRefundable: boolean;
 
-  @Column()
-  bookingDate: Date;
+  @Column({nullable:true})
+  bookingDate: string;
 
   @Column()
   expireDate: Date;
@@ -84,21 +84,16 @@ export class LagInfo {
   saveBooking: SaveBooking;
 }
 
-export class BookingID {
-  @ApiProperty({ default: '22' })
-  @IsNotEmpty()
-  @IsString()
-  BookingID: string;
-}
+
 class CreateLagInfoDto {
   @IsString()
-  DepDate: string;
+  DepDate?: string;
 
   @IsString()
-  DepFrom: string;
+  DepFrom?: string;
 
   @IsString()
-  ArrTo: string;
+  ArrTo?: string;
 }
 
 export class CreateSaveBookingDto {
@@ -126,7 +121,7 @@ export class CreateSaveBookingDto {
   bookingDate: string;
 
   @IsString()
-  expireDate: string;
+  expireDate: Date;
 
   @IsString()
   bookingStatus: string;
@@ -138,4 +133,10 @@ export class CreateSaveBookingDto {
   @ValidateNested({ each: true })
   @Type(() => CreateLagInfoDto)
   laginfo: CreateLagInfoDto[];
+}
+export class BookingID {
+  @ApiProperty({ default: '22' })
+  @IsNotEmpty()
+  @IsString()
+  BookingID: string;
 }

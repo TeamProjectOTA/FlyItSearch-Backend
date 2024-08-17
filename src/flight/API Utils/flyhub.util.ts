@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BookingService } from 'src/book/booking.service';
 import { MailService } from 'src/mail/mail.service';
 
@@ -281,7 +281,7 @@ export class FlyHubUtil {
 
     return FlightItenary;
   }
-  async dataTransformer(SearchResponse: any): Promise<any[]> {
+  async airRetriveDataTransformer(SearchResponse: any): Promise<any[]> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -528,8 +528,8 @@ export class FlyHubUtil {
 
   async bookingDataTransformerFlyhb(
     SearchResponse: any,
-    currentTimestamp?: any,
     header?: any,
+    currentTimestamp?: Date,
   ): Promise<any[]> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -745,7 +745,7 @@ export class FlyHubUtil {
             ResultId: Result.ResultID,
             BookingId: SearchResponse?.BookingID,
             PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
-            BookingDate: currentTimestamp,
+            BookingDate: currentTimestamp||null,
             SearchId: SearchResponse?.SearchId,
             BookingStatus: SearchResponse?.BookingStatus,
             InstantPayment: Instant_Payment,
@@ -774,13 +774,13 @@ export class FlyHubUtil {
     
     
     
-    const response = this.saveBookingData(FlightItenary, header);
-    return FlightItenary;
+     
+    return await this.saveBookingData(FlightItenary, header);
   }
 
   async saveBookingData(SearchResponse: any, header?: any): Promise<any> {
     const booking = SearchResponse[0];
-    const mail= this.mailService.sendMail(booking, header)
+     
     if (booking) {
       const flightNumber =
         booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
@@ -817,7 +817,7 @@ export class FlyHubUtil {
         bookingStatus: booking?.BookingStatus,
         TripType: tripType,
 
-        laginfo: booking.AllLegsInfo.map((leg: any) => ({
+        laginfo: booking?.AllLegsInfo.map((leg: any) => ({
           DepDate: leg?.DepDate,
           DepFrom: leg?.DepFrom,
           ArrTo: leg?.ArrTo,
@@ -825,7 +825,9 @@ export class FlyHubUtil {
       };
 
       //console.log(convertedData);
+      //await this.mailService.sendMail(booking)
       return await this.BookService.saveBooking(convertedData, header);
+      //return convertedData
     } else {
       return 'Booking data is unvalid';
     }

@@ -20,12 +20,12 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { User } from './entities/user.entity';
+import { BothTokensGuard } from 'src/auth/both-tokens.guard';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
-
   @Post('/signUp')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);

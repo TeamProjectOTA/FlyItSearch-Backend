@@ -21,6 +21,7 @@ const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.servi
 const flyhub_model_1 = require("../flight/API Utils/Dto/flyhub.model");
 const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
 const auth_service_1 = require("../auth/auth.service");
+const both_tokens_guard_1 = require("../auth/both-tokens.guard");
 let BookingController = class BookingController {
     constructor(bookingService, flyHubService, flyHubUtil, authService) {
         this.bookingService = bookingService;
@@ -29,12 +30,11 @@ let BookingController = class BookingController {
         this.authService = authService;
     }
     async airbook(data, header) {
-        await this.authService.verifyBothToken(header);
         const currentTimestamp = new Date();
-        return currentTimestamp;
+        return await this.flyHubService.airbook(data, header, currentTimestamp);
     }
-    async aircanel(bookingIdDto, uuid, header) {
-        return this.flyHubService.aircancel(bookingIdDto, uuid, header);
+    async aircanel(bookingIdDto, header) {
+        return this.flyHubService.aircancel(bookingIdDto, header);
     }
     async airRetrive(bookingIdDto) {
         return await this.flyHubService.airRetrive(bookingIdDto);
@@ -52,6 +52,7 @@ let BookingController = class BookingController {
 exports.BookingController = BookingController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
     (0, common_1.Post)('flh/air-book/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
@@ -60,12 +61,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airbook", null);
 __decorate([
-    (0, common_1.Post)('flh/cancel-ticket/:uuid'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Post)('flh/cancel-ticket'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Param)('uuid')),
-    __param(2, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [booking_model_1.BookingID, String, Object]),
+    __metadata("design:paramtypes", [booking_model_1.BookingID, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "aircanel", null);
 __decorate([
@@ -76,8 +77,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetrive", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('testBooking'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

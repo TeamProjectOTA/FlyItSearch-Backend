@@ -46,8 +46,7 @@ let MailService = class MailService {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(data);
     }
-    async sendMail(data, header) {
-        const email = await this.authService.decodeToken(header);
+    async sendMail(data) {
         const html = await this.compileTemplate('booking', {
             BookingStatus: data.BookingStatus === "Booked" ? "Confirmed" : data.BookingStatus === "Cancelled" ? "Cancellation" : "",
             BookingId: data.BookingId,
@@ -55,8 +54,9 @@ let MailService = class MailService {
             NetFare: data.NetFare,
             AllLegsInfo: data.AllLegsInfo,
             PassengerList: data.PassengerList,
-            flightUrl: 'https://flyitsearch.netlify.app/',
+            flightUrl: '',
         });
+        const email = data?.PassengerList[0]?.Email;
         const mailOptions = {
             from: process.env.EMAIL_CC,
             to: email,
@@ -65,7 +65,7 @@ let MailService = class MailService {
         };
         try {
             const info = await this.transporter.sendMail(mailOptions);
-            return { message: 'The email was delivered' };
+            return { message: 'The email was delivered', info };
         }
         catch (error) {
             throw error;

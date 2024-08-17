@@ -20,13 +20,15 @@ const booking_model_1 = require("./booking.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
 let BookingService = class BookingService {
-    constructor(saveBookingRepository, userRepository, authservice) {
+    constructor(saveBookingRepository, userRepository, authservice, lagInfoRepository) {
         this.saveBookingRepository = saveBookingRepository;
         this.userRepository = userRepository;
         this.authservice = authservice;
+        this.lagInfoRepository = lagInfoRepository;
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
+        console.log(createSaveBookingDto);
         const user = await this.userRepository.findOne({
             where: { email },
         });
@@ -45,7 +47,7 @@ let BookingService = class BookingService {
                 user,
             });
         }
-        return this.saveBookingRepository.save(saveBooking);
+        return await this.saveBookingRepository.save(saveBooking);
     }
 };
 exports.BookingService = BookingService;
@@ -53,8 +55,10 @@ exports.BookingService = BookingService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.SaveBooking)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.LagInfo)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        auth_service_1.AuthService])
+        auth_service_1.AuthService,
+        typeorm_2.Repository])
 ], BookingService);
 //# sourceMappingURL=booking.service.js.map

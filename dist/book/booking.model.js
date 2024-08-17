@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateSaveBookingDto = exports.BookingID = exports.LagInfo = exports.SaveBooking = void 0;
+exports.BookingID = exports.CreateSaveBookingDto = exports.LagInfo = exports.SaveBooking = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
@@ -51,8 +51,8 @@ __decorate([
     __metadata("design:type", Boolean)
 ], SaveBooking.prototype, "isRefundable", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], SaveBooking.prototype, "bookingDate", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -107,15 +107,6 @@ __decorate([
 exports.LagInfo = LagInfo = __decorate([
     (0, typeorm_1.Entity)()
 ], LagInfo);
-class BookingID {
-}
-exports.BookingID = BookingID;
-__decorate([
-    (0, swagger_1.ApiProperty)({ default: '22' }),
-    (0, class_validator_1.IsNotEmpty)(),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], BookingID.prototype, "BookingID", void 0);
 class CreateLagInfoDto {
 }
 __decorate([
@@ -167,7 +158,7 @@ __decorate([
 ], CreateSaveBookingDto.prototype, "bookingDate", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Date)
 ], CreateSaveBookingDto.prototype, "expireDate", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
@@ -183,4 +174,13 @@ __decorate([
     (0, class_transformer_1.Type)(() => CreateLagInfoDto),
     __metadata("design:type", Array)
 ], CreateSaveBookingDto.prototype, "laginfo", void 0);
+class BookingID {
+}
+exports.BookingID = BookingID;
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: '22' }),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], BookingID.prototype, "BookingID", void 0);
 //# sourceMappingURL=booking.model.js.map

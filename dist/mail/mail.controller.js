@@ -20,17 +20,16 @@ let MailController = class MailController {
     constructor(mailerService) {
         this.mailerService = mailerService;
     }
-    async sendMail(mailData, header) {
-        return this.mailerService.sendMail(mailData, header);
+    async sendMail(mailData) {
+        return this.mailerService.sendMail(mailData);
     }
 };
 exports.MailController = MailController;
 __decorate([
     (0, common_1.Post)('send'),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MailController.prototype, "sendMail", null);
 exports.MailController = MailController = __decorate([

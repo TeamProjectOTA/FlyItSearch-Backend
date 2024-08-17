@@ -119,8 +119,8 @@ export class FlightController {
     const currentTimestamp = new Date();
     return await this.testservice.bookingDataTransformerFlyhb(
       SearchResponse,
-      currentTimestamp,
       header,
     );
   }
+
 }

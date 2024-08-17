@@ -8,7 +8,7 @@ export declare class SaveBooking {
     CurrierCode: string;
     flightNumber: string;
     isRefundable: boolean;
-    bookingDate: Date;
+    bookingDate: string;
     expireDate: Date;
     bookingStatus: string;
     TripType: string;
@@ -22,13 +22,10 @@ export declare class LagInfo {
     ArrTo: string;
     saveBooking: SaveBooking;
 }
-export declare class BookingID {
-    BookingID: string;
-}
 declare class CreateLagInfoDto {
-    DepDate: string;
-    DepFrom: string;
-    ArrTo: string;
+    DepDate?: string;
+    DepFrom?: string;
+    ArrTo?: string;
 }
 export declare class CreateSaveBookingDto {
     system: string;
@@ -39,9 +36,12 @@ export declare class CreateSaveBookingDto {
     flightNumber: string;
     isRefundable: boolean;
     bookingDate: string;
-    expireDate: string;
+    expireDate: Date;
     bookingStatus: string;
     TripType: string;
     laginfo: CreateLagInfoDto[];
+}
+export declare class BookingID {
+    BookingID: string;
 }
 export {};

@@ -132,13 +132,12 @@ let UserService = class UserService {
             .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', {
             bookingStatus,
         })
+            .orderBy('saveBooking.bookingDate', 'DESC')
             .getOne();
         if (!user) {
             throw new common_1.NotFoundException('No Booking data Available for the user');
         }
         return {
-            name: user.fullName,
-            email: user.email,
             saveBookings: user.saveBookings,
         };
     }

@@ -28,9 +28,6 @@ export class FlyHubService {
   private readonly apiUrl: string = process.env.FLyHub_Url;
   constructor(
     private readonly flyHubUtil: FlyHubUtil,
-    @InjectRepository(Admin)
-    private readonly adminRepository: Repository<Admin>,
-    private readonly authService: AuthService,
   ) {}
 
   async getToken(): Promise<string> {
@@ -93,13 +90,9 @@ export class FlyHubService {
 
   async aircancel(
     BookingID: BookingID,
-    uuid: string,
     header?: any,
   ): Promise<any> {
-    // const findadmin = await this.adminRepository.findOne({ where: { uuid } });
-    // if (!findadmin) {
-    //   throw new UnauthorizedException();
-    // }
+   
     const token = await this.getToken();
     const ticketCancel = {
       method: 'post',
@@ -111,9 +104,9 @@ export class FlyHubService {
       },
       data: BookingID,
     };
-
     try {
       const response = await axios.request(ticketCancel);
+      
       return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header);
       //return response.data
     } catch (error) {
@@ -135,7 +128,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketRetrive);
-      return this.flyHubUtil.dataTransformer(response.data);
+      return this.flyHubUtil.airRetriveDataTransformer(response?.data);
       //return response.data
     } catch (error) {
       throw error?.response?.data;
@@ -204,8 +197,8 @@ export class FlyHubService {
 
   async airbook(
     data: FlbFlightSearchDto,
-    currentTimestamp?: Date,
     header?: any,
+    currentTimestamp?: Date,
   ) {
  
     const token = await this.getToken();
@@ -245,11 +238,15 @@ export class FlyHubService {
       const response0 = await axios.request(Price);
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
-      return this.flyHubUtil.bookingDataTransformerFlyhb(
+       
+      return {
+        updatedData:await this.flyHubUtil.bookingDataTransformerFlyhb(
         response.data,
-        currentTimestamp,
         header,
-      );
+        currentTimestamp,
+      ),
+      rawData:response.data
+    }
     } catch (error) {
       throw error?.response?.data;
     }

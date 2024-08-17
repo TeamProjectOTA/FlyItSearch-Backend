@@ -8,7 +8,7 @@ export class MailController {
   constructor(private readonly mailerService: MailService) {}
 
   @Post('send')
-  async sendMail(@Body() mailData: any,@Headers() header: Headers) {
-    return this.mailerService.sendMail(mailData,header);
+  async sendMail(@Body() mailData: any) {
+    return this.mailerService.sendMail(mailData);
   }
 }

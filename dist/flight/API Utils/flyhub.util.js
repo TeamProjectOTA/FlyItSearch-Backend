@@ -230,7 +230,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async dataTransformer(SearchResponse) {
+    async airRetriveDataTransformer(SearchResponse) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -418,7 +418,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async bookingDataTransformerFlyhb(SearchResponse, currentTimestamp, header) {
+    async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -579,7 +579,7 @@ let FlyHubUtil = class FlyHubUtil {
                         ResultId: Result.ResultID,
                         BookingId: SearchResponse?.BookingID,
                         PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
-                        BookingDate: currentTimestamp,
+                        BookingDate: currentTimestamp || null,
                         SearchId: SearchResponse?.SearchId,
                         BookingStatus: SearchResponse?.BookingStatus,
                         InstantPayment: Instant_Payment,
@@ -605,12 +605,10 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const response = this.saveBookingData(FlightItenary, header);
-        return FlightItenary;
+        return await this.saveBookingData(FlightItenary, header);
     }
     async saveBookingData(SearchResponse, header) {
         const booking = SearchResponse[0];
-        const mail = this.mailService.sendMail(booking, header);
         if (booking) {
             const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
             let tripType;
@@ -642,7 +640,7 @@ let FlyHubUtil = class FlyHubUtil {
                 expireDate: booking?.TimeLimit,
                 bookingStatus: booking?.BookingStatus,
                 TripType: tripType,
-                laginfo: booking.AllLegsInfo.map((leg) => ({
+                laginfo: booking?.AllLegsInfo.map((leg) => ({
                     DepDate: leg?.DepDate,
                     DepFrom: leg?.DepFrom,
                     ArrTo: leg?.ArrTo,

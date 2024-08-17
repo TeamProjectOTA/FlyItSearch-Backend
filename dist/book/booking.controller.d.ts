@@ -10,8 +10,11 @@ export declare class BookingController {
     private readonly flyHubUtil;
     private readonly authService;
     constructor(bookingService: BookingService, flyHubService: FlyHubService, flyHubUtil: FlyHubUtil, authService: AuthService);
-    airbook(data: FlbFlightSearchDto, header: Headers): Promise<Date>;
-    aircanel(bookingIdDto: BookingID, uuid: string, header: Headers): Promise<any>;
+    airbook(data: FlbFlightSearchDto, header: Headers): Promise<{
+        updatedData: any[];
+        rawData: any;
+    }>;
+    aircanel(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetrive(bookingIdDto: BookingID): Promise<any>;
     bookingtest(data: any, header: any): Promise<any>;
     test(data: any): Promise<any>;

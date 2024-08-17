@@ -43,8 +43,8 @@ export class MailService {
     return compiledTemplate(data);
 }
 
-  async sendMail(data: any,header:any) {
-    const email=await this.authService.decodeToken(header)
+  async sendMail(data: any) {
+    
     const html = await this.compileTemplate('booking', {
       BookingStatus:data.BookingStatus === "Booked" ? "Confirmed" : data.BookingStatus === "Cancelled" ? "Cancellation" : "",
       BookingId: data.BookingId,
@@ -52,9 +52,9 @@ export class MailService {
       NetFare: data.NetFare,
       AllLegsInfo: data.AllLegsInfo,
       PassengerList: data.PassengerList,
-      flightUrl: 'https://flyitsearch.netlify.app/', // or dynamically generated URL
+      flightUrl: '', // or dynamically generated URL
     });
-
+    const email = data?.PassengerList[0]?.Email;
     const mailOptions = {
       from: process.env.EMAIL_CC,
       to: email,
@@ -64,7 +64,7 @@ export class MailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      return {message:'The email was delivered'};
+      return {message:'The email was delivered', info};
     } catch (error) {
       throw error;
     }
