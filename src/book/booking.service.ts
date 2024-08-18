@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateSaveBookingDto, LagInfo, SaveBooking } from './booking.model';
+import { BookingSave, CreateSaveBookingDto, LagInfo, SaveBooking } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -15,27 +15,16 @@ export class BookingService {
     private readonly authservice: AuthService,
     @InjectRepository(LagInfo)
     private lagInfoRepository: Repository<LagInfo>,
+    @InjectRepository(BookingSave)
+    private readonly BookingSaveRepository:Repository<BookingSave>
   ) {}
 
-  // async saveFile(file: Express.Multer.File): Promise<File> {
-  //   try {
-  //     const newFile = this.fileRepository.create({
-  //       filename: 'FLYT' + file.originalname,
-  //       path: file.path,
-  //       size: file.size,
-  //       mimetype: file.mimetype,
-  //     });
-  //     return this.fileRepository.save(newFile);
-  //   } catch (error) {
-  //     console.log(error);
-  //     throw new NotFoundException();
-  //   }
-  // }
+
 
   async saveBooking(
     createSaveBookingDto: CreateSaveBookingDto,
     header: any,
-  ): Promise<SaveBooking> {
+  ): Promise<any> {
     const email = await this.authservice.decodeToken(header);
     console.log(createSaveBookingDto)
     const user = await this.userRepository.findOne({
@@ -45,19 +34,23 @@ export class BookingService {
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
     }
-    let saveBooking = await this.saveBookingRepository.findOne({
+    let saveBooking = await this.BookingSaveRepository.findOne({
       where: { bookingId: createSaveBookingDto.bookingId, user },
     });
 
     if (saveBooking) {
       saveBooking.bookingStatus = createSaveBookingDto.bookingStatus;
     } else {
-      saveBooking = this.saveBookingRepository.create({
+      saveBooking = this.BookingSaveRepository.create({
         ...createSaveBookingDto,
         user,
       });
+   
     }
-    
-    return await this.saveBookingRepository.save(saveBooking);
+    console.log(saveBooking)
+    return await this.BookingSaveRepository.save(saveBooking);
   }
+
+
+  
 }

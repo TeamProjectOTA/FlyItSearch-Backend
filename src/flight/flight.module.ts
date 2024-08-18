@@ -15,7 +15,7 @@ import { Test } from './API Utils/test.service';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { User } from 'src/user/entities/user.entity';
-import { LagInfo, SaveBooking } from 'src/book/booking.model';
+import { BookingSave, LagInfo, SaveBooking } from 'src/book/booking.model';
 import { BookingService } from 'src/book/booking.service';
 import { BookingServicesbr } from './booking.service';
 import { MailService } from 'src/mail/mail.service';
@@ -29,6 +29,7 @@ import { MailService } from 'src/mail/mail.service';
       SaveBooking,
       User,
       LagInfo,
+      BookingSave
     ]),
     HttpModule,
     AirportsModule,

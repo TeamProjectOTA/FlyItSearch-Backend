@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { BookingService } from './booking.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LagInfo, SaveBooking } from './booking.model';
+import { BookingSave, LagInfo, SaveBooking } from './booking.model';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlightModule } from 'src/flight/flight.module';
 import { Admin } from 'src/admin/entities/admin.entity';
@@ -15,7 +15,7 @@ import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, SaveBooking, User, LagInfo]),
+    TypeOrmModule.forFeature([Admin, SaveBooking, User, LagInfo,BookingSave]),
     UserModule,
     AuthModule,
     FlightModule,

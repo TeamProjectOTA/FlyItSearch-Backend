@@ -239,14 +239,12 @@ export class FlyHubService {
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
        
-      return {
-        updatedData:await this.flyHubUtil.bookingDataTransformerFlyhb(
+      return await this.flyHubUtil.bookingDataTransformerFlyhb(
         response.data,
         header,
         currentTimestamp,
-      ),
-      rawData:response.data
-    }
+      )
+     
     } catch (error) {
       throw error?.response?.data;
     }

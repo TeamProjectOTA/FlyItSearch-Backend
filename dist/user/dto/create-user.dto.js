@@ -28,7 +28,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "email", void 0);
 __decorate([
-    (0, class_validator_1.MaxLength)(8),
+    (0, class_validator_1.MaxLength)(15),
     (0, class_validator_1.MinLength)(6),
     (0, swagger_1.ApiProperty)({ default: '1234' }),
     __metadata("design:type", String)

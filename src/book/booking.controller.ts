@@ -29,6 +29,7 @@ export class BookingController {
     const currentTimestamp = new Date();
     return await this.flyHubService.airbook(data,header,currentTimestamp,);
   }
+  @UseGuards(BothTokensGuard)
   @ApiBearerAuth('access_token')
   @Post('flh/cancel-ticket')
   async aircanel(

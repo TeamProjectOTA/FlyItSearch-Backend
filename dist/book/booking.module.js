@@ -26,7 +26,7 @@ exports.BookingModule = BookingModule;
 exports.BookingModule = BookingModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, booking_model_1.SaveBooking, user_entity_1.User, booking_model_1.LagInfo]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, booking_model_1.SaveBooking, user_entity_1.User, booking_model_1.LagInfo, booking_model_1.BookingSave]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
             flight_module_1.FlightModule,

@@ -20,11 +20,12 @@ const booking_model_1 = require("./booking.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
 let BookingService = class BookingService {
-    constructor(saveBookingRepository, userRepository, authservice, lagInfoRepository) {
+    constructor(saveBookingRepository, userRepository, authservice, lagInfoRepository, BookingSaveRepository) {
         this.saveBookingRepository = saveBookingRepository;
         this.userRepository = userRepository;
         this.authservice = authservice;
         this.lagInfoRepository = lagInfoRepository;
+        this.BookingSaveRepository = BookingSaveRepository;
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
@@ -35,19 +36,20 @@ let BookingService = class BookingService {
         if (!user) {
             throw new common_1.NotFoundException('No Booking data available for the user');
         }
-        let saveBooking = await this.saveBookingRepository.findOne({
+        let saveBooking = await this.BookingSaveRepository.findOne({
             where: { bookingId: createSaveBookingDto.bookingId, user },
         });
         if (saveBooking) {
             saveBooking.bookingStatus = createSaveBookingDto.bookingStatus;
         }
         else {
-            saveBooking = this.saveBookingRepository.create({
+            saveBooking = this.BookingSaveRepository.create({
                 ...createSaveBookingDto,
                 user,
             });
         }
-        return await this.saveBookingRepository.save(saveBooking);
+        console.log(saveBooking);
+        return await this.BookingSaveRepository.save(saveBooking);
     }
 };
 exports.BookingService = BookingService;
@@ -56,9 +58,11 @@ exports.BookingService = BookingService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.SaveBooking)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.LagInfo)),
+    __param(4, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         auth_service_1.AuthService,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], BookingService);
 //# sourceMappingURL=booking.service.js.map

@@ -774,8 +774,8 @@ export class FlyHubUtil {
     
     
     
-     
-    return await this.saveBookingData(FlightItenary, header);
+     await this.saveBookingData(FlightItenary, header);
+    return  FlightItenary 
   }
 
   async saveBookingData(SearchResponse: any, header?: any): Promise<any> {
@@ -824,8 +824,8 @@ export class FlyHubUtil {
         })),
       };
 
-      //console.log(convertedData);
-      //await this.mailService.sendMail(booking)
+      
+      await this.mailService.sendMail(booking)
       return await this.BookService.saveBooking(convertedData, header);
       //return convertedData
     } else {

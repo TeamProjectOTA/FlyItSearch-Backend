@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BookingID = exports.CreateSaveBookingDto = exports.LagInfo = exports.SaveBooking = void 0;
+exports.BookingID = exports.CreateSaveBookingDto = exports.BookingSave = exports.LagInfo = exports.SaveBooking = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
@@ -107,6 +107,68 @@ __decorate([
 exports.LagInfo = LagInfo = __decorate([
     (0, typeorm_1.Entity)()
 ], LagInfo);
+let BookingSave = class BookingSave {
+};
+exports.BookingSave = BookingSave;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], BookingSave.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "system", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "bookingId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], BookingSave.prototype, "paxCount", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "Curriername", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "CurrierCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "flightNumber", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], BookingSave.prototype, "isRefundable", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], BookingSave.prototype, "bookingDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], BookingSave.prototype, "expireDate", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "bookingStatus", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "TripType", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Object)
+], BookingSave.prototype, "laginfo", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.bookingSave, { onDelete: 'CASCADE' }),
+    __metadata("design:type", user_entity_1.User)
+], BookingSave.prototype, "user", void 0);
+exports.BookingSave = BookingSave = __decorate([
+    (0, typeorm_1.Entity)()
+], BookingSave);
 class CreateLagInfoDto {
 }
 __decorate([

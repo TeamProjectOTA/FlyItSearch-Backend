@@ -84,6 +84,50 @@ export class LagInfo {
   saveBooking: SaveBooking;
 }
 
+@Entity()
+export class BookingSave{
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  system: string;
+
+  @Column()
+  bookingId: string;
+
+  @Column()
+  paxCount: number;
+
+  @Column()
+  Curriername: string;
+
+  @Column()
+  CurrierCode: string;
+
+  @Column()
+  flightNumber: string;
+
+  @Column()
+  isRefundable: boolean;
+
+  @Column({ nullable: true })
+  bookingDate: string;
+
+  @Column()
+  expireDate: Date;
+
+  @Column()
+  bookingStatus: string;
+
+  @Column()
+  TripType: string;
+
+  @Column('json', { nullable: true })
+  laginfo: any; // Store laginfo as a JSON object
+
+  @ManyToOne(() => User, (user) => user.bookingSave, { onDelete: 'CASCADE' })
+  user: User;
+}
 
 class CreateLagInfoDto {
   @IsString()

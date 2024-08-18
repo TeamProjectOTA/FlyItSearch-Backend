@@ -154,20 +154,19 @@ export class UserService {
 
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .leftJoinAndSelect('user.saveBookings', 'saveBooking')
-      .leftJoinAndSelect('saveBooking.laginfo', 'laginfo')
+      .leftJoinAndSelect('user.bookingSave', 'bookingSave')
       .where('user.email = :email', { email })
-      .andWhere('LOWER(saveBooking.bookingStatus) = LOWER(:bookingStatus)', {
+      .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
         bookingStatus,
       })
-      .orderBy('saveBooking.bookingDate', 'DESC')
+      .orderBy('bookingSave.bookingDate', 'ASC')
       .getOne();
 
     if (!user) {
       throw new NotFoundException('No Booking data Available for the user');
     }
     return {
-      saveBookings: user.saveBookings,
+      saveBookings: user.bookingSave,
     };
   }
 

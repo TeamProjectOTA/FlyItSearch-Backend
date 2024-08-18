@@ -22,6 +22,22 @@ export declare class LagInfo {
     ArrTo: string;
     saveBooking: SaveBooking;
 }
+export declare class BookingSave {
+    id: number;
+    system: string;
+    bookingId: string;
+    paxCount: number;
+    Curriername: string;
+    CurrierCode: string;
+    flightNumber: string;
+    isRefundable: boolean;
+    bookingDate: string;
+    expireDate: Date;
+    bookingStatus: string;
+    TripType: string;
+    laginfo: any;
+    user: User;
+}
 declare class CreateLagInfoDto {
     DepDate?: string;
     DepFrom?: string;

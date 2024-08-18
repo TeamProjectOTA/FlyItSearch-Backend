@@ -88,6 +88,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => booking_model_1.SaveBooking, (saveBooking) => saveBooking.user),
     __metadata("design:type", Array)
 ], User.prototype, "saveBookings", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => booking_model_1.BookingSave, (bookingSave) => bookingSave.user),
+    __metadata("design:type", Array)
+], User.prototype, "bookingSave", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

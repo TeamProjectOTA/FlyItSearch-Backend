@@ -605,7 +605,8 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        return await this.saveBookingData(FlightItenary, header);
+        await this.saveBookingData(FlightItenary, header);
+        return FlightItenary;
     }
     async saveBookingData(SearchResponse, header) {
         const booking = SearchResponse[0];
@@ -646,6 +647,7 @@ let FlyHubUtil = class FlyHubUtil {
                     ArrTo: leg?.ArrTo,
                 })),
             };
+            await this.mailService.sendMail(booking);
             return await this.BookService.saveBooking(convertedData, header);
         }
         else {

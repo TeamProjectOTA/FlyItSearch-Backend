@@ -61,6 +61,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airbook", null);
 __decorate([
+    (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('flh/cancel-ticket'),
     __param(0, (0, common_1.Body)()),

@@ -10,13 +10,10 @@ export declare class BookingController {
     private readonly flyHubUtil;
     private readonly authService;
     constructor(bookingService: BookingService, flyHubService: FlyHubService, flyHubUtil: FlyHubUtil, authService: AuthService);
-    airbook(data: FlbFlightSearchDto, header: Headers): Promise<{
-        updatedData: any[];
-        rawData: any;
-    }>;
+    airbook(data: FlbFlightSearchDto, header: Headers): Promise<any[]>;
     aircanel(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetrive(bookingIdDto: BookingID): Promise<any>;
     bookingtest(data: any, header: any): Promise<any>;
     test(data: any): Promise<any>;
-    SaveBooking(createSaveBookingDto: CreateSaveBookingDto, header: Headers): Promise<import("./booking.model").SaveBooking>;
+    SaveBooking(createSaveBookingDto: CreateSaveBookingDto, header: Headers): Promise<any>;
 }
