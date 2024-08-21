@@ -7,4 +7,5 @@ export declare class CreateUserDto {
     gender?: string;
     nationility?: string;
     passport?: string;
+    passportexp?: string;
 }

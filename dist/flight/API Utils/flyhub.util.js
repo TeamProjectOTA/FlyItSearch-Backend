@@ -13,10 +13,12 @@ exports.FlyHubUtil = void 0;
 const common_1 = require("@nestjs/common");
 const booking_service_1 = require("../../book/booking.service");
 const mail_service_1 = require("../../mail/mail.service");
+const payment_service_1 = require("../../payment/payment.service");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService, mailService) {
+    constructor(BookService, mailService, paymentService) {
         this.BookService = BookService;
         this.mailService = mailService;
+        this.paymentService = paymentService;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -390,7 +392,7 @@ let FlyHubUtil = class FlyHubUtil {
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
                         BookingId: SearchResponse?.BookingID,
-                        PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
+                        PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
                         SearchId: SearchResponse?.SearchId,
                         BookingStatus: SearchResponse?.BookingStatus,
                         InstantPayment: Instant_Payment,
@@ -416,7 +418,10 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        return FlightItenary;
+        return {
+            bookingData: FlightItenary,
+            sslpaymentLink: await this.paymentService.dataModification(FlightItenary)
+        };
     }
     async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp) {
         const FlightItenary = [];
@@ -606,7 +611,10 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         await this.saveBookingData(FlightItenary, header);
-        return FlightItenary;
+        return {
+            bookingData: FlightItenary,
+            sslpaymentLink: "gg"
+        };
     }
     async saveBookingData(SearchResponse, header) {
         const booking = SearchResponse[0];
@@ -658,6 +666,8 @@ let FlyHubUtil = class FlyHubUtil {
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [booking_service_1.BookingService, mail_service_1.MailService])
+    __metadata("design:paramtypes", [booking_service_1.BookingService,
+        mail_service_1.MailService,
+        payment_service_1.PaymentService])
 ], FlyHubUtil);
 //# sourceMappingURL=flyhub.util.js.map

@@ -8,59 +8,101 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("../user/entities/user.entity");
 const sslcommerz_1 = require("sslcommerz");
-const typeorm_2 = require("typeorm");
 let PaymentService = class PaymentService {
-    constructor(loginRepository) {
-        this.loginRepository = loginRepository;
+    constructor() {
         this.storeId = process.env.STORE_ID;
         this.storePassword = process.env.STORE_PASSWORD;
         this.isLive = false;
     }
-    async initiatePayment(passengerId) {
-        const userData = await this.loginRepository.findOne({
-            where: { passengerId: passengerId },
-        });
-        if (!userData) {
-            throw new common_1.NotFoundException(`User with passengerId ${passengerId} not found`);
+    async dataModification(SearchResponse) {
+        const booking = SearchResponse[0];
+        let tripType;
+        if (booking?.AllLegsInfo?.length === 1) {
+            tripType = 'OneWay';
         }
+        else if (booking?.AllLegsInfo?.length === 2) {
+            if (booking?.AllLegsInfo[0]?.ArrTo === booking?.AllLegsInfo[1]?.DepFrom &&
+                booking?.AllLegsInfo[0]?.DepFrom === booking?.AllLegsInfo[1]?.ArrTo) {
+                tripType = 'Return';
+            }
+            else {
+                tripType = 'Multistop';
+            }
+        }
+        else {
+            tripType = 'Multistop';
+        }
+        const flightDateTime = new Date(booking?.AllLegsInfo[0]?.DepDate);
+        const currentDateTime = new Date();
+        const timeDifference = flightDateTime.getTime() - currentDateTime.getTime();
+        const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
+        const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+        const airTicketPrice = booking?.NetFare;
+        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025);
+        const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
+        const hours_till_departure = ` ${hoursDifference} hrs ${minutesDifference} mins`;
+        const pnr = booking?.PNR;
+        const passenger = booking?.PassengerList?.[0];
+        const name = `${passenger?.FirstName || ''} ${passenger?.LastName || ''}`.trim();
+        const email = passenger?.Email;
+        const city = passenger?.CountryCode;
+        const postCode = '1206';
+        const phone = passenger?.ContactNumber;
+        const paymentData = {
+            total_amount: total_amount,
+            hours_till_departure: hours_till_departure,
+            flight_type: tripType,
+            pnr: pnr,
+            journey_from_to: 'DAC-CGP',
+            cus_name: name,
+            cus_email: email,
+            cus_city: city,
+            cus_postcode: postCode,
+            cus_country: 'Bangladesh',
+            cus_phone: phone,
+        };
+        return {
+            url: await this.initiatePayment(paymentData),
+            airTicketPrice: airTicketPrice,
+            paymentGatwayCharge: paymentGatwayCharge,
+            total_amount: total_amount,
+        };
+    }
+    async initiatePayment(paymentData) {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `${timestamp}_${randomNumber}`;
         const data = {
-            total_amount: 100,
+            total_amount: paymentData.total_amount,
             currency: 'BDT',
             tran_id: tran_id,
-            success_url: 'http://localhost:3000/payment/success',
-            fail_url: 'http://localhost:3000/payment/fail',
-            cancel_url: 'http://localhost:3000/payment/cancel',
+            success_url: 'http://localhost:8080/payment/success',
+            fail_url: 'http://localhost:8080/payment/fail',
+            cancel_url: 'http://localhost:8080/payment/cancel',
             shipping_method: 'NO',
             product_name: 'Air Ticket',
             product_category: 'air ticket',
             product_profile: 'airline-tickets',
-            hours_till_departure: '24 hrs',
-            flight_type: 'Oneway',
-            pnr: 'Q123h4',
-            journey_from_to: 'DAC-CGP',
+            hours_till_departure: paymentData.hours_till_departure,
+            flight_type: paymentData.flight_type,
+            pnr: paymentData.pnr,
+            journey_from_to: paymentData.journey_from_to,
             third_party_booking: 'No',
-            cus_name: userData.fullName,
-            cus_email: userData.email,
-            cus_city: 'Dhaka',
-            cus_postcode: '1000',
+            cus_name: paymentData.cus_name,
+            cus_email: paymentData.cus_email,
+            cus_city: paymentData.cus_city,
+            cus_postcode: paymentData.cus_postcode,
             cus_country: 'Bangladesh',
-            cus_phone: userData.phone,
+            cus_phone: paymentData.cus_phone,
         };
         try {
             const apiResponse = await sslcommerz.init(data);
+            console.log('apiresponse: ', apiResponse.GatewayPageURL);
             if (!apiResponse.GatewayPageURL) {
                 throw new common_1.HttpException('Failed to get payment URL', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -71,32 +113,10 @@ let PaymentService = class PaymentService {
             throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async validateOrder(val_id) {
-        const sslcz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
-        try {
-            const response = await sslcz.validate({ val_id });
-            if (response.status === 'VALID') {
-                return response;
-            }
-            else if (response.status === 'INVALID_TRANSACTION') {
-                console.error('Invalid transaction:', response);
-                throw new common_1.HttpException('Invalid transaction', common_1.HttpStatus.BAD_REQUEST);
-            }
-            else {
-                console.error('Unknown validation error:', response);
-                throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-        catch (error) {
-            console.error('Order validation error:', error);
-            throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 };
 exports.PaymentService = PaymentService;
 exports.PaymentService = PaymentService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __metadata("design:paramtypes", [])
 ], PaymentService);
 //# sourceMappingURL=payment.service.js.map

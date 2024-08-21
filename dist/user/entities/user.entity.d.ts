@@ -1,4 +1,4 @@
-import { BookingSave, SaveBooking } from 'src/book/booking.model';
+import { BookingSave } from 'src/book/booking.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
 export declare class User {
     id: number;
@@ -18,6 +18,5 @@ export declare class User {
     resetPasswordToken: string;
     resetPasswordExpires: Date;
     profilePicture: ProfilePicture;
-    saveBookings: SaveBooking[];
     bookingSave: BookingSave[];
 }

@@ -20,9 +20,9 @@ let PaymentController = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
     }
-    async getPaymentUrl(res, passengerId) {
+    async getPaymentUrl(res, paymentData) {
         try {
-            const redirectUrl = await this.paymentService.initiatePayment(passengerId);
+            const redirectUrl = await this.paymentService.initiatePayment(paymentData);
             res.status(common_1.HttpStatus.OK).json({ url: redirectUrl });
         }
         catch (error) {
@@ -30,62 +30,40 @@ let PaymentController = class PaymentController {
             throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async validateOrder(val_id) {
-        try {
-            const response = await this.paymentService.validateOrder(val_id);
-            return { data: response };
-        }
-        catch (error) {
-            console.error('Failed to validate order:', error);
-            throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
     async handleSuccess(val_id, res) {
         try {
-            const response = await this.paymentService.validateOrder(val_id);
-            const successMessage = {
+            res.status(common_1.HttpStatus.OK).json({
                 message: 'The payment was successful.',
-                data: response,
                 status: common_1.HttpStatus.OK,
-            };
-            res.status(common_1.HttpStatus.OK).json(successMessage);
+            });
         }
         catch (error) {
-            console.error('Success handling error:', error);
+            console.error('Error handling success:', error);
             throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     handleFail(res) {
-        const failMessage = {
+        res.status(common_1.HttpStatus.OK).json({
             message: 'The payment was not successful.',
             status: common_1.HttpStatus.OK,
-        };
-        res.status(common_1.HttpStatus.OK).json(failMessage);
+        });
     }
     handleCancel(res) {
-        const cancelMessage = {
+        res.status(common_1.HttpStatus.OK).json({
             message: 'The payment was canceled.',
             status: common_1.HttpStatus.OK,
-        };
-        res.status(common_1.HttpStatus.OK).json(cancelMessage);
+        });
     }
 };
 exports.PaymentController = PaymentController;
 __decorate([
-    (0, common_1.Get)('/:passengerId'),
+    (0, common_1.Post)('/sslccommerz'),
     __param(0, (0, common_1.Res)()),
-    __param(1, (0, common_1.Param)('passengerId')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "getPaymentUrl", null);
-__decorate([
-    (0, common_1.Get)('/payment/validate'),
-    __param(0, (0, common_1.Query)('val_id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "validateOrder", null);
 __decorate([
     (0, common_1.Post)('/success'),
     __param(0, (0, common_1.Query)('val_id')),

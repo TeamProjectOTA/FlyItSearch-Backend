@@ -1,27 +1,4 @@
 import { User } from 'src/user/entities/user.entity';
-export declare class SaveBooking {
-    id: number;
-    system: string;
-    bookingId: string;
-    paxCount: number;
-    Curriername: string;
-    CurrierCode: string;
-    flightNumber: string;
-    isRefundable: boolean;
-    bookingDate: string;
-    expireDate: Date;
-    bookingStatus: string;
-    TripType: string;
-    laginfo: LagInfo[];
-    user: User;
-}
-export declare class LagInfo {
-    id: number;
-    DepDate: string;
-    DepFrom: string;
-    ArrTo: string;
-    saveBooking: SaveBooking;
-}
 export declare class BookingSave {
     id: number;
     system: string;

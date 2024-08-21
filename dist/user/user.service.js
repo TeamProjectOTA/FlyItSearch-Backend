@@ -73,38 +73,33 @@ let UserService = class UserService {
             where: { email: email },
         });
         if (!updateUser) {
-            throw new common_1.NotFoundException();
+            throw new common_1.NotFoundException('User not found');
         }
-        if (updateUserDto.password) {
-            const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-            updateUser.password = hashedPassword;
-        }
-        if (updateUserDto.email) {
+        if (updateUserDto.email && updateUserDto.email !== updateUser.email) {
             const findEmail = await this.userRepository.findOne({
                 where: { email: updateUserDto.email },
             });
             if (findEmail) {
-                throw new common_1.ConflictException('Email already existed');
+                throw new common_1.ConflictException('Email already exists');
             }
         }
-        const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== updateUser.email;
-        let hashedPassword;
-        if (updateUserDto?.password) {
-            hashedPassword = await bcrypt.hash(updateUserDto?.password, 10);
+        if (updateUserDto.password) {
+            updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
         }
-        const password = hashedPassword || updateUser.password;
         Object.assign(updateUser, {
             fullName: updateUserDto?.fullName?.toUpperCase() || updateUser.fullName,
             phone: updateUserDto?.phone || updateUser.phone,
             email: updateUserDto?.email || updateUser.email,
             dob: updateUserDto?.dob || updateUser.dob,
-            gender: updateUserDto?.gender || updateUser.gender,
             nationility: updateUserDto?.nationility || updateUser.nationility,
+            password: updateUserDto?.password || updateUser.password,
+            gender: updateUserDto?.gender || updateUser.gender,
             passport: updateUserDto?.passport || updateUser.passport,
-            password: password
+            passportexp: updateUserDto?.passportexp || updateUser.passportexp,
         });
-        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+        const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== email;
         if (isEmailUpdated) {
+            const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
             updateUser.verificationToken = verificationToken;
             updateUser.emailVerified = false;
             await this.authservice.sendVerificationEmail(updateUser.email, verificationToken);

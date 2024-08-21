@@ -15,10 +15,12 @@ import { Test } from './API Utils/test.service';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { User } from 'src/user/entities/user.entity';
-import { BookingSave, LagInfo, SaveBooking } from 'src/book/booking.model';
+import { BookingSave,   } from 'src/book/booking.model';
 import { BookingService } from 'src/book/booking.service';
 import { BookingServicesbr } from './booking.service';
-import { MailService } from 'src/mail/mail.service';
+import { PaymentModule } from 'src/payment/payment.module';
+import { MailModule } from 'src/mail/mail.module';
+
 
 @Module({
   imports: [
@@ -26,15 +28,16 @@ import { MailService } from 'src/mail/mail.service';
       Flight,
       Segment,
       Admin,
-      SaveBooking,
       User,
-      LagInfo,
       BookingSave
     ]),
     HttpModule,
     AirportsModule,
     AirlinesModule,
     AuthModule,
+    PaymentModule,
+    MailModule,
+    
     
   ],
   controllers: [FlightController],
@@ -48,9 +51,8 @@ import { MailService } from 'src/mail/mail.service';
     FlyHubService,
     Test,
     BookingService,
-    MailService,
   ],
 
-  exports: [FlyHubService, FlyHubUtil, Test],
+  exports: [FlyHubService, FlyHubUtil],
 })
 export class FlightModule {}

@@ -20,69 +20,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
-export class SaveBooking {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  system: string;
 
-  @Column()
-  bookingId: string;
-
-  @Column()
-  paxCount: number;
-
-  @Column()
-  Curriername: string;
-
-  @Column()
-  CurrierCode: string;
-
-  @Column()
-  flightNumber: string;
-
-  @Column()
-  isRefundable: boolean;
-
-  @Column({nullable:true})
-  bookingDate: string;
-
-  @Column()
-  expireDate: Date;
-
-  @Column()
-  bookingStatus: string;
-
-  @Column()
-  TripType: string;
-
-  @OneToMany(() => LagInfo, (lagInfo) => lagInfo.saveBooking, {
-    onDelete: 'CASCADE',
-  })
-  laginfo: LagInfo[];
-  @ManyToOne(() => User, (user) => user.saveBookings, { onDelete: 'CASCADE' })
-  user: User;
-}
-@Entity()
-export class LagInfo {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column()
-  DepDate: string;
-
-  @Column()
-  DepFrom: string;
-
-  @Column()
-  ArrTo: string;
-
-  @ManyToOne(() => SaveBooking, (saveBooking) => saveBooking.laginfo, {
-    onDelete: 'CASCADE',
-  })
-  saveBooking: SaveBooking;
-}
 
 @Entity()
 export class BookingSave{

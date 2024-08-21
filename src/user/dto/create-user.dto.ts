@@ -20,4 +20,6 @@ export class CreateUserDto {
   nationility?:string
   @ApiProperty({default:"Q14596723"})
   passport?:string
+  @ApiProperty()
+  passportexp?:string
 }

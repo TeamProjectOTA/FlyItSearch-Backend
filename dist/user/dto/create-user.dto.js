@@ -49,4 +49,8 @@ __decorate([
     (0, swagger_1.ApiProperty)({ default: "Q14596723" }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "passport", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], CreateUserDto.prototype, "passportexp", void 0);
 //# sourceMappingURL=create-user.dto.js.map

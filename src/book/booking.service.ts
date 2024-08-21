@@ -1,20 +1,17 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BookingSave, CreateSaveBookingDto, LagInfo, SaveBooking } from './booking.model';
+import { BookingSave, CreateSaveBookingDto, } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class BookingService {
   constructor(
-    @InjectRepository(SaveBooking)
-    private saveBookingRepository: Repository<SaveBooking>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly authservice: AuthService,
-    @InjectRepository(LagInfo)
-    private lagInfoRepository: Repository<LagInfo>,
+  
     @InjectRepository(BookingSave)
     private readonly BookingSaveRepository:Repository<BookingSave>
   ) {}

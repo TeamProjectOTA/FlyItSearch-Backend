@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { BookingService } from 'src/book/booking.service';
 import { MailService } from 'src/mail/mail.service';
+import { PaymentService } from 'src/payment/payment.service';
 
 @Injectable()
 export class FlyHubUtil {
-  constructor(private readonly BookService: BookingService,private readonly mailService:MailService) {}
+  constructor(
+    private readonly BookService: BookingService,
+    private readonly mailService:MailService,
+    private readonly paymentService:PaymentService
+  ) {}
   async restBFMParser(
     SearchResponse: any,
     journeyType?: string,
@@ -281,7 +286,7 @@ export class FlyHubUtil {
 
     return FlightItenary;
   }
-  async airRetriveDataTransformer(SearchResponse: any): Promise<any[]> {
+  async airRetriveDataTransformer(SearchResponse: any): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -495,7 +500,7 @@ export class FlyHubUtil {
             System: 'FLYHUB',
             ResultId: Result.ResultID,
             BookingId: SearchResponse?.BookingID,
-            PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
+            PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
 
             SearchId: SearchResponse?.SearchId,
             BookingStatus: SearchResponse?.BookingStatus,
@@ -522,15 +527,21 @@ export class FlyHubUtil {
         }
       }
     }
+      
+    
 
-    return FlightItenary;
+    return {
+      bookingData:FlightItenary,
+      sslpaymentLink:await this.paymentService.dataModification(FlightItenary)
+
+    };
   }
 
   async bookingDataTransformerFlyhb(
     SearchResponse: any,
     header?: any,
     currentTimestamp?: Date,
-  ): Promise<any[]> {
+  ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -775,7 +786,11 @@ export class FlyHubUtil {
     
     
      await this.saveBookingData(FlightItenary, header);
-    return  FlightItenary 
+     return {
+      bookingData:FlightItenary,
+      sslpaymentLink:"gg"
+
+    };  
   }
 
   async saveBookingData(SearchResponse: any, header?: any): Promise<any> {

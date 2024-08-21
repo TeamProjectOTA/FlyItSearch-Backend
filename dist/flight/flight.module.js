@@ -27,7 +27,8 @@ const user_entity_1 = require("../user/entities/user.entity");
 const booking_model_1 = require("../book/booking.model");
 const booking_service_1 = require("../book/booking.service");
 const booking_service_2 = require("./booking.service");
-const mail_service_1 = require("../mail/mail.service");
+const payment_module_1 = require("../payment/payment.module");
+const mail_module_1 = require("../mail/mail.module");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -38,15 +39,15 @@ exports.FlightModule = FlightModule = __decorate([
                 flight_model_1.Flight,
                 flight_model_1.Segment,
                 admin_entity_1.Admin,
-                booking_model_1.SaveBooking,
                 user_entity_1.User,
-                booking_model_1.LagInfo,
                 booking_model_1.BookingSave
             ]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,
             airlines_module_1.AirlinesModule,
             auth_module_1.AuthModule,
+            payment_module_1.PaymentModule,
+            mail_module_1.MailModule,
         ],
         controllers: [flight_controller_1.FlightController],
         providers: [
@@ -59,9 +60,8 @@ exports.FlightModule = FlightModule = __decorate([
             flyhub_flight_service_1.FlyHubService,
             test_service_1.Test,
             booking_service_1.BookingService,
-            mail_service_1.MailService,
         ],
-        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, test_service_1.Test],
+        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

@@ -75,14 +75,14 @@ let FlightController = class FlightController {
 };
 exports.FlightController = FlightController;
 __decorate([
-    (0, common_1.Post)('/bdfare'),
+    (0, common_1.Post)('/bdFare'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [bdfare_model_1.RequestDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "getApiResponse", null);
 __decorate([
-    (0, common_1.Post)('/bdfareupdate'),
+    (0, common_1.Post)('/bdFareUpdate'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
@@ -96,7 +96,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "getpnr", null);
 __decorate([
-    (0, common_1.Get)('/airvoid/:pnr'),
+    (0, common_1.Get)('/airVoid/:pnr'),
     __param(0, (0, common_1.Param)('pnr')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -110,14 +110,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "get_ticket", null);
 __decorate([
-    (0, common_1.Post)('sbr/fair-rules'),
+    (0, common_1.Post)('sbr/fairRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [fare_rules_flight_dto_1.FareRulesDto]),
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "airfarerules", null);
 __decorate([
-    (0, common_1.Get)('/airretrive/:pnr'),
+    (0, common_1.Get)('/airRetrive/:pnr'),
     __param(0, (0, common_1.Param)('pnr')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -132,6 +132,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
     (0, common_1.Post)('flh/price-check'),
     __param(0, (0, common_1.Body)()),
@@ -140,7 +141,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airPrice", null);
 __decorate([
-    (0, common_1.Post)('flh/booking-policy'),
+    (0, common_1.Post)('flh/farePolicy'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),

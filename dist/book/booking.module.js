@@ -11,28 +11,25 @@ const common_1 = require("@nestjs/common");
 const booking_service_1 = require("./booking.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const booking_model_1 = require("./booking.model");
-const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.service");
 const flight_module_1 = require("../flight/flight.module");
 const admin_entity_1 = require("../admin/entities/admin.entity");
 const user_module_1 = require("../user/user.module");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_module_1 = require("../auth/auth.module");
-const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
 const booking_controller_1 = require("./booking.controller");
-const mail_service_1 = require("../mail/mail.service");
 let BookingModule = class BookingModule {
 };
 exports.BookingModule = BookingModule;
 exports.BookingModule = BookingModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, booking_model_1.SaveBooking, user_entity_1.User, booking_model_1.LagInfo, booking_model_1.BookingSave]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, booking_model_1.BookingSave]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
-            flight_module_1.FlightModule,
+            flight_module_1.FlightModule
         ],
         controllers: [booking_controller_1.BookingController],
-        providers: [booking_service_1.BookingService, flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, mail_service_1.MailService],
+        providers: [booking_service_1.BookingService,],
         exports: [booking_service_1.BookingService],
     })
 ], BookingModule);

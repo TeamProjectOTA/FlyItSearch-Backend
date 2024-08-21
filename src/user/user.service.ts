@@ -80,57 +80,64 @@ export class UserService {
 
 
   async update(header: any, updateUserDto: UpdateUserDto) {
+    // Verify user token
     const verifyUserToken = await this.authservice.verifyUserToken(header);
     if (!verifyUserToken) {
       throw new UnauthorizedException();
     }
+  
+    // Decode token to get user email
     const email = await this.authservice.decodeToken(header);
     const updateUser = await this.userRepository.findOne({
       where: { email: email },
     });
+  
     if (!updateUser) {
-      throw new NotFoundException();
+      throw new NotFoundException('User not found');
     }
-    if (updateUserDto.password) {
-      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-      updateUser.password = hashedPassword;
-    }
-    if (updateUserDto.email) {
+  
+    // Check for email conflict if email is being updated
+    if (updateUserDto.email && updateUserDto.email !== updateUser.email) {
       const findEmail = await this.userRepository.findOne({
         where: { email: updateUserDto.email },
       });
       if (findEmail) {
-        throw new ConflictException('Email already existed');
+        throw new ConflictException('Email already exists');
       }
     }
-    const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== updateUser.email;
-
-    let hashedPassword : string 
-    if(updateUserDto?.password){
-      hashedPassword = await bcrypt.hash(updateUserDto?.password, 10);
-    
+  
+    // Hash the new password if provided
+    if (updateUserDto.password) {
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
-    const password=hashedPassword ||updateUser.password
-
+  
+    // Update user properties
     Object.assign(updateUser, {
       fullName: updateUserDto?.fullName?.toUpperCase() || updateUser.fullName,
-      phone:updateUserDto?.phone||updateUser.phone,
+      phone: updateUserDto?.phone || updateUser.phone,
       email: updateUserDto?.email || updateUser.email,
       dob: updateUserDto?.dob || updateUser.dob,
-      gender: updateUserDto?.gender || updateUser.gender,
       nationility: updateUserDto?.nationility || updateUser.nationility,
+      password: updateUserDto?.password || updateUser.password,
+      gender: updateUserDto?.gender || updateUser.gender,
       passport: updateUserDto?.passport || updateUser.passport,
-      password:password
+      passportexp: updateUserDto?.passportexp || updateUser.passportexp,
     });
-    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+  
+    
+    const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== email;
     if (isEmailUpdated) {
-      updateUser.verificationToken = verificationToken
-      updateUser.emailVerified=false
-      await this.authservice.sendVerificationEmail(updateUser.email, verificationToken)
+      const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+      updateUser.verificationToken = verificationToken;
+      updateUser.emailVerified = false;
+      await this.authservice.sendVerificationEmail(updateUser.email, verificationToken);
     }
+  
+    
     return await this.userRepository.save(updateUser);
   }
-
+  
+  
 
  
 

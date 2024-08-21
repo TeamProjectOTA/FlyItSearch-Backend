@@ -7,6 +7,7 @@ import { TourPlan } from './tourPlan.Model';
 import { Objectives } from './objective.model';
 export declare class TourPackage {
     id: number;
+    tourpackageId: string;
     introduction: Introduction;
     overview: Overview;
     mainImage: MainImage[];

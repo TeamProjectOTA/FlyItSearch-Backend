@@ -1,4 +1,4 @@
-import { BookingSave, SaveBooking } from 'src/book/booking.model';
+import { BookingSave } from 'src/book/booking.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
 import {
   Column,
@@ -40,14 +40,10 @@ export class User {
   emailVerified: boolean; 
   @Column({ nullable: true })
   resetPasswordToken: string;
-
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpires: Date;
-
   @OneToOne(() => ProfilePicture, (profilePicture) => profilePicture.user)
   profilePicture: ProfilePicture;
-  @OneToMany(() => SaveBooking, (saveBooking) => saveBooking.user)
-  saveBookings: SaveBooking[];
   @OneToMany(() => BookingSave, (bookingSave) => bookingSave.user)
   bookingSave: BookingSave[];
   

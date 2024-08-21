@@ -26,6 +26,10 @@ __decorate([
     __metadata("design:type", Number)
 ], TourPackage.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], TourPackage.prototype, "tourpackageId", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => Introduction_model_1.Introduction, (introduction) => introduction.tourPackage, {
         cascade: true,
     }),

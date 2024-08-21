@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Flight, FlightSearchModel } from './flight.model';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
@@ -39,12 +39,12 @@ export class FlightController {
   //   return result;
   // }
 
-  @Post('/bdfare')
+  @Post('/bdFare')
   async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
     return await this.bdFareService.processApi(bdfaredto);
   }
 
-  @Post('/bdfareupdate')
+  @Post('/bdFareUpdate')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,
   ): Promise<any> {
@@ -63,7 +63,7 @@ export class FlightController {
   getpnr(@Param('pnr') pnr: string) {
     return this.sabreService.checkpnr(pnr);
   }
-  @Get('/airvoid/:pnr')
+  @Get('/airVoid/:pnr')
   airvoid(@Param('pnr') pnr: string) {
     return this.sabreService.airvoid(pnr);
   }
@@ -71,11 +71,11 @@ export class FlightController {
   get_ticket(@Param('pnr') pnr: string) {
     return this.sabreService.get_ticket(pnr);
   }
-  @Post('sbr/fair-rules')
+  @Post('sbr/fairRules')
   airfarerules(@Body() fareRulesDto: FareRulesDto) {
     return this.sabreService.airfarerules(fareRulesDto);
   }
-  @Get('/airretrive/:pnr')
+  @Get('/airRetrive/:pnr')
   airretrieve(@Param('pnr') pnr: string) {
     return this.sabreService.airretrieve(pnr);
   }
@@ -95,6 +95,7 @@ export class FlightController {
       userIp,
     );
   }
+  @ApiBearerAuth('access_token')
  @UseGuards(BothTokensGuard)
   @Post('flh/price-check')
   async airPrice(@Body() data: searchResultDto) {
@@ -102,7 +103,7 @@ export class FlightController {
     return await this.flyHubService.airPrice(data);
   }
 
-  @Post('flh/booking-policy')
+  @Post('flh/farePolicy')
   async miniRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.bookingRules(data);
   }

@@ -30,6 +30,7 @@ const airlines_module_1 = require("./airlines/airlines.module");
 const booking_module_1 = require("./book/booking.module");
 const uploads_module_1 = require("./uploads/uploads.module");
 const hotdeals_module_1 = require("./homepage/hotdeals/hotdeals.module");
+const terms_and_conditions_module_1 = require("./terms-and-conditions/terms-and-conditions.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -78,6 +79,7 @@ exports.AppModule = AppModule = __decorate([
             airlines_module_1.AirlinesModule,
             airports_module_1.AirportsModule,
             uploads_module_1.UploadsModule,
+            terms_and_conditions_module_1.TermsAndConditionsModule,
         ],
         providers: [
             {

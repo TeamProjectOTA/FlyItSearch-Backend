@@ -51,7 +51,7 @@ __decorate([
 ], UserController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Patch)('/update-user-profile'),
+    (0, common_1.Patch)('/updateUserProfile'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

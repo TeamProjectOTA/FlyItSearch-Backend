@@ -9,104 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BookingID = exports.CreateSaveBookingDto = exports.BookingSave = exports.LagInfo = exports.SaveBooking = void 0;
+exports.BookingID = exports.CreateSaveBookingDto = exports.BookingSave = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
-let SaveBooking = class SaveBooking {
-};
-exports.SaveBooking = SaveBooking;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], SaveBooking.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "system", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "bookingId", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], SaveBooking.prototype, "paxCount", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "Curriername", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "CurrierCode", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "flightNumber", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Boolean)
-], SaveBooking.prototype, "isRefundable", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "bookingDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Date)
-], SaveBooking.prototype, "expireDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "bookingStatus", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], SaveBooking.prototype, "TripType", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => LagInfo, (lagInfo) => lagInfo.saveBooking, {
-        onDelete: 'CASCADE',
-    }),
-    __metadata("design:type", Array)
-], SaveBooking.prototype, "laginfo", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.saveBookings, { onDelete: 'CASCADE' }),
-    __metadata("design:type", user_entity_1.User)
-], SaveBooking.prototype, "user", void 0);
-exports.SaveBooking = SaveBooking = __decorate([
-    (0, typeorm_1.Entity)()
-], SaveBooking);
-let LagInfo = class LagInfo {
-};
-exports.LagInfo = LagInfo;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], LagInfo.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], LagInfo.prototype, "DepDate", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], LagInfo.prototype, "DepFrom", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], LagInfo.prototype, "ArrTo", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => SaveBooking, (saveBooking) => saveBooking.laginfo, {
-        onDelete: 'CASCADE',
-    }),
-    __metadata("design:type", SaveBooking)
-], LagInfo.prototype, "saveBooking", void 0);
-exports.LagInfo = LagInfo = __decorate([
-    (0, typeorm_1.Entity)()
-], LagInfo);
 let BookingSave = class BookingSave {
 };
 exports.BookingSave = BookingSave;
