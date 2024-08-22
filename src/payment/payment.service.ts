@@ -111,7 +111,7 @@ export class PaymentService {
 
     try {
       const apiResponse = await sslcommerz.init(data);
-      console.log('apiresponse: ' ,apiResponse.GatewayPageURL)
+      //console.log('apiresponse: ' ,apiResponse.GatewayPageURL)
       if (!apiResponse.GatewayPageURL) {
         throw new HttpException('Failed to get payment URL', HttpStatus.INTERNAL_SERVER_ERROR);
       }

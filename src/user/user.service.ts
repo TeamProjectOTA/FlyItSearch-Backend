@@ -80,13 +80,13 @@ export class UserService {
 
 
   async update(header: any, updateUserDto: UpdateUserDto) {
-    // Verify user token
+
     const verifyUserToken = await this.authservice.verifyUserToken(header);
     if (!verifyUserToken) {
       throw new UnauthorizedException();
     }
   
-    // Decode token to get user email
+    
     const email = await this.authservice.decodeToken(header);
     const updateUser = await this.userRepository.findOne({
       where: { email: email },
@@ -96,7 +96,7 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
   
-    // Check for email conflict if email is being updated
+   
     if (updateUserDto.email && updateUserDto.email !== updateUser.email) {
       const findEmail = await this.userRepository.findOne({
         where: { email: updateUserDto.email },
@@ -106,12 +106,10 @@ export class UserService {
       }
     }
   
-    // Hash the new password if provided
+    
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
-  
-    // Update user properties
     Object.assign(updateUser, {
       fullName: updateUserDto?.fullName?.toUpperCase() || updateUser.fullName,
       phone: updateUserDto?.phone || updateUser.phone,
@@ -166,7 +164,7 @@ export class UserService {
       .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
         bookingStatus,
       })
-      .orderBy('bookingSave.bookingDate', 'ASC')
+      .orderBy('bookingSave.bookingDate', 'DESC')
       .getOne();
 
     if (!user) {

@@ -85,6 +85,11 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Email is not verified');
         }
         const payload = { sub: user.email, sub2: user.passengerId };
+        const expiresInSeconds = 18000;
+        const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
+        const dhakaTimeFormatted = dhakaTime.toISOString();
         const token = await this.jwtservice.signAsync(payload);
         const userData = {
             name: user.fullName,
@@ -94,7 +99,8 @@ let AuthService = class AuthService {
         return {
             access_token: token,
             message: "Log In Successfull",
-            userData
+            userData,
+            expireIn: dhakaTimeFormatted
         };
     }
     async verifyUserToken(header) {

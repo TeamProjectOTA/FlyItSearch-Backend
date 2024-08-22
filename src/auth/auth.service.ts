@@ -86,8 +86,6 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Invalid email ');
     }
-
-    // Compare hashed password with user-provided password
     const passwordMatch = await bcrypt.compare(pass, user.password);
 
     if (!passwordMatch) {
@@ -97,6 +95,17 @@ export class AuthService {
       throw new UnauthorizedException('Email is not verified')
     }
     const payload = { sub: user.email, sub2: user.passengerId };
+    const expiresInSeconds = 18000; // !important change it according to time out limit.
+    const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
+      // Convert to Dhaka time zone (UTC+6)
+  const dhakaOffset = 6 * 60 * 60 * 1000; 
+  const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
+
+  
+  const dhakaTimeFormatted = dhakaTime.toISOString();
+
+
+
     const token = await this.jwtservice.signAsync(payload);
     const userData={
       name:user.fullName,
@@ -106,7 +115,8 @@ export class AuthService {
     return {
       access_token: token,
       message:"Log In Successfull",
-      userData
+      userData,
+      expireIn:dhakaTimeFormatted
     };
   }
   async verifyUserToken(header: any) {
@@ -118,6 +128,7 @@ export class AuthService {
       const token = authHeader.replace('Bearer ', '');
 
       const decodedToken = await this.jwtservice.verifyAsync(token);
+      
       const email = decodedToken.sub;
 
       const userData = await this.userRepository.findOne({
@@ -163,9 +174,7 @@ export class AuthService {
       throw new NotFoundException('Invalid token');
     }
 
-    // if (!decodedToken || !decodedToken.sub2) {
-    //   throw new NotFoundException('Invalid token payload');
-    // }
+    
     
     return decodedToken.sub;
   }

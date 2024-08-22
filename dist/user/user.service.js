@@ -126,7 +126,7 @@ let UserService = class UserService {
             .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
             bookingStatus,
         })
-            .orderBy('bookingSave.bookingDate', 'ASC')
+            .orderBy('bookingSave.bookingDate', 'DESC')
             .getOne();
         if (!user) {
             throw new common_1.NotFoundException('No Booking data Available for the user');
