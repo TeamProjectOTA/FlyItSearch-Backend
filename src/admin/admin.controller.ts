@@ -29,9 +29,12 @@ export class AdminController {
   }
   @ApiBearerAuth('access_token')
   @Patch(':uuid')
-  async update(@Headers() header: Headers, @Body() updateAdminDto: UpdateAdminDto,@Param('uuid') uuid:string) {
-    
-    return await this.adminService.update(header, updateAdminDto,uuid);
+  async update(
+    @Headers() header: Headers,
+    @Body() updateAdminDto: UpdateAdminDto,
+    @Param('uuid') uuid: string,
+  ) {
+    return await this.adminService.update(header, updateAdminDto, uuid);
   }
 
   @ApiBearerAuth('access_token')

@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BookingSave, CreateSaveBookingDto, } from './booking.model';
+import { BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 
@@ -11,23 +11,20 @@ export class BookingService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private readonly authservice: AuthService,
-  
+
     @InjectRepository(BookingSave)
-    private readonly BookingSaveRepository:Repository<BookingSave>
+    private readonly BookingSaveRepository: Repository<BookingSave>,
   ) {}
-
-
 
   async saveBooking(
     createSaveBookingDto: CreateSaveBookingDto,
     header: any,
   ): Promise<any> {
     const email = await this.authservice.decodeToken(header);
-    console.log(createSaveBookingDto)
+    
     const user = await this.userRepository.findOne({
       where: { email },
     });
-
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
     }
@@ -42,12 +39,7 @@ export class BookingService {
         ...createSaveBookingDto,
         user,
       });
-   
     }
-    console.log(saveBooking)
     return await this.BookingSaveRepository.save(saveBooking);
   }
-
-
-  
 }

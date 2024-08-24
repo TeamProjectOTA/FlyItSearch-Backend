@@ -37,4 +37,7 @@ export declare class CreateSaveBookingDto {
 export declare class BookingID {
     BookingID: string;
 }
+export declare class data {
+    data: any;
+}
 export {};

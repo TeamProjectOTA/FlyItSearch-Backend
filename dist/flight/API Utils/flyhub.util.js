@@ -8,17 +8,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubUtil = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
 const booking_service_1 = require("../../book/booking.service");
 const mail_service_1 = require("../../mail/mail.service");
 const payment_service_1 = require("../../payment/payment.service");
+const flight_model_1 = require("../flight.model");
+const typeorm_2 = require("typeorm");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService, mailService, paymentService) {
+    constructor(BookService, mailService, paymentService, bookingIdSave) {
         this.BookService = BookService;
         this.mailService = mailService;
         this.paymentService = paymentService;
+        this.bookingIdSave = bookingIdSave;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -157,9 +164,9 @@ let FlyHubUtil = class FlyHubUtil {
                         const segments = segmentsList?.map((segment) => ({
                             MarketingCarrier: segment?.Airline?.AirlineCode,
                             MarketingCarrierName: segment?.Airline?.AirlineName,
-                            MarketingFlightNumber: parseInt(segment?.Airline?.FlightNumber),
+                            MarketingFlightNumber: segment?.Airline?.FlightNumber,
                             OperatingCarrier: segment?.Airline?.OperatingCarrier,
-                            OperatingFlightNumber: parseInt(segment?.Airline?.FlightNumber),
+                            OperatingFlightNumber: segment?.Airline?.FlightNumber,
                             OperatingCarrierName: segment?.Airline?.AirlineName,
                             DepFrom: segment?.Origin?.Airport?.AirportCode,
                             DepAirPort: segment?.Origin?.Airport?.AirportName,
@@ -232,7 +239,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async airRetriveDataTransformer(SearchResponse) {
+    async airRetriveDataTransformer(SearchResponse, fisId, header) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -391,7 +398,7 @@ let FlyHubUtil = class FlyHubUtil {
                     FlightItenary.push({
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
-                        BookingId: SearchResponse?.BookingID,
+                        BookingId: fisId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
                         SearchId: SearchResponse?.SearchId,
                         BookingStatus: SearchResponse?.BookingStatus,
@@ -418,9 +425,10 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
+        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary);
         return {
             bookingData: FlightItenary,
-            sslpaymentLink: await this.paymentService.dataModification(FlightItenary)
+            sslpaymentLink,
         };
     }
     async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp) {
@@ -579,11 +587,16 @@ let FlyHubUtil = class FlyHubUtil {
                             AllLegsInfo.push(legInfo);
                         }
                     }
+                    const randomId = 'FIS' + Math.floor(Math.random() * 10 ** 13).toString().padStart(13, '0');
+                    let add = new flight_model_1.BookingIdSave();
+                    add.flyitSearchId = randomId;
+                    add.flyhubId = SearchResponse?.BookingID;
+                    await this.bookingIdSave.save(add);
                     FlightItenary.push({
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
-                        BookingId: SearchResponse?.BookingID,
-                        PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
+                        BookingId: randomId,
+                        PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
                         BookingDate: currentTimestamp || null,
                         SearchId: SearchResponse?.SearchId,
                         BookingStatus: SearchResponse?.BookingStatus,
@@ -613,10 +626,10 @@ let FlyHubUtil = class FlyHubUtil {
         await this.saveBookingData(FlightItenary, header);
         return {
             bookingData: FlightItenary,
-            sslpaymentLink: "gg"
+            sslpaymentLink: await this.paymentService.dataModification(FlightItenary),
         };
     }
-    async saveBookingData(SearchResponse, header) {
+    async saveBookingData(SearchResponse, header, bookingId) {
         const booking = SearchResponse[0];
         if (booking) {
             const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
@@ -639,7 +652,7 @@ let FlyHubUtil = class FlyHubUtil {
             const paxCount = booking.PriceBreakDown.reduce((sum, breakdown) => sum + breakdown.PaxCount, 0);
             const convertedData = {
                 system: booking?.System,
-                bookingId: booking?.BookingId,
+                bookingId: bookingId ?? booking?.BookingId,
                 paxCount: paxCount,
                 Curriername: booking?.CarrierName,
                 CurrierCode: booking?.Carrier,
@@ -666,8 +679,10 @@ let FlyHubUtil = class FlyHubUtil {
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
+    __param(3, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
         mail_service_1.MailService,
-        payment_service_1.PaymentService])
+        payment_service_1.PaymentService,
+        typeorm_2.Repository])
 ], FlyHubUtil);
 //# sourceMappingURL=flyhub.util.js.map

@@ -27,7 +27,6 @@ let BookingService = class BookingService {
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
-        console.log(createSaveBookingDto);
         const user = await this.userRepository.findOne({
             where: { email },
         });
@@ -46,7 +45,6 @@ let BookingService = class BookingService {
                 user,
             });
         }
-        console.log(saveBooking);
         return await this.BookingSaveRepository.save(saveBooking);
     }
 };

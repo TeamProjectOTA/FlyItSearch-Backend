@@ -20,10 +20,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-
-
 @Entity()
-export class BookingSave{
+export class BookingSave {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -121,4 +119,7 @@ export class BookingID {
   @IsNotEmpty()
   @IsString()
   BookingID: string;
+}
+export class data{
+  data:any
 }

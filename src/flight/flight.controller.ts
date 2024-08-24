@@ -21,7 +21,8 @@ import { Test } from './API Utils/test.service';
 
 import { FlyHubUtil } from './API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
-import { BothTokensGuard } from 'src/auth/both-tokens.guard';
+import { UserTokenGuard } from 'src/auth/both-tokens.guard';
+
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -96,10 +97,9 @@ export class FlightController {
     );
   }
   @ApiBearerAuth('access_token')
- @UseGuards(BothTokensGuard)
+  @UseGuards(UserTokenGuard)
   @Post('flh/price-check')
   async airPrice(@Body() data: searchResultDto) {
-    
     return await this.flyHubService.airPrice(data);
   }
 
@@ -116,12 +116,12 @@ export class FlightController {
   async apicheck(
     @Body() SearchResponse: any,
     @Headers() header: Headers,
+    @Param('fisId')fisId:string,
   ): Promise<any> {
     const currentTimestamp = new Date();
-    return await this.testservice.bookingDataTransformerFlyhb(
+    return await this.testservice.airRetriveDataTransformer(
       SearchResponse,
-      header,
+      fisId
     );
   }
-
 }

@@ -24,5 +24,5 @@ export declare class FlightController {
     airPrice(data: searchResultDto): Promise<any[]>;
     miniRules(data: searchResultDto): Promise<any>;
     airRules(data: searchResultDto): Promise<any>;
-    apicheck(SearchResponse: any, header: Headers): Promise<any>;
+    apicheck(SearchResponse: any, header: Headers, fisId: string): Promise<any>;
 }

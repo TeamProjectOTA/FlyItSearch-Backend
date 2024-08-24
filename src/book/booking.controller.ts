@@ -1,12 +1,22 @@
-import { Body, Controller, Param, Post, Headers, UnauthorizedException, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Headers,
+  UnauthorizedException,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { BookingService } from './booking.service';
-import { BookingID, CreateSaveBookingDto } from './booking.model';
+import { BookingID, CreateSaveBookingDto, data } from './booking.model';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
-import { BothTokensGuard } from 'src/auth/both-tokens.guard';
+import { UserTokenGuard } from 'src/auth/both-tokens.guard';
+
 
 @ApiTags('Booking-Details')
 @Controller('booking')
@@ -15,26 +25,22 @@ export class BookingController {
     private readonly bookingService: BookingService,
     private readonly flyHubService: FlyHubService,
     private readonly flyHubUtil: FlyHubUtil,
-    private readonly authService:AuthService
+    private readonly authService: AuthService,
   ) {}
 
   @ApiBearerAuth('access_token')
-  @UseGuards(BothTokensGuard)
+  @UseGuards(UserTokenGuard)
   @Post('flh/air-book/')
-  async airbook(
-     @Body() data: FlbFlightSearchDto,
-    @Headers() header: Headers,
-  ) {
-   
+  async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers) {
     const currentTimestamp = new Date();
-    return await this.flyHubService.airbook(data,header,currentTimestamp,);
+    return await this.flyHubService.airbook(data, header, currentTimestamp);
   }
-  @UseGuards(BothTokensGuard)
+  @UseGuards(UserTokenGuard)
   @ApiBearerAuth('access_token')
   @Post('flh/cancel-ticket')
   async aircanel(
     @Body() bookingIdDto: BookingID,
-    @Headers() header: Headers,
+    @Headers() header: Headers
   ): Promise<any> {
     return this.flyHubService.aircancel(bookingIdDto,header);
   }
@@ -42,15 +48,23 @@ export class BookingController {
   async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto);
   }
+
+
+  
   @ApiBearerAuth('access_token')
   @Post('testBooking')
-  async bookingtest(@Body() data: any,@Headers() header: any): Promise<any> {
-    return await this.flyHubUtil.saveBookingData(data, header);
+  async bookingtest(
+    @Body() data: data,
+    @Headers() headers: any,
+    @Query('bookingId') bookingId?: string,
+  ): Promise<any> {
+    return await this.flyHubUtil.saveBookingData(data, headers, bookingId);
   }
-  @Post('one/testBooking')
-  async test(@Body() data: any): Promise<any> {
-    return await this.flyHubUtil.restBFMParser(data);
-  }
+  
+  // @Post('one/testBooking')
+  // async test(@Body() data: any): Promise<any> {
+  //   return await this.flyHubUtil.restBFMParser(data);
+  // }
   @ApiBearerAuth('access_token')
   @Post('/save-booking')
   async SaveBooking(

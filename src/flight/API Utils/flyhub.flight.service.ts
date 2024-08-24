@@ -2,6 +2,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -12,7 +13,7 @@ import {
   FlyAirSearchDto,
   searchResultDto,
 } from './Dto/flyhub.model';
-import { FlightSearchModel, JourneyType } from '../flight.model';
+import { BookingIdSave, FlightSearchModel, JourneyType } from '../flight.model';
 
 import { Test } from './test.service';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,9 +27,9 @@ export class FlyHubService {
   private readonly username: string = process.env.FLYHUB_UserName;
   private readonly apiKey: string = process.env.FLYHUB_ApiKey;
   private readonly apiUrl: string = process.env.FLyHub_Url;
-  constructor(
-    private readonly flyHubUtil: FlyHubUtil,
-  ) {}
+  @InjectRepository(BookingIdSave)
+  private readonly bookingIdSave:Repository<BookingIdSave>
+  constructor(private readonly flyHubUtil: FlyHubUtil) {}
 
   async getToken(): Promise<string> {
     try {
@@ -50,7 +51,7 @@ export class FlyHubService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-     // console.log(token);
+      // console.log(token);
       return token;
     } catch (error) {
       console.error(
@@ -88,11 +89,9 @@ export class FlyHubService {
     }
   }
 
-  async aircancel(
-    BookingID: BookingID,
-    header?: any,
-  ): Promise<any> {
-   
+  async aircancel(BookingID: BookingID,header:any): Promise<any> {
+    const bookingId=await this.bookingIdSave.findOne({where:{flyitSearchId:BookingID.BookingID}})
+    const flyhubId=bookingId.flyhubId
     const token = await this.getToken();
     const ticketCancel = {
       method: 'post',
@@ -102,18 +101,23 @@ export class FlyHubService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      data: BookingID,
+      data:{BookingID:flyhubId},
     };
     try {
       const response = await axios.request(ticketCancel);
-      
-      return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header);
+
+      return this.flyHubUtil.saveBookingData(response.data,header,BookingID.BookingID);
       //return response.data
     } catch (error) {
       throw error?.response?.data;
     }
   }
   async airRetrive(BookingID: BookingID): Promise<any> {
+    const bookingId=await this.bookingIdSave.findOne({where:{flyitSearchId:BookingID.BookingID}})
+    if(!bookingId){
+      throw new NotFoundException(`No Booking Found with ${BookingID.BookingID}` )
+    }
+    const flyhubId=bookingId.flyhubId
     const token = await this.getToken();
     const ticketRetrive = {
       method: 'post',
@@ -123,12 +127,12 @@ export class FlyHubService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      data: BookingID,
+      data: {BookingID:flyhubId},
     };
 
     try {
       const response = await axios.request(ticketRetrive);
-      return this.flyHubUtil.airRetriveDataTransformer(response?.data);
+      return this.flyHubUtil.airRetriveDataTransformer(response?.data,BookingID.BookingID);
       //return response.data
     } catch (error) {
       throw error?.response?.data;
@@ -200,7 +204,6 @@ export class FlyHubService {
     header?: any,
     currentTimestamp?: Date,
   ) {
- 
     const token = await this.getToken();
 
     const Price = {
@@ -238,13 +241,12 @@ export class FlyHubService {
       const response0 = await axios.request(Price);
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
-       
+
       return await this.flyHubUtil.bookingDataTransformerFlyhb(
         response.data,
         header,
         currentTimestamp,
-      )
-     
+      );
     } catch (error) {
       throw error?.response?.data;
     }
@@ -252,7 +254,7 @@ export class FlyHubService {
 
   async convertToFlyAirSearchDto(
     flightSearchModel: FlightSearchModel,
-    userIp: string, 
+    userIp: string,
   ): Promise<any> {
     const segments = flightSearchModel.segments.map((segment) => ({
       Origin: segment.depfrom,

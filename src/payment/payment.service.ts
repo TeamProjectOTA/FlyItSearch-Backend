@@ -11,16 +11,14 @@ export class PaymentService {
   private readonly storePassword: string;
   private readonly isLive: boolean;
 
-  constructor(
-  
-  ) {
+  constructor() {
     this.storeId = process.env.STORE_ID;
     this.storePassword = process.env.STORE_PASSWORD;
     this.isLive = false; // Use true for live environment
   }
   async dataModification(SearchResponse: any): Promise<any> {
     const booking = SearchResponse[0];
-    let tripType:string ;
+    let tripType: string;
     if (booking?.AllLegsInfo?.length === 1) {
       tripType = 'OneWay';
     } else if (booking?.AllLegsInfo?.length === 2) {
@@ -35,52 +33,56 @@ export class PaymentService {
     } else {
       tripType = 'Multistop';
     }
-    
-    const flightDateTime = new Date(booking?.AllLegsInfo[0]?.DepDate); 
-    const currentDateTime = new Date(); 
-    
+
+    const flightDateTime = new Date(booking?.AllLegsInfo[0]?.DepDate);
+    const currentDateTime = new Date();
+
     const timeDifference = flightDateTime.getTime() - currentDateTime.getTime();
     const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
-    const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    const minutesDifference = Math.floor(
+      (timeDifference % (1000 * 60 * 60)) / (1000 * 60),
+    );
     const airTicketPrice = booking?.NetFare;
-    const paymentGatwayCharge=Math.ceil(airTicketPrice*0.025);
-    const total_amount=Math.ceil(airTicketPrice+paymentGatwayCharge)
-    const hours_till_departure =` ${hoursDifference} hrs ${minutesDifference} mins`; 
+    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025);
+    const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
+    const hours_till_departure = ` ${hoursDifference} hrs ${minutesDifference} mins`;
     const pnr = booking?.PNR;
     const passenger = booking?.PassengerList?.[0];
-    const name = `${passenger?.FirstName || ''} ${passenger?.LastName || ''}`.trim();
+    const name =
+      `${passenger?.FirstName || ''} ${passenger?.LastName || ''}`.trim();
     const email = passenger?.Email;
     const city = passenger?.CountryCode;
-    const postCode = '1206'; 
+    const postCode = '1206';
     const phone = passenger?.ContactNumber;
-  
-   //console.log(hours_till_departure)
+
+    //console.log(hours_till_departure)
     const paymentData = {
       total_amount: total_amount,
       hours_till_departure: hours_till_departure,
       flight_type: tripType,
       pnr: pnr,
-      journey_from_to: 'DAC-CGP', 
-      cus_name:name,
+      journey_from_to: 'DAC-CGP',
+      cus_name: name,
       cus_email: email,
       cus_city: city,
       cus_postcode: postCode,
       cus_country: 'Bangladesh',
       cus_phone: phone,
     };
- 
-  
+
     return {
       url: await this.initiatePayment(paymentData),
-      airTicketPrice:airTicketPrice,
-      paymentGatwayCharge:paymentGatwayCharge,
-      total_amount:total_amount,
-
-
+      airTicketPrice: airTicketPrice,
+      paymentGatwayCharge: paymentGatwayCharge,
+      total_amount: total_amount,
     };
   }
   async initiatePayment(paymentData: any): Promise<string> {
-    const sslcommerz = new SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
+    const sslcommerz = new SslCommerzPayment(
+      this.storeId,
+      this.storePassword,
+      this.isLive,
+    );
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `${timestamp}_${randomNumber}`;
@@ -113,12 +115,18 @@ export class PaymentService {
       const apiResponse = await sslcommerz.init(data);
       //console.log('apiresponse: ' ,apiResponse.GatewayPageURL)
       if (!apiResponse.GatewayPageURL) {
-        throw new HttpException('Failed to get payment URL', HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(
+          'Failed to get payment URL',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
       }
       return apiResponse.GatewayPageURL;
     } catch (error) {
       console.error('Payment initiation error:', error);
-      throw new HttpException('Failed to initiate payment', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(
+        'Failed to initiate payment',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 

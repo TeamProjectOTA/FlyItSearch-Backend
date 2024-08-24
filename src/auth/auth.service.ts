@@ -33,13 +33,13 @@ export class AuthService {
     if (!admin || admin.password !== pass) {
       throw new UnauthorizedException('Invalid UUID or password');
     }
-    if(admin.status!="ACTIVE"){
-      
-        throw new ServiceUnavailableException(`Active Your Account ${admin.firstName} ${admin.lastName}`)
-      
+    if (admin.status != 'ACTIVE') {
+      throw new ServiceUnavailableException(
+        `Active Your Account ${admin.firstName} ${admin.lastName}`,
+      );
     }
 
-    const payload = { sub: admin.uuid ,sub2:admin.status};
+    const payload = { sub: admin.uuid, sub2: admin.status };
     const token = await this.jwtservice.signAsync(payload);
     return { access_token: token };
   }
@@ -62,7 +62,6 @@ export class AuthService {
       const adminData = await this.adminRepository.findOne({
         where: { uuid: uuid },
       });
-      
 
       if (!adminData) {
         throw new UnauthorizedException('Admin not found.');
@@ -91,32 +90,29 @@ export class AuthService {
     if (!passwordMatch) {
       throw new UnauthorizedException('Invalid password');
     }
-    if(user.emailVerified==false){
-      throw new UnauthorizedException('Email is not verified')
+    if (user.emailVerified == false) {
+      throw new UnauthorizedException('Email is not verified');
     }
     const payload = { sub: user.email, sub2: user.passengerId };
-    const expiresInSeconds = 18000; // !important change it according to time out limit.
+    const expiresInSeconds = 86400; // !important change it according to time out limit.
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
-      // Convert to Dhaka time zone (UTC+6)
-  const dhakaOffset = 6 * 60 * 60 * 1000; 
-  const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
 
-  
-  const dhakaTimeFormatted = dhakaTime.toISOString();
+    const dhakaOffset = 6 * 60 * 60 * 1000;
+    const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
 
-
+    const dhakaTimeFormatted = dhakaTime.toISOString();
 
     const token = await this.jwtservice.signAsync(payload);
-    const userData={
-      name:user.fullName,
+    const userData = {
+      name: user.fullName,
       email: user.email,
-      phone:user.phone
-    }
+      phone: user.phone,
+    };
     return {
       access_token: token,
-      message:"Log In Successfull",
+      message: 'Log In Successfull',
       userData,
-      expireIn:dhakaTimeFormatted
+      expireIn: dhakaTimeFormatted,
     };
   }
   async verifyUserToken(header: any) {
@@ -128,13 +124,12 @@ export class AuthService {
       const token = authHeader.replace('Bearer ', '');
 
       const decodedToken = await this.jwtservice.verifyAsync(token);
-      
+
       const email = decodedToken.sub;
 
       const userData = await this.userRepository.findOne({
         where: { email: email },
       });
-      
 
       if (!userData) {
         throw new UnauthorizedException('User not found.');
@@ -165,17 +160,14 @@ export class AuthService {
     }
 
     const token = header.authorization.replace('Bearer ', '');
-    
+
     let decodedToken: any;
     try {
       decodedToken = await this.jwtservice.verifyAsync(token);
-      
     } catch (error) {
       throw new NotFoundException('Invalid token');
     }
 
-    
-    
     return decodedToken.sub;
   }
 
@@ -200,10 +192,6 @@ export class AuthService {
     }
   }
 
-
-
-
-
   async sendVerificationEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -223,21 +211,15 @@ export class AuthService {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+      await transporter.sendMail(mailOptions);
     } catch (error) {
-        console.error('Error sending verification email:', error);
-        throw new Error('Failed to send verification email.');
+      console.error('Error sending verification email:', error);
+      throw new Error('Failed to send verification email.');
     }
-}
-  async findByVerificationToken(token: string): Promise<any> {
-    
-   
-    return  this.userRepository.findOne({ where: { verificationToken: token } });
-    
   }
-
-
-
+  async findByVerificationToken(token: string): Promise<any> {
+    return this.userRepository.findOne({ where: { verificationToken: token } });
+  }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<any> {
     const user = await this.userRepository.findOne({
@@ -246,41 +228,39 @@ export class AuthService {
         resetPasswordExpires: MoreThan(new Date()),
       },
     });
-  
+
     if (!user) {
       throw new BadRequestException('Invalid or expired reset token');
     }
-  
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
-  
+
     await this.userRepository.save(user);
-    return {message:`Thank you ${user.fullName}.Your password has been reseted`}
+    return {
+      message: `Thank you ${user.fullName}.Your password has been reseted`,
+    };
   }
 
-
-
   async sendPasswordResetEmail(email: string): Promise<any> {
-    
     const user = await this.userRepository.findOne({ where: { email } });
-    
+
     if (!user) {
       throw new NotFoundException('User with this email does not exist');
     }
-  
+
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetPasswordToken = resetToken;
     user.resetPasswordExpires = new Date(Date.now() + 1800000); // 1 hour expiry
-  
+
     await this.userRepository.save(user);
-  
+
     await this.sendResetPasswordEmail(user.email, resetToken);
-    return {message:`Your password reset code has been sent to ${email}`}
+    return { message: `Your password reset code has been sent to ${email}` };
   }
 
-  
   async sendResetPasswordEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -300,11 +280,10 @@ export class AuthService {
     };
 
     try {
-        await transporter.sendMail(mailOptions);
+      await transporter.sendMail(mailOptions);
     } catch (error) {
-        console.error('Error sending verification email:', error);
-        throw new Error('Failed to send verification email.');
+      console.error('Error sending verification email:', error);
+      throw new Error('Failed to send verification email.');
     }
   }
-
 }

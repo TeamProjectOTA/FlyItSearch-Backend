@@ -10,8 +10,7 @@ import { Repository } from 'typeorm';
 import { HotDeals, HotDealsDto } from './hotdeals.model';
 
 @Injectable()
-export class HotDealsService
- {
+export class HotDealsService {
   constructor(
     @InjectRepository(HotDeals)
     private readonly tourPacageRepository: Repository<HotDeals>,

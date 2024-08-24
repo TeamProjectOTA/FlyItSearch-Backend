@@ -14,7 +14,6 @@ import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcryptjs';
 
-
 @Injectable()
 export class UserService {
   constructor(
@@ -22,20 +21,17 @@ export class UserService {
     private readonly authservice: AuthService,
   ) {}
 
-
   async create(createUserDto: CreateUserDto): Promise<any> {
     let add: User = new User();
-  
-    
+
     const userAlreadyExisted = await this.userRepository.findOne({
       where: { email: createUserDto.email },
     });
-    
+
     if (userAlreadyExisted) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
-  
-   
+
     const passenger = await this.userRepository.find({
       order: { id: 'DESC' },
       take: 1,
@@ -48,55 +44,48 @@ export class UserService {
     } else {
       passengerId = 'FLYITP1000';
     }
-  
-    
+
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-  
-    
-    const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
-  
-    
+
+    const verificationToken = Math.floor(
+      100000 + Math.random() * 900000,
+    ).toString();
+
     add.passengerId = passengerId;
     add.fullName = createUserDto.fullName.toUpperCase();
     add.phone = createUserDto.phone;
     add.email = createUserDto.email;
     add.role = 'registered';
     add.password = hashedPassword;
-    add.verificationToken = verificationToken;  
-   
+    add.verificationToken = verificationToken;
+
     const user = await this.userRepository.save(add);
-  
+
     await this.authservice.sendVerificationEmail(user.email, verificationToken);
-  
+
     return {
-      fullName:user.fullName,
-      phone:user.phone,
-      email:user.email,
-      message:`Please verify your email. An varification mail code has been sent to ${user.email}`      
+      fullName: user.fullName,
+      phone: user.phone,
+      email: user.email,
+      message: `Please verify your email. An varification mail code has been sent to ${user.email}`,
     };
   }
-  
-  
-
 
   async update(header: any, updateUserDto: UpdateUserDto) {
-
     const verifyUserToken = await this.authservice.verifyUserToken(header);
     if (!verifyUserToken) {
       throw new UnauthorizedException();
     }
-  
-    
+
     const email = await this.authservice.decodeToken(header);
     const updateUser = await this.userRepository.findOne({
       where: { email: email },
     });
-  
+
     if (!updateUser) {
       throw new NotFoundException('User not found');
     }
-  
-   
+
     if (updateUserDto.email && updateUserDto.email !== updateUser.email) {
       const findEmail = await this.userRepository.findOne({
         where: { email: updateUserDto.email },
@@ -105,8 +94,7 @@ export class UserService {
         throw new ConflictException('Email already exists');
       }
     }
-  
-    
+
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
@@ -121,26 +109,23 @@ export class UserService {
       passport: updateUserDto?.passport || updateUser.passport,
       passportexp: updateUserDto?.passportexp || updateUser.passportexp,
     });
-  
-    
-    const isEmailUpdated = updateUserDto?.email && updateUserDto.email !== email;
+
+    const isEmailUpdated =
+      updateUserDto?.email && updateUserDto.email !== email;
     if (isEmailUpdated) {
-      const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+      const verificationToken = Math.floor(
+        100000 + Math.random() * 900000,
+      ).toString();
       updateUser.verificationToken = verificationToken;
       updateUser.emailVerified = false;
-      await this.authservice.sendVerificationEmail(updateUser.email, verificationToken);
+      await this.authservice.sendVerificationEmail(
+        updateUser.email,
+        verificationToken,
+      );
     }
-  
-    
+
     return await this.userRepository.save(updateUser);
   }
-  
-  
-
- 
-
-
-
 
   async allUser(header: any): Promise<User[]> {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
@@ -168,7 +153,7 @@ export class UserService {
       .getOne();
 
     if (!user) {
-      throw new NotFoundException('No Booking data Available for the user');
+      throw new NotFoundException(`No ${bookingStatus} Available for the user`);
     }
     return {
       saveBookings: user.bookingSave,
@@ -185,40 +170,42 @@ export class UserService {
     });
   }
 
-  async findOneUser(header:any):Promise<any>{
+  async findOneUser(header: any): Promise<any> {
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
     const email = await this.authservice.decodeToken(header);
-    const user= await this.userRepository.findOne({where:{email:email},relations:['profilePicture']})
-     
-  const nameParts = user.fullName.split(' ');
+    const user = await this.userRepository.findOne({
+      where: { email: email },
+      relations: ['profilePicture'],
+    });
 
-  let firstName = '';
-  let lastName = '';
+    const nameParts = user.fullName.split(' ');
 
-  if (nameParts.length > 0) {
-    firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
-  }
-  if (nameParts.length > 1) {
-    lastName = nameParts.slice(1).join(' ').charAt(0).toUpperCase() + nameParts.slice(1).join(' ').slice(1);
-  }
+    let firstName = '';
+    let lastName = '';
 
-    
-
-    return {
-      firstName:firstName,
-      lastName:lastName,
-      gender:user.gender,
-      dob:user.dob,
-      nationality:user.nationility,
-      passport:user.passport,
-      passportExpiryDate:user.passportexp,
-      email:user.email,
-      phone:user.phone,
-      profilePicture:user.profilePicture
+    if (nameParts.length > 0) {
+      firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+    }
+    if (nameParts.length > 1) {
+      lastName =
+        nameParts.slice(1).join(' ').charAt(0).toUpperCase() +
+        nameParts.slice(1).join(' ').slice(1);
     }
 
+    return {
+      firstName: firstName,
+      lastName: lastName,
+      gender: user.gender,
+      dob: user.dob,
+      nationality: user.nationility,
+      passport: user.passport,
+      passportExpiryDate: user.passportexp,
+      email: user.email,
+      phone: user.phone,
+      profilePicture: user.profilePicture,
+    };
   }
 }

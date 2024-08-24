@@ -105,16 +105,16 @@ export class AdminService {
     return finduser;
   }
 
-  async update(header: any, updateAdminDto: UpdateAdminDto,uuid:any) {
+  async update(header: any, updateAdminDto: UpdateAdminDto, uuid: any) {
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
-    
+
     const updateAdmin = await this.adminRepository.findOne({
       where: { uuid: uuid },
     });
-    
+
     if (!updateAdmin) {
       throw new NotFoundException();
     }
@@ -130,12 +130,12 @@ export class AdminService {
     }
     updateAdmin.firstName = updateAdminDto.firstName;
     updateAdmin.lastName = updateAdminDto.lastName;
-    updateAdmin.email=updateAdminDto.email
+    updateAdmin.email = updateAdminDto.email;
     updateAdmin.phone = updateAdminDto.phone;
     updateAdmin.password = updateAdminDto.password;
     updateAdmin.status = updateAdminDto.status;
     updateAdmin.updated_at = new Date();
-    
+
     return await this.adminRepository.save(updateAdmin);
   }
 
@@ -145,14 +145,14 @@ export class AdminService {
     if (!verifyAdminId) {
       throw new UnauthorizedException();
     }
-    const decodedToken=await this.authservice.decodeToken(header)
-    if(uuid==decodedToken){
-      throw new UnauthorizedException('You can not delete your self')
+    const decodedToken = await this.authservice.decodeToken(header);
+    if (uuid == decodedToken) {
+      throw new UnauthorizedException('You can not delete your self');
     }
     const adminToFind = await this.adminRepository.findOne({
       where: { uuid: uuid },
     });
-    
+
     const adminToDelete = await this.adminRepository.delete({
       uuid: uuid,
     }); //This is the solution for  truncation

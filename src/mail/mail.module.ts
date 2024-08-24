@@ -17,6 +17,6 @@ import { AdminModule } from 'src/admin/admin.module';
   ],
   providers: [MailService],
   controllers: [MailController],
-  exports:[MailService]
+  exports: [MailService],
 })
 export class MailModule {}

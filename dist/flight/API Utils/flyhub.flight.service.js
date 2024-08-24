@@ -15,6 +15,9 @@ const axios_1 = require("axios");
 const flyhub_util_1 = require("./flyhub.util");
 const class_transformer_1 = require("class-transformer");
 const flyhub_model_1 = require("./Dto/flyhub.model");
+const flight_model_1 = require("../flight.model");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 let FlyHubService = class FlyHubService {
     constructor(flyHubUtil) {
         this.flyHubUtil = flyHubUtil;
@@ -66,6 +69,8 @@ let FlyHubService = class FlyHubService {
         }
     }
     async aircancel(BookingID, header) {
+        const bookingId = await this.bookingIdSave.findOne({ where: { flyitSearchId: BookingID.BookingID } });
+        const flyhubId = bookingId.flyhubId;
         const token = await this.getToken();
         const ticketCancel = {
             method: 'post',
@@ -75,17 +80,22 @@ let FlyHubService = class FlyHubService {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            data: BookingID,
+            data: { BookingID: flyhubId },
         };
         try {
             const response = await axios_1.default.request(ticketCancel);
-            return this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header);
+            return this.flyHubUtil.saveBookingData(response.data, header, BookingID.BookingID);
         }
         catch (error) {
             throw error?.response?.data;
         }
     }
     async airRetrive(BookingID) {
+        const bookingId = await this.bookingIdSave.findOne({ where: { flyitSearchId: BookingID.BookingID } });
+        if (!bookingId) {
+            throw new common_1.NotFoundException(`No Booking Found with ${BookingID.BookingID}`);
+        }
+        const flyhubId = bookingId.flyhubId;
         const token = await this.getToken();
         const ticketRetrive = {
             method: 'post',
@@ -95,11 +105,11 @@ let FlyHubService = class FlyHubService {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
             },
-            data: BookingID,
+            data: { BookingID: flyhubId },
         };
         try {
             const response = await axios_1.default.request(ticketRetrive);
-            return this.flyHubUtil.airRetriveDataTransformer(response?.data);
+            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID);
         }
         catch (error) {
             throw error?.response?.data;
@@ -245,6 +255,10 @@ let FlyHubService = class FlyHubService {
     }
 };
 exports.FlyHubService = FlyHubService;
+__decorate([
+    (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave),
+    __metadata("design:type", typeorm_2.Repository)
+], FlyHubService.prototype, "bookingIdSave", void 0);
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil])

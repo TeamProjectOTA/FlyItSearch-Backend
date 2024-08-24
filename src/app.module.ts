@@ -22,7 +22,7 @@ import { AirlinesModule } from './airlines/airlines.module';
 import { BookingModule } from './book/booking.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { HotDealsModule } from './homepage/hotdeals/hotdeals.module';
-import { BothTokensGuard } from './auth/both-tokens.guard';
+
 import { TermsAndConditionsModule } from './terms-and-conditions/terms-and-conditions.module';
 
 require('dotenv').config();
@@ -85,8 +85,6 @@ require('dotenv').config();
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-   
-    
   ],
   controllers: [],
 })

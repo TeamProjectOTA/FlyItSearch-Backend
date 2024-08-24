@@ -39,11 +39,8 @@ let BookingController = class BookingController {
     async airRetrive(bookingIdDto) {
         return await this.flyHubService.airRetrive(bookingIdDto);
     }
-    async bookingtest(data, header) {
-        return await this.flyHubUtil.saveBookingData(data, header);
-    }
-    async test(data) {
-        return await this.flyHubUtil.restBFMParser(data);
+    async bookingtest(data, headers, bookingId) {
+        return await this.flyHubUtil.saveBookingData(data, headers, bookingId);
     }
     async SaveBooking(createSaveBookingDto, header) {
         return this.bookingService.saveBooking(createSaveBookingDto, header);
@@ -52,7 +49,7 @@ let BookingController = class BookingController {
 exports.BookingController = BookingController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
+    (0, common_1.UseGuards)(both_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('flh/air-book/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
@@ -61,7 +58,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airbook", null);
 __decorate([
-    (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
+    (0, common_1.UseGuards)(both_tokens_guard_1.UserTokenGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('flh/cancel-ticket'),
     __param(0, (0, common_1.Body)()),
@@ -82,17 +79,11 @@ __decorate([
     (0, common_1.Post)('testBooking'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
+    __param(2, (0, common_1.Query)('bookingId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [booking_model_1.data, Object, String]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "bookingtest", null);
-__decorate([
-    (0, common_1.Post)('one/testBooking'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BookingController.prototype, "test", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('/save-booking'),

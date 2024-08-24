@@ -46,7 +46,7 @@ __decorate([
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "nationility", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "Q14596723" }),
+    (0, swagger_1.ApiProperty)({ default: 'Q14596723' }),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "passport", void 0);
 __decorate([

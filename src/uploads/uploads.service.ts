@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfilePicture } from './uploads.model';
 import { Repository } from 'typeorm';
@@ -18,14 +22,15 @@ export class UploadsService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-
- 
-  async create(header: any, file: Express.Multer.File): Promise<ProfilePicture> {
+  async create(
+    header: any,
+    file: Express.Multer.File,
+  ): Promise<ProfilePicture> {
     const decodeToken = await this.authservice.decodeToken(header);
     const user = await this.userRepository.findOne({
       where: { email: decodeToken },
     });
-    
+
     if (!user) {
       throw new BadRequestException('User not found.');
     }
@@ -37,15 +42,12 @@ export class UploadsService {
       try {
         await fs.unlink(existingProfilePicture.path);
       } catch (error) {
-        
         //console.error('Failed to delete existing profile picture:', error);
       }
-      
-      
+
       await this.profilePictureRepository.remove(existingProfilePicture);
     }
 
- 
     const fileExtension = extname(file.originalname);
     const filename = `${user.passengerId}-ProfilePicture_of-${user.fullName}${fileExtension}`;
     const path = join('uploads', filename);
@@ -71,7 +73,9 @@ export class UploadsService {
     const user = await this.userRepository.findOne({
       where: { email: decodeToken },
     });
-    const profilePicture = await this.profilePictureRepository.findOne({ where: { user } });
+    const profilePicture = await this.profilePictureRepository.findOne({
+      where: { user },
+    });
 
     if (!profilePicture) {
       throw new NotFoundException('Profile picture not found');
@@ -79,6 +83,4 @@ export class UploadsService {
 
     return await this.profilePictureRepository.remove(profilePicture);
   }
-
-  }
-
+}

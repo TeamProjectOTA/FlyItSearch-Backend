@@ -68,9 +68,9 @@ let FlightController = class FlightController {
     async airRules(data) {
         return await this.flyHubService.airRules(data);
     }
-    async apicheck(SearchResponse, header) {
+    async apicheck(SearchResponse, header, fisId) {
         const currentTimestamp = new Date();
-        return await this.testservice.bookingDataTransformerFlyhb(SearchResponse, header);
+        return await this.testservice.airRetriveDataTransformer(SearchResponse, fisId);
     }
 };
 exports.FlightController = FlightController;
@@ -133,7 +133,7 @@ __decorate([
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.UseGuards)(both_tokens_guard_1.BothTokensGuard),
+    (0, common_1.UseGuards)(both_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('flh/price-check'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -158,8 +158,9 @@ __decorate([
     (0, common_1.Post)('apicheck'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
+    __param(2, (0, common_1.Param)('fisId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, String]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "apicheck", null);
 exports.FlightController = FlightController = __decorate([

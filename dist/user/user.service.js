@@ -60,7 +60,7 @@ let UserService = class UserService {
             fullName: user.fullName,
             phone: user.phone,
             email: user.email,
-            message: `Please verify your email. An varification mail code has been sent to ${user.email}`
+            message: `Please verify your email. An varification mail code has been sent to ${user.email}`,
         };
     }
     async update(header, updateUserDto) {
@@ -129,7 +129,7 @@ let UserService = class UserService {
             .orderBy('bookingSave.bookingDate', 'DESC')
             .getOne();
         if (!user) {
-            throw new common_1.NotFoundException('No Booking data Available for the user');
+            throw new common_1.NotFoundException(`No ${bookingStatus} Available for the user`);
         }
         return {
             saveBookings: user.bookingSave,
@@ -150,7 +150,10 @@ let UserService = class UserService {
             throw new common_1.UnauthorizedException();
         }
         const email = await this.authservice.decodeToken(header);
-        const user = await this.userRepository.findOne({ where: { email: email }, relations: ['profilePicture'] });
+        const user = await this.userRepository.findOne({
+            where: { email: email },
+            relations: ['profilePicture'],
+        });
         const nameParts = user.fullName.split(' ');
         let firstName = '';
         let lastName = '';
@@ -158,7 +161,9 @@ let UserService = class UserService {
             firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
         }
         if (nameParts.length > 1) {
-            lastName = nameParts.slice(1).join(' ').charAt(0).toUpperCase() + nameParts.slice(1).join(' ').slice(1);
+            lastName =
+                nameParts.slice(1).join(' ').charAt(0).toUpperCase() +
+                    nameParts.slice(1).join(' ').slice(1);
         }
         return {
             firstName: firstName,
@@ -170,7 +175,7 @@ let UserService = class UserService {
             passportExpiryDate: user.passportexp,
             email: user.email,
             phone: user.phone,
-            profilePicture: user.profilePicture
+            profilePicture: user.profilePicture,
         };
     }
 };

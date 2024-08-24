@@ -1,9 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class TermsAndCondition {
-@PrimaryGeneratedColumn()
-id:number
-@Column({type:'text'})
-text:string
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column({ type: 'text' })
+  text: string;
 }

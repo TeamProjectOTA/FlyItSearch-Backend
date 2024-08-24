@@ -1,1 +1,1 @@
-{"version":3,"file":"update-terms-and-condition.dto.js","sourceRoot":"","sources":["../../../src/terms-and-conditions/dto/update-terms-and-condition.dto.ts"],"names":[],"mappings":";;;AAAA,6CAA8C;AAC9C,qFAA8E;AAE9E,MAAa,0BAA2B,SAAQ,IAAA,qBAAW,EAAC,2DAA0B,CAAC;CAAG;AAA1F,gEAA0F"}
+{"version":3,"file":"update-terms-and-condition.dto.js","sourceRoot":"","sources":["../../../src/terms-and-conditions/dto/update-terms-and-condition.dto.ts"],"names":[],"mappings":";;;AAAA,6CAA8C;AAC9C,qFAA8E;AAE9E,MAAa,0BAA2B,SAAQ,IAAA,qBAAW,EACzD,2DAA0B,CAC3B;CAAG;AAFJ,gEAEI"}

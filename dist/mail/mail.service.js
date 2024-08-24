@@ -29,7 +29,10 @@ let MailService = class MailService {
             },
         });
         handlebars.registerHelper('formatTime', function (datetime) {
-            return new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return new Date(datetime).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+            });
         });
         handlebars.registerHelper('formatDate', function (datetime) {
             return new Date(datetime).toLocaleDateString();
@@ -48,7 +51,11 @@ let MailService = class MailService {
     }
     async sendMail(data) {
         const html = await this.compileTemplate('booking', {
-            BookingStatus: data.BookingStatus === "Booked" ? "Confirmed" : data.BookingStatus === "Cancelled" ? "Cancellation" : "",
+            BookingStatus: data.BookingStatus === 'Booked'
+                ? 'Confirmed'
+                : data.BookingStatus === 'Cancelled'
+                    ? 'Cancellation'
+                    : '',
             BookingId: data.BookingId,
             CarrierName: data.CarrierName,
             NetFare: data.NetFare,

@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, OneToMany, OneToOne, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  OneToOne,
+  Column,
+} from 'typeorm';
 import { Introduction } from './Introduction.model';
 import { Overview } from './overview.model';
 import { MetaInfo } from './metaInfo.model';
@@ -12,7 +18,7 @@ export class TourPackage {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
-  tourpackageId:string
+  tourpackageId: string;
 
   @OneToOne(() => Introduction, (introduction) => introduction.tourPackage, {
     cascade: true,

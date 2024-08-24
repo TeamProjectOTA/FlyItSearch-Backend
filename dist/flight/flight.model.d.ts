@@ -33,4 +33,13 @@ export declare class Segment {
     DepartureDateTime: string;
     flight: Flight;
 }
+export declare class BookingIdSave {
+    id: number;
+    flyitSearchId: string;
+    flyhubId: string;
+}
+export declare class BookingIdSaveDto {
+    flyitSearchId: string;
+    flyhubId: string;
+}
 export {};

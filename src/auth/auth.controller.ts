@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Authdto, Userauthdto } from './createauthdto';
@@ -10,9 +19,10 @@ import { Repository } from 'typeorm';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authservice: AuthService,
+  constructor(
+    private readonly authservice: AuthService,
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
   ) {}
   @HttpCode(HttpStatus.OK)
   @Post('signInAdmin')
@@ -25,16 +35,18 @@ export class AuthController {
   signInUser(@Body() signIndto: Userauthdto) {
     return this.authservice.signInUser(signIndto.email, signIndto.password);
   }
-  
+
   @Get('verify-email')
-  async verifyEmail(@Query('token') token: string): Promise<{ message: string }> {
+  async verifyEmail(
+    @Query('token') token: string,
+  ): Promise<{ message: string }> {
     const user = await this.authservice.findByVerificationToken(token);
     if (!user) {
       throw new NotFoundException('Invalid verification token');
     }
 
     user.emailVerified = true;
-    user.verificationToken = null;  
+    user.verificationToken = null;
     await this.userRepository.update(user.id, user);
 
     return { message: 'Email verified successfully' };
@@ -42,7 +54,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Body('email') email: string): Promise<any> {
-     return await this.authservice.sendPasswordResetEmail(email);
+    return await this.authservice.sendPasswordResetEmail(email);
   }
 
   @Post('reset-password')

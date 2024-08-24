@@ -7,15 +7,14 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class TermsAndConditionsService {
-  constructor(@InjectRepository(TermsAndCondition)
-private readonly termAndConditionRepository:Repository<TermsAndCondition>){}
-  
+  constructor(
+    @InjectRepository(TermsAndCondition)
+    private readonly termAndConditionRepository: Repository<TermsAndCondition>,
+  ) {}
 
   findAll() {
-    return this.termAndConditionRepository.find() ;
+    return this.termAndConditionRepository.find();
   }
-
- 
 
   update(id: number, updateTermsAndConditionDto: UpdateTermsAndConditionDto) {
     return `This action updates a #${id} termsAndCondition`;

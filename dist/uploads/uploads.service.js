@@ -69,7 +69,9 @@ let UploadsService = class UploadsService {
         const user = await this.userRepository.findOne({
             where: { email: decodeToken },
         });
-        const profilePicture = await this.profilePictureRepository.findOne({ where: { user } });
+        const profilePicture = await this.profilePictureRepository.findOne({
+            where: { user },
+        });
         if (!profilePicture) {
             throw new common_1.NotFoundException('Profile picture not found');
         }

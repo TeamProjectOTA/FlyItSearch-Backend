@@ -20,7 +20,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { User } from './entities/user.entity';
-import { BothTokensGuard } from 'src/auth/both-tokens.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -54,10 +53,10 @@ export class UserController {
   async findAllUserWithBookings(@Headers() header: Headers): Promise<any> {
     return this.userService.findAllUserWithBookings(header);
   }
-  
+
   @ApiBearerAuth('access_token')
-  @Get("/profileInfo")
-  async findOneUser(@Headers() header: Headers): Promise<any>{
-    return this.userService.findOneUser(header)
+  @Get('/profileInfo')
+  async findOneUser(@Headers() header: Headers): Promise<any> {
+    return this.userService.findOneUser(header);
   }
 }

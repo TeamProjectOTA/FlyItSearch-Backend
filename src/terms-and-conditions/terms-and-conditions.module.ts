@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TermsAndCondition } from './entities/terms-and-condition.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([TermsAndCondition])],
+  imports: [TypeOrmModule.forFeature([TermsAndCondition])],
   controllers: [TermsAndConditionsController],
   providers: [TermsAndConditionsService],
 })

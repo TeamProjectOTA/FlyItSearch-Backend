@@ -16,7 +16,7 @@ class CreateTermsAndConditionDto {
 }
 exports.CreateTermsAndConditionDto = CreateTermsAndConditionDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ default: "Data" }),
+    (0, swagger_1.ApiProperty)({ default: 'Data' }),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateTermsAndConditionDto.prototype, "text", void 0);

@@ -11,9 +11,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import {  FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-
 
 import { ApiTags } from '@nestjs/swagger';
 import { readdirSync } from 'fs';

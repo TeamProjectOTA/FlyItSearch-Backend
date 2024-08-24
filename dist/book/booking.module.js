@@ -26,10 +26,10 @@ exports.BookingModule = BookingModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, booking_model_1.BookingSave]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
-            flight_module_1.FlightModule
+            flight_module_1.FlightModule,
         ],
         controllers: [booking_controller_1.BookingController],
-        providers: [booking_service_1.BookingService,],
+        providers: [booking_service_1.BookingService],
         exports: [booking_service_1.BookingService],
     })
 ], BookingModule);

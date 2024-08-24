@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Segment = exports.Flight = exports.FlightSearchModel = exports.JourneyType = void 0;
+exports.BookingIdSaveDto = exports.BookingIdSave = exports.Segment = exports.Flight = exports.FlightSearchModel = exports.JourneyType = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
 const typeorm_1 = require("typeorm");
@@ -134,4 +134,25 @@ __decorate([
 exports.Segment = Segment = __decorate([
     (0, typeorm_1.Entity)()
 ], Segment);
+let BookingIdSave = class BookingIdSave {
+};
+exports.BookingIdSave = BookingIdSave;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], BookingIdSave.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingIdSave.prototype, "flyitSearchId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingIdSave.prototype, "flyhubId", void 0);
+exports.BookingIdSave = BookingIdSave = __decorate([
+    (0, typeorm_1.Entity)()
+], BookingIdSave);
+class BookingIdSaveDto {
+}
+exports.BookingIdSaveDto = BookingIdSaveDto;
 //# sourceMappingURL=flight.model.js.map

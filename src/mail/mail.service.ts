@@ -9,7 +9,7 @@ import { AuthService } from 'src/auth/auth.service';
 export class MailService {
   private transporter;
 
-  constructor(private readonly authService:AuthService) {
+  constructor(private readonly authService: AuthService) {
     this.transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT, 10),
@@ -22,7 +22,10 @@ export class MailService {
 
     // Register Handlebars helpers
     handlebars.registerHelper('formatTime', function (datetime) {
-      return new Date(datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return new Date(datetime).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
     });
 
     handlebars.registerHelper('formatDate', function (datetime) {
@@ -36,17 +39,29 @@ export class MailService {
     });
   }
 
-  private async compileTemplate(templateName: string, data: any): Promise<string> {
-    const filePath = path.join(process.cwd(), 'src', 'mail', `${templateName}.hbs`);
+  private async compileTemplate(
+    templateName: string,
+    data: any,
+  ): Promise<string> {
+    const filePath = path.join(
+      process.cwd(),
+      'src',
+      'mail',
+      `${templateName}.hbs`,
+    );
     const template = fs.readFileSync(filePath, 'utf-8');
     const compiledTemplate = handlebars.compile(template);
     return compiledTemplate(data);
-}
+  }
 
   async sendMail(data: any) {
-    
     const html = await this.compileTemplate('booking', {
-      BookingStatus:data.BookingStatus === "Booked" ? "Confirmed" : data.BookingStatus === "Cancelled" ? "Cancellation" : "",
+      BookingStatus:
+        data.BookingStatus === 'Booked'
+          ? 'Confirmed'
+          : data.BookingStatus === 'Cancelled'
+            ? 'Cancellation'
+            : '',
       BookingId: data.BookingId,
       CarrierName: data.CarrierName,
       NetFare: data.NetFare,
@@ -64,7 +79,7 @@ export class MailService {
 
     try {
       const info = await this.transporter.sendMail(mailOptions);
-      return {message:'The email was delivered', info};
+      return { message: 'The email was delivered', info };
     } catch (error) {
       throw error;
     }

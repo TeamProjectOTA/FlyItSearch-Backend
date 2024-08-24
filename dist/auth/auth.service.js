@@ -34,7 +34,7 @@ let AuthService = class AuthService {
         if (!admin || admin.password !== pass) {
             throw new common_1.UnauthorizedException('Invalid UUID or password');
         }
-        if (admin.status != "ACTIVE") {
+        if (admin.status != 'ACTIVE') {
             throw new common_1.ServiceUnavailableException(`Active Your Account ${admin.firstName} ${admin.lastName}`);
         }
         const payload = { sub: admin.uuid, sub2: admin.status };
@@ -85,7 +85,7 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Email is not verified');
         }
         const payload = { sub: user.email, sub2: user.passengerId };
-        const expiresInSeconds = 18000;
+        const expiresInSeconds = 86400;
         const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
@@ -94,13 +94,13 @@ let AuthService = class AuthService {
         const userData = {
             name: user.fullName,
             email: user.email,
-            phone: user.phone
+            phone: user.phone,
         };
         return {
             access_token: token,
-            message: "Log In Successfull",
+            message: 'Log In Successfull',
             userData,
-            expireIn: dhakaTimeFormatted
+            expireIn: dhakaTimeFormatted,
         };
     }
     async verifyUserToken(header) {
@@ -209,7 +209,9 @@ let AuthService = class AuthService {
         user.resetPasswordToken = null;
         user.resetPasswordExpires = null;
         await this.userRepository.save(user);
-        return { message: `Thank you ${user.fullName}.Your password has been reseted` };
+        return {
+            message: `Thank you ${user.fullName}.Your password has been reseted`,
+        };
     }
     async sendPasswordResetEmail(email) {
         const user = await this.userRepository.findOne({ where: { email } });

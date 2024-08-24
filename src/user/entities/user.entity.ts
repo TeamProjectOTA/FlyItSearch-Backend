@@ -23,21 +23,21 @@ export class User {
   @Column()
   password: string;
   @Column({ nullable: true })
-  dob:string
+  dob: string;
   @Column({ nullable: true })
-  gender:string
+  gender: string;
   @Column({ nullable: true })
-  nationility:string
+  nationility: string;
   @Column({ nullable: true })
-  passport:string
+  passport: string;
   @Column({ default: 'registered' })
   role: string;
   @Column({ nullable: true })
-  verificationToken?: string;  // Add this field
+  verificationToken?: string; // Add this field
   @Column({ nullable: true })
-  passportexp:string
+  passportexp: string;
   @Column({ default: false })
-  emailVerified: boolean; 
+  emailVerified: boolean;
   @Column({ nullable: true })
   resetPasswordToken: string;
   @Column({ type: 'timestamp', nullable: true })
@@ -46,5 +46,4 @@ export class User {
   profilePicture: ProfilePicture;
   @OneToMany(() => BookingSave, (bookingSave) => bookingSave.user)
   bookingSave: BookingSave[];
-  
 }

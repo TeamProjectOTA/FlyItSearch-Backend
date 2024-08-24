@@ -17,13 +17,13 @@ import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin,  User, BookingSave]),
+    TypeOrmModule.forFeature([Admin, User, BookingSave]),
     UserModule,
     AuthModule,
-    FlightModule
+    FlightModule,
   ],
   controllers: [BookingController],
-  providers: [BookingService, ],
+  providers: [BookingService],
   exports: [BookingService],
 })
 export class BookingModule {}

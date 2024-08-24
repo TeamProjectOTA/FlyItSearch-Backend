@@ -85,7 +85,7 @@ __decorate([
 ], UserController.prototype, "findAllUserWithBookings", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)("/profileInfo"),
+    (0, common_1.Get)('/profileInfo'),
     __param(0, (0, common_1.Headers)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

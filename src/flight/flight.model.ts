@@ -108,3 +108,17 @@ export class Segment {
   @ManyToOne(() => Flight, (flight) => flight.Segments)
   flight: Flight;
 }
+
+@Entity()
+export class BookingIdSave{
+  @PrimaryGeneratedColumn()
+  id:number
+  @Column()
+  flyitSearchId:string
+  @Column()
+  flyhubId:string
+}
+export class BookingIdSaveDto{
+  flyitSearchId:string
+  flyhubId:string
+}

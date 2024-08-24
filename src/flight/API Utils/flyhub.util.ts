@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { BookingService } from 'src/book/booking.service';
 import { MailService } from 'src/mail/mail.service';
 import { PaymentService } from 'src/payment/payment.service';
+import { BookingIdSave } from '../flight.model';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class FlyHubUtil {
   constructor(
     private readonly BookService: BookingService,
-    private readonly mailService:MailService,
-    private readonly paymentService:PaymentService
+    private readonly mailService: MailService,
+    private readonly paymentService: PaymentService,
+    @InjectRepository(BookingIdSave)
+    private readonly bookingIdSave:Repository<BookingIdSave>
   ) {}
   async restBFMParser(
     SearchResponse: any,
@@ -173,25 +178,25 @@ export class FlyHubUtil {
             const lastSegment = segmentsList[segmentsList.length - 1];
 
             //trying to calculate the transittime
-            let arivalTime=new Date(firstSegment.Destination.ArrTime).getTime()
-            let deptureTime=new Date(lastSegment.Origin.DepTime).getTime()
-            const totalduration=deptureTime-arivalTime
-            let totalDurationInMinutes = Math.floor(totalduration / (1000 * 60));
+            let arivalTime = new Date(
+              firstSegment.Destination.ArrTime,
+            ).getTime();
+            let deptureTime = new Date(lastSegment.Origin.DepTime).getTime();
+            const totalduration = deptureTime - arivalTime;
+            let totalDurationInMinutes = Math.floor(
+              totalduration / (1000 * 60),
+            );
             if (totalDurationInMinutes < 0) {
               totalDurationInMinutes = 0; // or handle it differently as per your logic
             }
-
-
 
             const legInfo = {
               DepDate: firstSegment?.Origin?.DepTime,
               DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
               ArrTo: lastSegment.Destination?.Airport?.AirportCode,
 
-
               //trying to calculate the transittime
-              test:totalDurationInMinutes,
-
+              test: totalDurationInMinutes,
 
               Duration: segmentsList?.reduce(
                 (acc, segment) => acc + parseInt(segment?.JourneyDuration),
@@ -206,9 +211,9 @@ export class FlyHubUtil {
             const segments = segmentsList?.map((segment) => ({
               MarketingCarrier: segment?.Airline?.AirlineCode,
               MarketingCarrierName: segment?.Airline?.AirlineName,
-              MarketingFlightNumber: parseInt(segment?.Airline?.FlightNumber),
+              MarketingFlightNumber: segment?.Airline?.FlightNumber,
               OperatingCarrier: segment?.Airline?.OperatingCarrier,
-              OperatingFlightNumber: parseInt(segment?.Airline?.FlightNumber),
+              OperatingFlightNumber: segment?.Airline?.FlightNumber,
               OperatingCarrierName: segment?.Airline?.AirlineName,
               DepFrom: segment?.Origin?.Airport?.AirportCode,
               DepAirPort: segment?.Origin?.Airport?.AirportName,
@@ -274,7 +279,7 @@ export class FlyHubUtil {
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
             TimeLimit: TimeLimit,
-            RePriceStatus:SearchResponse?.RePriceStatus,
+            RePriceStatus: SearchResponse?.RePriceStatus,
             Refundable: Refundable,
             ExtraService: Result?.ExtraServices || null,
             PriceBreakDown: PriceBreakDown,
@@ -286,7 +291,7 @@ export class FlyHubUtil {
 
     return FlightItenary;
   }
-  async airRetriveDataTransformer(SearchResponse: any): Promise<any> {
+  async airRetriveDataTransformer(SearchResponse: any,fisId:string,header?:any): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -495,13 +500,13 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
+         
 
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
-            BookingId: SearchResponse?.BookingID,
+            BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
-
             SearchId: SearchResponse?.SearchId,
             BookingStatus: SearchResponse?.BookingStatus,
             InstantPayment: Instant_Payment,
@@ -527,13 +532,10 @@ export class FlyHubUtil {
         }
       }
     }
-      
-    
-
+    const sslpaymentLink=await this.paymentService.dataModification(FlightItenary)
     return {
-      bookingData:FlightItenary,
-      sslpaymentLink:await this.paymentService.dataModification(FlightItenary)
-
+      bookingData: FlightItenary,
+      sslpaymentLink,
     };
   }
 
@@ -750,13 +752,19 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
-
+         
+          const randomId = 'FIS' + Math.floor(Math.random() * 10**13).toString().padStart(13, '0');
+          let add: BookingIdSave = new BookingIdSave();
+          add.flyitSearchId=randomId
+          add.flyhubId=SearchResponse?.BookingID
+          await this.bookingIdSave.save(add)
+          
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
-            BookingId: SearchResponse?.BookingID,
-            PNR: SearchResponse?.Results[0].segments[0].AirlinePNR,
-            BookingDate: currentTimestamp||null,
+            BookingId: randomId,
+            PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
+            BookingDate: currentTimestamp || null,
             SearchId: SearchResponse?.SearchId,
             BookingStatus: SearchResponse?.BookingStatus,
             InstantPayment: Instant_Payment,
@@ -782,20 +790,16 @@ export class FlyHubUtil {
         }
       }
     }
-    
-    
-    
-     await this.saveBookingData(FlightItenary, header);
-     return {
-      bookingData:FlightItenary,
-      sslpaymentLink:"gg"
 
-    };  
+    await this.saveBookingData(FlightItenary, header,);
+    return {
+      bookingData: FlightItenary,
+      sslpaymentLink: await this.paymentService.dataModification(FlightItenary),
+    };
   }
 
-  async saveBookingData(SearchResponse: any, header?: any): Promise<any> {
+  async saveBookingData(SearchResponse: any, header?: any,bookingId?:string): Promise<any> {
     const booking = SearchResponse[0];
-     
     if (booking) {
       const flightNumber =
         booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
@@ -821,7 +825,7 @@ export class FlyHubUtil {
 
       const convertedData = {
         system: booking?.System,
-        bookingId: booking?.BookingId,
+        bookingId: bookingId??booking?.BookingId,
         paxCount: paxCount,
         Curriername: booking?.CarrierName,
         CurrierCode: booking?.Carrier,
@@ -839,8 +843,7 @@ export class FlyHubUtil {
         })),
       };
 
-      
-      await this.mailService.sendMail(booking)
+      await this.mailService.sendMail(booking);
       return await this.BookService.saveBooking(convertedData, header);
       //return convertedData
     } else {

@@ -7,10 +7,11 @@ export declare class FlyHubService {
     private readonly username;
     private readonly apiKey;
     private readonly apiUrl;
+    private readonly bookingIdSave;
     constructor(flyHubUtil: FlyHubUtil);
     getToken(): Promise<string>;
     searchFlights(reqBody: FlyAirSearchDto): Promise<any>;
-    aircancel(BookingID: BookingID, header?: any): Promise<any>;
+    aircancel(BookingID: BookingID, header: any): Promise<any>;
     airRetrive(BookingID: BookingID): Promise<any>;
     bookingRules(data: searchResultDto): Promise<any>;
     airPrice(data: searchResultDto): Promise<any[]>;
