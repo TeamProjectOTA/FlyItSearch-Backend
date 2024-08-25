@@ -141,14 +141,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airPrice", null);
 __decorate([
-    (0, common_1.Post)('flh/farePolicy'),
+    (0, common_1.Post)('flh/farePolicyMiniRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "miniRules", null);
 __decorate([
-    (0, common_1.Post)('flh/air-rules'),
+    (0, common_1.Post)('flh/fairRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),

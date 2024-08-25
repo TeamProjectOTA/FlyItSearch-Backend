@@ -103,11 +103,11 @@ export class FlightController {
     return await this.flyHubService.airPrice(data);
   }
 
-  @Post('flh/farePolicy')
+  @Post('flh/farePolicyMiniRules')
   async miniRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.bookingRules(data);
   }
-  @Post('flh/air-rules')
+  @Post('flh/fairRules')
   async airRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.airRules(data);
   }
