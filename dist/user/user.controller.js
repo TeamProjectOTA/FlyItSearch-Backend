@@ -18,6 +18,8 @@ const user_service_1 = require("./user.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const update_user_dto_1 = require("./dto/update-user.dto");
 const swagger_1 = require("@nestjs/swagger");
+const user_tokens_guard_1 = require("../auth/user-tokens.guard");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let UserController = class UserController {
     constructor(userService) {
         this.userService = userService;
@@ -34,8 +36,8 @@ let UserController = class UserController {
     async findUserWithBookings(header, bookingStatus) {
         return this.userService.findUserWithBookings(header, bookingStatus);
     }
-    async findAllUserWithBookings(header) {
-        return this.userService.findAllUserWithBookings(header);
+    async findAllUserWithBookings() {
+        return this.userService.findAllUserWithBookings();
     }
     async findOneUser(header) {
         return this.userService.findOneUser(header);
@@ -60,7 +62,7 @@ __decorate([
 ], UserController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)('/admin/all-user'),
+    (0, common_1.Get)('/admin/allUser'),
     __param(0, (0, common_1.Headers)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -77,14 +79,15 @@ __decorate([
 ], UserController.prototype, "findUserWithBookings", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)('admin/all-user-bookings'),
-    __param(0, (0, common_1.Headers)()),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Get)('admin/allUserBookings'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAllUserWithBookings", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Get)('/profileInfo'),
     __param(0, (0, common_1.Headers)()),
     __metadata("design:type", Function),

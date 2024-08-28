@@ -7,6 +7,7 @@ export declare class AuthService {
     private readonly userRepository;
     private readonly jwtservice;
     authservice: any;
+    private readonly time;
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService);
     signInAdmin(uuid: string, pass: string): Promise<any>;
     verifyAdminToken(header: any): Promise<Admin>;

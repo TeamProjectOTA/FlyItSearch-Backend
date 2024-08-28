@@ -21,7 +21,8 @@ import { Test } from './API Utils/test.service';
 
 import { FlyHubUtil } from './API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
-import { UserTokenGuard } from 'src/auth/both-tokens.guard';
+import { UserTokenGuard } from 'src/auth/user-tokens.guard';
+
 
 
 @ApiTags('Flight-filters')
@@ -80,7 +81,7 @@ export class FlightController {
   airretrieve(@Param('pnr') pnr: string) {
     return this.sabreService.airretrieve(pnr);
   }
-
+  @ApiBearerAuth('access_token')
   @Post('fhb/air-search/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
@@ -90,7 +91,7 @@ export class FlightController {
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
     }
-
+  
     return this.flyHubService.convertToFlyAirSearchDto(
       flightSearchModel,
       userIp,
@@ -112,16 +113,16 @@ export class FlightController {
     return await this.flyHubService.airRules(data);
   }
 
-  @Post('apicheck')
-  async apicheck(
-    @Body() SearchResponse: any,
-    @Headers() header: Headers,
-    @Param('fisId')fisId:string,
-  ): Promise<any> {
-    const currentTimestamp = new Date();
-    return await this.testservice.airRetriveDataTransformer(
-      SearchResponse,
-      fisId
-    );
-  }
+  // @Post('apicheck')
+  // async apicheck(
+  //   @Body() SearchResponse: any,
+  //   @Headers() header: Headers,
+  //   @Param('fisId')fisId:string,
+  // ): Promise<any> {
+  //   const currentTimestamp = new Date();
+  //   return await this.testservice.airRetriveDataTransformer(
+  //     SearchResponse,
+  //     fisId
+  //   );
+  // }
 }

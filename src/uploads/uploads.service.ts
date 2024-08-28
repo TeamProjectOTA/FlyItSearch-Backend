@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProfilePicture } from './uploads.model';
@@ -11,6 +12,7 @@ import { User } from 'src/user/entities/user.entity';
 import { extname, join } from 'path';
 import { promises as fs } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
+import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 
 @Injectable()
 export class UploadsService {
@@ -21,7 +23,7 @@ export class UploadsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
-
+ @UseGuards(UserTokenGuard)
   async create(
     header: any,
     file: Express.Multer.File,
@@ -42,22 +44,17 @@ export class UploadsService {
       try {
         await fs.unlink(existingProfilePicture.path);
       } catch (error) {
-        //console.error('Failed to delete existing profile picture:', error);
       }
-
       await this.profilePictureRepository.remove(existingProfilePicture);
     }
-
     const fileExtension = extname(file.originalname);
     const filename = `${user.passengerId}-ProfilePicture_of-${user.fullName}${fileExtension}`;
     const path = join('uploads', filename);
-
     try {
       await fs.rename(file.path, path);
     } catch (error) {
       throw new BadRequestException('Failed to save file.');
     }
-
     const size = file.size;
     const profilePicture = this.profilePictureRepository.create({
       user,
@@ -65,7 +62,6 @@ export class UploadsService {
       path,
       size,
     });
-
     return this.profilePictureRepository.save(profilePicture);
   }
   async delete(header: any): Promise<any> {

@@ -44,7 +44,7 @@ require('dotenv').config();
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      logging: true,
+      logging: false,
       timezone: 'Z',
     }),
     // TypeOrmModule.forRoot({
@@ -98,13 +98,12 @@ export class AppModule {
         { path: 'auth/sign-in-user', method: RequestMethod.POST },
         { path: 'social-site/google', method: RequestMethod.GET },
         { path: 'social-site/google-redirect', method: RequestMethod.GET },
-        { path: 'payment/:passengerId', method: RequestMethod.GET },
       )
       .forRoutes(
         //{ path: '*', method: RequestMethod.ALL },
         // include all the path that uses this middleware
-        { path: '/tour-packages', method: RequestMethod.ALL },
-        // {path:'/flights/fhb',method:RequestMethod.ALL}
+        { path: '/flights/fhb/air-search', method: RequestMethod.POST },
+        
       );
   }
 }

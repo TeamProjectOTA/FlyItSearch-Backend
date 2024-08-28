@@ -14,11 +14,9 @@ export class UserTokenGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const headers = request.headers;
 
-    try {
+    
       await this.authService.verifyUserToken(headers);
       return true;
-    } catch (error) {
-      throw new UnauthorizedException();
-    }
+    
   }
 }

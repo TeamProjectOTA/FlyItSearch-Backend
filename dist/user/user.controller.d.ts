@@ -9,6 +9,6 @@ export declare class UserController {
     update(header: Headers, updateUserDto: UpdateUserDto): Promise<User>;
     findAllUser(header: Headers): Promise<User[]>;
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<Partial<User>>;
-    findAllUserWithBookings(header: Headers): Promise<any>;
+    findAllUserWithBookings(): Promise<any>;
     findOneUser(header: Headers): Promise<any>;
 }

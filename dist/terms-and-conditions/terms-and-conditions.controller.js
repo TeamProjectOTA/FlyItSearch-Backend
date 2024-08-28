@@ -17,35 +17,39 @@ const common_1 = require("@nestjs/common");
 const terms_and_conditions_service_1 = require("./terms-and-conditions.service");
 const update_terms_and_condition_dto_1 = require("./dto/update-terms-and-condition.dto");
 const swagger_1 = require("@nestjs/swagger");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let TermsAndConditionsController = class TermsAndConditionsController {
     constructor(termsAndConditionsService) {
         this.termsAndConditionsService = termsAndConditionsService;
     }
-    findAll() {
-        return this.termsAndConditionsService.findAll();
+    findAllsite(catagory) {
+        return this.termsAndConditionsService.findAllSite(catagory);
     }
-    update(id, updateTermsAndConditionDto) {
-        return this.termsAndConditionsService.update(+id, updateTermsAndConditionDto);
+    updatesite(catagory, updateTermsAndConditionDto) {
+        return this.termsAndConditionsService.updateSite(updateTermsAndConditionDto, catagory);
     }
 };
 exports.TermsAndConditionsController = TermsAndConditionsController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('site/api/:catagory'),
+    __param(0, (0, common_1.Param)('catagory')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], TermsAndConditionsController.prototype, "findAll", null);
+], TermsAndConditionsController.prototype, "findAllsite", null);
 __decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Patch)('admin/site/api/:catagory'),
+    __param(0, (0, common_1.Param)('catagory')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, update_terms_and_condition_dto_1.UpdateTermsAndConditionDto]),
     __metadata("design:returntype", void 0)
-], TermsAndConditionsController.prototype, "update", null);
+], TermsAndConditionsController.prototype, "updatesite", null);
 exports.TermsAndConditionsController = TermsAndConditionsController = __decorate([
     (0, swagger_1.ApiTags)('Terms And Conditions'),
-    (0, common_1.Controller)('terms-and-conditions'),
+    (0, common_1.Controller)('termsAndConditions'),
     __metadata("design:paramtypes", [terms_and_conditions_service_1.TermsAndConditionsService])
 ], TermsAndConditionsController);
 //# sourceMappingURL=terms-and-conditions.controller.js.map

@@ -21,6 +21,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const path_1 = require("path");
 const fs_1 = require("fs");
 const auth_service_1 = require("../auth/auth.service");
+const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 let UploadsService = class UploadsService {
     constructor(profilePictureRepository, authservice, userRepository) {
         this.profilePictureRepository = profilePictureRepository;
@@ -79,6 +80,12 @@ let UploadsService = class UploadsService {
     }
 };
 exports.UploadsService = UploadsService;
+__decorate([
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UploadsService.prototype, "create", null);
 exports.UploadsService = UploadsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),

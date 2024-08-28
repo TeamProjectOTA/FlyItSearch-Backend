@@ -20,6 +20,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { User } from './entities/user.entity';
+import { UserTokenGuard } from 'src/auth/user-tokens.guard';
+import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 
 @ApiTags('User')
 @Controller('user')
@@ -36,7 +38,7 @@ export class UserController {
   }
 
   @ApiBearerAuth('access_token')
-  @Get('/admin/all-user')
+  @Get('/admin/allUser')
   findAllUser(@Headers() header: Headers) {
     return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
   }
@@ -48,13 +50,17 @@ export class UserController {
   ): Promise<Partial<User>> {
     return this.userService.findUserWithBookings(header, bookingStatus);
   }
-  @ApiBearerAuth('access_token')
-  @Get('admin/all-user-bookings')
-  async findAllUserWithBookings(@Headers() header: Headers): Promise<any> {
-    return this.userService.findAllUserWithBookings(header);
-  }
 
   @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Get('admin/allUserBookings')
+  async findAllUserWithBookings(): Promise<any> {
+    return this.userService.findAllUserWithBookings();
+  }
+
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
   @Get('/profileInfo')
   async findOneUser(@Headers() header: Headers): Promise<any> {
     return this.userService.findOneUser(header);

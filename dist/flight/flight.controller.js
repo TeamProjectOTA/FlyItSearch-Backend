@@ -23,7 +23,7 @@ const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const flyhub_util_1 = require("./API Utils/flyhub.util");
-const both_tokens_guard_1 = require("../auth/both-tokens.guard");
+const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 let FlightController = class FlightController {
     constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
@@ -67,10 +67,6 @@ let FlightController = class FlightController {
     }
     async airRules(data) {
         return await this.flyHubService.airRules(data);
-    }
-    async apicheck(SearchResponse, header, fisId) {
-        const currentTimestamp = new Date();
-        return await this.testservice.airRetriveDataTransformer(SearchResponse, fisId);
     }
 };
 exports.FlightController = FlightController;
@@ -124,6 +120,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], FlightController.prototype, "airretrieve", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('fhb/air-search/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
@@ -133,7 +130,7 @@ __decorate([
 ], FlightController.prototype, "convertToFlyAirSearchDto", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.UseGuards)(both_tokens_guard_1.UserTokenGuard),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('flh/price-check'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -154,15 +151,6 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRules", null);
-__decorate([
-    (0, common_1.Post)('apicheck'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)()),
-    __param(2, (0, common_1.Param)('fisId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, String]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "apicheck", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),

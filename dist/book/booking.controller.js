@@ -21,7 +21,7 @@ const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.servi
 const flyhub_model_1 = require("../flight/API Utils/Dto/flyhub.model");
 const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
 const auth_service_1 = require("../auth/auth.service");
-const both_tokens_guard_1 = require("../auth/both-tokens.guard");
+const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 let BookingController = class BookingController {
     constructor(bookingService, flyHubService, flyHubUtil, authService) {
         this.bookingService = bookingService;
@@ -49,8 +49,8 @@ let BookingController = class BookingController {
 exports.BookingController = BookingController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.UseGuards)(both_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('flh/air-book/'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('flh/airBook/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
@@ -58,9 +58,9 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airbook", null);
 __decorate([
-    (0, common_1.UseGuards)(both_tokens_guard_1.UserTokenGuard),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('flh/cancel-ticket'),
+    (0, common_1.Post)('flh/cancelBooking'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
@@ -68,7 +68,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "aircanel", null);
 __decorate([
-    (0, common_1.Post)('flh/air-retrive'),
+    (0, common_1.Post)('flh/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [booking_model_1.BookingID]),

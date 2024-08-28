@@ -6,29 +6,31 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TermsAndConditionsService } from './terms-and-conditions.service';
-import { CreateTermsAndConditionDto } from './dto/create-terms-and-condition.dto';
 import { UpdateTermsAndConditionDto } from './dto/update-terms-and-condition.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 @ApiTags('Terms And Conditions')
-@Controller('terms-and-conditions')
+@Controller('termsAndConditions')
 export class TermsAndConditionsController {
   constructor(
     private readonly termsAndConditionsService: TermsAndConditionsService,
   ) {}
-  @Get()
-  findAll() {
-    return this.termsAndConditionsService.findAll();
+  @Get('site/api/:catagory')
+  findAllsite(@Param('catagory') catagory:string) {
+    return this.termsAndConditionsService.findAllSite(catagory);
   }
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Patch('admin/site/api/:catagory')
+  updatesite(
+    @Param('catagory') catagory:string,
     @Body() updateTermsAndConditionDto: UpdateTermsAndConditionDto,
   ) {
-    return this.termsAndConditionsService.update(
-      +id,
-      updateTermsAndConditionDto,
+    return this.termsAndConditionsService.updateSite(updateTermsAndConditionDto,catagory
     );
   }
+
 }

@@ -21,14 +21,23 @@ let TermsAndConditionsService = class TermsAndConditionsService {
     constructor(termAndConditionRepository) {
         this.termAndConditionRepository = termAndConditionRepository;
     }
-    findAll() {
-        return this.termAndConditionRepository.find();
+    async findAllSite(catagory) {
+        const condition = await this.termAndConditionRepository.findOne({ where: { catagory: catagory } });
+        if (!condition) {
+            throw new common_1.NotFoundException(`No Terms and Conditons found on ${catagory}. Contect with +8801302086413`);
+        }
+        return condition;
     }
-    update(id, updateTermsAndConditionDto) {
-        return `This action updates a #${id} termsAndCondition`;
-    }
-    remove(id) {
-        return `This action removes a #${id} termsAndCondition`;
+    async updateSite(updateTermsAndConditionDto, catagory) {
+        const text = await this.termAndConditionRepository.findOne({ where: { catagory: catagory } });
+        if (!text) {
+            throw new common_1.NotFoundException;
+        }
+        text.text = updateTermsAndConditionDto.text;
+        const Updated = await this.termAndConditionRepository.save(text);
+        return {
+            message: `The term and condition has been changed ..................from................. ${text.text} </br> .........................................TO.......................................................... ${Updated.text}`
+        };
     }
 };
 exports.TermsAndConditionsService = TermsAndConditionsService;

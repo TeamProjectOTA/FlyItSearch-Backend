@@ -12,12 +12,13 @@ const terms_and_conditions_service_1 = require("./terms-and-conditions.service")
 const terms_and_conditions_controller_1 = require("./terms-and-conditions.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const terms_and_condition_entity_1 = require("./entities/terms-and-condition.entity");
+const auth_module_1 = require("../auth/auth.module");
 let TermsAndConditionsModule = class TermsAndConditionsModule {
 };
 exports.TermsAndConditionsModule = TermsAndConditionsModule;
 exports.TermsAndConditionsModule = TermsAndConditionsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([terms_and_condition_entity_1.TermsAndCondition])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([terms_and_condition_entity_1.TermsAndCondition]), auth_module_1.AuthModule],
         controllers: [terms_and_conditions_controller_1.TermsAndConditionsController],
         providers: [terms_and_conditions_service_1.TermsAndConditionsService],
     })

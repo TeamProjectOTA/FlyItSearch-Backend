@@ -40,7 +40,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GoogleOuthController.prototype, "googleAuth", null);
 __decorate([
-    (0, common_1.Get)('/google-redirect'),
+    (0, common_1.Get)('/googleRedirect'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -56,7 +56,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], GoogleOuthController.prototype, "facebookAuth", null);
 __decorate([
-    (0, common_1.Get)('/facebook-redirect'),
+    (0, common_1.Get)('/facebookRedirect'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),

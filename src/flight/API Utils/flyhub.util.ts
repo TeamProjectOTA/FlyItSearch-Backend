@@ -288,7 +288,7 @@ export class FlyHubUtil {
         }
       }
     }
-
+   
     return FlightItenary;
   }
   async airRetriveDataTransformer(SearchResponse: any,fisId:string,header?:any): Promise<any> {
@@ -532,6 +532,7 @@ export class FlyHubUtil {
         }
       }
     }
+    
     const sslpaymentLink=await this.paymentService.dataModification(FlightItenary)
     return {
       bookingData: FlightItenary,

@@ -17,13 +17,16 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class AuthService {
   authservice: any;
+  private readonly time:number
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtservice: JwtService,
-  ) {}
+  ) {
+    this.time= 86400
+  }
 
   async signInAdmin(uuid: string, pass: string): Promise<any> {
     const admin = await this.adminRepository.findOne({
@@ -41,7 +44,24 @@ export class AuthService {
 
     const payload = { sub: admin.uuid, sub2: admin.status };
     const token = await this.jwtservice.signAsync(payload);
-    return { access_token: token };
+    const expiresInSeconds = this.time; // !important change it according to time out limit.
+    const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
+
+    const dhakaOffset = 6 * 60 * 60 * 1000;
+    const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
+
+    const dhakaTimeFormatted = dhakaTime.toISOString();
+    const adminData = {
+      name: `${admin.firstName} ${admin.lastName}`,
+      email: admin.email,
+      phone: admin.phone,
+    };
+    return {
+      access_token: token,
+      message: 'Log In Successfull',
+      adminData,
+      expireIn: dhakaTimeFormatted,
+    };
   }
 
   async verifyAdminToken(header: any) {
@@ -94,7 +114,7 @@ export class AuthService {
       throw new UnauthorizedException('Email is not verified');
     }
     const payload = { sub: user.email, sub2: user.passengerId };
-    const expiresInSeconds = 86400; // !important change it according to time out limit.
+    const expiresInSeconds = this.time; // !important change it according to time out limit.
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
 
     const dhakaOffset = 6 * 60 * 60 * 1000;

@@ -4,7 +4,8 @@ import { Repository } from 'typeorm';
 export declare class TermsAndConditionsService {
     private readonly termAndConditionRepository;
     constructor(termAndConditionRepository: Repository<TermsAndCondition>);
-    findAll(): Promise<TermsAndCondition[]>;
-    update(id: number, updateTermsAndConditionDto: UpdateTermsAndConditionDto): string;
-    remove(id: number): string;
+    findAllSite(catagory: string): Promise<TermsAndCondition>;
+    updateSite(updateTermsAndConditionDto: UpdateTermsAndConditionDto, catagory: string): Promise<{
+        message: string;
+    }>;
 }

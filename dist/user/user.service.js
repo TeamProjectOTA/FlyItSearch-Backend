@@ -135,20 +135,12 @@ let UserService = class UserService {
             saveBookings: user.bookingSave,
         };
     }
-    async findAllUserWithBookings(header) {
-        const verifyAdmin = await this.authservice.verifyAdminToken(header);
-        if (!verifyAdmin) {
-            throw new common_1.UnauthorizedException();
-        }
+    async findAllUserWithBookings() {
         return this.userRepository.find({
-            relations: ['saveBookings', 'saveBookings.laginfo'],
+            relations: ['bookingSave'],
         });
     }
     async findOneUser(header) {
-        const verifyUser = await this.authservice.verifyUserToken(header);
-        if (!verifyUser) {
-            throw new common_1.UnauthorizedException();
-        }
         const email = await this.authservice.decodeToken(header);
         const user = await this.userRepository.findOne({
             where: { email: email },

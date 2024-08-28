@@ -15,7 +15,8 @@ import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
-import { UserTokenGuard } from 'src/auth/both-tokens.guard';
+import { UserTokenGuard } from 'src/auth/user-tokens.guard';
+
 
 
 @ApiTags('Booking-Details')
@@ -30,21 +31,21 @@ export class BookingController {
 
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('flh/air-book/')
+  @Post('flh/airBook/')
   async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers) {
     const currentTimestamp = new Date();
     return await this.flyHubService.airbook(data, header, currentTimestamp);
   }
   @UseGuards(UserTokenGuard)
   @ApiBearerAuth('access_token')
-  @Post('flh/cancel-ticket')
+  @Post('flh/cancelBooking')
   async aircanel(
     @Body() bookingIdDto: BookingID,
     @Headers() header: Headers
   ): Promise<any> {
     return this.flyHubService.aircancel(bookingIdDto,header);
   }
-  @Post('flh/air-retrive')
+  @Post('flh/airRetrive')
   async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto);
   }

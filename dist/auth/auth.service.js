@@ -26,6 +26,7 @@ let AuthService = class AuthService {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
         this.jwtservice = jwtservice;
+        this.time = 86400;
     }
     async signInAdmin(uuid, pass) {
         const admin = await this.adminRepository.findOne({
@@ -39,7 +40,22 @@ let AuthService = class AuthService {
         }
         const payload = { sub: admin.uuid, sub2: admin.status };
         const token = await this.jwtservice.signAsync(payload);
-        return { access_token: token };
+        const expiresInSeconds = this.time;
+        const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
+        const dhakaTimeFormatted = dhakaTime.toISOString();
+        const adminData = {
+            name: `${admin.firstName} ${admin.lastName}`,
+            email: admin.email,
+            phone: admin.phone,
+        };
+        return {
+            access_token: token,
+            message: 'Log In Successfull',
+            adminData,
+            expireIn: dhakaTimeFormatted,
+        };
     }
     async verifyAdminToken(header) {
         try {
@@ -85,7 +101,7 @@ let AuthService = class AuthService {
             throw new common_1.UnauthorizedException('Email is not verified');
         }
         const payload = { sub: user.email, sub2: user.passengerId };
-        const expiresInSeconds = 86400;
+        const expiresInSeconds = this.time;
         const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);

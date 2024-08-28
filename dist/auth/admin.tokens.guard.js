@@ -9,28 +9,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserTokenGuard = void 0;
+exports.AdmintokenGuard = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
-let UserTokenGuard = class UserTokenGuard {
+let AdmintokenGuard = class AdmintokenGuard {
     constructor(authService) {
         this.authService = authService;
     }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
         const headers = request.headers;
-        try {
-            await this.authService.verifyUserToken(headers);
-            return true;
-        }
-        catch (error) {
-            throw new common_1.UnauthorizedException();
-        }
+        await this.authService.verifyAdminToken(headers);
+        return true;
     }
 };
-exports.UserTokenGuard = UserTokenGuard;
-exports.UserTokenGuard = UserTokenGuard = __decorate([
+exports.AdmintokenGuard = AdmintokenGuard;
+exports.AdmintokenGuard = AdmintokenGuard = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
-], UserTokenGuard);
-//# sourceMappingURL=both-tokens.guard.js.map
+], AdmintokenGuard);
+//# sourceMappingURL=admin.tokens.guard.js.map

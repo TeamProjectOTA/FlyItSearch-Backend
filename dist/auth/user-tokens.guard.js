@@ -9,24 +9,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TermsAndCondition = void 0;
-const typeorm_1 = require("typeorm");
-let TermsAndCondition = class TermsAndCondition {
+exports.UserTokenGuard = void 0;
+const common_1 = require("@nestjs/common");
+const auth_service_1 = require("./auth.service");
+let UserTokenGuard = class UserTokenGuard {
+    constructor(authService) {
+        this.authService = authService;
+    }
+    async canActivate(context) {
+        const request = context.switchToHttp().getRequest();
+        const headers = request.headers;
+        await this.authService.verifyUserToken(headers);
+        return true;
+    }
 };
-exports.TermsAndCondition = TermsAndCondition;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], TermsAndCondition.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], TermsAndCondition.prototype, "catagory", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    __metadata("design:type", String)
-], TermsAndCondition.prototype, "text", void 0);
-exports.TermsAndCondition = TermsAndCondition = __decorate([
-    (0, typeorm_1.Entity)()
-], TermsAndCondition);
-//# sourceMappingURL=terms-and-condition.entity.js.map
+exports.UserTokenGuard = UserTokenGuard;
+exports.UserTokenGuard = UserTokenGuard = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
+], UserTokenGuard);
+//# sourceMappingURL=user-tokens.guard.js.map
