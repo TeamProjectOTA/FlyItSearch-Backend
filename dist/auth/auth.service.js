@@ -231,8 +231,11 @@ let AuthService = class AuthService {
     }
     async sendPasswordResetEmail(email) {
         const user = await this.userRepository.findOne({ where: { email } });
+        if (!email) {
+            throw new common_1.NotFoundException('Please Enter Your Email');
+        }
         if (!user) {
-            throw new common_1.NotFoundException('User with this email does not exist');
+            throw new common_1.NotFoundException('There is no User Associated with this email');
         }
         const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
         user.resetPasswordToken = resetToken;

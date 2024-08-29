@@ -36,7 +36,7 @@ export class AuthController {
     return this.authservice.signInUser(signIndto.email, signIndto.password);
   }
 
-  @Get('verify-email')
+  @Get('verifyEmail')
   async verifyEmail(
     @Query('token') token: string,
   ): Promise<{ message: string }> {
@@ -52,7 +52,7 @@ export class AuthController {
     return { message: 'Email verified successfully' };
   }
 
-  @Post('forgot-password')
+  @Post('forgotPassword')
   async forgotPassword(@Body('email') email: string): Promise<any> {
     return await this.authservice.sendPasswordResetEmail(email);
   }

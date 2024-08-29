@@ -37,7 +37,7 @@ let AppModule = class AppModule {
         consumer
             .apply(jwt_middleware_1.JwtMiddleware, rate_limiter_middleware_1.RateLimiterMiddleware)
             .exclude({ path: 'auth/sign-in-admin', method: common_1.RequestMethod.POST }, { path: 'auth/sign-in-user', method: common_1.RequestMethod.POST }, { path: 'social-site/google', method: common_1.RequestMethod.GET }, { path: 'social-site/google-redirect', method: common_1.RequestMethod.GET })
-            .forRoutes({ path: '/flights/fhb/air-search', method: common_1.RequestMethod.POST });
+            .forRoutes();
     }
 };
 exports.AppModule = AppModule;
@@ -52,13 +52,14 @@ exports.AppModule = AppModule = __decorate([
             ]),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
-                host: 'localhost',
+                host: process.env.FLYIT_URL,
                 port: 3306,
-                username: process.env.DB_USERNAME,
-                password: process.env.DB_PASSWORD,
-                database: process.env.DB_NAME,
+                username: process.env.FLYIT_DB_USERNAME,
+                password: process.env.FLYIT_DB_PASSWORD,
+                database: process.env.FLYIT_DB_NAME,
                 autoLoadEntities: true,
                 synchronize: true,
+                connectTimeout: 60000,
                 logging: false,
                 timezone: 'Z',
             }),

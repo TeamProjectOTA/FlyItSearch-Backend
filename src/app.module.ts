@@ -35,30 +35,32 @@ require('dotenv').config();
         limit: 15,
       },
     ]),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      autoLoadEntities: true,
-      synchronize: true,
-      logging: false,
-      timezone: 'Z',
-    }),
     // TypeOrmModule.forRoot({
     //   type: 'mysql',
-    //   host: process.env.FLYIT_URL,
+    //   host: 'localhost',
     //   port: 3306,
-    //   username: process.env.FLYIT_DB_USERNAME,
-    //   password: process.env.FLYIT_DB_PASSWORD,
-    //   database: process.env.FLYIT_DB_NAME,
+    //   username: process.env.DB_USERNAME,
+    //   password: process.env.DB_PASSWORD,
+    //   database: process.env.DB_NAME,
     //   autoLoadEntities: true,
-    //   synchronize: false,
-    //   connectTimeout: 60000
-
+    //   synchronize: true,
+    //   logging: false,
+    //   timezone: 'Z',
     // }),
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: process.env.FLYIT_URL,
+      port: 3306,
+      username: process.env.FLYIT_DB_USERNAME,
+      password: process.env.FLYIT_DB_PASSWORD,
+      database: process.env.FLYIT_DB_NAME,
+      autoLoadEntities: true,
+      synchronize: true,
+      connectTimeout: 60000,
+      logging: false,
+      timezone: 'Z',
+
+    }),
 
     AdminModule,
     UserModule,
@@ -102,7 +104,7 @@ export class AppModule {
       .forRoutes(
         //{ path: '*', method: RequestMethod.ALL },
         // include all the path that uses this middleware
-        { path: '/flights/fhb/air-search', method: RequestMethod.POST },
+        // { path: '/flights/fhb/airSearch', method: RequestMethod.POST },
         
       );
   }

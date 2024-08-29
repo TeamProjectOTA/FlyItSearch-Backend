@@ -121,7 +121,7 @@ __decorate([
 ], FlightController.prototype, "airretrieve", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('fhb/air-search/'),
+    (0, common_1.Post)('fhb/airSearch/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -131,7 +131,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('flh/price-check'),
+    (0, common_1.Post)('flh/priceCheck'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),

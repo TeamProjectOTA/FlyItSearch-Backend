@@ -106,7 +106,7 @@ export class FlyHubService {
     try {
       const response = await axios.request(ticketCancel);
 
-      return this.flyHubUtil.saveBookingData(response.data,header,BookingID.BookingID);
+      return this.flyHubUtil.bookingCancelDataTranformerFlyhub(response.data,BookingID.BookingID,header);
       //return response.data
     } catch (error) {
       throw error?.response?.data;

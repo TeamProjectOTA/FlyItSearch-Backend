@@ -267,8 +267,11 @@ export class AuthService {
   async sendPasswordResetEmail(email: string): Promise<any> {
     const user = await this.userRepository.findOne({ where: { email } });
 
-    if (!user) {
-      throw new NotFoundException('User with this email does not exist');
+    if (!email) {
+      throw new NotFoundException('Please Enter Your Email');
+    }
+    if(!user){
+      throw new NotFoundException('There is no User Associated with this email')
     }
 
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();

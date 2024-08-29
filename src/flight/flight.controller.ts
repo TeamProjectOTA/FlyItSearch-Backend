@@ -82,7 +82,7 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
   @ApiBearerAuth('access_token')
-  @Post('fhb/air-search/')
+  @Post('fhb/airSearch/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
     @Req() request: Request,
@@ -99,7 +99,7 @@ export class FlightController {
   }
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('flh/price-check')
+  @Post('flh/priceCheck')
   async airPrice(@Body() data: searchResultDto) {
     return await this.flyHubService.airPrice(data);
   }

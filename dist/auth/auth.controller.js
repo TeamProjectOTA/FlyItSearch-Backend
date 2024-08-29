@@ -66,14 +66,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signInUser", null);
 __decorate([
-    (0, common_1.Get)('verify-email'),
+    (0, common_1.Get)('verifyEmail'),
     __param(0, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "verifyEmail", null);
 __decorate([
-    (0, common_1.Post)('forgot-password'),
+    (0, common_1.Post)('forgotPassword'),
     __param(0, (0, common_1.Body)('email')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

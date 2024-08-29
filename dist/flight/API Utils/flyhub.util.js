@@ -629,6 +629,195 @@ let FlyHubUtil = class FlyHubUtil {
             sslpaymentLink: await this.paymentService.dataModification(FlightItenary),
         };
     }
+    async bookingCancelDataTranformerFlyhub(SearchResponse, fisId, header) {
+        const FlightItenary = [];
+        const { Results } = SearchResponse;
+        const PaxTypeMapping = {
+            Adult: 1,
+            Child: 2,
+            Infant: 3,
+        };
+        if (Results) {
+            const DepCountry = Results?.[0]?.segments[0]?.Origin?.Airport?.CountryName;
+            const ArrCountry = Results?.[0]?.segments[0]?.Destination?.Airport?.CountryName;
+            let partialoption;
+            if (DepCountry === 'BD' && ArrCountry === 'BD') {
+                partialoption = false;
+            }
+            else if (DepCountry !== 'BD' && ArrCountry !== 'BD') {
+                partialoption = false;
+            }
+            else if (DepCountry !== 'BD' && ArrCountry === 'BD') {
+                partialoption = true;
+            }
+            else if (DepCountry === 'BD' && ArrCountry !== 'BD') {
+                partialoption = true;
+            }
+            for (const Result of Results) {
+                const ValidatingCarrier = Result?.Validatingcarrier;
+                const FareType = Result?.FareType || 'Regular';
+                const AllPassenger = Result?.Fares || [];
+                const CarrierName = Result?.segments[0]?.Airline?.AirlineName || 'N/F';
+                const Instant_Payment = Result?.FareType === 'InstantTicketing';
+                const IsBookable = Result?.HoldAllowed;
+                let discount = Result?.Discount * 0.2;
+                let addAmount = 0;
+                if (discount < 100) {
+                    addAmount = Result?.TotalFareWithAgentMarkup * 0.015;
+                }
+                const equivalentAmount = AllPassenger.reduce((sum, passenger) => sum + (passenger?.BaseFare * passenger?.PassengerCount || 0), 0);
+                let equivalentAmount1 = equivalentAmount + addAmount;
+                const Taxes = AllPassenger.reduce((sum, passenger) => sum + (passenger?.Tax * passenger?.PassengerCount || 0), 0);
+                const extraService = AllPassenger.reduce((sum, passenger) => sum + (passenger?.OtherCharges * passenger?.PassengerCount || 0), 0);
+                const servicefee = AllPassenger.reduce((sum, passenger) => sum + (passenger?.ServiceFee * passenger?.PassengerCount || 0), 0);
+                let TotalFare = Result?.TotalFareWithAgentMarkup + addAmount + discount || 0;
+                if (Result?.segments) {
+                    const AllSegments = Result?.segments;
+                    let Cabinclass = AllSegments?.Airline?.CabinClass;
+                    const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
+                    const PartialAmount = NetFare * 0.3;
+                    const Refundable = Result?.IsRefundable;
+                    let TimeLimit = null;
+                    if (Result?.LastTicketDate) {
+                        const lastTicketDate = Result?.LastTicketDate;
+                        TimeLimit = `${lastTicketDate}`;
+                    }
+                    const PriceBreakDown = AllPassenger.map((allPassenger) => {
+                        const PaxType = allPassenger?.PaxType;
+                        const paxCount = allPassenger?.PassengerCount;
+                        const basefare = allPassenger?.BaseFare + addAmount;
+                        const othercharge = allPassenger?.OtherCharges;
+                        const servicefee = allPassenger?.ServiceFee;
+                        const totalTaxAmount = allPassenger?.Tax;
+                        const PaxtotalFare = basefare + totalTaxAmount + servicefee + othercharge;
+                        const PaxequivalentAmount = basefare;
+                        const baggageDetails = AllSegments.map((segment) => {
+                            const allowance = segment?.baggageDetails
+                                ?.filter((baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType)
+                                .map((baggage) => baggage?.Checkin)[0] || '';
+                            return {
+                                Airline: ValidatingCarrier,
+                                Allowance: allowance || 'SB',
+                            };
+                        });
+                        let i = 0;
+                        const FareBasis = Result?.segments.map((fareComponent) => {
+                            i++;
+                            return {
+                                Origin: fareComponent?.Origin?.Airport?.AirportCode,
+                                Destination: fareComponent?.Destination?.Airport?.AirportCode,
+                                DepDate: fareComponent?.Origin?.DepTime,
+                                FareBasisCode: fareComponent?.Airline?.BookingClass,
+                                Carrier: fareComponent?.Airline?.AirlineCode,
+                            };
+                        });
+                        return {
+                            PaxType: PaxType,
+                            BaseFare: Math.ceil(PaxequivalentAmount),
+                            Taxes: totalTaxAmount,
+                            ServiceFee: servicefee,
+                            OtherCharges: othercharge,
+                            TotalFare: Math.ceil(PaxtotalFare),
+                            PaxCount: paxCount,
+                            Bag: baggageDetails,
+                            FareComponent: FareBasis,
+                        };
+                    });
+                    const processSegments = (segmentsList) => {
+                        if (segmentsList.length === 0)
+                            return null;
+                        const firstSegment = segmentsList[0];
+                        const lastSegment = segmentsList[segmentsList.length - 1];
+                        const legInfo = {
+                            DepDate: firstSegment?.Origin?.DepTime,
+                            DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
+                            ArrTo: lastSegment.Destination?.Airport?.AirportCode,
+                            TotalFlightDuration: segmentsList?.reduce((acc, segment) => acc + parseInt(segment?.JourneyDuration), 0),
+                        };
+                        const bookingClass = firstSegment?.Airline?.BookingClass;
+                        const cabinClass = firstSegment?.Airline?.CabinClass;
+                        const seatsAvailable = Result?.Availabilty;
+                        const segments = segmentsList?.map((segment) => ({
+                            MarketingCarrier: segment?.Airline?.AirlineCode,
+                            MarketingCarrierName: segment?.Airline?.AirlineName,
+                            MarketingFlightNumber: parseInt(segment?.Airline?.FlightNumber),
+                            OperatingCarrier: segment?.Airline?.OperatingCarrier,
+                            OperatingFlightNumber: parseInt(segment?.Airline?.FlightNumber),
+                            OperatingCarrierName: segment?.Airline?.AirlineName,
+                            DepFrom: segment?.Origin?.Airport?.AirportCode,
+                            DepAirPort: segment?.Origin?.Airport?.AirportName,
+                            DepLocation: `${segment?.Origin?.Airport?.CityName}, ${segment?.Origin?.Airport?.CountryName}`,
+                            DepDateAdjustment: 0,
+                            DepTime: segment?.Origin?.DepTime,
+                            ArrTo: segment?.Destination?.Airport?.AirportCode,
+                            ArrAirPort: segment?.Destination?.Airport?.AirportName,
+                            ArrLocation: `${segment?.Destination?.Airport?.CityName}, ${segment?.Destination?.Airport?.CountryName}`,
+                            ArrDateAdjustment: 0,
+                            ArrTime: segment?.Destination?.ArrTime,
+                            OperatedBy: segment?.Airline?.AirlineName,
+                            StopCount: segment?.StopQuantity,
+                            Duration: parseInt(segment?.JourneyDuration),
+                            AircraftTypeName: segment?.Equipment,
+                            Amenities: {},
+                            DepartureGate: segment?.Origin?.Airport?.Terminal || 'TBA',
+                            ArrivalGate: segment?.Destination?.Airport?.Terminal || 'TBA',
+                            HiddenStops: [],
+                            TotalMilesFlown: 0,
+                            SegmentCode: {
+                                bookingCode: bookingClass,
+                                cabinCode: cabinClass,
+                                seatsAvailable: seatsAvailable,
+                            },
+                        }));
+                        legInfo['Segments'] = segments;
+                        return legInfo;
+                    };
+                    const groupedSegments = AllSegments?.reduce((acc, segment) => {
+                        (acc[segment?.SegmentGroup] =
+                            acc[segment?.SegmentGroup] || []).push(segment);
+                        return acc;
+                    }, {});
+                    const AllLegsInfo = [];
+                    for (const key in groupedSegments) {
+                        const groupSegments = groupedSegments[key];
+                        const legInfo = processSegments(groupSegments);
+                        if (legInfo) {
+                            AllLegsInfo.push(legInfo);
+                        }
+                    }
+                    FlightItenary.push({
+                        System: 'FLYHUB',
+                        ResultId: Result.ResultID,
+                        BookingId: fisId,
+                        PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
+                        SearchId: SearchResponse?.SearchId,
+                        BookingStatus: SearchResponse?.BookingStatus,
+                        InstantPayment: Instant_Payment,
+                        IsBookable: IsBookable,
+                        FareType: FareType,
+                        Carrier: ValidatingCarrier,
+                        CarrierName: CarrierName,
+                        Cabinclass: Cabinclass,
+                        BaseFare: equivalentAmount,
+                        Taxes: Taxes,
+                        SerViceFee: extraService + servicefee || 0,
+                        NetFare: Math.ceil(TotalFare),
+                        GrossFare: NetFare,
+                        PartialOption: partialoption,
+                        PartialFare: Math.ceil(PartialAmount),
+                        TimeLimit: TimeLimit,
+                        Refundable: Refundable,
+                        ExtraService: Result?.ExtraServices || null,
+                        PriceBreakDown: PriceBreakDown,
+                        AllLegsInfo: AllLegsInfo,
+                        PassengerList: SearchResponse?.Passengers,
+                    });
+                }
+            }
+        }
+        await this.saveBookingData(FlightItenary, header);
+        return FlightItenary;
+    }
     async saveBookingData(SearchResponse, header, bookingId) {
         const booking = SearchResponse[0];
         if (booking) {
