@@ -17,6 +17,7 @@ export declare class User {
     emailVerified: boolean;
     resetPasswordToken: string;
     resetPasswordExpires: Date;
+    status: string;
     profilePicture: ProfilePicture;
     bookingSave: BookingSave[];
 }

@@ -1,5 +1,5 @@
 export declare class Authdto {
-    uuid: string;
+    email: string;
     password: string;
 }
 export declare class Userauthdto {

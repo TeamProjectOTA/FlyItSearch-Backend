@@ -28,17 +28,20 @@ let AuthService = class AuthService {
         this.jwtservice = jwtservice;
         this.time = 86400;
     }
-    async signInAdmin(uuid, pass) {
+    async signInAdmin(email, pass) {
         const admin = await this.adminRepository.findOne({
-            where: { uuid: uuid },
+            where: { email: email },
         });
-        if (!admin || admin.password !== pass) {
-            throw new common_1.UnauthorizedException('Invalid UUID or password');
+        if (!admin) {
+            throw new common_1.NotFoundException("Invalid Email");
+        }
+        if (admin.password !== pass) {
+            throw new common_1.UnauthorizedException('Invalid password');
         }
         if (admin.status != 'ACTIVE') {
             throw new common_1.ServiceUnavailableException(`Active Your Account ${admin.firstName} ${admin.lastName}`);
         }
-        const payload = { sub: admin.uuid, sub2: admin.status };
+        const payload = { sub: admin.email, sub2: admin.status };
         const token = await this.jwtservice.signAsync(payload);
         const expiresInSeconds = this.time;
         const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
@@ -49,6 +52,7 @@ let AuthService = class AuthService {
             name: `${admin.firstName} ${admin.lastName}`,
             email: admin.email,
             phone: admin.phone,
+            uuid: admin.uuid,
         };
         return {
             access_token: token,
@@ -68,9 +72,9 @@ let AuthService = class AuthService {
                 throw new common_1.UnauthorizedException();
             }
             const decodedToken = await this.jwtservice.verifyAsync(token);
-            const uuid = decodedToken.sub;
+            const email = decodedToken.sub;
             const adminData = await this.adminRepository.findOne({
-                where: { uuid: uuid },
+                where: { email: email },
             });
             if (!adminData) {
                 throw new common_1.UnauthorizedException('Admin not found.');
@@ -99,6 +103,9 @@ let AuthService = class AuthService {
         }
         if (user.emailVerified == false) {
             throw new common_1.UnauthorizedException('Email is not verified');
+        }
+        if (user.status != 'ACTIVE') {
+            throw new common_1.ServiceUnavailableException(`Mr: ${user.fullName} due to some  of your activity we desided to Inactive your account. Please contect to our support for the process to active your account `);
         }
         const payload = { sub: user.email, sub2: user.passengerId };
         const expiresInSeconds = this.time;
@@ -164,24 +171,6 @@ let AuthService = class AuthService {
             throw new common_1.NotFoundException('Invalid token');
         }
         return decodedToken.sub;
-    }
-    async verifyBothToken(header) {
-        let isUserTokenValid = false;
-        let isAdminTokenValid = false;
-        try {
-            await this.verifyUserToken(header);
-            isUserTokenValid = true;
-        }
-        catch (error) {
-        }
-        try {
-            await this.verifyAdminToken(header);
-            isAdminTokenValid = true;
-        }
-        catch (error) { }
-        if (!isUserTokenValid && !isAdminTokenValid) {
-            throw new common_1.UnauthorizedException();
-        }
     }
     async sendVerificationEmail(email, token) {
         const transporter = nodemailer.createTransport({

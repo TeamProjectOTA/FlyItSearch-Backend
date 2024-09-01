@@ -42,6 +42,8 @@ export class User {
   resetPasswordToken: string;
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpires: Date;
+  @Column()
+  status:string
   @OneToOne(() => ProfilePicture, (profilePicture) => profilePicture.user)
   profilePicture: ProfilePicture;
   @OneToMany(() => BookingSave, (bookingSave) => bookingSave.user)

@@ -45,6 +45,9 @@ let BookingController = class BookingController {
     async SaveBooking(createSaveBookingDto, header) {
         return this.bookingService.saveBooking(createSaveBookingDto, header);
     }
+    async test(header) {
+        return;
+    }
 };
 exports.BookingController = BookingController;
 __decorate([
@@ -93,6 +96,14 @@ __decorate([
     __metadata("design:paramtypes", [booking_model_1.CreateSaveBookingDto, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "SaveBooking", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Get)('/test'),
+    __param(0, (0, common_1.Headers)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "test", null);
 exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('booking'),

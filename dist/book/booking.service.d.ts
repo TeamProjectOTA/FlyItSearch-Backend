@@ -8,4 +8,5 @@ export declare class BookingService {
     private readonly BookingSaveRepository;
     constructor(userRepository: Repository<User>, authservice: AuthService, BookingSaveRepository: Repository<BookingSave>);
     saveBooking(createSaveBookingDto: CreateSaveBookingDto, header: any): Promise<any>;
+    cancelDataSave(fsid: string, status: string, header: any): Promise<any>;
 }

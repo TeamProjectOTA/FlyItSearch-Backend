@@ -55,7 +55,7 @@ require('dotenv').config();
       password: process.env.FLYIT_DB_PASSWORD,
       database: process.env.FLYIT_DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
       connectTimeout: 60000,
       logging: false,
       timezone: 'Z',

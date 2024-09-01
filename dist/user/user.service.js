@@ -52,6 +52,7 @@ let UserService = class UserService {
         add.phone = createUserDto.phone;
         add.email = createUserDto.email;
         add.role = 'registered';
+        add.status = 'ACTIVE';
         add.password = hashedPassword;
         add.verificationToken = verificationToken;
         const user = await this.userRepository.save(add);

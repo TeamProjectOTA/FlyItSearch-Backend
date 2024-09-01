@@ -81,6 +81,10 @@ __decorate([
     __metadata("design:type", Date)
 ], User.prototype, "resetPasswordExpires", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], User.prototype, "status", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => uploads_model_1.ProfilePicture, (profilePicture) => profilePicture.user),
     __metadata("design:type", uploads_model_1.ProfilePicture)
 ], User.prototype, "profilePicture", void 0);

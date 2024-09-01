@@ -15,4 +15,5 @@ export declare class BookingController {
     airRetrive(bookingIdDto: BookingID): Promise<any>;
     bookingtest(data: data, headers: any, bookingId?: string): Promise<any>;
     SaveBooking(createSaveBookingDto: CreateSaveBookingDto, header: Headers): Promise<any>;
+    test(header: Headers): Promise<void>;
 }

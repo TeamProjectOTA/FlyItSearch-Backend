@@ -28,13 +28,16 @@ export class AuthService {
     this.time= 86400
   }
 
-  async signInAdmin(uuid: string, pass: string): Promise<any> {
+  async signInAdmin(email: string, pass: string): Promise<any> {
     const admin = await this.adminRepository.findOne({
-      where: { uuid: uuid },
+      where: { email: email },
     });
+    if(!admin){
+      throw new NotFoundException("Invalid Email")
+    }
 
-    if (!admin || admin.password !== pass) {
-      throw new UnauthorizedException('Invalid UUID or password');
+    if (admin.password !== pass) {
+      throw new UnauthorizedException('Invalid password');
     }
     if (admin.status != 'ACTIVE') {
       throw new ServiceUnavailableException(
@@ -42,7 +45,7 @@ export class AuthService {
       );
     }
 
-    const payload = { sub: admin.uuid, sub2: admin.status };
+    const payload = { sub: admin.email, sub2: admin.status };
     const token = await this.jwtservice.signAsync(payload);
     const expiresInSeconds = this.time; // !important change it according to time out limit.
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
@@ -55,6 +58,7 @@ export class AuthService {
       name: `${admin.firstName} ${admin.lastName}`,
       email: admin.email,
       phone: admin.phone,
+      uuid:admin.uuid,
     };
     return {
       access_token: token,
@@ -77,10 +81,10 @@ export class AuthService {
       }
 
       const decodedToken = await this.jwtservice.verifyAsync(token);
-      const uuid = decodedToken.sub;
+      const email = decodedToken.sub;
 
       const adminData = await this.adminRepository.findOne({
-        where: { uuid: uuid },
+        where: { email: email },
       });
 
       if (!adminData) {
@@ -112,6 +116,11 @@ export class AuthService {
     }
     if (user.emailVerified == false) {
       throw new UnauthorizedException('Email is not verified');
+    }
+    if (user.status != 'ACTIVE') {
+      throw new ServiceUnavailableException(
+        `Mr: ${user.fullName} due to some  of your activity we desided to Inactive your account. Please contect to our support for the process to active your account `,
+      );
     }
     const payload = { sub: user.email, sub2: user.passengerId };
     const expiresInSeconds = this.time; // !important change it according to time out limit.
@@ -190,28 +199,6 @@ export class AuthService {
 
     return decodedToken.sub;
   }
-
-  async verifyBothToken(header: any): Promise<any> {
-    let isUserTokenValid = false;
-    let isAdminTokenValid = false;
-
-    try {
-      await this.verifyUserToken(header);
-      isUserTokenValid = true;
-    } catch (error) {
-      // console.log(error);
-    }
-
-    try {
-      await this.verifyAdminToken(header);
-      isAdminTokenValid = true;
-    } catch (error) {}
-
-    if (!isUserTokenValid && !isAdminTokenValid) {
-      throw new UnauthorizedException();
-    }
-  }
-
   async sendVerificationEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,

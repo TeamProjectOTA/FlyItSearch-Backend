@@ -26,7 +26,7 @@ let AuthController = class AuthController {
         this.userRepository = userRepository;
     }
     signIn(signIndto) {
-        return this.authservice.signInAdmin(signIndto.uuid, signIndto.password);
+        return this.authservice.signInAdmin(signIndto.email, signIndto.password);
     }
     signInUser(signIndto) {
         return this.authservice.signInUser(signIndto.email, signIndto.password);

@@ -4,7 +4,7 @@ import { IsEmail, IsString } from 'class-validator';
 export class Authdto {
   @ApiProperty()
   @IsString()
-  uuid: string;
+  email: string;
   @ApiProperty()
   password: string;
 }

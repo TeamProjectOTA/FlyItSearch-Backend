@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
   UseGuards,
   Query,
+  Get,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingID, CreateSaveBookingDto, data } from './booking.model';
@@ -74,4 +75,12 @@ export class BookingController {
   ) {
     return this.bookingService.saveBooking(createSaveBookingDto, header);
   }
+  @ApiBearerAuth('access_token')
+  @Get('/test')
+  async test(
+    @Headers() header:Headers
+  ){
+    return 
+  }
+
 }

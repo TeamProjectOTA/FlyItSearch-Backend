@@ -42,4 +42,26 @@ export class BookingService {
     }
     return await this.BookingSaveRepository.save(saveBooking);
   }
+  async cancelDataSave(
+    fsid: string,
+    status:string,
+    header: any,
+  ): Promise<any> {
+    const email = await this.authservice.decodeToken(header);
+    
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+    if (!user) {
+      throw new NotFoundException('No Booking data available for the user');
+    }
+    let saveBooking = await this.BookingSaveRepository.findOne({
+      where: { bookingId: fsid, user },
+    });
+    saveBooking.bookingStatus=status
+    
+
+  return await this.BookingSaveRepository.save(saveBooking)
+  }    
 }
+

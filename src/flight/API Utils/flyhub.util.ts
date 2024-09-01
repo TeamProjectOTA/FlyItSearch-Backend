@@ -13,7 +13,7 @@ export class FlyHubUtil {
     private readonly mailService: MailService,
     private readonly paymentService: PaymentService,
     @InjectRepository(BookingIdSave)
-    private readonly bookingIdSave:Repository<BookingIdSave>
+    private readonly bookingIdSave: Repository<BookingIdSave>,
   ) {}
   async restBFMParser(
     SearchResponse: any,
@@ -133,12 +133,20 @@ export class FlyHubUtil {
             const PaxequivalentAmount = basefare;
 
             const baggageDetails = AllSegments.map((segment) => {
-              const allowance =
-                segment?.baggageDetails
-                  ?.filter(
-                    (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
-                  )
-                  .map((baggage) => baggage?.Checkin)[0] || '';
+              let allowance = '';
+              const allPaxBaggage = segment?.baggageDetails?.find(
+                (baggage) => baggage?.IsAllPax === true,
+              );
+              if (allPaxBaggage) {
+                allowance = allPaxBaggage?.Checkin || '';
+              } else {
+                allowance =
+                  segment?.baggageDetails
+                    ?.filter(
+                      (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
+                    )
+                    .map((baggage) => baggage?.Checkin)[0] || '';
+              }
 
               return {
                 Airline: ValidatingCarrier,
@@ -288,10 +296,14 @@ export class FlyHubUtil {
         }
       }
     }
-   
+
     return FlightItenary;
   }
-  async airRetriveDataTransformer(SearchResponse: any,fisId:string,header?:any): Promise<any> {
+  async airRetriveDataTransformer(
+    SearchResponse: any,
+    fisId: string,
+    header?: any,
+  ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -391,16 +403,24 @@ export class FlyHubUtil {
             const PaxequivalentAmount = basefare;
 
             const baggageDetails = AllSegments.map((segment) => {
-              const allowance =
-                segment?.baggageDetails
-                  ?.filter(
-                    (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
-                  )
-                  .map((baggage) => baggage?.Checkin)[0] || '';
+              let allowance = '';
+              const allPaxBaggage = segment?.baggageDetails?.find(
+                (baggage) => baggage?.IsAllPax === true,
+              );
+              if (allPaxBaggage) {
+                allowance = allPaxBaggage?.Checkin || '';
+              } else {
+                allowance =
+                  segment?.baggageDetails
+                    ?.filter(
+                      (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
+                    )
+                    .map((baggage) => baggage?.Checkin)[0] || '';
+              }
 
               return {
                 Airline: ValidatingCarrier,
-                Allowance: allowance || 'SB',
+                Allowance: allowance || '',
               };
             });
 
@@ -500,7 +520,6 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
-         
 
           FlightItenary.push({
             System: 'FLYHUB',
@@ -532,8 +551,9 @@ export class FlyHubUtil {
         }
       }
     }
-    
-    const sslpaymentLink=await this.paymentService.dataModification(FlightItenary)
+
+    const sslpaymentLink =
+      await this.paymentService.dataModification(FlightItenary);
     return {
       bookingData: FlightItenary,
       sslpaymentLink,
@@ -644,16 +664,24 @@ export class FlyHubUtil {
             const PaxequivalentAmount = basefare;
 
             const baggageDetails = AllSegments.map((segment) => {
-              const allowance =
-                segment?.baggageDetails
-                  ?.filter(
-                    (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
-                  )
-                  .map((baggage) => baggage?.Checkin)[0] || '';
+              let allowance = '';
+              const allPaxBaggage = segment?.baggageDetails?.find(
+                (baggage) => baggage?.IsAllPax === true,
+              );
+              if (allPaxBaggage) {
+                allowance = allPaxBaggage?.Checkin || '';
+              } else {
+                allowance =
+                  segment?.baggageDetails
+                    ?.filter(
+                      (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
+                    )
+                    .map((baggage) => baggage?.Checkin)[0] || '';
+              }
 
               return {
                 Airline: ValidatingCarrier,
-                Allowance: allowance || 'SB',
+                Allowance: allowance || '',
               };
             });
 
@@ -753,13 +781,17 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
-         
-          const randomId = 'FIS' + Math.floor(Math.random() * 10**13).toString().padStart(13, '0');
+
+          const randomId =
+            'FIS' +
+            Math.floor(Math.random() * 10 ** 13)
+              .toString()
+              .padStart(13, '0');
           let add: BookingIdSave = new BookingIdSave();
-          add.flyitSearchId=randomId
-          add.flyhubId=SearchResponse?.BookingID
-          await this.bookingIdSave.save(add)
-          
+          add.flyitSearchId = randomId;
+          add.flyhubId = SearchResponse?.BookingID;
+          await this.bookingIdSave.save(add);
+
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
@@ -792,16 +824,75 @@ export class FlyHubUtil {
       }
     }
 
-    await this.saveBookingData(FlightItenary, header,);
+    await this.saveBookingData(FlightItenary, header);
     return {
       bookingData: FlightItenary,
       sslpaymentLink: await this.paymentService.dataModification(FlightItenary),
     };
   }
 
+  async saveBookingData(
+    SearchResponse: any,
+    header?: any,
+    bookingId?: string,
+  ): Promise<any> {
+    const booking = SearchResponse[0];
+    if (booking) {
+      const flightNumber =
+        booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
+      let tripType: string;
+      if (booking.AllLegsInfo.length === 1) {
+        tripType = 'OneWay';
+      } else if (booking.AllLegsInfo.length === 2) {
+        if (
+          booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
+          booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo
+        ) {
+          tripType = 'Return';
+        } else {
+          tripType = 'Multicity';
+        }
+      } else {
+        tripType = 'Multicity';
+      }
+      const paxCount = booking.PriceBreakDown.reduce(
+        (sum: number, breakdown: any) => sum + breakdown.PaxCount,
+        0,
+      );
 
+      const convertedData = {
+        system: booking?.System,
+        bookingId: bookingId ?? booking?.BookingId,
+        paxCount: paxCount,
+        Curriername: booking?.CarrierName,
+        CurrierCode: booking?.Carrier,
+        flightNumber: flightNumber.toString(),
+        isRefundable: booking?.Refundable,
+        bookingDate: booking?.BookingDate,
+        expireDate: booking?.TimeLimit,
+        bookingStatus: booking?.BookingStatus,
+        TripType: tripType,
 
-  async bookingCancelDataTranformerFlyhub(SearchResponse: any,fisId:string,header?:any): Promise<any> {
+        laginfo: booking?.AllLegsInfo.map((leg: any) => ({
+          DepDate: leg?.DepDate,
+          DepFrom: leg?.DepFrom,
+          ArrTo: leg?.ArrTo,
+        })),
+      };
+
+      await this.mailService.sendMail(booking);
+      return await this.BookService.saveBooking(convertedData, header);
+      //return convertedData
+    } else {
+      return 'Booking data is unvalid';
+    }
+  }
+
+  async bookingCancelDataTranformerFlyhub(
+    SearchResponse: any,
+    fisId: string,
+    header?: any,
+  ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -901,16 +992,24 @@ export class FlyHubUtil {
             const PaxequivalentAmount = basefare;
 
             const baggageDetails = AllSegments.map((segment) => {
-              const allowance =
-                segment?.baggageDetails
-                  ?.filter(
-                    (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
-                  )
-                  .map((baggage) => baggage?.Checkin)[0] || '';
+              let allowance = '';
+              const allPaxBaggage = segment?.baggageDetails?.find(
+                (baggage) => baggage?.IsAllPax === true,
+              );
+              if (allPaxBaggage) {
+                allowance = allPaxBaggage?.Checkin || '';
+              } else {
+                allowance =
+                  segment?.baggageDetails
+                    ?.filter(
+                      (baggage) => PaxTypeMapping[PaxType] === baggage?.PaxType,
+                    )
+                    .map((baggage) => baggage?.Checkin)[0] || '';
+              }
 
               return {
                 Airline: ValidatingCarrier,
-                Allowance: allowance || 'SB',
+                Allowance: allowance || '',
               };
             });
 
@@ -1010,7 +1109,6 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
-         
 
           FlightItenary.push({
             System: 'FLYHUB',
@@ -1042,64 +1140,12 @@ export class FlyHubUtil {
         }
       }
     }
-    await this.saveBookingData(FlightItenary, header);
-    
-    return  FlightItenary
-    
-  }
+    await this.BookService.cancelDataSave(
+      FlightItenary[0].BookingId,
+      FlightItenary[0].BookingStatus,
+      header,
+    );
 
-
-
-  async saveBookingData(SearchResponse: any, header?: any,bookingId?:string): Promise<any> {
-    const booking = SearchResponse[0];
-    if (booking) {
-      const flightNumber =
-        booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
-      let tripType: string;
-      if (booking.AllLegsInfo.length === 1) {
-        tripType = 'OneWay';
-      } else if (booking.AllLegsInfo.length === 2) {
-        if (
-          booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
-          booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo
-        ) {
-          tripType = 'Return';
-        } else {
-          tripType = 'Multicity';
-        }
-      } else {
-        tripType = 'Multicity';
-      }
-      const paxCount = booking.PriceBreakDown.reduce(
-        (sum: number, breakdown: any) => sum + breakdown.PaxCount,
-        0,
-      );
-
-      const convertedData = {
-        system: booking?.System,
-        bookingId: bookingId??booking?.BookingId,
-        paxCount: paxCount,
-        Curriername: booking?.CarrierName,
-        CurrierCode: booking?.Carrier,
-        flightNumber: flightNumber.toString(),
-        isRefundable: booking?.Refundable,
-        bookingDate: booking?.BookingDate,
-        expireDate: booking?.TimeLimit,
-        bookingStatus: booking?.BookingStatus,
-        TripType: tripType,
-
-        laginfo: booking?.AllLegsInfo.map((leg: any) => ({
-          DepDate: leg?.DepDate,
-          DepFrom: leg?.DepFrom,
-          ArrTo: leg?.ArrTo,
-        })),
-      };
-
-      await this.mailService.sendMail(booking);
-      return await this.BookService.saveBooking(convertedData, header);
-      //return convertedData
-    } else {
-      return 'Booking data is unvalid';
-    }
+    return FlightItenary;
   }
 }
