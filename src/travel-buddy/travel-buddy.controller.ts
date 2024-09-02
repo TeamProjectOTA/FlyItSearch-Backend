@@ -22,7 +22,6 @@ export class TravelBuddyController {
   @UseGuards(UserTokenGuard)
   @Delete('/deleteTravelBuddy/:id')
   async deleteTravelBuddy(@Param('id') id:number){
-    console.log(id)
     return await this.travelBuddyService.deleteTravelBuddy(id)
   }
 }
