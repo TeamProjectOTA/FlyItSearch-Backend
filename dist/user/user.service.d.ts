@@ -13,4 +13,5 @@ export declare class UserService {
     findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
     findAllUserWithBookings(): Promise<any>;
     findOneUser(header: any): Promise<any>;
+    findUserTravelBuddy(header: any): Promise<any>;
 }

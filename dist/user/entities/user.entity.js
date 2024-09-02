@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const booking_model_1 = require("../../book/booking.model");
+const travel_buddy_model_1 = require("../../travel-buddy/travel-buddy.model");
 const uploads_model_1 = require("../../uploads/uploads.model");
 const typeorm_1 = require("typeorm");
 let User = class User {
@@ -92,6 +93,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => booking_model_1.BookingSave, (bookingSave) => bookingSave.user),
     __metadata("design:type", Array)
 ], User.prototype, "bookingSave", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => travel_buddy_model_1.TravelBuddy, (travelBuddy) => travelBuddy.user),
+    __metadata("design:type", Array)
+], User.prototype, "travelBuddy", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

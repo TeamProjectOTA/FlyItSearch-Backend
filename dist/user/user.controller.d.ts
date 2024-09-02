@@ -11,4 +11,5 @@ export declare class UserController {
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<Partial<User>>;
     findAllUserWithBookings(): Promise<any>;
     findOneUser(header: Headers): Promise<any>;
+    getUserTravelBuddies(header: Headers): Promise<any>;
 }

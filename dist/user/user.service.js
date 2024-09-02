@@ -127,7 +127,7 @@ let UserService = class UserService {
             .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
             bookingStatus,
         })
-            .orderBy('bookingSave.bookingDate', 'DESC')
+            .orderBy('bookingSave.id', 'DESC')
             .getOne();
         if (!user) {
             throw new common_1.NotFoundException(`No ${bookingStatus} Available for the user`);
@@ -169,6 +169,25 @@ let UserService = class UserService {
             email: user.email,
             phone: user.phone,
             profilePicture: user.profilePicture,
+        };
+    }
+    async findUserTravelBuddy(header) {
+        const verifyUser = await this.authservice.verifyUserToken(header);
+        if (!verifyUser) {
+            throw new common_1.UnauthorizedException();
+        }
+        const email = await this.authservice.decodeToken(header);
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.travelBuddy', 'travelBuddy')
+            .where('user.email = :email', { email })
+            .orderBy('travelBuddy.id', 'DESC')
+            .getOne();
+        if (!user || user.travelBuddy.length === 0) {
+            throw new common_1.NotFoundException(`No Travel Buddies available for the user`);
+        }
+        return {
+            travelBuddies: user.travelBuddy,
         };
     }
 };

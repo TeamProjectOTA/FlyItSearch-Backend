@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
@@ -22,9 +21,9 @@ import { AirlinesModule } from './airlines/airlines.module';
 import { BookingModule } from './book/booking.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { HotDealsModule } from './homepage/hotdeals/hotdeals.module';
-
 import { TermsAndConditionsModule } from './terms-and-conditions/terms-and-conditions.module';
-
+import { DepositModule } from './deposit/deposit.module';
+import { TravelBuddyModule } from './travel-buddy/travel-buddy.module';
 require('dotenv').config();
 
 @Module({
@@ -35,32 +34,32 @@ require('dotenv').config();
         limit: 15,
       },
     ]),
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   host: 'localhost',
-    //   port: 3306,
-    //   username: process.env.DB_USERNAME,
-    //   password: process.env.DB_PASSWORD,
-    //   database: process.env.DB_NAME,
-    //   autoLoadEntities: true,
-    //   synchronize: true,
-    //   logging: false,
-    //   timezone: 'Z',
-    // }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: process.env.FLYIT_URL,
+      host: 'localhost',
       port: 3306,
-      username: process.env.FLYIT_DB_USERNAME,
-      password: process.env.FLYIT_DB_PASSWORD,
-      database: process.env.FLYIT_DB_NAME,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: false,
-      connectTimeout: 60000,
+      synchronize: true,
       logging: false,
       timezone: 'Z',
-
     }),
+    // TypeOrmModule.forRoot({
+    //   type: 'mysql',
+    //   host: process.env.FLYIT_URL,
+    //   port: 3306,
+    //   username: process.env.FLYIT_DB_USERNAME,
+    //   password: process.env.FLYIT_DB_PASSWORD,
+    //   database: process.env.FLYIT_DB_NAME,
+    //   autoLoadEntities: true,
+    //   synchronize: false,
+    //   connectTimeout: 60000,
+    //   logging: false,
+    //   timezone: 'Z',
+
+    // }),
 
     AdminModule,
     UserModule,
@@ -80,6 +79,8 @@ require('dotenv').config();
     AirportsModule,
     UploadsModule,
     TermsAndConditionsModule,
+    DepositModule,
+    TravelBuddyModule,
   ],
 
   providers: [

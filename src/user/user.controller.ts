@@ -65,4 +65,11 @@ export class UserController {
   async findOneUser(@Headers() header: Headers): Promise<any> {
     return this.userService.findOneUser(header);
   }
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard) 
+  @Get('/findAllTravelBuddy')
+  async getUserTravelBuddies(@Headers() header: Headers) {
+    const travelBuddies = await this.userService.findUserTravelBuddy(header);
+    return travelBuddies;
+  }
 }

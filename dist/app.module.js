@@ -31,6 +31,8 @@ const booking_module_1 = require("./book/booking.module");
 const uploads_module_1 = require("./uploads/uploads.module");
 const hotdeals_module_1 = require("./homepage/hotdeals/hotdeals.module");
 const terms_and_conditions_module_1 = require("./terms-and-conditions/terms-and-conditions.module");
+const deposit_module_1 = require("./deposit/deposit.module");
+const travel_buddy_module_1 = require("./travel-buddy/travel-buddy.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -52,14 +54,13 @@ exports.AppModule = AppModule = __decorate([
             ]),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
-                host: process.env.FLYIT_URL,
+                host: 'localhost',
                 port: 3306,
-                username: process.env.FLYIT_DB_USERNAME,
-                password: process.env.FLYIT_DB_PASSWORD,
-                database: process.env.FLYIT_DB_NAME,
+                username: process.env.DB_USERNAME,
+                password: process.env.DB_PASSWORD,
+                database: process.env.DB_NAME,
                 autoLoadEntities: true,
-                synchronize: false,
-                connectTimeout: 60000,
+                synchronize: true,
                 logging: false,
                 timezone: 'Z',
             }),
@@ -81,6 +82,8 @@ exports.AppModule = AppModule = __decorate([
             airports_module_1.AirportsModule,
             uploads_module_1.UploadsModule,
             terms_and_conditions_module_1.TermsAndConditionsModule,
+            deposit_module_1.DepositModule,
+            travel_buddy_module_1.TravelBuddyModule,
         ],
         providers: [
             {

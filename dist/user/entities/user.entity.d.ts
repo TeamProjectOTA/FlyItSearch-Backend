@@ -1,4 +1,5 @@
 import { BookingSave } from 'src/book/booking.model';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
 export declare class User {
     id: number;
@@ -20,4 +21,5 @@ export declare class User {
     status: string;
     profilePicture: ProfilePicture;
     bookingSave: BookingSave[];
+    travelBuddy: TravelBuddy[];
 }

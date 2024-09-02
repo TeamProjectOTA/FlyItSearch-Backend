@@ -1,4 +1,5 @@
 import { BookingSave } from 'src/book/booking.model';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
 import {
   Column,
@@ -48,4 +49,6 @@ export class User {
   profilePicture: ProfilePicture;
   @OneToMany(() => BookingSave, (bookingSave) => bookingSave.user)
   bookingSave: BookingSave[];
+  @OneToMany(() => TravelBuddy, (travelBuddy) => travelBuddy.user)
+  travelBuddy: TravelBuddy[];
 }

@@ -55,7 +55,7 @@ export class PaymentService {
     const postCode = '1206';
     const phone = passenger?.ContactNumber;
 
-    //console.log(hours_till_departure)
+    
     const paymentData = {
       total_amount: total_amount,
       hours_till_departure: hours_till_departure,
