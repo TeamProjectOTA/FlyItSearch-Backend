@@ -8,7 +8,11 @@ import { AuthModule } from 'src/auth/auth.module';
 import { User } from 'src/user/entities/user.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([TravelBuddy,User]),UserModule,AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([TravelBuddy, User]),
+    UserModule,
+    AuthModule,
+  ],
   controllers: [TravelBuddyController],
   providers: [TravelBuddyService],
 })

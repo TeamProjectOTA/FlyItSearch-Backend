@@ -1,4 +1,1 @@
-
-export class Deposit{
-
-}
+export class Deposit {}

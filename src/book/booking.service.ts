@@ -21,7 +21,7 @@ export class BookingService {
     header: any,
   ): Promise<any> {
     const email = await this.authservice.decodeToken(header);
-    
+
     const user = await this.userRepository.findOne({
       where: { email },
     });
@@ -44,11 +44,11 @@ export class BookingService {
   }
   async cancelDataSave(
     fsid: string,
-    status:string,
+    status: string,
     header: any,
   ): Promise<any> {
     const email = await this.authservice.decodeToken(header);
-    
+
     const user = await this.userRepository.findOne({
       where: { email },
     });
@@ -58,10 +58,8 @@ export class BookingService {
     let saveBooking = await this.BookingSaveRepository.findOne({
       where: { bookingId: fsid, user },
     });
-    saveBooking.bookingStatus=status
-    
+    saveBooking.bookingStatus = status;
 
-  return await this.BookingSaveRepository.save(saveBooking)
-  }    
+    return await this.BookingSaveRepository.save(saveBooking);
+  }
 }
-

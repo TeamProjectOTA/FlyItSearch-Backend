@@ -43,7 +43,7 @@ export class PaymentService {
       (timeDifference % (1000 * 60 * 60)) / (1000 * 60),
     );
     const airTicketPrice = booking?.NetFare;
-    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025);
+    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025);//2.5% charge added in sslcomerz
     const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
     const hours_till_departure = ` ${hoursDifference} hrs ${minutesDifference} mins`;
     const pnr = booking?.PNR;
@@ -54,14 +54,14 @@ export class PaymentService {
     const city = passenger?.CountryCode;
     const postCode = '1206';
     const phone = passenger?.ContactNumber;
-
-    
+    const depfrom = booking?.AllLegsInfo[0]?.DepFrom||"DAC";
+    const arrto = booking?.AllLegsInfo[(booking?.AllLegsInfo).length - 1]?.ArrTo||"DXB";
     const paymentData = {
       total_amount: total_amount,
       hours_till_departure: hours_till_departure,
       flight_type: tripType,
       pnr: pnr,
-      journey_from_to: 'DAC-CGP',
+      journey_from_to: `${depfrom}-${arrto}`,
       cus_name: name,
       cus_email: email,
       cus_city: city,
@@ -70,6 +70,7 @@ export class PaymentService {
       cus_phone: phone,
     };
 
+    
     return {
       url: await this.initiatePayment(paymentData),
       airTicketPrice: airTicketPrice,
@@ -91,7 +92,7 @@ export class PaymentService {
       total_amount: paymentData.total_amount,
       currency: 'BDT',
       tran_id: tran_id,
-      success_url: 'http://localhost:8080/payment/success',
+      success_url:` http://localhost:8080/payment/success/${tran_id}`,
       fail_url: 'http://localhost:8080/payment/fail',
       cancel_url: 'http://localhost:8080/payment/cancel',
       shipping_method: 'NO',
@@ -111,43 +112,26 @@ export class PaymentService {
       cus_phone: paymentData.cus_phone,
     };
 
-    try {
       const apiResponse = await sslcommerz.init(data);
-      //console.log('apiresponse: ' ,apiResponse.GatewayPageURL)
-      if (!apiResponse.GatewayPageURL) {
-        throw new HttpException(
-          'Failed to get payment URL',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
       return apiResponse.GatewayPageURL;
-    } catch (error) {
-      console.error('Payment initiation error:', error);
-      throw new HttpException(
-        'Failed to initiate payment',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    
   }
 
-  // async validateOrder(val_id: string) {
-  //   const sslcommerz = new SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
-
-  //   try {
-  //     const response = await sslcommerz.validate({ val_id });
-
-  //     if (response.status === 'VALID') {
-  //       return response;
-  //     } else if (response.status === 'INVALID_TRANSACTION') {
-  //       console.error('Invalid transaction:', response);
-  //       throw new HttpException('Invalid transaction', HttpStatus.BAD_REQUEST);
-  //     } else {
-  //       console.error('Unknown validation error:', response);
-  //       throw new HttpException('Failed to validate order', HttpStatus.INTERNAL_SERVER_ERROR);
-  //     }
-  //   } catch (error) {
-  //     console.error('Order validation error:', error);
-  //     throw new HttpException('Failed to validate order', HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
+  async validateOrder(val_id: string) {
+    const sslcommerz = new SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
+  
+  
+      const validationData = {
+        val_id: val_id,
+      };
+      console.log('Validation Request Data:', validationData);
+  
+      const response = await sslcommerz.validate(validationData);
+      //console.log('Full Validation Response:', response);
+      return response
+  
+      
+  }
+  
+  
 }

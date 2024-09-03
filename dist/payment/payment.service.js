@@ -52,12 +52,14 @@ let PaymentService = class PaymentService {
         const city = passenger?.CountryCode;
         const postCode = '1206';
         const phone = passenger?.ContactNumber;
+        const depfrom = booking?.AllLegsInfo[0]?.DepFrom || "DAC";
+        const arrto = booking?.AllLegsInfo[(booking?.AllLegsInfo).length - 1]?.ArrTo || "DXB";
         const paymentData = {
             total_amount: total_amount,
             hours_till_departure: hours_till_departure,
             flight_type: tripType,
             pnr: pnr,
-            journey_from_to: 'DAC-CGP',
+            journey_from_to: `${depfrom}-${arrto}`,
             cus_name: name,
             cus_email: email,
             cus_city: city,
@@ -81,7 +83,7 @@ let PaymentService = class PaymentService {
             total_amount: paymentData.total_amount,
             currency: 'BDT',
             tran_id: tran_id,
-            success_url: 'http://localhost:8080/payment/success',
+            success_url: ` http://localhost:8080/payment/success/${tran_id}`,
             fail_url: 'http://localhost:8080/payment/fail',
             cancel_url: 'http://localhost:8080/payment/cancel',
             shipping_method: 'NO',
@@ -100,17 +102,17 @@ let PaymentService = class PaymentService {
             cus_country: 'Bangladesh',
             cus_phone: paymentData.cus_phone,
         };
-        try {
-            const apiResponse = await sslcommerz.init(data);
-            if (!apiResponse.GatewayPageURL) {
-                throw new common_1.HttpException('Failed to get payment URL', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            return apiResponse.GatewayPageURL;
-        }
-        catch (error) {
-            console.error('Payment initiation error:', error);
-            throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        const apiResponse = await sslcommerz.init(data);
+        return apiResponse.GatewayPageURL;
+    }
+    async validateOrder(val_id) {
+        const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
+        const validationData = {
+            val_id: val_id,
+        };
+        console.log('Validation Request Data:', validationData);
+        const response = await sslcommerz.validate(validationData);
+        return response;
     }
 };
 exports.PaymentService = PaymentService;

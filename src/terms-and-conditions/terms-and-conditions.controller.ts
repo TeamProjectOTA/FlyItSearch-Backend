@@ -19,18 +19,19 @@ export class TermsAndConditionsController {
     private readonly termsAndConditionsService: TermsAndConditionsService,
   ) {}
   @Get('site/api/:catagory')
-  findAllsite(@Param('catagory') catagory:string) {
+  findAllsite(@Param('catagory') catagory: string) {
     return this.termsAndConditionsService.findAllSite(catagory);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Patch('admin/site/api/:catagory')
   updatesite(
-    @Param('catagory') catagory:string,
+    @Param('catagory') catagory: string,
     @Body() updateTermsAndConditionDto: UpdateTermsAndConditionDto,
   ) {
-    return this.termsAndConditionsService.updateSite(updateTermsAndConditionDto,catagory
+    return this.termsAndConditionsService.updateSite(
+      updateTermsAndConditionDto,
+      catagory,
     );
   }
-
 }

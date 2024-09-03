@@ -26,7 +26,6 @@ let TravelBuddyController = class TravelBuddyController {
         return await this.travelBuddyService.createTravelBuddy(createTravelBuddyDto, header);
     }
     async deleteTravelBuddy(id) {
-        console.log(id);
         return await this.travelBuddyService.deleteTravelBuddy(id);
     }
 };

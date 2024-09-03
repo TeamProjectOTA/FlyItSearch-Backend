@@ -120,6 +120,6 @@ export class BookingID {
   @IsString()
   BookingID: string;
 }
-export class data{
-  data:any
+export class data {
+  data: any;
 }

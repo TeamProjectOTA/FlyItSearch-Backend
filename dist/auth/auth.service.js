@@ -33,7 +33,7 @@ let AuthService = class AuthService {
             where: { email: email },
         });
         if (!admin) {
-            throw new common_1.NotFoundException("Invalid Email");
+            throw new common_1.NotFoundException('Invalid Email');
         }
         if (admin.password !== pass) {
             throw new common_1.UnauthorizedException('Invalid password');

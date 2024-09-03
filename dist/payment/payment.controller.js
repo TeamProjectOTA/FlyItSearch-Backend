@@ -32,26 +32,36 @@ let PaymentController = class PaymentController {
     }
     async handleSuccess(val_id, res) {
         try {
-            res.status(common_1.HttpStatus.OK).json({
-                message: 'The payment was successful.',
-                status: common_1.HttpStatus.OK,
-            });
+            const response = await this.paymentService.validateOrder(val_id);
+            if (response.status === 'VALID') {
+                res.status(common_1.HttpStatus.OK).json({
+                    message: 'Payment was successful.',
+                    details: response,
+                });
+            }
+            else {
+                res.status(common_1.HttpStatus.BAD_REQUEST).json({
+                    message: 'Payment validation failed.',
+                    details: response,
+                });
+            }
         }
         catch (error) {
             console.error('Error handling success:', error);
-            throw new common_1.HttpException('Failed to validate order', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({
+                message: 'Failed to validate payment.',
+                error: error.message,
+            });
         }
     }
     handleFail(res) {
-        res.status(common_1.HttpStatus.OK).json({
-            message: 'The payment was not successful.',
-            status: common_1.HttpStatus.OK,
+        res.status(common_1.HttpStatus.BAD_REQUEST).json({
+            message: 'Payment failed.',
         });
     }
     handleCancel(res) {
-        res.status(common_1.HttpStatus.OK).json({
-            message: 'The payment was canceled.',
-            status: common_1.HttpStatus.OK,
+        res.status(common_1.HttpStatus.BAD_REQUEST).json({
+            message: 'Payment was cancelled.',
         });
     }
 };
@@ -65,8 +75,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "getPaymentUrl", null);
 __decorate([
-    (0, common_1.Post)('/success'),
-    __param(0, (0, common_1.Query)('val_id')),
+    (0, common_1.Post)('/success/:val_id'),
+    __param(0, (0, common_1.Param)('val_id')),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),

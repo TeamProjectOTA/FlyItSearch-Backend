@@ -6,7 +6,7 @@ import { TermsAndCondition } from './entities/terms-and-condition.entity';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([TermsAndCondition]),AuthModule],
+  imports: [TypeOrmModule.forFeature([TermsAndCondition]), AuthModule],
   controllers: [TermsAndConditionsController],
   providers: [TermsAndConditionsService],
 })

@@ -5,7 +5,7 @@ export class TermsAndCondition {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
-  catagory:string
+  catagory: string;
   @Column({ type: 'text' })
   text: string;
 }

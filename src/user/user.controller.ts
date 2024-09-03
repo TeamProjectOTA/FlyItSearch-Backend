@@ -58,7 +58,6 @@ export class UserController {
     return this.userService.findAllUserWithBookings();
   }
 
-
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('/profileInfo')
@@ -66,7 +65,7 @@ export class UserController {
     return this.userService.findOneUser(header);
   }
   @ApiBearerAuth('access_token')
-  @UseGuards(UserTokenGuard) 
+  @UseGuards(UserTokenGuard)
   @Get('/findAllTravelBuddy')
   async getUserTravelBuddies(@Headers() header: Headers) {
     const travelBuddies = await this.userService.findUserTravelBuddy(header);

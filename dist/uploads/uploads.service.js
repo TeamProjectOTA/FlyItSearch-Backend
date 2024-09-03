@@ -43,8 +43,7 @@ let UploadsService = class UploadsService {
             try {
                 await fs_1.promises.unlink(existingProfilePicture.path);
             }
-            catch (error) {
-            }
+            catch (error) { }
             await this.profilePictureRepository.remove(existingProfilePicture);
         }
         const fileExtension = (0, path_1.extname)(file.originalname);

@@ -28,7 +28,7 @@ export class FlyHubService {
   private readonly apiKey: string = process.env.FLYHUB_ApiKey;
   private readonly apiUrl: string = process.env.FLyHub_Url;
   @InjectRepository(BookingIdSave)
-  private readonly bookingIdSave:Repository<BookingIdSave>
+  private readonly bookingIdSave: Repository<BookingIdSave>;
   constructor(private readonly flyHubUtil: FlyHubUtil) {}
 
   async getToken(): Promise<string> {
@@ -89,9 +89,11 @@ export class FlyHubService {
     }
   }
 
-  async aircancel(BookingID: BookingID,header:any): Promise<any> {
-    const bookingId=await this.bookingIdSave.findOne({where:{flyitSearchId:BookingID.BookingID}})
-    const flyhubId=bookingId.flyhubId
+  async aircancel(BookingID: BookingID, header: any): Promise<any> {
+    const bookingId = await this.bookingIdSave.findOne({
+      where: { flyitSearchId: BookingID.BookingID },
+    });
+    const flyhubId = bookingId.flyhubId;
     const token = await this.getToken();
     const ticketCancel = {
       method: 'post',
@@ -101,23 +103,31 @@ export class FlyHubService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      data:{BookingID:flyhubId},
+      data: { BookingID: flyhubId },
     };
     try {
       const response = await axios.request(ticketCancel);
 
-      return this.flyHubUtil.bookingCancelDataTranformerFlyhub(response.data,BookingID.BookingID,header);
+      return this.flyHubUtil.bookingCancelDataTranformerFlyhub(
+        response.data,
+        BookingID.BookingID,
+        header,
+      );
       //return response.data
     } catch (error) {
       throw error?.response?.data;
     }
   }
   async airRetrive(BookingID: BookingID): Promise<any> {
-    const bookingId=await this.bookingIdSave.findOne({where:{flyitSearchId:BookingID.BookingID}})
-    if(!bookingId){
-      throw new NotFoundException(`No Booking Found with ${BookingID.BookingID}` )
+    const bookingId = await this.bookingIdSave.findOne({
+      where: { flyitSearchId: BookingID.BookingID },
+    });
+    if (!bookingId) {
+      throw new NotFoundException(
+        `No Booking Found with ${BookingID.BookingID}`,
+      );
     }
-    const flyhubId=bookingId.flyhubId
+    const flyhubId = bookingId.flyhubId;
     const token = await this.getToken();
     const ticketRetrive = {
       method: 'post',
@@ -127,12 +137,15 @@ export class FlyHubService {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      data: {BookingID:flyhubId},
+      data: { BookingID: flyhubId },
     };
 
     try {
       const response = await axios.request(ticketRetrive);
-      return this.flyHubUtil.airRetriveDataTransformer(response?.data,BookingID.BookingID);
+      return this.flyHubUtil.airRetriveDataTransformer(
+        response?.data,
+        BookingID.BookingID,
+      );
       //return response.data
     } catch (error) {
       throw error?.response?.data;

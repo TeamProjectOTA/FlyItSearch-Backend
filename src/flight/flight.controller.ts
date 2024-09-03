@@ -23,8 +23,6 @@ import { FlyHubUtil } from './API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 
-
-
 @ApiTags('Flight-filters')
 @Controller('flights')
 export class FlightController {
@@ -91,7 +89,7 @@ export class FlightController {
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
     }
-  
+
     return this.flyHubService.convertToFlyAirSearchDto(
       flightSearchModel,
       userIp,

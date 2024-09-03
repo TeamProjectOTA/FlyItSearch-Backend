@@ -20,7 +20,11 @@ let TravelBuddyModule = class TravelBuddyModule {
 exports.TravelBuddyModule = TravelBuddyModule;
 exports.TravelBuddyModule = TravelBuddyModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([travel_buddy_model_1.TravelBuddy, user_entity_1.User]), user_module_1.UserModule, auth_module_1.AuthModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([travel_buddy_model_1.TravelBuddy, user_entity_1.User]),
+            user_module_1.UserModule,
+            auth_module_1.AuthModule,
+        ],
         controllers: [travel_buddy_controller_1.TravelBuddyController],
         providers: [travel_buddy_service_1.TravelBuddyService],
     })

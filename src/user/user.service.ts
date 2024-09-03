@@ -56,7 +56,7 @@ export class UserService {
     add.phone = createUserDto.phone;
     add.email = createUserDto.email;
     add.role = 'registered';
-    add.status='ACTIVE'
+    add.status = 'ACTIVE';
     add.password = hashedPassword;
     add.verificationToken = verificationToken;
 
@@ -202,21 +202,20 @@ export class UserService {
     };
   }
 
-
   async findUserTravelBuddy(header: any): Promise<any> {
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
     const email = await this.authservice.decodeToken(header);
-  
+
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.travelBuddy', 'travelBuddy')
       .where('user.email = :email', { email })
-      .orderBy('travelBuddy.id', 'DESC')  
+      .orderBy('travelBuddy.id', 'DESC')
       .getOne();
-  
+
     if (!user || user.travelBuddy.length === 0) {
       throw new NotFoundException(`No Travel Buddies available for the user`);
     }
@@ -224,5 +223,4 @@ export class UserService {
       travelBuddies: user.travelBuddy,
     };
   }
-
 }

@@ -151,7 +151,10 @@
                 <p><strong>Booking ID:</strong> {{BookingId}}</p>
             </div>
             <div class="button-container">
-                <a href="{{flightUrl}}" class="view-flight-button">View Flight</a>
+             <form action="{{flightUrl}}" method="POST" style="display: inline;">
+               <input type="hidden" name="BookingID" value="{{bodyData.BookingID}}">
+                 <button type="submit" class="view-flight-button">View Flight</button>
+                </form>
             </div>
         </div>
     </div>

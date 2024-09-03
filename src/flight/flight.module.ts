@@ -23,7 +23,14 @@ import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Flight, Segment, Admin, User, BookingSave,BookingIdSave]),
+    TypeOrmModule.forFeature([
+      Flight,
+      Segment,
+      Admin,
+      User,
+      BookingSave,
+      BookingIdSave,
+    ]),
     HttpModule,
     AirportsModule,
     AirlinesModule,

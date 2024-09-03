@@ -35,7 +35,14 @@ exports.FlightModule = FlightModule;
 exports.FlightModule = FlightModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([flight_model_1.Flight, flight_model_1.Segment, admin_entity_1.Admin, user_entity_1.User, booking_model_1.BookingSave, flight_model_1.BookingIdSave]),
+            typeorm_1.TypeOrmModule.forFeature([
+                flight_model_1.Flight,
+                flight_model_1.Segment,
+                admin_entity_1.Admin,
+                user_entity_1.User,
+                booking_model_1.BookingSave,
+                flight_model_1.BookingIdSave,
+            ]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,
             airlines_module_1.AirlinesModule,

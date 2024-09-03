@@ -71,16 +71,18 @@ export class RateLimiterMiddleware implements NestMiddleware {
 
       next();
     } catch {
-      if(userRole=='registered'){
-      res
-        .status(HttpStatus.TOO_MANY_REQUESTS)
-        .json({ message: 'Your Search limit is exited for today. Contect with help-line ' });
+      if (userRole == 'registered') {
+        res
+          .status(HttpStatus.TOO_MANY_REQUESTS)
+          .json({
+            message:
+              'Your Search limit is exited for today. Contect with help-line ',
+          });
+      } else if (userRole == 'unregistered') {
+        res
+          .status(HttpStatus.TOO_MANY_REQUESTS)
+          .json({ message: 'Sign up to get more search ' });
+      }
     }
-    else if (userRole=='unregistered'){
-      res
-      .status(HttpStatus.TOO_MANY_REQUESTS)
-      .json({ message: 'Sign up to get more search ' });
-    }
-  }
   }
 }

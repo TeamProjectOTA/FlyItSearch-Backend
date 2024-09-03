@@ -69,7 +69,9 @@ let FlyHubService = class FlyHubService {
         }
     }
     async aircancel(BookingID, header) {
-        const bookingId = await this.bookingIdSave.findOne({ where: { flyitSearchId: BookingID.BookingID } });
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID.BookingID },
+        });
         const flyhubId = bookingId.flyhubId;
         const token = await this.getToken();
         const ticketCancel = {
@@ -91,7 +93,9 @@ let FlyHubService = class FlyHubService {
         }
     }
     async airRetrive(BookingID) {
-        const bookingId = await this.bookingIdSave.findOne({ where: { flyitSearchId: BookingID.BookingID } });
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID.BookingID },
+        });
         if (!bookingId) {
             throw new common_1.NotFoundException(`No Booking Found with ${BookingID.BookingID}`);
         }

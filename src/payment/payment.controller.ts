@@ -2,16 +2,15 @@ import {
   Controller,
   Get,
   HttpStatus,
-  Param,
   Post,
-  Query,
   Res,
   HttpException,
   Body,
+  Param,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response } from 'express';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('SSLCOMMERZ')
 @Controller('payment')
@@ -31,51 +30,43 @@ export class PaymentController {
       );
     }
   }
-
-  // @Get('/validate')
-  // async validateOrder(
-  //   @Query('val_id') val_id: string,
-  //   @Res() res: Response
-  // ) {
-  //   try {
-  //     const response = await this.paymentService.validateOrder(val_id);
-  //     res.status(HttpStatus.OK).json({ data: response });
-  //   } catch (error) {
-  //     console.error('Failed to validate order:', error);
-  //     throw new HttpException('Failed to validate order', HttpStatus.INTERNAL_SERVER_ERROR);
-  //   }
-  // }
-
-  @Post('/success')
-  async handleSuccess(@Query('val_id') val_id: string, @Res() res: Response) {
+  
+  @Post('/success/:val_id')
+  async handleSuccess(@Param('val_id') val_id: string, @Res() res: Response) {
+   // console.log(val_id)
     try {
-      //const response = await this.paymentService.validateOrder(val_id);
-      res.status(HttpStatus.OK).json({
-        message: 'The payment was successful.',
-        status: HttpStatus.OK,
-      });
+      const response = await this.paymentService.validateOrder(val_id);
+      if (response.status === 'VALID') {
+        res.status(HttpStatus.OK).json({
+          message: 'Payment was successful.',
+          details: response,
+        });
+      } else {
+        res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Payment validation failed.',
+          details: response,
+        });
+      }
     } catch (error) {
       console.error('Error handling success:', error);
-      throw new HttpException(
-        'Failed to validate order',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'Failed to validate payment.',
+        error: error.message,
+      });
     }
   }
 
   @Post('/fail')
   handleFail(@Res() res: Response) {
-    res.status(HttpStatus.OK).json({
-      message: 'The payment was not successful.',
-      status: HttpStatus.OK,
+    res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'Payment failed.',
     });
   }
 
   @Post('/cancel')
   handleCancel(@Res() res: Response) {
-    res.status(HttpStatus.OK).json({
-      message: 'The payment was canceled.',
-      status: HttpStatus.OK,
+    res.status(HttpStatus.BAD_REQUEST).json({
+      message: 'Payment was cancelled.',
     });
   }
 }

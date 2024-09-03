@@ -51,12 +51,16 @@ let TravelBuddyService = class TravelBuddyService {
         return;
     }
     async deleteTravelBuddy(id) {
-        const travelBuddy = await this.travelBuddyRepository.findOne({ where: { id: id } });
+        const travelBuddy = await this.travelBuddyRepository.findOne({
+            where: { id: id },
+        });
         if (!travelBuddy) {
             throw new common_1.NotFoundException('');
         }
         await this.travelBuddyRepository.delete(id);
-        return { message: `The traveler named ${travelBuddy.firstName} ${travelBuddy.lastName} with this ${travelBuddy.passport} passport number was deleted successfully` };
+        return {
+            message: `The traveler named ${travelBuddy.firstName} ${travelBuddy.lastName} with this ${travelBuddy.passport} passport number was deleted successfully`,
+        };
     }
 };
 exports.TravelBuddyService = TravelBuddyService;

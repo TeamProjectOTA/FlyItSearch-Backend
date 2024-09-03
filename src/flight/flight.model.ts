@@ -110,15 +110,15 @@ export class Segment {
 }
 
 @Entity()
-export class BookingIdSave{
+export class BookingIdSave {
   @PrimaryGeneratedColumn()
-  id:number
+  id: number;
   @Column()
-  flyitSearchId:string
+  flyitSearchId: string;
   @Column()
-  flyhubId:string
+  flyhubId: string;
 }
-export class BookingIdSaveDto{
-  flyitSearchId:string
-  flyhubId:string
+export class BookingIdSaveDto {
+  flyitSearchId: string;
+  flyhubId: string;
 }

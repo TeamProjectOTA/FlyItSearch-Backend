@@ -55,6 +55,10 @@ export class MailService {
   }
 
   async sendMail(data: any) {
+    const flightUrl = 'http://localhost:8080/booking/flh/airRetrive'; // dynamically generated URL
+    const bodyData = {
+      BookingID: data.BookingId,
+    };
     const html = await this.compileTemplate('booking', {
       BookingStatus:
         data.BookingStatus === 'Booked'
@@ -67,7 +71,8 @@ export class MailService {
       NetFare: data.NetFare,
       AllLegsInfo: data.AllLegsInfo,
       PassengerList: data.PassengerList,
-      flightUrl: '', // or dynamically generated URL
+      flightUrl: flightUrl,
+      bodyData: bodyData 
     });
     const email = data?.PassengerList[0]?.Email;
     const mailOptions = {

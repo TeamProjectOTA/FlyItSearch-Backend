@@ -23,7 +23,7 @@ export class UploadsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
- @UseGuards(UserTokenGuard)
+  @UseGuards(UserTokenGuard)
   async create(
     header: any,
     file: Express.Multer.File,
@@ -43,8 +43,7 @@ export class UploadsService {
     if (existingProfilePicture) {
       try {
         await fs.unlink(existingProfilePicture.path);
-      } catch (error) {
-      }
+      } catch (error) {}
       await this.profilePictureRepository.remove(existingProfilePicture);
     }
     const fileExtension = extname(file.originalname);

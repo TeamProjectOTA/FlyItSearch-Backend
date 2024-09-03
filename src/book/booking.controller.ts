@@ -18,8 +18,6 @@ import { FlyHubUtil } from 'src/flight/API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 
-
-
 @ApiTags('Booking-Details')
 @Controller('booking')
 export class BookingController {
@@ -42,17 +40,15 @@ export class BookingController {
   @Post('flh/cancelBooking')
   async aircanel(
     @Body() bookingIdDto: BookingID,
-    @Headers() header: Headers
+    @Headers() header: Headers,
   ): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto,header);
+    return this.flyHubService.aircancel(bookingIdDto, header);
   }
   @Post('flh/airRetrive')
   async airRetrive(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto);
   }
 
-
-  
   @ApiBearerAuth('access_token')
   @Post('testBooking')
   async bookingtest(
@@ -62,7 +58,7 @@ export class BookingController {
   ): Promise<any> {
     return await this.flyHubUtil.saveBookingData(data, headers, bookingId);
   }
-  
+
   // @Post('one/testBooking')
   // async test(@Body() data: any): Promise<any> {
   //   return await this.flyHubUtil.restBFMParser(data);
@@ -77,10 +73,7 @@ export class BookingController {
   }
   @ApiBearerAuth('access_token')
   @Get('/test')
-  async test(
-    @Headers() header:Headers
-  ){
-    return 
+  async test(@Headers() header: Headers) {
+    return;
   }
-
 }

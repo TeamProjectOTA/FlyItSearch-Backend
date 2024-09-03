@@ -17,7 +17,7 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class AuthService {
   authservice: any;
-  private readonly time:number
+  private readonly time: number;
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
@@ -25,15 +25,15 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtservice: JwtService,
   ) {
-    this.time= 86400
+    this.time = 86400;
   }
 
   async signInAdmin(email: string, pass: string): Promise<any> {
     const admin = await this.adminRepository.findOne({
       where: { email: email },
     });
-    if(!admin){
-      throw new NotFoundException("Invalid Email")
+    if (!admin) {
+      throw new NotFoundException('Invalid Email');
     }
 
     if (admin.password !== pass) {
@@ -58,7 +58,7 @@ export class AuthService {
       name: `${admin.firstName} ${admin.lastName}`,
       email: admin.email,
       phone: admin.phone,
-      uuid:admin.uuid,
+      uuid: admin.uuid,
     };
     return {
       access_token: token,
@@ -257,8 +257,10 @@ export class AuthService {
     if (!email) {
       throw new NotFoundException('Please Enter Your Email');
     }
-    if(!user){
-      throw new NotFoundException('There is no User Associated with this email')
+    if (!user) {
+      throw new NotFoundException(
+        'There is no User Associated with this email',
+      );
     }
 
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();

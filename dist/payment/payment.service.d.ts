@@ -5,4 +5,5 @@ export declare class PaymentService {
     constructor();
     dataModification(SearchResponse: any): Promise<any>;
     initiatePayment(paymentData: any): Promise<string>;
+    validateOrder(val_id: string): Promise<any>;
 }
