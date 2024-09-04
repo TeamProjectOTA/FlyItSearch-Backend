@@ -78,14 +78,15 @@ let PaymentService = class PaymentService {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
-        const tran_id = `${timestamp}_${randomNumber}`;
+        const tran_id = `flyit-${timestamp}${randomNumber}`;
         const data = {
             total_amount: paymentData.total_amount,
             currency: 'BDT',
             tran_id: tran_id,
-            success_url: ` http://localhost:8080/payment/success/${tran_id}`,
+            success_url: `http://localhost:8080/payment/success`,
             fail_url: 'http://localhost:8080/payment/fail',
             cancel_url: 'http://localhost:8080/payment/cancel',
+            ipn_url: 'http://localhost:8080/payment/ipn',
             shipping_method: 'NO',
             product_name: 'Air Ticket',
             product_category: 'air ticket',
@@ -102,17 +103,28 @@ let PaymentService = class PaymentService {
             cus_country: 'Bangladesh',
             cus_phone: paymentData.cus_phone,
         };
-        const apiResponse = await sslcommerz.init(data);
-        return apiResponse.GatewayPageURL;
+        try {
+            const apiResponse = await sslcommerz.init(data);
+            return apiResponse?.GatewayPageURL;
+        }
+        catch (error) {
+            console.log(error);
+            return error;
+        }
     }
     async validateOrder(val_id) {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const validationData = {
             val_id: val_id,
         };
-        console.log('Validation Request Data:', validationData);
-        const response = await sslcommerz.validate(validationData);
-        return response;
+        try {
+            const response = await sslcommerz.validate(validationData);
+            return response;
+        }
+        catch (error) {
+            console.error('Error during payment validation:', error);
+            throw new Error('Payment validation failed.');
+        }
     }
 };
 exports.PaymentService = PaymentService;

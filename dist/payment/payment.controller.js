@@ -30,8 +30,9 @@ let PaymentController = class PaymentController {
             throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async handleSuccess(val_id, res) {
+    async handleSuccess(req, res) {
         try {
+            const { val_id } = req.body;
             const response = await this.paymentService.validateOrder(val_id);
             if (response.status === 'VALID') {
                 res.status(common_1.HttpStatus.OK).json({
@@ -64,6 +65,23 @@ let PaymentController = class PaymentController {
             message: 'Payment was cancelled.',
         });
     }
+    async handleIPN(req, res) {
+        try {
+            const ipnData = req.body;
+            console.log('IPN Data:', ipnData);
+            const response = await this.paymentService.validateOrder(ipnData.tran_id);
+            if (response.status === 'VALID') {
+                res.status(common_1.HttpStatus.OK).send('IPN received and processed');
+            }
+            else {
+                res.status(common_1.HttpStatus.BAD_REQUEST).send('IPN validation failed');
+            }
+        }
+        catch (error) {
+            console.error('Error handling IPN:', error);
+            res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).send('IPN processing failed');
+        }
+    }
 };
 exports.PaymentController = PaymentController;
 __decorate([
@@ -75,11 +93,11 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "getPaymentUrl", null);
 __decorate([
-    (0, common_1.Post)('/success/:val_id'),
-    __param(0, (0, common_1.Param)('val_id')),
+    (0, common_1.Post)('/success'),
+    __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleSuccess", null);
 __decorate([
@@ -96,6 +114,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PaymentController.prototype, "handleCancel", null);
+__decorate([
+    (0, common_1.Post)('/ipn'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "handleIPN", null);
 exports.PaymentController = PaymentController = __decorate([
     (0, swagger_1.ApiTags)('SSLCOMMERZ'),
     (0, common_1.Controller)('payment'),
