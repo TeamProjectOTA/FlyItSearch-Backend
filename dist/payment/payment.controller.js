@@ -20,20 +20,10 @@ let PaymentController = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
     }
-    async getPaymentUrl(res, paymentData) {
-        try {
-            const redirectUrl = await this.paymentService.initiatePayment(paymentData);
-            res.status(common_1.HttpStatus.OK).json({ url: redirectUrl });
-        }
-        catch (error) {
-            console.error('Failed to initiate payment:', error);
-            throw new common_1.HttpException('Failed to initiate payment', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async handleSuccess(req, res) {
+    async handleSuccess(bookingId, req, res) {
         try {
             const { val_id } = req.body;
-            const response = await this.paymentService.validateOrder(val_id);
+            const response = await this.paymentService.validateOrder(val_id, bookingId);
             if (response.status === 'VALID') {
                 res.status(common_1.HttpStatus.OK).json({
                     message: 'Payment was successful.',
@@ -85,19 +75,12 @@ let PaymentController = class PaymentController {
 };
 exports.PaymentController = PaymentController;
 __decorate([
-    (0, common_1.Post)('/sslccommerz'),
-    __param(0, (0, common_1.Res)()),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.Post)('/success/:bookingId'),
+    __param(0, (0, common_1.Param)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "getPaymentUrl", null);
-__decorate([
-    (0, common_1.Post)('/success'),
-    __param(0, (0, common_1.Req)()),
-    __param(1, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleSuccess", null);
 __decorate([

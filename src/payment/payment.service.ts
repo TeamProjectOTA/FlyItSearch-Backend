@@ -1,14 +1,22 @@
 import {
+  ConflictException,
   Injectable,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BookingSave } from 'src/book/booking.model';
 import { SslCommerzPayment } from 'sslcommerz';
+import { Repository } from 'typeorm';
 @Injectable()
 export class PaymentService {
   private readonly storeId: string;
   private readonly storePassword: string;
   private readonly isLive: boolean;
 
-  constructor() {
+  constructor(
+   @InjectRepository(BookingSave)
+   private readonly bookingSaveRepository:Repository<BookingSave>
+
+  ) {
     this.storeId = process.env.STORE_ID;
     this.storePassword = process.env.STORE_PASSWORD;
     this.isLive = false; // Use true for live environment
@@ -53,6 +61,7 @@ export class PaymentService {
     const phone = passenger?.ContactNumber;
     const depfrom = booking?.AllLegsInfo[0]?.DepFrom||"DAC";
     const arrto = booking?.AllLegsInfo[(booking?.AllLegsInfo).length - 1]?.ArrTo||"DXB";
+    const bookingId=booking?.BookingId
     const paymentData = {
       total_amount: total_amount,
       hours_till_departure: hours_till_departure,
@@ -69,13 +78,13 @@ export class PaymentService {
 
     
     return {
-      url: await this.initiatePayment(paymentData),
+      url: await this.initiatePayment(paymentData,bookingId),
       airTicketPrice: airTicketPrice,
       paymentGatwayCharge: paymentGatwayCharge,
       total_amount: total_amount,
     };
   }
-  async initiatePayment(paymentData: any): Promise<string> {
+  async initiatePayment(paymentData: any,bookingId:string): Promise<string> {
     const sslcommerz = new SslCommerzPayment(
       this.storeId,
       this.storePassword,
@@ -85,11 +94,13 @@ export class PaymentService {
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `flyit-${timestamp}${randomNumber}`;
 
+    const bookingSave = await this.bookingSaveRepository.findOne( {where: { bookingId: bookingId}});
+    if(bookingSave.bookingStatus=="Booked"){
     const data = {
       total_amount: paymentData.total_amount,
       currency: 'BDT',
       tran_id: tran_id,
-      success_url: `http://localhost:8080/payment/success`,
+      success_url: `http://localhost:8080/payment/success/${bookingId}`,
       fail_url: 'http://localhost:8080/payment/fail',
       cancel_url: 'http://localhost:8080/payment/cancel',
       ipn_url: 'http://localhost:8080/payment/ipn',
@@ -109,6 +120,7 @@ export class PaymentService {
       cus_country: 'Bangladesh',
       cus_phone: paymentData.cus_phone,
     };
+    
     try{
       const apiResponse = await sslcommerz.init(data);
       return apiResponse?.GatewayPageURL;}
@@ -116,24 +128,36 @@ export class PaymentService {
         console.log(error)
         return error
       }
+    }else {
+     return`The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`
+    }
     
   }
 
-  async validateOrder(val_id: string) {
+  async validateOrder(val_id: string, bookingId?: any) {
     const sslcommerz = new SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
   
-    
     const validationData = {
-      val_id: val_id, 
+      val_id: val_id,
     };
+  
     try {
       const response = await sslcommerz.validate(validationData);
+      
+      if (response.status === 'VALID') {
+          const bookingSave = await this.bookingSaveRepository.findOne( {where: { bookingId: bookingId.bookingId }});
+          bookingSave.bookingStatus='IssueInProcess'
+          await this.bookingSaveRepository.save(bookingSave)
+      }
+  
       return response;
     } catch (error) {
       console.error('Error during payment validation:', error);
       throw new Error('Payment validation failed.');
     }
   }
+  
+  
   
   
   

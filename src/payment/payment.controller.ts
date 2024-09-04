@@ -17,26 +17,11 @@ import { ApiTags } from '@nestjs/swagger';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('/sslccommerz')
-  async getPaymentUrl(@Res() res: Response, @Body() paymentData: any) {
-    try {
-      const redirectUrl =
-        await this.paymentService.initiatePayment(paymentData);
-      res.status(HttpStatus.OK).json({ url: redirectUrl });
-    } catch (error) {
-      console.error('Failed to initiate payment:', error);
-      throw new HttpException(
-        'Failed to initiate payment',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
-  @Post('/success')
-  async handleSuccess(@Req() req: Request, @Res() res: Response) {
+  @Post('/success/:bookingId')
+  async handleSuccess(@Param() bookingId: string, @Req() req: Request, @Res() res: Response) {
     try {
       const { val_id } = req.body;
-      const response = await this.paymentService.validateOrder(val_id);
+      const response = await this.paymentService.validateOrder(val_id, bookingId);
       if (response.status === 'VALID') {
         res.status(HttpStatus.OK).json({
           message: 'Payment was successful.',
@@ -56,6 +41,7 @@ export class PaymentController {
       });
     }
   }
+  
 
   @Post('/fail')
   handleFail(@Res() res: Response) {
@@ -78,7 +64,7 @@ export class PaymentController {
       const ipnData = req.body;
       console.log('IPN Data:', ipnData);
 
-      const response = await this.paymentService.validateOrder(ipnData.tran_id);
+      const response = await this.paymentService.validateOrder(ipnData.tran_id,);
       if (response.status === 'VALID') {
        
         res.status(HttpStatus.OK).send('IPN received and processed');

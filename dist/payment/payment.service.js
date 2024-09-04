@@ -8,12 +8,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentService = void 0;
 const common_1 = require("@nestjs/common");
+const typeorm_1 = require("@nestjs/typeorm");
+const booking_model_1 = require("../book/booking.model");
 const sslcommerz_1 = require("sslcommerz");
+const typeorm_2 = require("typeorm");
 let PaymentService = class PaymentService {
-    constructor() {
+    constructor(bookingSaveRepository) {
+        this.bookingSaveRepository = bookingSaveRepository;
         this.storeId = process.env.STORE_ID;
         this.storePassword = process.env.STORE_PASSWORD;
         this.isLive = false;
@@ -54,6 +61,7 @@ let PaymentService = class PaymentService {
         const phone = passenger?.ContactNumber;
         const depfrom = booking?.AllLegsInfo[0]?.DepFrom || "DAC";
         const arrto = booking?.AllLegsInfo[(booking?.AllLegsInfo).length - 1]?.ArrTo || "DXB";
+        const bookingId = booking?.BookingId;
         const paymentData = {
             total_amount: total_amount,
             hours_till_departure: hours_till_departure,
@@ -68,57 +76,68 @@ let PaymentService = class PaymentService {
             cus_phone: phone,
         };
         return {
-            url: await this.initiatePayment(paymentData),
+            url: await this.initiatePayment(paymentData, bookingId),
             airTicketPrice: airTicketPrice,
             paymentGatwayCharge: paymentGatwayCharge,
             total_amount: total_amount,
         };
     }
-    async initiatePayment(paymentData) {
+    async initiatePayment(paymentData, bookingId) {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `flyit-${timestamp}${randomNumber}`;
-        const data = {
-            total_amount: paymentData.total_amount,
-            currency: 'BDT',
-            tran_id: tran_id,
-            success_url: `http://localhost:8080/payment/success`,
-            fail_url: 'http://localhost:8080/payment/fail',
-            cancel_url: 'http://localhost:8080/payment/cancel',
-            ipn_url: 'http://localhost:8080/payment/ipn',
-            shipping_method: 'NO',
-            product_name: 'Air Ticket',
-            product_category: 'air ticket',
-            product_profile: 'airline-tickets',
-            hours_till_departure: paymentData.hours_till_departure,
-            flight_type: paymentData.flight_type,
-            pnr: paymentData.pnr,
-            journey_from_to: paymentData.journey_from_to,
-            third_party_booking: 'No',
-            cus_name: paymentData.cus_name,
-            cus_email: paymentData.cus_email,
-            cus_city: paymentData.cus_city,
-            cus_postcode: paymentData.cus_postcode,
-            cus_country: 'Bangladesh',
-            cus_phone: paymentData.cus_phone,
-        };
-        try {
-            const apiResponse = await sslcommerz.init(data);
-            return apiResponse?.GatewayPageURL;
+        const bookingSave = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId } });
+        if (bookingSave.bookingStatus == "Booked") {
+            const data = {
+                total_amount: paymentData.total_amount,
+                currency: 'BDT',
+                tran_id: tran_id,
+                success_url: `http://localhost:8080/payment/success/${bookingId}`,
+                fail_url: 'http://localhost:8080/payment/fail',
+                cancel_url: 'http://localhost:8080/payment/cancel',
+                ipn_url: 'http://localhost:8080/payment/ipn',
+                shipping_method: 'NO',
+                product_name: 'Air Ticket',
+                product_category: 'air ticket',
+                product_profile: 'airline-tickets',
+                hours_till_departure: paymentData.hours_till_departure,
+                flight_type: paymentData.flight_type,
+                pnr: paymentData.pnr,
+                journey_from_to: paymentData.journey_from_to,
+                third_party_booking: 'No',
+                cus_name: paymentData.cus_name,
+                cus_email: paymentData.cus_email,
+                cus_city: paymentData.cus_city,
+                cus_postcode: paymentData.cus_postcode,
+                cus_country: 'Bangladesh',
+                cus_phone: paymentData.cus_phone,
+            };
+            try {
+                const apiResponse = await sslcommerz.init(data);
+                return apiResponse?.GatewayPageURL;
+            }
+            catch (error) {
+                console.log(error);
+                return error;
+            }
         }
-        catch (error) {
-            console.log(error);
-            return error;
+        else {
+            return `The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`;
         }
     }
-    async validateOrder(val_id) {
+    async validateOrder(val_id, bookingId) {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const validationData = {
             val_id: val_id,
         };
         try {
             const response = await sslcommerz.validate(validationData);
+            if (response.status === 'VALID') {
+                const bookingSave = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId.bookingId } });
+                bookingSave.bookingStatus = 'IssueInProcess';
+                await this.bookingSaveRepository.save(bookingSave);
+            }
             return response;
         }
         catch (error) {
@@ -130,6 +149,7 @@ let PaymentService = class PaymentService {
 exports.PaymentService = PaymentService;
 exports.PaymentService = PaymentService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __metadata("design:paramtypes", [typeorm_2.Repository])
 ], PaymentService);
 //# sourceMappingURL=payment.service.js.map
