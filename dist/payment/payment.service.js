@@ -86,7 +86,7 @@ let PaymentService = class PaymentService {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
-        const tran_id = `flyit-${timestamp}${randomNumber}`;
+        const tran_id = `SSM${timestamp}${randomNumber}`;
         const bookingSave = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId } });
         if (bookingSave.bookingStatus == "Booked") {
             const data = {
@@ -133,11 +133,6 @@ let PaymentService = class PaymentService {
         };
         try {
             const response = await sslcommerz.validate(validationData);
-            if (response.status === 'VALID') {
-                const bookingSave = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId.bookingId } });
-                bookingSave.bookingStatus = 'IssueInProcess';
-                await this.bookingSaveRepository.save(bookingSave);
-            }
             return response;
         }
         catch (error) {

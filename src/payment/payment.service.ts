@@ -84,7 +84,7 @@ export class PaymentService {
       total_amount: total_amount,
     };
   }
-  async initiatePayment(paymentData: any,bookingId:string): Promise<string> {
+  async initiatePayment(paymentData: any,bookingId:string,): Promise<string> {
     const sslcommerz = new SslCommerzPayment(
       this.storeId,
       this.storePassword,
@@ -92,7 +92,7 @@ export class PaymentService {
     );
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
-    const tran_id = `flyit-${timestamp}${randomNumber}`;
+    const tran_id = `SSM${timestamp}${randomNumber}`;
 
     const bookingSave = await this.bookingSaveRepository.findOne( {where: { bookingId: bookingId}});
     if(bookingSave.bookingStatus=="Booked"){
@@ -144,12 +144,11 @@ export class PaymentService {
     try {
       const response = await sslcommerz.validate(validationData);
       
-      if (response.status === 'VALID') {
-          const bookingSave = await this.bookingSaveRepository.findOne( {where: { bookingId: bookingId.bookingId }});
-          bookingSave.bookingStatus='IssueInProcess'
-          await this.bookingSaveRepository.save(bookingSave)
-      }
-  
+      // if (response.status === 'VALID') {
+      //     const bookingSave = await this.bookingSaveRepository.findOne( {where: { bookingId: bookingId.bookingId }});
+      //     bookingSave.bookingStatus='IssueInProcess'
+      //     await this.bookingSaveRepository.save(bookingSave)
+      // }
       return response;
     } catch (error) {
       console.error('Error during payment validation:', error);

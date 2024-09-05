@@ -33,6 +33,7 @@ const hotdeals_module_1 = require("./homepage/hotdeals/hotdeals.module");
 const terms_and_conditions_module_1 = require("./terms-and-conditions/terms-and-conditions.module");
 const deposit_module_1 = require("./deposit/deposit.module");
 const travel_buddy_module_1 = require("./travel-buddy/travel-buddy.module");
+const transection_module_1 = require("./transection/transection.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -84,6 +85,7 @@ exports.AppModule = AppModule = __decorate([
             terms_and_conditions_module_1.TermsAndConditionsModule,
             deposit_module_1.DepositModule,
             travel_buddy_module_1.TravelBuddyModule,
+            transection_module_1.TransectionModule,
         ],
         providers: [
             {

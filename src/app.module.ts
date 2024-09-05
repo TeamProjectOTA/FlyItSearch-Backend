@@ -24,6 +24,7 @@ import { HotDealsModule } from './homepage/hotdeals/hotdeals.module';
 import { TermsAndConditionsModule } from './terms-and-conditions/terms-and-conditions.module';
 import { DepositModule } from './deposit/deposit.module';
 import { TravelBuddyModule } from './travel-buddy/travel-buddy.module';
+import { TransectionModule } from './transection/transection.module';
 require('dotenv').config();
 
 @Module({
@@ -81,6 +82,7 @@ require('dotenv').config();
     TermsAndConditionsModule,
     DepositModule,
     TravelBuddyModule,
+    TransectionModule,
   ],
 
   providers: [
