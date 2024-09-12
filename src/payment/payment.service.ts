@@ -18,14 +18,14 @@ export class PaymentService {
     @InjectRepository(Transection)
     private readonly transectionRepository: Repository<Transection>,
     @InjectRepository(User)
-    private readonly userRepository:Repository<User>,
-    private readonly authService:AuthService
+    private readonly userRepository: Repository<User>,
+    private readonly authService: AuthService,
   ) {
     this.storeId = process.env.STORE_ID;
     this.storePassword = process.env.STORE_PASSWORD;
     this.isLive = false; // Use true for live environment
   }
-  async dataModification(SearchResponse: any,header:any): Promise<any> {
+  async dataModification(SearchResponse: any, header: any): Promise<any> {
     const booking = SearchResponse[0];
     let tripType: string;
     if (booking?.AllLegsInfo?.length === 1) {
@@ -82,13 +82,17 @@ export class PaymentService {
     };
 
     return {
-      url: await this.initiatePayment(paymentData, bookingId,header),
+      url: await this.initiatePayment(paymentData, bookingId, header),
       airTicketPrice: airTicketPrice,
       paymentGatwayCharge: paymentGatwayCharge,
       total_amount: total_amount,
     };
   }
-  async initiatePayment(paymentData: any, bookingId: string,header:any): Promise<string> {
+  async initiatePayment(
+    paymentData: any,
+    bookingId: string,
+    header: any,
+  ): Promise<string> {
     const sslcommerz = new SslCommerzPayment(
       this.storeId,
       this.storePassword,
@@ -98,8 +102,7 @@ export class PaymentService {
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `SSM${timestamp}${randomNumber}`;
 
-    const email = await this.authService.decodeToken(header)
-
+    const email = await this.authService.decodeToken(header);
 
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
@@ -142,7 +145,7 @@ export class PaymentService {
     }
   }
 
-  async validateOrder(val_id: string, bookingId?: any,email?:any) {
+  async validateOrder(val_id: string, bookingId?: any, email?: any) {
     const sslcommerz = new SslCommerzPayment(
       this.storeId,
       this.storePassword,
@@ -152,18 +155,24 @@ export class PaymentService {
     const validationData = {
       val_id: val_id,
     };
-    
+
     try {
       const response = await sslcommerz.validate(validationData);
-      
 
       if (response.status === 'VALID') {
         const bookingSave = await this.bookingSaveRepository.findOne({
           where: { bookingId: bookingId.bookingId },
         });
-        bookingSave.bookingStatus = 'IssueInProcess';
+        bookingSave.bookingStatus = 'Booked';
+        const depfrom = bookingSave?.laginfo[0]?.DepFrom ;
+        const arrto =bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
         await this.bookingSaveRepository.save(bookingSave);
-        const user= await this.userRepository.findOne({where:{email:email}})
+        const user = await this.userRepository.findOne({
+          where: { email: email },
+        });
+        const airPlaneName=bookingSave.Curriername
+        const tripType=bookingSave.TripType
+       
         let addTransection: Transection = new Transection();
         addTransection.tranId = response.tran_id;
         addTransection.tranDate = response.tran_date;
@@ -176,6 +185,10 @@ export class PaymentService {
         addTransection.cardBrand = response.card_brand;
         addTransection.cardIssuerCountry = response.card_issuer_country;
         addTransection.validationDate = response.validated_on;
+        addTransection.status = 'Purchase';
+        
+        addTransection.currierName=airPlaneName
+        addTransection.requestType=`${depfrom}-${arrto},${tripType} Air Ticket By `
         addTransection.user = user;
         await this.transectionRepository.save(addTransection);
       }

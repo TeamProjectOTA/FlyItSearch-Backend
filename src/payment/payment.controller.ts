@@ -29,7 +29,7 @@ export class PaymentController {
       const response = await this.paymentService.validateOrder(
         val_id,
         bookingId,
-        email
+        email,
       );
       if (response.status === 'VALID') {
         res.status(HttpStatus.OK).json({

@@ -123,7 +123,7 @@ export class FlyHubService {
       throw error?.response?.data;
     }
   }
-  async airRetrive(BookingID: BookingID,header?:any): Promise<any> {
+  async airRetrive(BookingID: BookingID, header?: any): Promise<any> {
     const findBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
@@ -156,7 +156,7 @@ export class FlyHubService {
         response?.data,
         BookingID.BookingID,
         findBooking.bookingStatus,
-        header
+        header,
       );
       //return response.data
     } catch (error) {
@@ -227,7 +227,7 @@ export class FlyHubService {
   async airbook(
     data: FlbFlightSearchDto,
     header?: any,
-    currentTimestamp?: Date,
+    currentTimestamp?: any,
   ) {
     const token = await this.getToken();
 

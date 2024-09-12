@@ -1,30 +1,6 @@
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-export class CreateTransectionDTO {
-  tranId: string;
-
-  tranDate?: string;
-
-  paidAmount?: string;
-
-  offerAmmount?: string;
-
-  bankTranId?: string;
-
-  riskTitle?: string;
-
-  cardType?: string;
-
-  cardIssuer?: string;
-
-  cardBrand?: string;
-
-  cardIssuerCountry?: string;
-
-  validationDate?: string;
-}
-
 @Entity()
 export class Transection {
   @PrimaryGeneratedColumn()
@@ -51,6 +27,13 @@ export class Transection {
   cardIssuerCountry: string;
   @Column({ nullable: true })
   validationDate: string;
+  @Column()
+  status: string;
+  @Column({ nullable: true })
+  currierName: string;
+  @Column()
+  requestType: string;
+
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
 }

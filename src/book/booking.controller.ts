@@ -31,8 +31,11 @@ export class BookingController {
   @UseGuards(UserTokenGuard)
   @Post('flh/airBook/')
   async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers) {
-    const currentTimestamp = new Date();
-    return await this.flyHubService.airbook(data, header, currentTimestamp);
+    const nowdate = new Date(Date.now());
+    const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
+    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+    const dhakaTimeFormatted = dhakaTime.toISOString();
+    return await this.flyHubService.airbook(data, header, dhakaTimeFormatted);
   }
   @UseGuards(UserTokenGuard)
   @ApiBearerAuth('access_token')
@@ -46,8 +49,11 @@ export class BookingController {
 
   @ApiBearerAuth('access_token')
   @Post('flh/airRetrive')
-  async airRetrive(@Body() bookingIdDto: BookingID, @Headers() header: Headers,): Promise<any> {
-    return await this.flyHubService.airRetrive(bookingIdDto,header);
+  async airRetrive(
+    @Body() bookingIdDto: BookingID,
+    @Headers() header: Headers,
+  ): Promise<any> {
+    return await this.flyHubService.airRetrive(bookingIdDto, header);
   }
 
   @UseGuards(AdmintokenGuard)

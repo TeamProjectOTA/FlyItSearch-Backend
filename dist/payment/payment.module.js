@@ -24,7 +24,9 @@ exports.PaymentModule = PaymentModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, transection_model_1.Transection, user_entity_1.User]),
-            transection_module_1.TransectionModule, user_module_1.UserModule, auth_module_1.AuthModule
+            transection_module_1.TransectionModule,
+            user_module_1.UserModule,
+            auth_module_1.AuthModule,
         ],
         controllers: [payment_controller_1.PaymentController],
         providers: [payment_service_1.PaymentService],

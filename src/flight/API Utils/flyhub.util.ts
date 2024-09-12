@@ -303,7 +303,7 @@ export class FlyHubUtil {
     SearchResponse: any,
     fisId: string,
     bookingStatus?: any,
-    header?:any
+    header?: any,
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -559,8 +559,10 @@ export class FlyHubUtil {
       }
     }
 
-    const sslpaymentLink =
-      await this.paymentService.dataModification(FlightItenary,header);
+    const sslpaymentLink = await this.paymentService.dataModification(
+      FlightItenary,
+      header,
+    );
     return {
       bookingData: FlightItenary,
       sslpaymentLink,
@@ -570,7 +572,7 @@ export class FlyHubUtil {
   async bookingDataTransformerFlyhb(
     SearchResponse: any,
     header?: any,
-    currentTimestamp?: Date,
+    currentTimestamp?: any,
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -834,7 +836,10 @@ export class FlyHubUtil {
     await this.saveBookingData(FlightItenary, header);
     return {
       bookingData: FlightItenary,
-      sslpaymentLink: await this.paymentService.dataModification(FlightItenary,header),
+      sslpaymentLink: await this.paymentService.dataModification(
+        FlightItenary,
+        header,
+      ),
     };
   }
 

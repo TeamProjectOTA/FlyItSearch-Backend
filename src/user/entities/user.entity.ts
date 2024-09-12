@@ -54,5 +54,4 @@ export class User {
   travelBuddy: TravelBuddy[];
   @OneToMany(() => Transection, (transection) => transection.user)
   transection: Transection[];
-
 }

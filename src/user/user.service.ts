@@ -227,13 +227,13 @@ export class UserService {
     };
   }
 
-
-
-  async findUserTransection(header:any){
+  async findUserTransection(header: any) {
     const email = await this.authservice.decodeToken(header);
+    const transection=await this.userRepository.findOne({
+      where: { email },
+      relations: ['transection'],
+    });
 
-    return await this.userRepository.find({where:{email},relations:['transection']})
-
-    
+    return {transection: transection.transection}
   }
 }

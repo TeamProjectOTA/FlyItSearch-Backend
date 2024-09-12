@@ -146,9 +146,15 @@ let PaymentService = class PaymentService {
                 const bookingSave = await this.bookingSaveRepository.findOne({
                     where: { bookingId: bookingId.bookingId },
                 });
-                bookingSave.bookingStatus = 'IssueInProcess';
+                bookingSave.bookingStatus = 'Booked';
+                const depfrom = bookingSave?.laginfo[0]?.DepFrom;
+                const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
                 await this.bookingSaveRepository.save(bookingSave);
-                const user = await this.userRepository.findOne({ where: { email: email } });
+                const user = await this.userRepository.findOne({
+                    where: { email: email },
+                });
+                const airPlaneName = bookingSave.Curriername;
+                const tripType = bookingSave.TripType;
                 let addTransection = new transection_model_1.Transection();
                 addTransection.tranId = response.tran_id;
                 addTransection.tranDate = response.tran_date;
@@ -161,6 +167,9 @@ let PaymentService = class PaymentService {
                 addTransection.cardBrand = response.card_brand;
                 addTransection.cardIssuerCountry = response.card_issuer_country;
                 addTransection.validationDate = response.validated_on;
+                addTransection.status = 'Purchase';
+                addTransection.currierName = airPlaneName;
+                addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket By `;
                 addTransection.user = user;
                 await this.transectionRepository.save(addTransection);
             }

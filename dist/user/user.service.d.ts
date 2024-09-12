@@ -14,5 +14,7 @@ export declare class UserService {
     findAllUserWithBookings(): Promise<any>;
     findOneUser(header: any): Promise<any>;
     findUserTravelBuddy(header: any): Promise<any>;
-    findUserTransection(header: any): Promise<User[]>;
+    findUserTransection(header: any): Promise<{
+        transection: import("../transection/transection.model").Transection[];
+    }>;
 }

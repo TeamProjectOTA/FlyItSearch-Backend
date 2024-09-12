@@ -11,8 +11,10 @@ import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BookingSave, Transection,User]),
-    TransectionModule,UserModule,AuthModule
+    TypeOrmModule.forFeature([BookingSave, Transection, User]),
+    TransectionModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [PaymentController],
   providers: [PaymentService],

@@ -75,7 +75,7 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('/oneUserAllTransection')
-  async findAllUserTransection(@Headers() header: Headers){
-    return await this.userService.findUserTransection(header)
+  async findAllUserTransection(@Headers() header: Headers) {
+    return await this.userService.findUserTransection(header);
   }
 }

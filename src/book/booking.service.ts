@@ -64,7 +64,7 @@ export class BookingService {
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
-    saveBooking.actionAt=dhakaTimeFormatted
+    saveBooking.actionAt = dhakaTimeFormatted;
 
     return await this.bookingSaveRepository.save(saveBooking);
   }
