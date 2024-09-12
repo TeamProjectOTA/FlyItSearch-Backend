@@ -46,6 +46,9 @@ let UserController = class UserController {
         const travelBuddies = await this.userService.findUserTravelBuddy(header);
         return travelBuddies;
     }
+    async findAllUserTransection(header) {
+        return await this.userService.findUserTransection(header);
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -107,6 +110,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUserTravelBuddies", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Get)('/oneUserAllTransection'),
+    __param(0, (0, common_1.Headers)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "findAllUserTransection", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User'),
     (0, common_1.Controller)('user'),

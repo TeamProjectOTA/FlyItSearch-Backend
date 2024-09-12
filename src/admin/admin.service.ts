@@ -16,6 +16,7 @@ import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { v4 as uuidv4 } from 'uuid';
 import { Agents } from 'src/agents/entities/agents.entity';
+import { BookingSave } from 'src/book/booking.model';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +27,8 @@ export class AdminService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Agents)
     private readonly agentRepository: Repository<Agents>,
+    @InjectRepository(BookingSave)
+    private readonly bookingSaveRepository: Repository<BookingSave>,
     private readonly authservice: AuthService,
   ) {}
 
@@ -173,5 +176,9 @@ export class AdminService {
       passengerId: passengerId,
     });
     return { userToFind, userToDelete };
+  }
+
+  async allbooking() {
+    return await this.bookingSaveRepository.find();
   }
 }

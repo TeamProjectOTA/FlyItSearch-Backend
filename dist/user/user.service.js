@@ -139,6 +139,9 @@ let UserService = class UserService {
     async findAllUserWithBookings() {
         return this.userRepository.find({
             relations: ['bookingSave'],
+            order: {
+                passengerId: 'DESC',
+            },
         });
     }
     async findOneUser(header) {
@@ -189,6 +192,10 @@ let UserService = class UserService {
         return {
             travelBuddies: user.travelBuddy,
         };
+    }
+    async findUserTransection(header) {
+        const email = await this.authservice.decodeToken(header);
+        return await this.userRepository.find({ where: { email }, relations: ['transection'] });
     }
 };
 exports.UserService = UserService;

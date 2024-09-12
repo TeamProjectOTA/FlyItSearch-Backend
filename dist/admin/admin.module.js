@@ -17,13 +17,14 @@ const user_module_1 = require("../user/user.module");
 const auth_module_1 = require("../auth/auth.module");
 const agents_entity_1 = require("../agents/entities/agents.entity");
 const agents_module_1 = require("../agents/agents.module");
+const booking_model_1 = require("../book/booking.model");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
 exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, agents_entity_1.Agents]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, agents_entity_1.Agents, booking_model_1.BookingSave]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
             agents_module_1.AgentsModule,

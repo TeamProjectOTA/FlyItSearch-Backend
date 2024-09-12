@@ -14,4 +14,5 @@ export declare class AdminController {
         userToFind: import("../user/entities/user.entity").User;
         userToDelete: import("typeorm").DeleteResult;
     }>;
+    allBooking(): Promise<import("../book/booking.model").BookingSave[]>;
 }

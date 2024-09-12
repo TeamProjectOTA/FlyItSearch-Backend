@@ -17,11 +17,20 @@ import { ApiTags } from '@nestjs/swagger';
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
 
-  @Post('/success/:bookingId')
-  async handleSuccess(@Param() bookingId: string, @Req() req: Request, @Res() res: Response) {
+  @Post('/success/:bookingId/:email')
+  async handleSuccess(
+    @Param('bookingId') bookingId: string,
+    @Param('email') email: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     try {
       const { val_id } = req.body;
-      const response = await this.paymentService.validateOrder(val_id, bookingId);
+      const response = await this.paymentService.validateOrder(
+        val_id,
+        bookingId,
+        email
+      );
       if (response.status === 'VALID') {
         res.status(HttpStatus.OK).json({
           message: 'Payment was successful.',
@@ -41,7 +50,6 @@ export class PaymentController {
       });
     }
   }
-  
 
   @Post('/fail')
   handleFail(@Res() res: Response) {
@@ -57,23 +65,23 @@ export class PaymentController {
     });
   }
 
-
   @Post('/ipn')
   async handleIPN(@Req() req: Request, @Res() res: Response) {
     try {
       const ipnData = req.body;
       console.log('IPN Data:', ipnData);
 
-      const response = await this.paymentService.validateOrder(ipnData.tran_id,);
+      const response = await this.paymentService.validateOrder(ipnData.tran_id);
       if (response.status === 'VALID') {
-       
         res.status(HttpStatus.OK).send('IPN received and processed');
       } else {
         res.status(HttpStatus.BAD_REQUEST).send('IPN validation failed');
       }
     } catch (error) {
       console.error('Error handling IPN:', error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('IPN processing failed');
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send('IPN processing failed');
     }
   }
 }

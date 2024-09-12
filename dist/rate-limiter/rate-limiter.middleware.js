@@ -68,9 +68,7 @@ let RateLimiterMiddleware = class RateLimiterMiddleware {
         }
         catch {
             if (userRole == 'registered') {
-                res
-                    .status(common_1.HttpStatus.TOO_MANY_REQUESTS)
-                    .json({
+                res.status(common_1.HttpStatus.TOO_MANY_REQUESTS).json({
                     message: 'Your Search limit is exited for today. Contect with help-line ',
                 });
             }

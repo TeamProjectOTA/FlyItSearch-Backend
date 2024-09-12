@@ -5,8 +5,9 @@ import { AuthService } from 'src/auth/auth.service';
 export declare class BookingService {
     private userRepository;
     private readonly authservice;
-    private readonly BookingSaveRepository;
-    constructor(userRepository: Repository<User>, authservice: AuthService, BookingSaveRepository: Repository<BookingSave>);
+    private readonly bookingSaveRepository;
+    constructor(userRepository: Repository<User>, authservice: AuthService, bookingSaveRepository: Repository<BookingSave>);
     saveBooking(createSaveBookingDto: CreateSaveBookingDto, header: any): Promise<any>;
     cancelDataSave(fsid: string, status: string, header: any): Promise<any>;
+    findAllBooking(bookingStatus?: string): Promise<BookingSave[]>;
 }

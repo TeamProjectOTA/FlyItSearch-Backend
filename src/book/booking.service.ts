@@ -13,7 +13,7 @@ export class BookingService {
     private readonly authservice: AuthService,
 
     @InjectRepository(BookingSave)
-    private readonly BookingSaveRepository: Repository<BookingSave>,
+    private readonly bookingSaveRepository: Repository<BookingSave>,
   ) {}
 
   async saveBooking(
@@ -28,19 +28,19 @@ export class BookingService {
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
     }
-    let saveBooking = await this.BookingSaveRepository.findOne({
+    let saveBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: createSaveBookingDto.bookingId, user },
     });
 
     if (saveBooking) {
       saveBooking.bookingStatus = createSaveBookingDto.bookingStatus;
     } else {
-      saveBooking = this.BookingSaveRepository.create({
+      saveBooking = this.bookingSaveRepository.create({
         ...createSaveBookingDto,
         user,
       });
     }
-    return await this.BookingSaveRepository.save(saveBooking);
+    return await this.bookingSaveRepository.save(saveBooking);
   }
   async cancelDataSave(
     fsid: string,
@@ -55,11 +55,28 @@ export class BookingService {
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
     }
-    let saveBooking = await this.BookingSaveRepository.findOne({
+    let saveBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: fsid, user },
     });
     saveBooking.bookingStatus = status;
+    saveBooking.actionBy = user.fullName;
+    const nowdate = new Date(Date.now());
+    const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
+    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+    const dhakaTimeFormatted = dhakaTime.toISOString();
+    saveBooking.actionAt=dhakaTimeFormatted
 
-    return await this.BookingSaveRepository.save(saveBooking);
+    return await this.bookingSaveRepository.save(saveBooking);
+  }
+
+  async findAllBooking(bookingStatus?: string) {
+    if (bookingStatus && bookingStatus !== 'all') {
+      return await this.bookingSaveRepository.find({
+        where: { bookingStatus: bookingStatus },
+        relations: ['user'],
+      });
+    } else {
+      return await this.bookingSaveRepository.find({ relations: ['user'] });
+    }
   }
 }

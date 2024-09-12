@@ -71,4 +71,11 @@ export class UserController {
     const travelBuddies = await this.userService.findUserTravelBuddy(header);
     return travelBuddies;
   }
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
+  @Get('/oneUserAllTransection')
+  async findAllUserTransection(@Headers() header: Headers){
+    return await this.userService.findUserTransection(header)
+  }
 }

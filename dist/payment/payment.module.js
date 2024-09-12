@@ -12,12 +12,20 @@ const payment_controller_1 = require("./payment.controller");
 const payment_service_1 = require("./payment.service");
 const typeorm_1 = require("@nestjs/typeorm");
 const booking_model_1 = require("../book/booking.model");
+const transection_model_1 = require("../transection/transection.model");
+const transection_module_1 = require("../transection/transection.module");
+const user_entity_1 = require("../user/entities/user.entity");
+const user_module_1 = require("../user/user.module");
+const auth_module_1 = require("../auth/auth.module");
 let PaymentModule = class PaymentModule {
 };
 exports.PaymentModule = PaymentModule;
 exports.PaymentModule = PaymentModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave])],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, transection_model_1.Transection, user_entity_1.User]),
+            transection_module_1.TransectionModule, user_module_1.UserModule, auth_module_1.AuthModule
+        ],
         controllers: [payment_controller_1.PaymentController],
         providers: [payment_service_1.PaymentService],
         exports: [payment_service_1.PaymentService],

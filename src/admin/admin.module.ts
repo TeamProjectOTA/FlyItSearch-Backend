@@ -8,10 +8,11 @@ import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { Agents } from 'src/agents/entities/agents.entity';
 import { AgentsModule } from 'src/agents/agents.module';
+import { BookingSave } from 'src/book/booking.model';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, Agents]),
+    TypeOrmModule.forFeature([Admin, User, Agents, BookingSave]),
     UserModule,
     AuthModule,
     AgentsModule,

@@ -1,12 +1,18 @@
+import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
+import { Transection } from 'src/transection/transection.model';
+import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
 export declare class PaymentService {
     private readonly bookingSaveRepository;
+    private readonly transectionRepository;
+    private readonly userRepository;
+    private readonly authService;
     private readonly storeId;
     private readonly storePassword;
     private readonly isLive;
-    constructor(bookingSaveRepository: Repository<BookingSave>);
-    dataModification(SearchResponse: any): Promise<any>;
-    initiatePayment(paymentData: any, bookingId: string): Promise<string>;
-    validateOrder(val_id: string, bookingId?: any): Promise<any>;
+    constructor(bookingSaveRepository: Repository<BookingSave>, transectionRepository: Repository<Transection>, userRepository: Repository<User>, authService: AuthService);
+    dataModification(SearchResponse: any, header: any): Promise<any>;
+    initiatePayment(paymentData: any, bookingId: string, header: any): Promise<string>;
+    validateOrder(val_id: string, bookingId?: any, email?: any): Promise<any>;
 }

@@ -247,7 +247,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async airRetriveDataTransformer(SearchResponse, fisId, header) {
+    async airRetriveDataTransformer(SearchResponse, fisId, bookingStatus, header) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -411,13 +411,20 @@ let FlyHubUtil = class FlyHubUtil {
                             AllLegsInfo.push(legInfo);
                         }
                     }
+                    let BookingStatus;
+                    if (bookingStatus) {
+                        BookingStatus = bookingStatus;
+                    }
+                    else {
+                        BookingStatus = SearchResponse?.BookingStatus;
+                    }
                     FlightItenary.push({
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
                         BookingId: fisId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
                         SearchId: SearchResponse?.SearchId,
-                        BookingStatus: SearchResponse?.BookingStatus,
+                        BookingStatus: BookingStatus,
                         InstantPayment: Instant_Payment,
                         IsBookable: IsBookable,
                         FareType: FareType,
@@ -441,7 +448,7 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary);
+        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
         return {
             bookingData: FlightItenary,
             sslpaymentLink,
@@ -653,7 +660,7 @@ let FlyHubUtil = class FlyHubUtil {
         await this.saveBookingData(FlightItenary, header);
         return {
             bookingData: FlightItenary,
-            sslpaymentLink: await this.paymentService.dataModification(FlightItenary),
+            sslpaymentLink: await this.paymentService.dataModification(FlightItenary, header),
         };
     }
     async saveBookingData(SearchResponse, header, bookingId) {
@@ -688,6 +695,9 @@ let FlyHubUtil = class FlyHubUtil {
                 bookingDate: booking?.BookingDate,
                 expireDate: booking?.TimeLimit,
                 bookingStatus: booking?.BookingStatus,
+                PNR: booking?.PNR,
+                grossAmmount: booking?.GrossFare,
+                netAmmount: booking?.NetFare,
                 TripType: tripType,
                 laginfo: booking?.AllLegsInfo.map((leg) => ({
                     DepDate: leg?.DepDate,

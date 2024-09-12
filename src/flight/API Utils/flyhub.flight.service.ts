@@ -13,23 +13,28 @@ import {
   FlyAirSearchDto,
   searchResultDto,
 } from './Dto/flyhub.model';
-import { BookingIdSave, FlightSearchModel, JourneyType } from '../flight.model';
+import { BookingIdSave, FlightSearchModel } from '../flight.model';
 
 import { Test } from './test.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
-import { BookingID } from 'src/book/booking.model';
+import { BookingID, BookingSave } from 'src/book/booking.model';
 
 @Injectable()
 export class FlyHubService {
   private readonly username: string = process.env.FLYHUB_UserName;
   private readonly apiKey: string = process.env.FLYHUB_ApiKey;
   private readonly apiUrl: string = process.env.FLyHub_Url;
-  @InjectRepository(BookingIdSave)
-  private readonly bookingIdSave: Repository<BookingIdSave>;
-  constructor(private readonly flyHubUtil: FlyHubUtil) {}
+
+  constructor(
+    private readonly flyHubUtil: FlyHubUtil,
+    @InjectRepository(BookingIdSave)
+    private readonly bookingIdSave: Repository<BookingIdSave>,
+    @InjectRepository(BookingSave)
+    private readonly bookingSaveRepository: Repository<BookingSave>,
+  ) {}
 
   async getToken(): Promise<string> {
     try {
@@ -118,7 +123,11 @@ export class FlyHubService {
       throw error?.response?.data;
     }
   }
-  async airRetrive(BookingID: BookingID): Promise<any> {
+  async airRetrive(BookingID: BookingID,header?:any): Promise<any> {
+    const findBooking = await this.bookingSaveRepository.findOne({
+      where: { bookingId: BookingID.BookingID },
+      relations: ['user'],
+    });
     const bookingId = await this.bookingIdSave.findOne({
       where: { flyitSearchId: BookingID.BookingID },
     });
@@ -127,6 +136,7 @@ export class FlyHubService {
         `No Booking Found with ${BookingID.BookingID}`,
       );
     }
+
     const flyhubId = bookingId.flyhubId;
     const token = await this.getToken();
     const ticketRetrive = {
@@ -145,6 +155,8 @@ export class FlyHubService {
       return this.flyHubUtil.airRetriveDataTransformer(
         response?.data,
         BookingID.BookingID,
+        findBooking.bookingStatus,
+        header
       );
       //return response.data
     } catch (error) {

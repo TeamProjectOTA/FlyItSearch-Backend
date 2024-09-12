@@ -1,4 +1,5 @@
 import { BookingSave } from 'src/book/booking.model';
+import { Transection } from 'src/transection/transection.model';
 import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
 export declare class User {
@@ -22,4 +23,5 @@ export declare class User {
     profilePicture: ProfilePicture;
     bookingSave: BookingSave[];
     travelBuddy: TravelBuddy[];
+    transection: Transection[];
 }

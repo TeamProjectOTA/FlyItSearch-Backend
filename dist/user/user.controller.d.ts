@@ -12,4 +12,5 @@ export declare class UserController {
     findAllUserWithBookings(): Promise<any>;
     findOneUser(header: Headers): Promise<any>;
     getUserTravelBuddies(header: Headers): Promise<any>;
+    findAllUserTransection(header: Headers): Promise<User[]>;
 }

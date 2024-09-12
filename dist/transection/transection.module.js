@@ -9,13 +9,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TransectionModule = void 0;
 const common_1 = require("@nestjs/common");
 const transection_service_1 = require("./transection.service");
-const transection_controller_1 = require("./transection.controller");
+const typeorm_1 = require("@nestjs/typeorm");
+const transection_model_1 = require("./transection.model");
 let TransectionModule = class TransectionModule {
 };
 exports.TransectionModule = TransectionModule;
 exports.TransectionModule = TransectionModule = __decorate([
     (0, common_1.Module)({
-        controllers: [transection_controller_1.TransectionController],
+        imports: [typeorm_1.TypeOrmModule.forFeature([transection_model_1.Transection])],
         providers: [transection_service_1.TransectionService],
     })
 ], TransectionModule);

@@ -21,11 +21,13 @@ const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
 const uuid_1 = require("uuid");
 const agents_entity_1 = require("../agents/entities/agents.entity");
+const booking_model_1 = require("../book/booking.model");
 let AdminService = class AdminService {
-    constructor(adminRepository, userRepository, agentRepository, authservice) {
+    constructor(adminRepository, userRepository, agentRepository, bookingSaveRepository, authservice) {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
         this.agentRepository = agentRepository;
+        this.bookingSaveRepository = bookingSaveRepository;
         this.authservice = authservice;
     }
     async create(createAdminDto, header) {
@@ -157,6 +159,9 @@ let AdminService = class AdminService {
         });
         return { userToFind, userToDelete };
     }
+    async allbooking() {
+        return await this.bookingSaveRepository.find();
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -164,7 +169,9 @@ exports.AdminService = AdminService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(2, (0, typeorm_1.InjectRepository)(agents_entity_1.Agents)),
+    __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         auth_service_1.AuthService])

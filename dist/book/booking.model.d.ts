@@ -12,6 +12,11 @@ export declare class BookingSave {
     expireDate: Date;
     bookingStatus: string;
     TripType: string;
+    PNR: string;
+    grossAmmount: string;
+    netAmmount: string;
+    actionAt: string;
+    actionBy: String;
     laginfo: any;
     user: User;
 }

@@ -20,10 +20,10 @@ const booking_model_1 = require("./booking.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
 let BookingService = class BookingService {
-    constructor(userRepository, authservice, BookingSaveRepository) {
+    constructor(userRepository, authservice, bookingSaveRepository) {
         this.userRepository = userRepository;
         this.authservice = authservice;
-        this.BookingSaveRepository = BookingSaveRepository;
+        this.bookingSaveRepository = bookingSaveRepository;
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
@@ -33,19 +33,19 @@ let BookingService = class BookingService {
         if (!user) {
             throw new common_1.NotFoundException('No Booking data available for the user');
         }
-        let saveBooking = await this.BookingSaveRepository.findOne({
+        let saveBooking = await this.bookingSaveRepository.findOne({
             where: { bookingId: createSaveBookingDto.bookingId, user },
         });
         if (saveBooking) {
             saveBooking.bookingStatus = createSaveBookingDto.bookingStatus;
         }
         else {
-            saveBooking = this.BookingSaveRepository.create({
+            saveBooking = this.bookingSaveRepository.create({
                 ...createSaveBookingDto,
                 user,
             });
         }
-        return await this.BookingSaveRepository.save(saveBooking);
+        return await this.bookingSaveRepository.save(saveBooking);
     }
     async cancelDataSave(fsid, status, header) {
         const email = await this.authservice.decodeToken(header);
@@ -55,11 +55,28 @@ let BookingService = class BookingService {
         if (!user) {
             throw new common_1.NotFoundException('No Booking data available for the user');
         }
-        let saveBooking = await this.BookingSaveRepository.findOne({
+        let saveBooking = await this.bookingSaveRepository.findOne({
             where: { bookingId: fsid, user },
         });
         saveBooking.bookingStatus = status;
-        return await this.BookingSaveRepository.save(saveBooking);
+        saveBooking.actionBy = user.fullName;
+        const nowdate = new Date(Date.now());
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+        const dhakaTimeFormatted = dhakaTime.toISOString();
+        saveBooking.actionAt = dhakaTimeFormatted;
+        return await this.bookingSaveRepository.save(saveBooking);
+    }
+    async findAllBooking(bookingStatus) {
+        if (bookingStatus && bookingStatus !== 'all') {
+            return await this.bookingSaveRepository.find({
+                where: { bookingStatus: bookingStatus },
+                relations: ['user'],
+            });
+        }
+        else {
+            return await this.bookingSaveRepository.find({ relations: ['user'] });
+        }
     }
 };
 exports.BookingService = BookingService;

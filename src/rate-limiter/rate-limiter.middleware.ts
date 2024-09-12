@@ -72,12 +72,10 @@ export class RateLimiterMiddleware implements NestMiddleware {
       next();
     } catch {
       if (userRole == 'registered') {
-        res
-          .status(HttpStatus.TOO_MANY_REQUESTS)
-          .json({
-            message:
-              'Your Search limit is exited for today. Contect with help-line ',
-          });
+        res.status(HttpStatus.TOO_MANY_REQUESTS).json({
+          message:
+            'Your Search limit is exited for today. Contect with help-line ',
+        });
       } else if (userRole == 'unregistered') {
         res
           .status(HttpStatus.TOO_MANY_REQUESTS)

@@ -67,6 +67,26 @@ __decorate([
     __metadata("design:type", String)
 ], BookingSave.prototype, "TripType", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "PNR", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "grossAmmount", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], BookingSave.prototype, "netAmmount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], BookingSave.prototype, "actionAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], BookingSave.prototype, "actionBy", void 0);
+__decorate([
     (0, typeorm_1.Column)('json', { nullable: true }),
     __metadata("design:type", Object)
 ], BookingSave.prototype, "laginfo", void 0);

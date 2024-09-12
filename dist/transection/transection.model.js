@@ -10,13 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Transection = exports.CreateTransectionDTO = void 0;
+const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 class CreateTransectionDTO {
 }
 exports.CreateTransectionDTO = CreateTransectionDTO;
-(0, typeorm_1.Entity)();
-class Transection {
-}
+let Transection = class Transection {
+};
 exports.Transection = Transection;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
@@ -27,43 +27,50 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "tranId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "tranDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "paidAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "offerAmmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "bankTranId", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "riskTitle", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "cardType", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "cardIssuer", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "cardBrand", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "cardIssuerCountry", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "validationDate", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.transection, { onDelete: 'CASCADE' }),
+    __metadata("design:type", user_entity_1.User)
+], Transection.prototype, "user", void 0);
+exports.Transection = Transection = __decorate([
+    (0, typeorm_1.Entity)()
+], Transection);
 //# sourceMappingURL=transection.model.js.map

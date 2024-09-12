@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FlyHubService = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,9 +21,12 @@ const flyhub_model_1 = require("./Dto/flyhub.model");
 const flight_model_1 = require("../flight.model");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const booking_model_1 = require("../../book/booking.model");
 let FlyHubService = class FlyHubService {
-    constructor(flyHubUtil) {
+    constructor(flyHubUtil, bookingIdSave, bookingSaveRepository) {
         this.flyHubUtil = flyHubUtil;
+        this.bookingIdSave = bookingIdSave;
+        this.bookingSaveRepository = bookingSaveRepository;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
@@ -92,7 +98,11 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airRetrive(BookingID) {
+    async airRetrive(BookingID, header) {
+        const findBooking = await this.bookingSaveRepository.findOne({
+            where: { bookingId: BookingID.BookingID },
+            relations: ['user'],
+        });
         const bookingId = await this.bookingIdSave.findOne({
             where: { flyitSearchId: BookingID.BookingID },
         });
@@ -113,7 +123,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketRetrive);
-            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID);
+            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID, findBooking.bookingStatus, header);
         }
         catch (error) {
             throw error?.response?.data;
@@ -259,12 +269,12 @@ let FlyHubService = class FlyHubService {
     }
 };
 exports.FlyHubService = FlyHubService;
-__decorate([
-    (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave),
-    __metadata("design:type", typeorm_2.Repository)
-], FlyHubService.prototype, "bookingIdSave", void 0);
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil])
+    __param(1, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(2, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
+        typeorm_2.Repository,
+        typeorm_2.Repository])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

@@ -44,7 +44,7 @@ require('dotenv').config();
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      logging: false,
+      logging: true,
       timezone: 'Z',
     }),
     // TypeOrmModule.forRoot({

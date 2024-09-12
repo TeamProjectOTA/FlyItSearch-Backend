@@ -12,13 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class BookingSave {
@@ -57,6 +51,17 @@ export class BookingSave {
 
   @Column()
   TripType: string;
+
+  @Column()
+  PNR: string;
+  @Column()
+  grossAmmount: string;
+  @Column()
+  netAmmount: string;
+  @Column({ nullable: true })
+  actionAt: string;
+  @Column({ nullable: true })
+  actionBy: String;
 
   @Column('json', { nullable: true })
   laginfo: any; // Store laginfo as a JSON object

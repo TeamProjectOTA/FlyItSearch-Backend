@@ -302,7 +302,8 @@ export class FlyHubUtil {
   async airRetriveDataTransformer(
     SearchResponse: any,
     fisId: string,
-    header?: any,
+    bookingStatus?: any,
+    header?:any
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -520,6 +521,12 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
+          let BookingStatus: string;
+          if (bookingStatus) {
+            BookingStatus = bookingStatus;
+          } else {
+            BookingStatus = SearchResponse?.BookingStatus;
+          }
 
           FlightItenary.push({
             System: 'FLYHUB',
@@ -527,7 +534,7 @@ export class FlyHubUtil {
             BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
             SearchId: SearchResponse?.SearchId,
-            BookingStatus: SearchResponse?.BookingStatus,
+            BookingStatus: BookingStatus,
             InstantPayment: Instant_Payment,
             IsBookable: IsBookable,
             FareType: FareType,
@@ -553,7 +560,7 @@ export class FlyHubUtil {
     }
 
     const sslpaymentLink =
-      await this.paymentService.dataModification(FlightItenary);
+      await this.paymentService.dataModification(FlightItenary,header);
     return {
       bookingData: FlightItenary,
       sslpaymentLink,
@@ -827,7 +834,7 @@ export class FlyHubUtil {
     await this.saveBookingData(FlightItenary, header);
     return {
       bookingData: FlightItenary,
-      sslpaymentLink: await this.paymentService.dataModification(FlightItenary),
+      sslpaymentLink: await this.paymentService.dataModification(FlightItenary,header),
     };
   }
 
@@ -871,6 +878,9 @@ export class FlyHubUtil {
         bookingDate: booking?.BookingDate,
         expireDate: booking?.TimeLimit,
         bookingStatus: booking?.BookingStatus,
+        PNR: booking?.PNR,
+        grossAmmount: booking?.GrossFare,
+        netAmmount: booking?.NetFare,
         TripType: tripType,
 
         laginfo: booking?.AllLegsInfo.map((leg: any) => ({
@@ -882,7 +892,6 @@ export class FlyHubUtil {
 
       await this.mailService.sendMail(booking);
       return await this.BookService.saveBooking(convertedData, header);
-      //return convertedData
     } else {
       return 'Booking data is unvalid';
     }

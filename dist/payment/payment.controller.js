@@ -20,10 +20,10 @@ let PaymentController = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
     }
-    async handleSuccess(bookingId, req, res) {
+    async handleSuccess(bookingId, email, req, res) {
         try {
             const { val_id } = req.body;
-            const response = await this.paymentService.validateOrder(val_id, bookingId);
+            const response = await this.paymentService.validateOrder(val_id, bookingId, email);
             if (response.status === 'VALID') {
                 res.status(common_1.HttpStatus.OK).json({
                     message: 'Payment was successful.',
@@ -69,18 +69,21 @@ let PaymentController = class PaymentController {
         }
         catch (error) {
             console.error('Error handling IPN:', error);
-            res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).send('IPN processing failed');
+            res
+                .status(common_1.HttpStatus.INTERNAL_SERVER_ERROR)
+                .send('IPN processing failed');
         }
     }
 };
 exports.PaymentController = PaymentController;
 __decorate([
-    (0, common_1.Post)('/success/:bookingId'),
-    __param(0, (0, common_1.Param)()),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Res)()),
+    (0, common_1.Post)('/success/:bookingId/:email'),
+    __param(0, (0, common_1.Param)('bookingId')),
+    __param(1, (0, common_1.Param)('email')),
+    __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleSuccess", null);
 __decorate([

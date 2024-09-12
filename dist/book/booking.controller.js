@@ -19,15 +19,12 @@ const booking_model_1 = require("./booking.model");
 const swagger_1 = require("@nestjs/swagger");
 const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.service");
 const flyhub_model_1 = require("../flight/API Utils/Dto/flyhub.model");
-const flyhub_util_1 = require("../flight/API Utils/flyhub.util");
-const auth_service_1 = require("../auth/auth.service");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let BookingController = class BookingController {
-    constructor(bookingService, flyHubService, flyHubUtil, authService) {
+    constructor(bookingService, flyHubService) {
         this.bookingService = bookingService;
         this.flyHubService = flyHubService;
-        this.flyHubUtil = flyHubUtil;
-        this.authService = authService;
     }
     async airbook(data, header) {
         const currentTimestamp = new Date();
@@ -36,17 +33,14 @@ let BookingController = class BookingController {
     async aircanel(bookingIdDto, header) {
         return this.flyHubService.aircancel(bookingIdDto, header);
     }
-    async airRetrive(bookingIdDto) {
+    async airRetrive(bookingIdDto, header) {
+        return await this.flyHubService.airRetrive(bookingIdDto, header);
+    }
+    async airRetriveAdmin(bookingIdDto) {
         return await this.flyHubService.airRetrive(bookingIdDto);
     }
-    async bookingtest(data, headers, bookingId) {
-        return await this.flyHubUtil.saveBookingData(data, headers, bookingId);
-    }
-    async SaveBooking(createSaveBookingDto, header) {
-        return this.bookingService.saveBooking(createSaveBookingDto, header);
-    }
-    async test(header) {
-        return;
+    async findAll(bookingStatus) {
+        return await this.bookingService.findAllBooking(bookingStatus);
     }
 };
 exports.BookingController = BookingController;
@@ -71,45 +65,35 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "aircanel", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('flh/airRetrive'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [booking_model_1.BookingID, Object]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "airRetrive", null);
+__decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Post)('admin/flh/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [booking_model_1.BookingID]),
     __metadata("design:returntype", Promise)
-], BookingController.prototype, "airRetrive", null);
+], BookingController.prototype, "airRetriveAdmin", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('testBooking'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)()),
-    __param(2, (0, common_1.Query)('bookingId')),
+    (0, common_1.Get)('admin/allBooking/:bookingStatus'),
+    __param(0, (0, common_1.Param)('bookingStatus')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [booking_model_1.data, Object, String]),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
-], BookingController.prototype, "bookingtest", null);
-__decorate([
-    (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('/save-booking'),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [booking_model_1.CreateSaveBookingDto, Object]),
-    __metadata("design:returntype", Promise)
-], BookingController.prototype, "SaveBooking", null);
-__decorate([
-    (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)('/test'),
-    __param(0, (0, common_1.Headers)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], BookingController.prototype, "test", null);
+], BookingController.prototype, "findAll", null);
 exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('booking'),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
-        flyhub_flight_service_1.FlyHubService,
-        flyhub_util_1.FlyHubUtil,
-        auth_service_1.AuthService])
+        flyhub_flight_service_1.FlyHubService])
 ], BookingController);
 //# sourceMappingURL=booking.controller.js.map

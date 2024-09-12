@@ -3,10 +3,17 @@ import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookingSave } from 'src/book/booking.model';
-import { BookingModule } from 'src/book/booking.module';
+import { Transection } from 'src/transection/transection.model';
+import { TransectionModule } from 'src/transection/transection.module';
+import { User } from 'src/user/entities/user.entity';
+import { UserModule } from 'src/user/user.module';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([BookingSave])],
+  imports: [
+    TypeOrmModule.forFeature([BookingSave, Transection,User]),
+    TransectionModule,UserModule,AuthModule
+  ],
   controllers: [PaymentController],
   providers: [PaymentService],
   exports: [PaymentService],

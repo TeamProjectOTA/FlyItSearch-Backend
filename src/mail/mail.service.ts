@@ -72,7 +72,7 @@ export class MailService {
       AllLegsInfo: data.AllLegsInfo,
       PassengerList: data.PassengerList,
       flightUrl: flightUrl,
-      bodyData: bodyData 
+      bodyData: bodyData,
     });
     const email = data?.PassengerList[0]?.Email;
     const mailOptions = {

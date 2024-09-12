@@ -15,17 +15,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const auth_service_1 = require("../auth/auth.service");
 const booking_model_1 = require("../book/booking.model");
+const transection_model_1 = require("../transection/transection.model");
+const user_entity_1 = require("../user/entities/user.entity");
 const sslcommerz_1 = require("sslcommerz");
 const typeorm_2 = require("typeorm");
 let PaymentService = class PaymentService {
-    constructor(bookingSaveRepository) {
+    constructor(bookingSaveRepository, transectionRepository, userRepository, authService) {
         this.bookingSaveRepository = bookingSaveRepository;
+        this.transectionRepository = transectionRepository;
+        this.userRepository = userRepository;
+        this.authService = authService;
         this.storeId = process.env.STORE_ID;
         this.storePassword = process.env.STORE_PASSWORD;
         this.isLive = false;
     }
-    async dataModification(SearchResponse) {
+    async dataModification(SearchResponse, header) {
         const booking = SearchResponse[0];
         let tripType;
         if (booking?.AllLegsInfo?.length === 1) {
@@ -49,7 +55,7 @@ let PaymentService = class PaymentService {
         const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
         const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
         const airTicketPrice = booking?.NetFare;
-        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025);
+        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.035);
         const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
         const hours_till_departure = ` ${hoursDifference} hrs ${minutesDifference} mins`;
         const pnr = booking?.PNR;
@@ -59,8 +65,8 @@ let PaymentService = class PaymentService {
         const city = passenger?.CountryCode;
         const postCode = '1206';
         const phone = passenger?.ContactNumber;
-        const depfrom = booking?.AllLegsInfo[0]?.DepFrom || "DAC";
-        const arrto = booking?.AllLegsInfo[(booking?.AllLegsInfo).length - 1]?.ArrTo || "DXB";
+        const depfrom = booking?.AllLegsInfo[0]?.DepFrom || 'DAC';
+        const arrto = booking?.AllLegsInfo[(booking?.AllLegsInfo).length - 1]?.ArrTo || 'DXB';
         const bookingId = booking?.BookingId;
         const paymentData = {
             total_amount: total_amount,
@@ -76,24 +82,27 @@ let PaymentService = class PaymentService {
             cus_phone: phone,
         };
         return {
-            url: await this.initiatePayment(paymentData, bookingId),
+            url: await this.initiatePayment(paymentData, bookingId, header),
             airTicketPrice: airTicketPrice,
             paymentGatwayCharge: paymentGatwayCharge,
             total_amount: total_amount,
         };
     }
-    async initiatePayment(paymentData, bookingId) {
+    async initiatePayment(paymentData, bookingId, header) {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `SSM${timestamp}${randomNumber}`;
-        const bookingSave = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId } });
-        if (bookingSave.bookingStatus == "Booked") {
+        const email = await this.authService.decodeToken(header);
+        const bookingSave = await this.bookingSaveRepository.findOne({
+            where: { bookingId: bookingId },
+        });
+        if (bookingSave.bookingStatus == 'Booked') {
             const data = {
                 total_amount: paymentData.total_amount,
                 currency: 'BDT',
                 tran_id: tran_id,
-                success_url: `http://localhost:8080/payment/success/${bookingId}`,
+                success_url: `http://localhost:8080/payment/success/${bookingId}/${email}`,
                 fail_url: 'http://localhost:8080/payment/fail',
                 cancel_url: 'http://localhost:8080/payment/cancel',
                 ipn_url: 'http://localhost:8080/payment/ipn',
@@ -126,13 +135,35 @@ let PaymentService = class PaymentService {
             return `The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`;
         }
     }
-    async validateOrder(val_id, bookingId) {
+    async validateOrder(val_id, bookingId, email) {
         const sslcommerz = new sslcommerz_1.SslCommerzPayment(this.storeId, this.storePassword, this.isLive);
         const validationData = {
             val_id: val_id,
         };
         try {
             const response = await sslcommerz.validate(validationData);
+            if (response.status === 'VALID') {
+                const bookingSave = await this.bookingSaveRepository.findOne({
+                    where: { bookingId: bookingId.bookingId },
+                });
+                bookingSave.bookingStatus = 'IssueInProcess';
+                await this.bookingSaveRepository.save(bookingSave);
+                const user = await this.userRepository.findOne({ where: { email: email } });
+                let addTransection = new transection_model_1.Transection();
+                addTransection.tranId = response.tran_id;
+                addTransection.tranDate = response.tran_date;
+                addTransection.paidAmount = response.amount;
+                addTransection.offerAmmount = response.store_amount;
+                addTransection.bankTranId = response.bank_tran_id;
+                addTransection.riskTitle = response.risk_title;
+                addTransection.cardType = response.card_type;
+                addTransection.cardIssuer = response.card_issuer;
+                addTransection.cardBrand = response.card_brand;
+                addTransection.cardIssuerCountry = response.card_issuer_country;
+                addTransection.validationDate = response.validated_on;
+                addTransection.user = user;
+                await this.transectionRepository.save(addTransection);
+            }
             return response;
         }
         catch (error) {
@@ -145,6 +176,11 @@ exports.PaymentService = PaymentService;
 exports.PaymentService = PaymentService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
+    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        auth_service_1.AuthService])
 ], PaymentService);
 //# sourceMappingURL=payment.service.js.map
