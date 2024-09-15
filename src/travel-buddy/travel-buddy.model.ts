@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -12,6 +12,7 @@ export class TravelBuddyDto {
   lastName: string;
   @IsString()
   gender: string;
+  @IsNotEmpty()
   @IsString()
   nationility: string;
   @IsDate()

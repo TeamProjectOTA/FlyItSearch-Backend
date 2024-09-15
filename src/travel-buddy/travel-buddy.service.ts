@@ -43,6 +43,7 @@ export class TravelBuddyService {
         user,
       });
     }
+
     return await this.travelBuddyRepository.save(saveTravelBuddy);
   }
   async updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto): Promise<any> {

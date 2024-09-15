@@ -38,6 +38,7 @@ let RateLimiterMiddleware = class RateLimiterMiddleware {
     async use(req, res, next) {
         const ip = req.ip;
         const userRole = req.user?.role || 'unregistered';
+        const email = req.user?.email;
         const rateLimiter = rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;
         try {
             await rateLimiter.consume(ip);
@@ -60,9 +61,9 @@ let RateLimiterMiddleware = class RateLimiterMiddleware {
                     }
                 }
                 else {
-                    ipAddress = await this.ipService.create(ip, userRole, rateLimiter.points - 1, currentTime);
+                    ipAddress = await this.ipService.create(ip, userRole, rateLimiter.points - 1, currentTime, email);
                 }
-                await this.ipService.createOrUpdate(ip, userRole, ipAddress.points, currentTime);
+                await this.ipService.createOrUpdate(ip, userRole, ipAddress.points, currentTime, email);
             }
             next();
         }

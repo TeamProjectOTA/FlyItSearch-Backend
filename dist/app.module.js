@@ -40,7 +40,7 @@ let AppModule = class AppModule {
         consumer
             .apply(jwt_middleware_1.JwtMiddleware, rate_limiter_middleware_1.RateLimiterMiddleware)
             .exclude({ path: 'auth/sign-in-admin', method: common_1.RequestMethod.POST }, { path: 'auth/sign-in-user', method: common_1.RequestMethod.POST }, { path: 'social-site/google', method: common_1.RequestMethod.GET }, { path: 'social-site/google-redirect', method: common_1.RequestMethod.GET })
-            .forRoutes();
+            .forRoutes({ path: '/flights/fhb/airSearch', method: common_1.RequestMethod.POST });
     }
 };
 exports.AppModule = AppModule;
@@ -62,7 +62,7 @@ exports.AppModule = AppModule = __decorate([
                 database: process.env.DB_NAME,
                 autoLoadEntities: true,
                 synchronize: true,
-                logging: true,
+                logging: false,
                 timezone: 'Z',
             }),
             admin_module_1.AdminModule,

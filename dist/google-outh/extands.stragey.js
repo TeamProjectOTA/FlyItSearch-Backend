@@ -10,35 +10,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GoogleStrategy = void 0;
-const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-const dotenv_1 = require("dotenv");
 const passport_google_oauth20_1 = require("passport-google-oauth20");
-(0, dotenv_1.config)();
+const common_1 = require("@nestjs/common");
+const auth_service_1 = require("../auth/auth.service");
 let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrategy)(passport_google_oauth20_1.Strategy, 'google') {
-    constructor() {
+    constructor(authService) {
         super({
             clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: 'http://localhost:8080/social-site/google/redirect',
             scope: ['email', 'profile'],
         });
+        this.authService = authService;
     }
     async validate(accessToken, refreshToken, profile, done) {
-        const { name, emails, photos } = profile;
+        const { name, emails } = profile;
         const user = {
             email: emails[0].value,
-            firstName: name.givenName,
-            lastName: name.familyName,
-            picture: photos[0].value,
-            accessToken,
+            fullName: `${name.givenName} ${name.familyName}`,
+            googleId: profile.id,
         };
-        done(null, user);
+        const authenticatedUser = await this.authService.validateUser(user);
+        done(null, authenticatedUser);
     }
 };
 exports.GoogleStrategy = GoogleStrategy;
 exports.GoogleStrategy = GoogleStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], GoogleStrategy);
 //# sourceMappingURL=extands.stragey.js.map

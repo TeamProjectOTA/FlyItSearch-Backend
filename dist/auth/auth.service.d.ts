@@ -11,7 +11,7 @@ export declare class AuthService {
     constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService);
     signInAdmin(email: string, pass: string): Promise<any>;
     verifyAdminToken(header: any): Promise<Admin>;
-    signInUser(email: string, pass: string): Promise<any>;
+    signInUser(email: string, pass?: string, isGoogleAuth?: boolean): Promise<any>;
     verifyUserToken(header: any): Promise<User>;
     getUserByEmail(email: string): Promise<User>;
     getAdminByUUID(uuid: string): Promise<Admin>;
@@ -21,4 +21,6 @@ export declare class AuthService {
     resetPassword(resetToken: string, newPassword: string): Promise<any>;
     sendPasswordResetEmail(email: string): Promise<any>;
     sendResetPasswordEmail(email: string, token: string): Promise<void>;
+    signInUserForGoogle(user: User): Promise<any>;
+    validateUser(user: any): Promise<any>;
 }

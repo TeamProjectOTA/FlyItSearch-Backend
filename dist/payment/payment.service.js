@@ -169,7 +169,7 @@ let PaymentService = class PaymentService {
                 addTransection.validationDate = response.validated_on;
                 addTransection.status = 'Purchase';
                 addTransection.currierName = airPlaneName;
-                addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket By `;
+                addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
                 addTransection.user = user;
                 await this.transectionRepository.save(addTransection);
             }

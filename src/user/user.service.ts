@@ -229,11 +229,11 @@ export class UserService {
 
   async findUserTransection(header: any) {
     const email = await this.authservice.decodeToken(header);
-    const transection=await this.userRepository.findOne({
+    const transection = await this.userRepository.findOne({
       where: { email },
       relations: ['transection'],
     });
 
-    return {transection: transection.transection}
+    return { transection: transection.transection };
   }
 }

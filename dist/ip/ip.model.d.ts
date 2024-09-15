@@ -4,4 +4,5 @@ export declare class IpAddress {
     role: string;
     points: number;
     lastRequestTime: number;
+    email: string;
 }

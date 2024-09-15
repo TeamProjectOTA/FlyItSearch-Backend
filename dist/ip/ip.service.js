@@ -24,29 +24,31 @@ let IpService = class IpService {
     async findOne(ip) {
         return this.ipRepository.findOne({ where: { ip } });
     }
-    async create(ip, role, points, lastRequestTime) {
+    async create(ip, role, points, lastRequestTime, email) {
         const ipAddress = this.ipRepository.create({
             ip,
             role,
             points,
             lastRequestTime,
+            email
         });
         return this.ipRepository.save(ipAddress);
     }
-    async createOrUpdate(ip, role, points, lastRequestTime) {
+    async createOrUpdate(ip, role, points, lastRequestTime, email) {
         let ipAddress = await this.findOne(ip);
         if (ipAddress) {
             ipAddress.role = role;
             ipAddress.points = points;
             ipAddress.lastRequestTime = lastRequestTime;
+            ipAddress.email = email;
             return this.ipRepository.save(ipAddress);
         }
         else {
-            return this.create(ip, role, points, lastRequestTime);
+            return this.create(ip, role, points, lastRequestTime, email);
         }
     }
-    async delete(ip) {
-        await this.ipRepository.delete({ ip });
+    async delete(email) {
+        await this.ipRepository.delete({ email });
     }
     async cleanupOldIps(expirationTime) {
         await this.ipRepository.delete({

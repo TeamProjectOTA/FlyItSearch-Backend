@@ -90,22 +90,24 @@ let AuthService = class AuthService {
             }
         }
     }
-    async signInUser(email, pass) {
+    async signInUser(email, pass, isGoogleAuth = false) {
         const user = await this.userRepository.findOne({
             where: { email: email },
         });
         if (!user) {
-            throw new common_1.UnauthorizedException('Invalid email ');
+            throw new common_1.UnauthorizedException('Invalid email');
         }
-        const passwordMatch = await bcrypt.compare(pass, user.password);
-        if (!passwordMatch) {
-            throw new common_1.UnauthorizedException('Invalid password');
+        if (!isGoogleAuth) {
+            const passwordMatch = await bcrypt.compare(pass, user.password);
+            if (!passwordMatch) {
+                throw new common_1.UnauthorizedException('Invalid password');
+            }
         }
-        if (user.emailVerified == false) {
+        if (!isGoogleAuth && user.emailVerified === false) {
             throw new common_1.UnauthorizedException('Email is not verified');
         }
-        if (user.status != 'ACTIVE') {
-            throw new common_1.ServiceUnavailableException(`Mr: ${user.fullName} due to some  of your activity we desided to Inactive your account. Please contect to our support for the process to active your account `);
+        if (user.status !== 'ACTIVE') {
+            throw new common_1.ServiceUnavailableException(`Mr : ${user.fullName}, due to some of your activity we decided to inactivate your account. Please contact our support for the process to activate your account.`);
         }
         const payload = { sub: user.email, sub2: user.passengerId };
         const expiresInSeconds = this.time;
@@ -121,7 +123,7 @@ let AuthService = class AuthService {
         };
         return {
             access_token: token,
-            message: 'Log In Successfull',
+            message: 'Log In Successful',
             userData,
             expireIn: dhakaTimeFormatted,
         };
@@ -256,6 +258,59 @@ let AuthService = class AuthService {
             console.error('Error sending verification email:', error);
             throw new Error('Failed to send verification email.');
         }
+    }
+    async signInUserForGoogle(user) {
+        if (user.status !== 'ACTIVE') {
+            throw new common_1.ServiceUnavailableException(`Mr : ${user.fullName}, due to some of your activity we decided to Inactivate your account. Please contact our support for the process to activate your account.`);
+        }
+        const payload = { sub: user.email, sub2: user.passengerId };
+        const expiresInSeconds = this.time;
+        const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
+        const dhakaTimeFormatted = dhakaTime.toISOString();
+        const token = await this.jwtservice.signAsync(payload);
+        const userData = {
+            name: user.fullName,
+            email: user.email,
+            phone: user.phone,
+        };
+        return {
+            access_token: token,
+            message: 'Log In Successful',
+            userData,
+            expireIn: dhakaTimeFormatted,
+        };
+    }
+    async validateUser(user) {
+        const { email, fullName, googleId } = user;
+        let existingUser = await this.userRepository.findOne({ where: { email } });
+        if (!existingUser) {
+            const passenger = await this.userRepository.find({
+                order: { id: 'DESC' },
+                take: 1,
+            });
+            let passengerId;
+            if (passenger.length === 1) {
+                const lastPassenger = passenger[0];
+                const oldpassengerId = lastPassenger.passengerId.replace('FLYITP', '');
+                passengerId = 'FLYITP' + (parseInt(oldpassengerId) + 1);
+            }
+            else {
+                passengerId = 'FLYITP1000';
+            }
+            let newUser = new user_entity_1.User();
+            newUser.passengerId = passengerId;
+            newUser.email = email;
+            newUser.fullName = fullName.toUpperCase();
+            newUser.googleId = googleId;
+            newUser.status = 'ACTIVE';
+            newUser.emailVerified = true;
+            newUser.role = 'registered';
+            existingUser = await this.userRepository.save(newUser);
+            return existingUser;
+        }
+        return await this.signInUserForGoogle(existingUser);
     }
 };
 exports.AuthService = AuthService;

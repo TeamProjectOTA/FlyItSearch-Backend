@@ -22,11 +22,4 @@ export class GoogleOuthService {
       user: req.user,
     };
   }
-  // async verifytoken(header:any){
-  // const token = header['authorization'].replace('Bearer','')
-  // if (!token){
-  //   throw new UnauthorizedException()
-  // }
-
-  // }
 }

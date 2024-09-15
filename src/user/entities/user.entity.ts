@@ -18,11 +18,11 @@ export class User {
   passengerId: string;
   @Column()
   fullName: string;
-  @Column()
+  @Column({ nullable: true })
   phone: string;
   @Column()
   email: string;
-  @Column()
+  @Column({ nullable: true })
   password: string;
   @Column({ nullable: true })
   dob: string;
@@ -46,6 +46,8 @@ export class User {
   resetPasswordExpires: Date;
   @Column()
   status: string;
+  @Column({ nullable: true })
+  googleId: string;
   @OneToOne(() => ProfilePicture, (profilePicture) => profilePicture.user)
   profilePicture: ProfilePicture;
   @OneToMany(() => BookingSave, (bookingSave) => bookingSave.user)

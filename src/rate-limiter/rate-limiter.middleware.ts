@@ -29,6 +29,7 @@ export class RateLimiterMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const ip = req.ip;
     const userRole = req.user?.role || 'unregistered';
+    const email=req.user?.email
 
     const rateLimiter =
       rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;
@@ -59,6 +60,7 @@ export class RateLimiterMiddleware implements NestMiddleware {
             userRole,
             rateLimiter.points - 1,
             currentTime,
+            email,
           );
         }
         await this.ipService.createOrUpdate(
@@ -66,6 +68,7 @@ export class RateLimiterMiddleware implements NestMiddleware {
           userRole,
           ipAddress.points,
           currentTime,
+          email,
         );
       }
 

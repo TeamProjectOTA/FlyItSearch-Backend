@@ -20,6 +20,7 @@ export declare class User {
     resetPasswordToken: string;
     resetPasswordExpires: Date;
     status: string;
+    googleId: string;
     profilePicture: ProfilePicture;
     bookingSave: BookingSave[];
     travelBuddy: TravelBuddy[];

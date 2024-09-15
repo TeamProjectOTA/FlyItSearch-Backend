@@ -17,13 +17,17 @@ const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
 const google_outh_service_1 = require("./google-outh.service");
 const swagger_1 = require("@nestjs/swagger");
+const auth_service_1 = require("../auth/auth.service");
 let GoogleOuthController = class GoogleOuthController {
-    constructor(appService) {
+    constructor(appService, authService) {
         this.appService = appService;
+        this.authService = authService;
     }
-    async googleAuth(req) { }
-    googleAuthRedirect(req) {
-        return this.appService.googleLogin(req);
+    async googleAuth(req) {
+        console.log(req);
+    }
+    async googleAuthRedirect(req) {
+        return req.user;
     }
     async facebookAuth(req) { }
     facebookAuthRedirect(req) {
@@ -32,20 +36,20 @@ let GoogleOuthController = class GoogleOuthController {
 };
 exports.GoogleOuthController = GoogleOuthController;
 __decorate([
-    (0, common_1.Get)('/google'),
+    (0, common_1.Get)('google'),
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Request]),
+    __metadata("design:returntype", Promise)
+], GoogleOuthController.prototype, "googleAuth", null);
+__decorate([
+    (0, common_1.Get)('google/redirect'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], GoogleOuthController.prototype, "googleAuth", null);
-__decorate([
-    (0, common_1.Get)('/googleRedirect'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
 ], GoogleOuthController.prototype, "googleAuthRedirect", null);
 __decorate([
     (0, common_1.Get)('/facebook'),
@@ -66,6 +70,7 @@ __decorate([
 exports.GoogleOuthController = GoogleOuthController = __decorate([
     (0, swagger_1.ApiTags)('Google-log-in'),
     (0, common_1.Controller)('social-site'),
-    __metadata("design:paramtypes", [google_outh_service_1.GoogleOuthService])
+    __metadata("design:paramtypes", [google_outh_service_1.GoogleOuthService,
+        auth_service_1.AuthService])
 ], GoogleOuthController);
 //# sourceMappingURL=google-outh.controller.js.map

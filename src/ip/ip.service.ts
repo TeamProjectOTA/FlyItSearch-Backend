@@ -19,12 +19,14 @@ export class IpService {
     role: string,
     points: number,
     lastRequestTime: number,
+    email:string
   ): Promise<IpAddress> {
     const ipAddress = this.ipRepository.create({
       ip,
       role,
       points,
       lastRequestTime,
+      email
     });
     return this.ipRepository.save(ipAddress);
   }
@@ -34,20 +36,22 @@ export class IpService {
     role: string,
     points: number,
     lastRequestTime: number,
+    email:string
   ): Promise<IpAddress> {
     let ipAddress = await this.findOne(ip);
     if (ipAddress) {
       ipAddress.role = role;
       ipAddress.points = points;
       ipAddress.lastRequestTime = lastRequestTime;
+      ipAddress.email=email
       return this.ipRepository.save(ipAddress);
     } else {
-      return this.create(ip, role, points, lastRequestTime);
+      return this.create(ip, role, points, lastRequestTime,email);
     }
   }
 
-  async delete(ip: string): Promise<void> {
-    await this.ipRepository.delete({ ip });
+  async delete(email: string): Promise<void> {
+    await this.ipRepository.delete({ email });
   }
 
   async cleanupOldIps(expirationTime: number): Promise<void> {

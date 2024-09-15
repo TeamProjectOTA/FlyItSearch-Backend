@@ -101,49 +101,68 @@ export class AuthService {
     }
   }
 
-  async signInUser(email: string, pass: string): Promise<any> {
+  async signInUser(
+    email: string,
+    pass?: string,
+    isGoogleAuth: boolean = false,
+  ): Promise<any> {
+    
+    
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
 
     if (!user) {
-      throw new UnauthorizedException('Invalid email ');
+      throw new UnauthorizedException('Invalid email');
     }
-    const passwordMatch = await bcrypt.compare(pass, user.password);
 
-    if (!passwordMatch) {
-      throw new UnauthorizedException('Invalid password');
+  
+    if (!isGoogleAuth) {
+      const passwordMatch = await bcrypt.compare(pass, user.password);
+
+      if (!passwordMatch) {
+        throw new UnauthorizedException('Invalid password');
+      }
     }
-    if (user.emailVerified == false) {
+
+   
+    if (!isGoogleAuth && user.emailVerified === false) {
       throw new UnauthorizedException('Email is not verified');
     }
-    if (user.status != 'ACTIVE') {
+
+   
+    if (user.status !== 'ACTIVE') {
       throw new ServiceUnavailableException(
-        `Mr: ${user.fullName} due to some  of your activity we desided to Inactive your account. Please contect to our support for the process to active your account `,
+        `Mr : ${user.fullName}, due to some of your activity we decided to inactivate your account. Please contact our support for the process to activate your account.`,
       );
     }
+
+    
     const payload = { sub: user.email, sub2: user.passengerId };
-    const expiresInSeconds = this.time; // !important change it according to time out limit.
+    const expiresInSeconds = this.time; // Adjust expiration as needed
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
 
     const dhakaOffset = 6 * 60 * 60 * 1000;
     const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
-
     const dhakaTimeFormatted = dhakaTime.toISOString();
 
     const token = await this.jwtservice.signAsync(payload);
+
+    
     const userData = {
       name: user.fullName,
       email: user.email,
       phone: user.phone,
     };
+
     return {
       access_token: token,
-      message: 'Log In Successfull',
+      message: 'Log In Successful',
       userData,
       expireIn: dhakaTimeFormatted,
     };
   }
+
   async verifyUserToken(header: any) {
     try {
       const authHeader = header['authorization'];
@@ -297,5 +316,70 @@ export class AuthService {
       console.error('Error sending verification email:', error);
       throw new Error('Failed to send verification email.');
     }
+  }
+
+  async signInUserForGoogle(user: User): Promise<any> {
+    if (user.status !== 'ACTIVE') {
+      throw new ServiceUnavailableException(
+        `Mr : ${user.fullName}, due to some of your activity we decided to Inactivate your account. Please contact our support for the process to activate your account.`,
+      );
+    }
+
+    const payload = { sub: user.email, sub2: user.passengerId };
+    const expiresInSeconds = this.time; // Adjust expiration as needed
+    const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
+
+    const dhakaOffset = 6 * 60 * 60 * 1000;
+    const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
+    const dhakaTimeFormatted = dhakaTime.toISOString();
+
+    const token = await this.jwtservice.signAsync(payload);
+    const userData = {
+      name: user.fullName,
+      email: user.email,
+      phone: user.phone,
+    };
+
+    return {
+      access_token: token,
+      message: 'Log In Successful',
+      userData,
+      expireIn: dhakaTimeFormatted,
+    };
+  }
+
+  async validateUser(user: any): Promise<any> {
+    const { email, fullName, googleId } = user;
+    let existingUser = await this.userRepository.findOne({ where: { email } });
+
+    if (!existingUser) {
+      const passenger = await this.userRepository.find({
+        order: { id: 'DESC' },
+        take: 1,
+      });
+      let passengerId: string;
+      if (passenger.length === 1) {
+        const lastPassenger = passenger[0];
+        const oldpassengerId = lastPassenger.passengerId.replace('FLYITP', '');
+        passengerId = 'FLYITP' + (parseInt(oldpassengerId) + 1);
+      } else {
+        passengerId = 'FLYITP1000';
+      }
+
+      let newUser = new User();
+      newUser.passengerId = passengerId;
+      newUser.email = email;
+      newUser.fullName = fullName.toUpperCase();
+      newUser.googleId = googleId;
+      newUser.status = 'ACTIVE';
+      newUser.emailVerified = true;
+      newUser.role = 'registered';
+
+      existingUser = await this.userRepository.save(newUser);
+
+      return existingUser;
+    }
+    //console.log(existingUser);
+    return await this.signInUserForGoogle(existingUser);
   }
 }
