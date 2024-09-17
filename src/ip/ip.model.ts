@@ -19,6 +19,6 @@ export class IpAddress {
 
   @Column('bigint')
   lastRequestTime: number;
-  @Column({nullable:true})
-  email:string
+  @Column({ nullable: true })
+  email: string;
 }

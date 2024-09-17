@@ -23,7 +23,6 @@ const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 let HotDealsController = class HotDealsController {
     constructor(tourpackageService) {
         this.tourpackageService = tourpackageService;
-        this.counter = 0;
     }
     async create(tourpackageDto, files) {
         const fileDetails = files.map((file) => ({

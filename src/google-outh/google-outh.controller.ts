@@ -14,7 +14,7 @@ export class GoogleOuthController {
   @Get('google')
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req: Request) {
-    console.log(req)
+    console.log(req);
   }
 
   @Get('google/redirect')

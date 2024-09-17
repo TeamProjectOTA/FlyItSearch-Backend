@@ -27,7 +27,7 @@ let UserService = class UserService {
     async create(createUserDto) {
         let add = new user_entity_1.User();
         const userAlreadyExisted = await this.userRepository.findOne({
-            where: { email: createUserDto.email },
+            where: { email: createUserDto.email }, relations: ['wallet']
         });
         if (userAlreadyExisted) {
             throw new common_1.HttpException('User already exists', common_1.HttpStatus.BAD_REQUEST);
@@ -55,6 +55,7 @@ let UserService = class UserService {
         add.status = 'ACTIVE';
         add.password = hashedPassword;
         add.verificationToken = verificationToken;
+        add.wallet.ammount = 0;
         const user = await this.userRepository.save(add);
         await this.authservice.sendVerificationEmail(user.email, verificationToken);
         return {
@@ -148,7 +149,7 @@ let UserService = class UserService {
         const email = await this.authservice.decodeToken(header);
         const user = await this.userRepository.findOne({
             where: { email: email },
-            relations: ['profilePicture'],
+            relations: ['profilePicture', 'wallet'],
         });
         const nameParts = user.fullName.split(' ');
         let firstName = '';
@@ -172,6 +173,7 @@ let UserService = class UserService {
             email: user.email,
             phone: user.phone,
             profilePicture: user.profilePicture,
+            wallet: user.wallet
         };
     }
     async findUserTravelBuddy(header) {

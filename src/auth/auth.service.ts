@@ -106,8 +106,6 @@ export class AuthService {
     pass?: string,
     isGoogleAuth: boolean = false,
   ): Promise<any> {
-    
-    
     const user = await this.userRepository.findOne({
       where: { email: email },
     });
@@ -116,7 +114,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email');
     }
 
-  
     if (!isGoogleAuth) {
       const passwordMatch = await bcrypt.compare(pass, user.password);
 
@@ -125,19 +122,16 @@ export class AuthService {
       }
     }
 
-   
     if (!isGoogleAuth && user.emailVerified === false) {
       throw new UnauthorizedException('Email is not verified');
     }
 
-   
     if (user.status !== 'ACTIVE') {
       throw new ServiceUnavailableException(
         `Mr : ${user.fullName}, due to some of your activity we decided to inactivate your account. Please contact our support for the process to activate your account.`,
       );
     }
 
-    
     const payload = { sub: user.email, sub2: user.passengerId };
     const expiresInSeconds = this.time; // Adjust expiration as needed
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
@@ -148,7 +142,6 @@ export class AuthService {
 
     const token = await this.jwtservice.signAsync(payload);
 
-    
     const userData = {
       name: user.fullName,
       email: user.email,

@@ -33,7 +33,6 @@ export class Transection {
   currierName: string;
   @Column()
   requestType: string;
-
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
 }

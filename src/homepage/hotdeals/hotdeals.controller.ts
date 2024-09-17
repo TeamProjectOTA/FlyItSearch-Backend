@@ -6,7 +6,6 @@ import {
   Get,
   Param,
   Post,
-  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -23,7 +22,6 @@ const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
 @ApiTags('Hotdeals-Api')
 @Controller('hotdeals')
 export class HotDealsController {
-  private counter = 0;
   constructor(private readonly tourpackageService: HotDealsService) {}
 
   @Post()
@@ -73,38 +71,8 @@ export class HotDealsController {
   async findOne(@Param('category') category: string) {
     return await this.tourpackageService.findOne(category);
   }
-
-  // @Get()
-  // async findAll(){
-  //   return await this.tourpackageService.findAll()
-  // }
-
   @Delete('/delete/:title')
   Delete(@Param('title') title: string) {
     return this.tourpackageService.Delete(title);
   }
-
-  // @Get('/flight')
-  // findAllFlight() {
-  //   const category = 'Flight';
-  //   return this.tourpackageService.findByFlight(category);
-  // }
-
-  // @Get('/hotel')
-  // findAllHotel(){
-  //   const category = 'Hotel';
-  //   return this.tourpackageService.findByHotel(category)
-  // }
-
-  // @Get('/group-fare')
-  // findAllGroupFare(){
-  //   const category = 'Group Fare';
-  //   return this.tourpackageService.findByGroupFare(category)
-  // }
-
-  // @Get('/tour')
-  // findAllTour(){
-  //   const category = 'Tour';
-  //   return this.tourpackageService.findByTour(category)
-  // }
 }

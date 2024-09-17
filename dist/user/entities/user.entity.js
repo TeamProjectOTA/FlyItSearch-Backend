@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
 const booking_model_1 = require("../../book/booking.model");
+const deposit_model_1 = require("../../deposit/deposit.model");
 const transection_model_1 = require("../../transection/transection.model");
 const travel_buddy_model_1 = require("../../travel-buddy/travel-buddy.model");
 const uploads_model_1 = require("../../uploads/uploads.model");
@@ -106,6 +107,14 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => transection_model_1.Transection, (transection) => transection.user),
     __metadata("design:type", Array)
 ], User.prototype, "transection", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => deposit_model_1.Deposit, (deposit) => deposit.user),
+    __metadata("design:type", Array)
+], User.prototype, "deposit", void 0);
+__decorate([
+    (0, typeorm_1.OneToOne)(() => deposit_model_1.Wallet, (wallet) => wallet.user),
+    __metadata("design:type", deposit_model_1.Wallet)
+], User.prototype, "wallet", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

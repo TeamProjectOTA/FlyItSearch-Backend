@@ -25,7 +25,7 @@ export class UserService {
     let add: User = new User();
 
     const userAlreadyExisted = await this.userRepository.findOne({
-      where: { email: createUserDto.email },
+      where: { email: createUserDto.email },relations:['wallet']
     });
 
     if (userAlreadyExisted) {
@@ -59,6 +59,7 @@ export class UserService {
     add.status = 'ACTIVE';
     add.password = hashedPassword;
     add.verificationToken = verificationToken;
+    add.wallet.ammount=0
 
     const user = await this.userRepository.save(add);
 
@@ -174,7 +175,8 @@ export class UserService {
     const email = await this.authservice.decodeToken(header);
     const user = await this.userRepository.findOne({
       where: { email: email },
-      relations: ['profilePicture'],
+      relations: ['profilePicture','wallet'],
+      
     });
 
     const nameParts = user.fullName.split(' ');
@@ -202,6 +204,7 @@ export class UserService {
       email: user.email,
       phone: user.phone,
       profilePicture: user.profilePicture,
+      wallet:user.wallet    
     };
   }
 

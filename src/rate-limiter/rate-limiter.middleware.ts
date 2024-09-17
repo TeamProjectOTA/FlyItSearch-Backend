@@ -29,7 +29,7 @@ export class RateLimiterMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const ip = req.ip;
     const userRole = req.user?.role || 'unregistered';
-    const email=req.user?.email
+    const email = req.user?.email;
 
     const rateLimiter =
       rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;

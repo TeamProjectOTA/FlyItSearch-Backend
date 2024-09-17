@@ -30,7 +30,7 @@ let IpService = class IpService {
             role,
             points,
             lastRequestTime,
-            email
+            email,
         });
         return this.ipRepository.save(ipAddress);
     }

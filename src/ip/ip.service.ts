@@ -19,14 +19,14 @@ export class IpService {
     role: string,
     points: number,
     lastRequestTime: number,
-    email:string
+    email: string,
   ): Promise<IpAddress> {
     const ipAddress = this.ipRepository.create({
       ip,
       role,
       points,
       lastRequestTime,
-      email
+      email,
     });
     return this.ipRepository.save(ipAddress);
   }
@@ -36,17 +36,17 @@ export class IpService {
     role: string,
     points: number,
     lastRequestTime: number,
-    email:string
+    email: string,
   ): Promise<IpAddress> {
     let ipAddress = await this.findOne(ip);
     if (ipAddress) {
       ipAddress.role = role;
       ipAddress.points = points;
       ipAddress.lastRequestTime = lastRequestTime;
-      ipAddress.email=email
+      ipAddress.email = email;
       return this.ipRepository.save(ipAddress);
     } else {
-      return this.create(ip, role, points, lastRequestTime,email);
+      return this.create(ip, role, points, lastRequestTime, email);
     }
   }
 

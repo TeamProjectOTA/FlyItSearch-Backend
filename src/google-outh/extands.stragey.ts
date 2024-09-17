@@ -26,7 +26,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       fullName: `${name.givenName} ${name.familyName}`,
       googleId: profile.id,
     };
-    
+
     const authenticatedUser = await this.authService.validateUser(user);
     done(null, authenticatedUser);
   }

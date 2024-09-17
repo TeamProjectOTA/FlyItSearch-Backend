@@ -1,4 +1,5 @@
 import { BookingSave } from 'src/book/booking.model';
+import { Deposit, Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
@@ -56,4 +57,8 @@ export class User {
   travelBuddy: TravelBuddy[];
   @OneToMany(() => Transection, (transection) => transection.user)
   transection: Transection[];
+  @OneToMany(() => Deposit, (deposit) => deposit.user)
+  deposit: Deposit[];
+  @OneToOne(() => Wallet, (wallet) => wallet.user)
+  wallet:Wallet
 }
