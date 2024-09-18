@@ -1,5 +1,12 @@
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Deposit {
@@ -33,8 +40,8 @@ export class Deposit {
   status: string;
   @Column({ type: 'timestamp' })
   createdAt: Date;
-  @Column({ type: 'timestamp' ,nullable:true})
-  actionAt:string
+  @Column({ type: 'timestamp', nullable: true })
+  actionAt: string;
   @Column({ nullable: true, default: 'NA' })
   rejectionReason: string;
   @ManyToOne(() => User, (user) => user.deposit, { onDelete: 'CASCADE' })
@@ -42,12 +49,12 @@ export class Deposit {
 }
 
 @Entity()
-export class Wallet{
- @PrimaryGeneratedColumn() 
- id:number
- @Column({default:0})
- ammount:number
- @OneToOne(() => User, (user) => user.wallet, { onDelete: 'CASCADE' })
- @JoinColumn()
- user: User;
+export class Wallet {
+  @PrimaryGeneratedColumn()
+  id: number;
+  @Column({ default: 0 })
+  ammount: number;
+  @OneToOne(() => User, (user) => user.wallet, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user: User;
 }

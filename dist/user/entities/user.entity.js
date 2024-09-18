@@ -112,7 +112,7 @@ __decorate([
     __metadata("design:type", Array)
 ], User.prototype, "deposit", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => deposit_model_1.Wallet, (wallet) => wallet.user),
+    (0, typeorm_1.OneToOne)(() => deposit_model_1.Wallet, (wallet) => wallet.user, { cascade: true }),
     __metadata("design:type", deposit_model_1.Wallet)
 ], User.prototype, "wallet", void 0);
 exports.User = User = __decorate([

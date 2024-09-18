@@ -13,6 +13,7 @@ import { MoreThan, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 import * as nodemailer from 'nodemailer';
+import { Wallet } from 'src/deposit/deposit.model';
 
 @Injectable()
 export class AuthService {
@@ -367,12 +368,12 @@ export class AuthService {
       newUser.status = 'ACTIVE';
       newUser.emailVerified = true;
       newUser.role = 'registered';
+      const newWallet = new Wallet();
+      newWallet.ammount = 0; 
+      newUser.wallet = newWallet;
 
       existingUser = await this.userRepository.save(newUser);
-
-      return existingUser;
     }
-    //console.log(existingUser);
     return await this.signInUserForGoogle(existingUser);
   }
 }

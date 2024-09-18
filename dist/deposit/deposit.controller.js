@@ -38,7 +38,7 @@ let DepositController = class DepositController {
         return this.depositService.updateDepositStatus(depositId, updateData);
     }
     async wallet(header) {
-        return this.depositService.wallet(header);
+        return await this.depositService.wallet(header);
     }
 };
 exports.DepositController = DepositController;

@@ -44,13 +44,16 @@ export class DepositController {
     return this.depositService.findAllDeposit();
   }
   @Patch('/admin/depositAction/:depositId')
-  async actionOnDeposit(@Body() updateData:{ status: string; rejectionReason: string },@Param('depositId') depositId:string){
-    return this.depositService.updateDepositStatus(depositId,updateData)
+  async actionOnDeposit(
+    @Body() updateData: { status: string; rejectionReason: string },
+    @Param('depositId') depositId: string,
+  ) {
+    return this.depositService.updateDepositStatus(depositId, updateData);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('user/wallet')
   async wallet(@Headers() header: any) {
-    return this.depositService.wallet(header);
+    return await this.depositService.wallet(header);
   }
 }

@@ -68,7 +68,10 @@ let DepositService = class DepositService {
         });
     }
     async updateDepositStatus(depositId, updateData) {
-        const deposit = await this.depositRepository.findOne({ where: { depositId: depositId }, relations: ['user'] });
+        const deposit = await this.depositRepository.findOne({
+            where: { depositId: depositId },
+            relations: ['user'],
+        });
         const userEmail = deposit.user.email;
         if (!deposit) {
             throw new common_1.NotFoundException('Deposit not found');
@@ -84,7 +87,10 @@ let DepositService = class DepositService {
         deposit.actionAt = dhakaTimeFormatted;
         deposit.rejectionReason = updateData.rejectionReason;
         if (updateData.status == 'Approved') {
-            const findUser = await this.userRepository.findOne({ where: { email: userEmail }, relations: ['wallet'] });
+            const findUser = await this.userRepository.findOne({
+                where: { email: userEmail },
+                relations: ['wallet'],
+            });
             findUser.wallet.ammount = findUser.wallet.ammount + deposit.ammount;
             await this.walletRepository.save(findUser.wallet);
         }
@@ -92,7 +98,10 @@ let DepositService = class DepositService {
     }
     async wallet(header) {
         const email = await this.authService.decodeToken(header);
-        const wallet = await this.userRepository.findOne({ where: { email: email }, relations: ['wallet'] });
+        const wallet = await this.userRepository.findOne({
+            where: { email: email },
+            relations: ['wallet'],
+        });
         return wallet.wallet;
     }
 };

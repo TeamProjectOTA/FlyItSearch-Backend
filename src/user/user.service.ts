@@ -13,19 +13,26 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcryptjs';
+import { Wallet } from 'src/deposit/deposit.model';
+import { IpAddress } from 'src/ip/ip.model';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+    // @InjectRepository(IpAddress)
+    // private readonly ipAddressRepository:Repository<IpAddress>,
     private readonly authservice: AuthService,
+    
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
     let add: User = new User();
 
     const userAlreadyExisted = await this.userRepository.findOne({
-      where: { email: createUserDto.email },relations:['wallet']
+      where: { email: createUserDto.email },
+      relations: ['wallet'],
     });
 
     if (userAlreadyExisted) {
@@ -59,10 +66,11 @@ export class UserService {
     add.status = 'ACTIVE';
     add.password = hashedPassword;
     add.verificationToken = verificationToken;
-    add.wallet.ammount=0
-
+    const newWallet = new Wallet();
+    newWallet.ammount = 0; 
+    add.wallet = newWallet;
     const user = await this.userRepository.save(add);
-
+    console.log(user)
     await this.authservice.sendVerificationEmail(user.email, verificationToken);
 
     return {
@@ -163,20 +171,31 @@ export class UserService {
   }
 
   async findAllUserWithBookings(): Promise<any> {
-    return this.userRepository.find({
-      relations: ['bookingSave'],
+    const users =await this.userRepository.find({
+      relations: ['bookingSave','wallet'],
       order: {
         passengerId: 'DESC',
       },
     });
+    const usersWithIpData = await Promise.all(
+      users.map(async (user) => {
+        const emaildata = user.email;  
+       
+        return {
+          ...user,
+          emaildata, 
+        };
+      })
+    );
+  
+    return usersWithIpData;
   }
 
   async findOneUser(header: any): Promise<any> {
     const email = await this.authservice.decodeToken(header);
     const user = await this.userRepository.findOne({
       where: { email: email },
-      relations: ['profilePicture','wallet'],
-      
+      relations: ['profilePicture', 'wallet'],
     });
 
     const nameParts = user.fullName.split(' ');
@@ -204,7 +223,7 @@ export class UserService {
       email: user.email,
       phone: user.phone,
       profilePicture: user.profilePicture,
-      wallet:user.wallet    
+      wallet: user.wallet,
     };
   }
 

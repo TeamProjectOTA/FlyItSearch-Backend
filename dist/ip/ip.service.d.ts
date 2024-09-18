@@ -6,6 +6,8 @@ export declare class IpService {
     findOne(ip: string): Promise<IpAddress>;
     create(ip: string, role: string, points: number, lastRequestTime: number, email: string): Promise<IpAddress>;
     createOrUpdate(ip: string, role: string, points: number, lastRequestTime: number, email: string): Promise<IpAddress>;
-    delete(email: string): Promise<void>;
+    delete(email: string): Promise<any>;
+    update(email: string, points: number): Promise<void>;
+    findUser(email: string): Promise<IpAddress>;
     cleanupOldIps(expirationTime: number): Promise<void>;
 }

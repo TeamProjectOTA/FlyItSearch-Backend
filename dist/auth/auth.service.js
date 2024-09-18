@@ -21,6 +21,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_2 = require("typeorm");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const deposit_model_1 = require("../deposit/deposit.model");
 let AuthService = class AuthService {
     constructor(adminRepository, userRepository, jwtservice) {
         this.adminRepository = adminRepository;
@@ -307,8 +308,10 @@ let AuthService = class AuthService {
             newUser.status = 'ACTIVE';
             newUser.emailVerified = true;
             newUser.role = 'registered';
+            const newWallet = new deposit_model_1.Wallet();
+            newWallet.ammount = 0;
+            newUser.wallet = newWallet;
             existingUser = await this.userRepository.save(newUser);
-            return existingUser;
         }
         return await this.signInUserForGoogle(existingUser);
     }

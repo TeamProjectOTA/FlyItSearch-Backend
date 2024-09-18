@@ -8,7 +8,11 @@ import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Deposit, User,Wallet]), UserModule, AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([Deposit, User, Wallet]),
+    UserModule,
+    AuthModule,
+  ],
   controllers: [DepositController],
   providers: [DepositService],
 })

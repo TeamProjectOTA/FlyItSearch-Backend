@@ -19,6 +19,7 @@ const user_entity_1 = require("./entities/user.entity");
 const typeorm_2 = require("typeorm");
 const auth_service_1 = require("../auth/auth.service");
 const bcrypt = require("bcryptjs");
+const deposit_model_1 = require("../deposit/deposit.model");
 let UserService = class UserService {
     constructor(userRepository, authservice) {
         this.userRepository = userRepository;
@@ -27,7 +28,8 @@ let UserService = class UserService {
     async create(createUserDto) {
         let add = new user_entity_1.User();
         const userAlreadyExisted = await this.userRepository.findOne({
-            where: { email: createUserDto.email }, relations: ['wallet']
+            where: { email: createUserDto.email },
+            relations: ['wallet'],
         });
         if (userAlreadyExisted) {
             throw new common_1.HttpException('User already exists', common_1.HttpStatus.BAD_REQUEST);
@@ -55,8 +57,11 @@ let UserService = class UserService {
         add.status = 'ACTIVE';
         add.password = hashedPassword;
         add.verificationToken = verificationToken;
-        add.wallet.ammount = 0;
+        const newWallet = new deposit_model_1.Wallet();
+        newWallet.ammount = 0;
+        add.wallet = newWallet;
         const user = await this.userRepository.save(add);
+        console.log(user);
         await this.authservice.sendVerificationEmail(user.email, verificationToken);
         return {
             fullName: user.fullName,
@@ -138,12 +143,20 @@ let UserService = class UserService {
         };
     }
     async findAllUserWithBookings() {
-        return this.userRepository.find({
-            relations: ['bookingSave'],
+        const users = await this.userRepository.find({
+            relations: ['bookingSave', 'wallet'],
             order: {
                 passengerId: 'DESC',
             },
         });
+        const usersWithIpData = await Promise.all(users.map(async (user) => {
+            const emaildata = user.email;
+            return {
+                ...user,
+                emaildata,
+            };
+        }));
+        return usersWithIpData;
     }
     async findOneUser(header) {
         const email = await this.authservice.decodeToken(header);
@@ -173,7 +186,7 @@ let UserService = class UserService {
             email: user.email,
             phone: user.phone,
             profilePicture: user.profilePicture,
-            wallet: user.wallet
+            wallet: user.wallet,
         };
     }
     async findUserTravelBuddy(header) {
