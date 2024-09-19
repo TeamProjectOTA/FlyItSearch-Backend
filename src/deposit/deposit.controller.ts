@@ -44,6 +44,7 @@ export class DepositController {
     return this.depositService.findAllDeposit();
   }
   @Patch('/admin/depositAction/:depositId')
+  @UseGuards(AdmintokenGuard)
   async actionOnDeposit(
     @Body() updateData: { status: string; rejectionReason: string },
     @Param('depositId') depositId: string,

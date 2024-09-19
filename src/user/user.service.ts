@@ -15,14 +15,15 @@ import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { Wallet } from 'src/deposit/deposit.model';
 import { IpAddress } from 'src/ip/ip.model';
+import { Transection } from 'src/transection/transection.model';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    // @InjectRepository(IpAddress)
-    // private readonly ipAddressRepository:Repository<IpAddress>,
+    @InjectRepository(Transection)
+    private readonly transectionRepository:Repository<Transection>,
     private readonly authservice: AuthService,
     
   ) {}
@@ -251,11 +252,21 @@ export class UserService {
 
   async findUserTransection(header: any) {
     const email = await this.authservice.decodeToken(header);
-    const transection = await this.userRepository.findOne({
-      where: { email },
-      relations: ['transection'],
-    });
+    const user = await this.userRepository.createQueryBuilder('user')
+    .leftJoinAndSelect('user.transection', 'transection')
+    .where('user.email = :email', { email })
+    .orderBy('transection.id', 'DESC') 
+    .getOne();
+    return { transection: user.transection };
+  }
+  async allTransection(){
+    return await this.transectionRepository.find({relations:['user','user.wallet'],order:{id:'DESC'}})
+  }
 
-    return { transection: transection.transection };
+  async updateUserActivation(email:string,action:string){
+    let user = await this.userRepository.findOne({where:{email:email}})
+    user.status=action
+    return await this.userRepository.save(user)
+    
   }
 }

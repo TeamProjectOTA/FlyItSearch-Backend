@@ -46,8 +46,14 @@ let UserController = class UserController {
         const travelBuddies = await this.userService.findUserTravelBuddy(header);
         return travelBuddies;
     }
-    async findAllUserTransection(header) {
+    async findOneUserTransection(header) {
         return await this.userService.findUserTransection(header);
+    }
+    async findAllUserTransection() {
+        return await this.userService.allTransection();
+    }
+    async updateUserActivation(email, action) {
+        return await this.userService.updateUserActivation(email, action);
     }
 };
 exports.UserController = UserController;
@@ -118,7 +124,25 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
+], UserController.prototype, "findOneUserTransection", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Get)('admin/ledgerReport'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAllUserTransection", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Patch)('admin/userAccountAction'),
+    __param(0, (0, common_1.Body)('email')),
+    __param(1, (0, common_1.Body)('action')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateUserActivation", null);
 exports.UserController = UserController = __decorate([
     (0, swagger_1.ApiTags)('User'),
     (0, common_1.Controller)('user'),

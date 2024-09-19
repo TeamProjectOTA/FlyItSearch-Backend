@@ -302,6 +302,7 @@ let AuthService = class AuthService {
             }
             let newUser = new user_entity_1.User();
             newUser.passengerId = passengerId;
+            newUser.password = 'Google loge in';
             newUser.email = email;
             newUser.fullName = fullName.toUpperCase();
             newUser.googleId = googleId;

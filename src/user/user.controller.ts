@@ -75,7 +75,24 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('/oneUserAllTransection')
-  async findAllUserTransection(@Headers() header: Headers) {
+  async findOneUserTransection(@Headers() header: Headers) {
     return await this.userService.findUserTransection(header);
   }
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Get('admin/ledgerReport')
+  async findAllUserTransection() {
+    return await this.userService.allTransection();
+  }
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Patch('admin/userAccountAction')
+  async updateUserActivation(
+    @Body('email') email: string,
+    @Body('action') action: string,
+  ) {
+    return await this.userService.updateUserActivation(email, action);
+  }
+
 }

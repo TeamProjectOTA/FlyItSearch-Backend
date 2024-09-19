@@ -7,9 +7,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './jwt.constaints';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { Transection } from 'src/transection/transection.model';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User]),
+    TypeOrmModule.forFeature([Admin, User,Transection]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

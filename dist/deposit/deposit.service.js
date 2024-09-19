@@ -16,14 +16,17 @@ exports.DepositService = void 0;
 const common_1 = require("@nestjs/common");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
+const moment = require("moment");
 const deposit_model_1 = require("./deposit.model");
 const typeorm_2 = require("@nestjs/typeorm");
 const auth_service_1 = require("../auth/auth.service");
+const transection_model_1 = require("../transection/transection.model");
 let DepositService = class DepositService {
-    constructor(depositRepository, userRepository, walletRepository, authService) {
+    constructor(depositRepository, userRepository, walletRepository, transectionRepository, authService) {
         this.depositRepository = depositRepository;
         this.userRepository = userRepository;
         this.walletRepository = walletRepository;
+        this.transectionRepository = transectionRepository;
         this.authService = authService;
     }
     async createDeposit(depositData, header) {
@@ -87,6 +90,17 @@ let DepositService = class DepositService {
         deposit.actionAt = dhakaTimeFormatted;
         deposit.rejectionReason = updateData.rejectionReason;
         if (updateData.status == 'Approved') {
+            let addTransection = new transection_model_1.Transection();
+            addTransection.tranId = deposit.depositId;
+            addTransection.user = deposit.user;
+            addTransection.tranDate = moment.utc(deposit.createdAt).format('YYYY-MM-DD HH:mm:ss');
+            addTransection.requestType = `${deposit.depositType} Transfar`;
+            addTransection.bankTranId = deposit.referance;
+            addTransection.paidAmount = deposit.ammount.toString();
+            addTransection.status = 'Deposited';
+            addTransection.riskTitle = 'Checked OK';
+            addTransection.validationDate = moment.utc(deposit.actionAt).format('YYYY-MM-DD HH:mm:ss');
+            await this.transectionRepository.save(addTransection);
             const findUser = await this.userRepository.findOne({
                 where: { email: userEmail },
                 relations: ['wallet'],
@@ -111,7 +125,9 @@ exports.DepositService = DepositService = __decorate([
     __param(0, (0, typeorm_2.InjectRepository)(deposit_model_1.Deposit)),
     __param(1, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
     __param(2, (0, typeorm_2.InjectRepository)(deposit_model_1.Wallet)),
+    __param(3, (0, typeorm_2.InjectRepository)(transection_model_1.Transection)),
     __metadata("design:paramtypes", [typeorm_1.Repository,
+        typeorm_1.Repository,
         typeorm_1.Repository,
         typeorm_1.Repository,
         auth_service_1.AuthService])

@@ -38,8 +38,8 @@ export class Deposit {
   depositedFrom: string;
   @Column()
   status: string;
-  @Column({ type: 'timestamp' })
-  createdAt: Date;
+  @Column()
+  createdAt: string;
   @Column({ type: 'timestamp', nullable: true })
   actionAt: string;
   @Column({ nullable: true, default: 'NA' })

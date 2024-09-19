@@ -14,7 +14,7 @@ export declare class Deposit {
     transferDate: string;
     depositedFrom: string;
     status: string;
-    createdAt: Date;
+    createdAt: string;
     actionAt: string;
     rejectionReason: string;
     user: User;

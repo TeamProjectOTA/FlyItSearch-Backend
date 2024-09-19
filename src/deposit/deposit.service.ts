@@ -5,9 +5,11 @@ import {
 } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import * as moment from 'moment';
 import { Deposit, Wallet } from './deposit.model';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
+import { Transection } from 'src/transection/transection.model';
 
 @Injectable()
 export class DepositService {
@@ -18,6 +20,8 @@ export class DepositService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
+    @InjectRepository(Transection)
+    private readonly transectionRepository:Repository<Transection>,
     private readonly authService: AuthService,
   ) {}
 
@@ -100,6 +104,17 @@ export class DepositService {
     //     throw new NotFoundException('Rejection Reason Cannot be empty')
     // }
     if (updateData.status == 'Approved') {
+       let addTransection:Transection=new Transection()
+        addTransection.tranId=deposit.depositId
+        addTransection.user=deposit.user
+        addTransection.tranDate=moment.utc(deposit.createdAt).format('YYYY-MM-DD HH:mm:ss')
+        addTransection.requestType=`${deposit.depositType} Transfar`
+        addTransection.bankTranId=deposit.referance
+        addTransection.paidAmount=deposit.ammount.toString()
+        addTransection.status='Deposited'
+        addTransection.riskTitle='Checked OK'
+        addTransection.validationDate=moment.utc(deposit.actionAt).format('YYYY-MM-DD HH:mm:ss')
+        await this.transectionRepository.save(addTransection)
       const findUser = await this.userRepository.findOne({
         where: { email: userEmail },
         relations: ['wallet'],

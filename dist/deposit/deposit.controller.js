@@ -70,6 +70,7 @@ __decorate([
 ], DepositController.prototype, "findAllDepositForAdmin", null);
 __decorate([
     (0, common_1.Patch)('/admin/depositAction/:depositId'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Param)('depositId')),
     __metadata("design:type", Function),

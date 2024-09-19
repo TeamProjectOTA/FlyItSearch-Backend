@@ -20,9 +20,11 @@ const typeorm_2 = require("typeorm");
 const auth_service_1 = require("../auth/auth.service");
 const bcrypt = require("bcryptjs");
 const deposit_model_1 = require("../deposit/deposit.model");
+const transection_model_1 = require("../transection/transection.model");
 let UserService = class UserService {
-    constructor(userRepository, authservice) {
+    constructor(userRepository, transectionRepository, authservice) {
         this.userRepository = userRepository;
+        this.transectionRepository = transectionRepository;
         this.authservice = authservice;
     }
     async create(createUserDto) {
@@ -210,18 +212,29 @@ let UserService = class UserService {
     }
     async findUserTransection(header) {
         const email = await this.authservice.decodeToken(header);
-        const transection = await this.userRepository.findOne({
-            where: { email },
-            relations: ['transection'],
-        });
-        return { transection: transection.transection };
+        const user = await this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.transection', 'transection')
+            .where('user.email = :email', { email })
+            .orderBy('transection.id', 'DESC')
+            .getOne();
+        return { transection: user.transection };
+    }
+    async allTransection() {
+        return await this.transectionRepository.find({ relations: ['user', 'user.wallet'], order: { id: 'DESC' } });
+    }
+    async updateUserActivation(email, action) {
+        let user = await this.userRepository.findOne({ where: { email: email } });
+        user.status = action;
+        return await this.userRepository.save(user);
     }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(1, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         auth_service_1.AuthService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map
