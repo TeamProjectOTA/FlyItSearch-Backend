@@ -93,20 +93,26 @@ let DepositService = class DepositService {
             let addTransection = new transection_model_1.Transection();
             addTransection.tranId = deposit.depositId;
             addTransection.user = deposit.user;
-            addTransection.tranDate = moment.utc(deposit.createdAt).format('YYYY-MM-DD HH:mm:ss');
+            addTransection.tranDate = moment
+                .utc(deposit.createdAt)
+                .format('YYYY-MM-DD HH:mm:ss');
             addTransection.requestType = `${deposit.depositType} Transfar`;
             addTransection.bankTranId = deposit.referance;
             addTransection.paidAmount = deposit.ammount.toString();
             addTransection.status = 'Deposited';
             addTransection.riskTitle = 'Checked OK';
-            addTransection.validationDate = moment.utc(deposit.actionAt).format('YYYY-MM-DD HH:mm:ss');
-            await this.transectionRepository.save(addTransection);
+            addTransection.validationDate = moment
+                .utc(deposit.actionAt)
+                .format('YYYY-MM-DD HH:mm:ss');
             const findUser = await this.userRepository.findOne({
                 where: { email: userEmail },
                 relations: ['wallet'],
             });
             findUser.wallet.ammount = findUser.wallet.ammount + deposit.ammount;
             await this.walletRepository.save(findUser.wallet);
+            addTransection.walletBalance = findUser.wallet.ammount + deposit.ammount;
+            addTransection.paymentType = 'Money added';
+            await this.transectionRepository.save(addTransection);
         }
         return await this.depositRepository.save(deposit);
     }

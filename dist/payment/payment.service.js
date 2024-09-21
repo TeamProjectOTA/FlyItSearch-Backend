@@ -17,15 +17,17 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const auth_service_1 = require("../auth/auth.service");
 const booking_model_1 = require("../book/booking.model");
+const deposit_model_1 = require("../deposit/deposit.model");
 const transection_model_1 = require("../transection/transection.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const sslcommerz_1 = require("sslcommerz");
 const typeorm_2 = require("typeorm");
 let PaymentService = class PaymentService {
-    constructor(bookingSaveRepository, transectionRepository, userRepository, authService) {
+    constructor(bookingSaveRepository, transectionRepository, userRepository, walletRepository, authService) {
         this.bookingSaveRepository = bookingSaveRepository;
         this.transectionRepository = transectionRepository;
         this.userRepository = userRepository;
+        this.walletRepository = walletRepository;
         this.authService = authService;
         this.storeId = process.env.STORE_ID;
         this.storePassword = process.env.STORE_PASSWORD;
@@ -153,6 +155,11 @@ let PaymentService = class PaymentService {
                 const user = await this.userRepository.findOne({
                     where: { email: email },
                 });
+                const wallet = await this.walletRepository
+                    .createQueryBuilder('wallet')
+                    .innerJoinAndSelect('wallet.user', 'user')
+                    .where('user.email = :email', { email })
+                    .getOne();
                 const airPlaneName = bookingSave.Curriername;
                 const tripType = bookingSave.TripType;
                 let addTransection = new transection_model_1.Transection();
@@ -168,8 +175,11 @@ let PaymentService = class PaymentService {
                 addTransection.cardIssuerCountry = response.card_issuer_country;
                 addTransection.validationDate = response.validated_on;
                 addTransection.status = 'Purchase';
+                addTransection.walletBalance = wallet.ammount;
+                addTransection.paymentType = 'Payment for air ticket';
                 addTransection.currierName = airPlaneName;
                 addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
+                addTransection.bookingId = bookingId;
                 addTransection.user = user;
                 await this.transectionRepository.save(addTransection);
             }
@@ -187,7 +197,9 @@ exports.PaymentService = PaymentService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __param(1, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
     __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(deposit_model_1.Wallet)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         auth_service_1.AuthService])

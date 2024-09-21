@@ -17,13 +17,14 @@ const transection_module_1 = require("../transection/transection.module");
 const user_entity_1 = require("../user/entities/user.entity");
 const user_module_1 = require("../user/user.module");
 const auth_module_1 = require("../auth/auth.module");
+const deposit_model_1 = require("../deposit/deposit.model");
 let PaymentModule = class PaymentModule {
 };
 exports.PaymentModule = PaymentModule;
 exports.PaymentModule = PaymentModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, transection_model_1.Transection, user_entity_1.User]),
+            typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, transection_model_1.Transection, user_entity_1.User, deposit_model_1.Wallet]),
             transection_module_1.TransectionModule,
             user_module_1.UserModule,
             auth_module_1.AuthModule,

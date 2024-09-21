@@ -10,12 +10,17 @@ exports.TransectionModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const transection_model_1 = require("./transection.model");
+const transection_service_1 = require("./transection.service");
+const auth_module_1 = require("../auth/auth.module");
+const booking_model_1 = require("../book/booking.model");
 let TransectionModule = class TransectionModule {
 };
 exports.TransectionModule = TransectionModule;
 exports.TransectionModule = TransectionModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([transection_model_1.Transection])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([transection_model_1.Transection, booking_model_1.BookingSave]), auth_module_1.AuthModule],
+        providers: [transection_service_1.TransectionService],
+        exports: [transection_service_1.TransectionService]
     })
 ], TransectionModule);
 //# sourceMappingURL=transection.module.js.map

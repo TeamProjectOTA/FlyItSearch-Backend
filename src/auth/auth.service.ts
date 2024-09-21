@@ -363,7 +363,7 @@ export class AuthService {
 
       let newUser = new User();
       newUser.passengerId = passengerId;
-      newUser.password='Google loge in'
+      newUser.password = 'Google loge in';
       newUser.email = email;
       newUser.fullName = fullName.toUpperCase();
       newUser.googleId = googleId;
@@ -371,7 +371,7 @@ export class AuthService {
       newUser.emailVerified = true;
       newUser.role = 'registered';
       const newWallet = new Wallet();
-      newWallet.ammount = 0; 
+      newWallet.ammount = 0;
       newUser.wallet = newWallet;
 
       existingUser = await this.userRepository.save(newUser);

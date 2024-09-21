@@ -20,11 +20,13 @@ const mail_service_1 = require("../../mail/mail.service");
 const payment_service_1 = require("../../payment/payment.service");
 const flight_model_1 = require("../flight.model");
 const typeorm_2 = require("typeorm");
+const transection_service_1 = require("../../transection/transection.service");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService, mailService, paymentService, bookingIdSave) {
+    constructor(BookService, mailService, paymentService, transectionService, bookingIdSave) {
         this.BookService = BookService;
         this.mailService = mailService;
         this.paymentService = paymentService;
+        this.transectionService = transectionService;
         this.bookingIdSave = bookingIdSave;
     }
     async restBFMParser(SearchResponse, journeyType) {
@@ -449,6 +451,7 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
+        const walletPayment = await this.transectionService.paymentWithWallet(header, fisId);
         return {
             bookingData: FlightItenary,
             sslpaymentLink,
@@ -913,10 +916,11 @@ let FlyHubUtil = class FlyHubUtil {
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
-    __param(3, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(4, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
         mail_service_1.MailService,
         payment_service_1.PaymentService,
+        transection_service_1.TransectionService,
         typeorm_2.Repository])
 ], FlyHubUtil);
 //# sourceMappingURL=flyhub.util.js.map

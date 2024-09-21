@@ -9,6 +9,8 @@ export class Transection {
   tranId: string;
   @Column({ nullable: true })
   tranDate: string;
+  @Column()
+  bookingId:string
   @Column({ nullable: true })
   paidAmount: string;
   @Column({ nullable: true })
@@ -33,6 +35,10 @@ export class Transection {
   currierName: string;
   @Column()
   requestType: string;
+  @Column()
+  walletBalance: number;
+  @Column()
+  paymentType:string
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
 }

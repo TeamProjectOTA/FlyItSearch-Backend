@@ -29,6 +29,8 @@ const booking_service_1 = require("../book/booking.service");
 const booking_service_2 = require("./booking.service");
 const payment_module_1 = require("../payment/payment.module");
 const mail_module_1 = require("../mail/mail.module");
+const transection_module_1 = require("../transection/transection.module");
+const transection_model_1 = require("../transection/transection.model");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -42,6 +44,7 @@ exports.FlightModule = FlightModule = __decorate([
                 user_entity_1.User,
                 booking_model_1.BookingSave,
                 flight_model_1.BookingIdSave,
+                transection_model_1.Transection
             ]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,
@@ -49,6 +52,7 @@ exports.FlightModule = FlightModule = __decorate([
             auth_module_1.AuthModule,
             payment_module_1.PaymentModule,
             mail_module_1.MailModule,
+            transection_module_1.TransectionModule
         ],
         controllers: [flight_controller_1.FlightController],
         providers: [

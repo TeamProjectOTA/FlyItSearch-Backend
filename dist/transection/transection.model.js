@@ -28,6 +28,10 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "tranDate", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Transection.prototype, "bookingId", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "paidAmount", void 0);
@@ -75,6 +79,14 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Transection.prototype, "requestType", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], Transection.prototype, "walletBalance", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Transection.prototype, "paymentType", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.transection, { onDelete: 'CASCADE' }),
     __metadata("design:type", user_entity_1.User)

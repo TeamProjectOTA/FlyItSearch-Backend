@@ -3,6 +3,7 @@ export declare class Transection {
     id: number;
     tranId: string;
     tranDate: string;
+    bookingId: string;
     paidAmount: string;
     offerAmmount: string;
     bankTranId: string;
@@ -15,5 +16,7 @@ export declare class Transection {
     status: string;
     currierName: string;
     requestType: string;
+    walletBalance: number;
+    paymentType: string;
     user: User;
 }

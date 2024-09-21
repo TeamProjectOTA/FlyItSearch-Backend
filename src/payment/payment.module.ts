@@ -8,10 +8,11 @@ import { TransectionModule } from 'src/transection/transection.module';
 import { User } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
+import { Wallet } from 'src/deposit/deposit.model';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BookingSave, Transection, User]),
+    TypeOrmModule.forFeature([BookingSave, Transection, User, Wallet]),
     TransectionModule,
     UserModule,
     AuthModule,

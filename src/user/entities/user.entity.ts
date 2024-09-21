@@ -59,6 +59,6 @@ export class User {
   transection: Transection[];
   @OneToMany(() => Deposit, (deposit) => deposit.user)
   deposit: Deposit[];
-  @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true }) 
+  @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
   wallet: Wallet;
 }

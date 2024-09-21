@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
+import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { User } from 'src/user/entities/user.entity';
 import { SslCommerzPayment } from 'sslcommerz';
@@ -19,6 +20,8 @@ export class PaymentService {
     private readonly transectionRepository: Repository<Transection>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
     private readonly authService: AuthService,
   ) {
     this.storeId = process.env.STORE_ID;
@@ -107,6 +110,7 @@ export class PaymentService {
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
     });
+
     if (bookingSave.bookingStatus == 'Booked') {
       const data = {
         total_amount: paymentData.total_amount,
@@ -171,6 +175,12 @@ export class PaymentService {
         const user = await this.userRepository.findOne({
           where: { email: email },
         });
+        const wallet = await this.walletRepository
+          .createQueryBuilder('wallet')
+          .innerJoinAndSelect('wallet.user', 'user')
+          .where('user.email = :email', { email })
+          .getOne();
+
         const airPlaneName = bookingSave.Curriername;
         const tripType = bookingSave.TripType;
 
@@ -187,9 +197,11 @@ export class PaymentService {
         addTransection.cardIssuerCountry = response.card_issuer_country;
         addTransection.validationDate = response.validated_on;
         addTransection.status = 'Purchase';
-
+        addTransection.walletBalance=wallet.ammount
+        addTransection.paymentType='Payment for air ticket'
         addTransection.currierName = airPlaneName;
         addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
+        addTransection.bookingId=bookingId
         addTransection.user = user;
         await this.transectionRepository.save(addTransection);
       }
@@ -199,4 +211,6 @@ export class PaymentService {
       throw new Error('Payment validation failed.');
     }
   }
+
+
 }

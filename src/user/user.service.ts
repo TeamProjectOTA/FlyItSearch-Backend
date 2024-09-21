@@ -23,9 +23,8 @@ export class UserService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(Transection)
-    private readonly transectionRepository:Repository<Transection>,
+    private readonly transectionRepository: Repository<Transection>,
     private readonly authservice: AuthService,
-    
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -68,10 +67,10 @@ export class UserService {
     add.password = hashedPassword;
     add.verificationToken = verificationToken;
     const newWallet = new Wallet();
-    newWallet.ammount = 0; 
+    newWallet.ammount = 0;
     add.wallet = newWallet;
     const user = await this.userRepository.save(add);
-    console.log(user)
+    console.log(user);
     await this.authservice.sendVerificationEmail(user.email, verificationToken);
 
     return {
@@ -172,23 +171,23 @@ export class UserService {
   }
 
   async findAllUserWithBookings(): Promise<any> {
-    const users =await this.userRepository.find({
-      relations: ['bookingSave','wallet'],
+    const users = await this.userRepository.find({
+      relations: ['bookingSave', 'wallet'],
       order: {
         passengerId: 'DESC',
       },
     });
     const usersWithIpData = await Promise.all(
       users.map(async (user) => {
-        const emaildata = user.email;  
-       
+        const emaildata = user.email;
+
         return {
           ...user,
-          emaildata, 
+          emaildata,
         };
-      })
+      }),
     );
-  
+
     return usersWithIpData;
   }
 
@@ -252,21 +251,24 @@ export class UserService {
 
   async findUserTransection(header: any) {
     const email = await this.authservice.decodeToken(header);
-    const user = await this.userRepository.createQueryBuilder('user')
-    .leftJoinAndSelect('user.transection', 'transection')
-    .where('user.email = :email', { email })
-    .orderBy('transection.id', 'DESC') 
-    .getOne();
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.transection', 'transection')
+      .where('user.email = :email', { email })
+      .orderBy('transection.id', 'DESC')
+      .getOne();
     return { transection: user.transection };
   }
-  async allTransection(){
-    return await this.transectionRepository.find({relations:['user','user.wallet'],order:{id:'DESC'}})
+  async allTransection() {
+    return await this.transectionRepository.find({
+      relations: ['user', 'user.wallet'],
+      order: { id: 'DESC' },
+    });
   }
 
-  async updateUserActivation(email:string,action:string){
-    let user = await this.userRepository.findOne({where:{email:email}})
-    user.status=action
-    return await this.userRepository.save(user)
-    
+  async updateUserActivation(email: string, action: string) {
+    let user = await this.userRepository.findOne({ where: { email: email } });
+    user.status = action;
+    return await this.userRepository.save(user);
   }
 }

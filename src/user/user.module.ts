@@ -7,7 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Transection } from 'src/transection/transection.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User,Transection]), AuthModule],
+  imports: [TypeOrmModule.forFeature([User, Transection]), AuthModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

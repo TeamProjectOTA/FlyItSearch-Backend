@@ -212,7 +212,8 @@ let UserService = class UserService {
     }
     async findUserTransection(header) {
         const email = await this.authservice.decodeToken(header);
-        const user = await this.userRepository.createQueryBuilder('user')
+        const user = await this.userRepository
+            .createQueryBuilder('user')
             .leftJoinAndSelect('user.transection', 'transection')
             .where('user.email = :email', { email })
             .orderBy('transection.id', 'DESC')
@@ -220,7 +221,10 @@ let UserService = class UserService {
         return { transection: user.transection };
     }
     async allTransection() {
-        return await this.transectionRepository.find({ relations: ['user', 'user.wallet'], order: { id: 'DESC' } });
+        return await this.transectionRepository.find({
+            relations: ['user', 'user.wallet'],
+            order: { id: 'DESC' },
+        });
     }
     async updateUserActivation(email, action) {
         let user = await this.userRepository.findOne({ where: { email: email } });

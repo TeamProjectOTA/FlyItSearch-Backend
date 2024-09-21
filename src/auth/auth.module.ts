@@ -10,7 +10,7 @@ import { UserService } from 'src/user/user.service';
 import { Transection } from 'src/transection/transection.model';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User,Transection]),
+    TypeOrmModule.forFeature([Admin, User, Transection]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

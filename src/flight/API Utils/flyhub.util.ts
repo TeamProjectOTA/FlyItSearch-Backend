@@ -5,6 +5,7 @@ import { MailService } from 'src/mail/mail.service';
 import { PaymentService } from 'src/payment/payment.service';
 import { BookingIdSave } from '../flight.model';
 import { Repository } from 'typeorm';
+import { TransectionService } from 'src/transection/transection.service';
 
 @Injectable()
 export class FlyHubUtil {
@@ -12,6 +13,7 @@ export class FlyHubUtil {
     private readonly BookService: BookingService,
     private readonly mailService: MailService,
     private readonly paymentService: PaymentService,
+    private readonly transectionService:TransectionService,
     @InjectRepository(BookingIdSave)
     private readonly bookingIdSave: Repository<BookingIdSave>,
   ) {}
@@ -563,6 +565,7 @@ export class FlyHubUtil {
       FlightItenary,
       header,
     );
+    const walletPayment= await this.transectionService.paymentWithWallet(header,fisId)
     return {
       bookingData: FlightItenary,
       sslpaymentLink,

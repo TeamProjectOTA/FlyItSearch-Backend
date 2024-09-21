@@ -20,6 +20,8 @@ import { BookingService } from 'src/book/booking.service';
 import { BookingServicesbr } from './booking.service';
 import { PaymentModule } from 'src/payment/payment.module';
 import { MailModule } from 'src/mail/mail.module';
+import { TransectionModule } from 'src/transection/transection.module';
+import { Transection } from 'src/transection/transection.model';
 
 @Module({
   imports: [
@@ -30,6 +32,7 @@ import { MailModule } from 'src/mail/mail.module';
       User,
       BookingSave,
       BookingIdSave,
+      Transection
     ]),
     HttpModule,
     AirportsModule,
@@ -37,6 +40,7 @@ import { MailModule } from 'src/mail/mail.module';
     AuthModule,
     PaymentModule,
     MailModule,
+    TransectionModule
   ],
   controllers: [FlightController],
   providers: [
@@ -49,6 +53,7 @@ import { MailModule } from 'src/mail/mail.module';
     FlyHubService,
     Test,
     BookingService,
+    
   ],
 
   exports: [FlyHubService, FlyHubUtil],

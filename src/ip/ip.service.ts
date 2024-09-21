@@ -53,12 +53,11 @@ export class IpService {
   async delete(email: string): Promise<any> {
     return await this.ipRepository.delete({ email });
   }
-  async update (email:string,points:number){
-   const user= await this.ipRepository.findOne({where:{email:email}})
-   
+  async update(email: string, points: number) {
+    const user = await this.ipRepository.findOne({ where: { email: email } });
   }
-  async findUser(email:string){
-    return await this.ipRepository.findOne({where:{email:email}})
+  async findUser(email: string) {
+    return await this.ipRepository.findOne({ where: { email: email } });
   }
 
   async cleanupOldIps(expirationTime: number): Promise<void> {

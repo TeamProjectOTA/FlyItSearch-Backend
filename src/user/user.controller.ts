@@ -94,5 +94,4 @@ export class UserController {
   ) {
     return await this.userService.updateUserActivation(email, action);
   }
-
 }
