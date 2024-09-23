@@ -13,7 +13,7 @@ export class FlyHubUtil {
     private readonly BookService: BookingService,
     private readonly mailService: MailService,
     private readonly paymentService: PaymentService,
-    private readonly transectionService:TransectionService,
+    private readonly transectionService: TransectionService,
     @InjectRepository(BookingIdSave)
     private readonly bookingIdSave: Repository<BookingIdSave>,
   ) {}
@@ -565,10 +565,16 @@ export class FlyHubUtil {
       FlightItenary,
       header,
     );
-    const walletPayment= await this.transectionService.paymentWithWallet(header,fisId)
+    // const walletPayment = await this.transectionService.paymentWithWallet(
+    //   header,
+    //   fisId,
+    //   FlightItenary
+    // );
     return {
       bookingData: FlightItenary,
       sslpaymentLink,
+      // walletPayment
+
     };
   }
 
@@ -835,14 +841,14 @@ export class FlyHubUtil {
         }
       }
     }
-
+    const sslpaymentLink = await this.paymentService.dataModification(
+      FlightItenary,
+      header,
+    );
     await this.saveBookingData(FlightItenary, header);
     return {
       bookingData: FlightItenary,
-      sslpaymentLink: await this.paymentService.dataModification(
-        FlightItenary,
-        header,
-      ),
+      sslpaymentLink
     };
   }
 

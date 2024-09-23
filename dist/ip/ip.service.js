@@ -47,11 +47,10 @@ let IpService = class IpService {
             return this.create(ip, role, points, lastRequestTime, email);
         }
     }
-    async delete(email) {
-        return await this.ipRepository.delete({ email });
-    }
     async update(email, points) {
         const user = await this.ipRepository.findOne({ where: { email: email } });
+        user.points = 50 - points;
+        return await this.ipRepository.save(user);
     }
     async findUser(email) {
         return await this.ipRepository.findOne({ where: { email: email } });

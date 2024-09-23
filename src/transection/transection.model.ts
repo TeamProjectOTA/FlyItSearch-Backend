@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -9,8 +11,8 @@ export class Transection {
   tranId: string;
   @Column({ nullable: true })
   tranDate: string;
-  @Column()
-  bookingId:string
+  @Column({nullable:true})
+  bookingId: string;
   @Column({ nullable: true })
   paidAmount: string;
   @Column({ nullable: true })
@@ -35,10 +37,33 @@ export class Transection {
   currierName: string;
   @Column()
   requestType: string;
-  @Column()
+  @Column({nullable:true})
   walletBalance: number;
   @Column()
-  paymentType:string
+  paymentType: string;
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
+}
+export class CreateTransectionDto {
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  bookingId?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  paidAmount?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  offerAmmount?: string;
+
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  currierName?: string;
+
 }

@@ -4,10 +4,12 @@ import { IpService } from './ip.service';
 import { IpAddress } from './ip.model';
 import { ScheduleModule } from '@nestjs/schedule';
 import { IpCleanupService } from './ip-cleanup.service';
+import { IpController } from './ip.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([IpAddress]), ScheduleModule.forRoot()],
   providers: [IpService, IpCleanupService],
   exports: [IpService, IpCleanupService],
+  controllers:[IpController]
 })
 export class IpModule {}

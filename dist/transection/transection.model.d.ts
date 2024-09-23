@@ -20,3 +20,9 @@ export declare class Transection {
     paymentType: string;
     user: User;
 }
+export declare class CreateTransectionDto {
+    bookingId?: string;
+    paidAmount?: number;
+    offerAmmount?: string;
+    currierName?: string;
+}

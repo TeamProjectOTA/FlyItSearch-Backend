@@ -145,16 +145,14 @@ let PaymentService = class PaymentService {
         try {
             const response = await sslcommerz.validate(validationData);
             if (response.status === 'VALID') {
-                const bookingSave = await this.bookingSaveRepository.findOne({
-                    where: { bookingId: bookingId.bookingId },
-                });
-                bookingSave.bookingStatus = 'Booked';
-                const depfrom = bookingSave?.laginfo[0]?.DepFrom;
-                const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
-                await this.bookingSaveRepository.save(bookingSave);
                 const user = await this.userRepository.findOne({
                     where: { email: email },
                 });
+                const bookingSave = await this.bookingSaveRepository.findOne({
+                    where: { bookingId: bookingId },
+                });
+                bookingSave.bookingStatus = 'IssueInProcess';
+                await this.bookingSaveRepository.save(bookingSave);
                 const wallet = await this.walletRepository
                     .createQueryBuilder('wallet')
                     .innerJoinAndSelect('wallet.user', 'user')
@@ -162,6 +160,8 @@ let PaymentService = class PaymentService {
                     .getOne();
                 const airPlaneName = bookingSave.Curriername;
                 const tripType = bookingSave.TripType;
+                const depfrom = bookingSave?.laginfo[0]?.DepFrom;
+                const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
                 let addTransection = new transection_model_1.Transection();
                 addTransection.tranId = response.tran_id;
                 addTransection.tranDate = response.tran_date;

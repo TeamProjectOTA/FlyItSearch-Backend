@@ -13,14 +13,18 @@ const transection_model_1 = require("./transection.model");
 const transection_service_1 = require("./transection.service");
 const auth_module_1 = require("../auth/auth.module");
 const booking_model_1 = require("../book/booking.model");
+const user_entity_1 = require("../user/entities/user.entity");
+const deposit_model_1 = require("../deposit/deposit.model");
+const transection_controller_1 = require("./transection.controller");
 let TransectionModule = class TransectionModule {
 };
 exports.TransectionModule = TransectionModule;
 exports.TransectionModule = TransectionModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([transection_model_1.Transection, booking_model_1.BookingSave]), auth_module_1.AuthModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([transection_model_1.Transection, booking_model_1.BookingSave, user_entity_1.User, deposit_model_1.Wallet]), auth_module_1.AuthModule],
         providers: [transection_service_1.TransectionService],
-        exports: [transection_service_1.TransectionService]
+        exports: [transection_service_1.TransectionService],
+        controllers: [transection_controller_1.TransectionController]
     })
 ], TransectionModule);
 //# sourceMappingURL=transection.module.js.map

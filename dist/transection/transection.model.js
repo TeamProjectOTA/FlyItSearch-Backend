@@ -9,7 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Transection = void 0;
+exports.CreateTransectionDto = exports.Transection = void 0;
+const swagger_1 = require("@nestjs/swagger");
+const class_validator_1 = require("class-validator");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let Transection = class Transection {
@@ -28,7 +30,7 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "tranDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Transection.prototype, "bookingId", void 0);
 __decorate([
@@ -80,7 +82,7 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "requestType", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", Number)
 ], Transection.prototype, "walletBalance", void 0);
 __decorate([
@@ -94,4 +96,30 @@ __decorate([
 exports.Transection = Transection = __decorate([
     (0, typeorm_1.Entity)()
 ], Transection);
+class CreateTransectionDto {
+}
+exports.CreateTransectionDto = CreateTransectionDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTransectionDto.prototype, "bookingId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Number)
+], CreateTransectionDto.prototype, "paidAmount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTransectionDto.prototype, "offerAmmount", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateTransectionDto.prototype, "currierName", void 0);
 //# sourceMappingURL=transection.model.js.map

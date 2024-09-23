@@ -14,8 +14,8 @@ import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import * as bcrypt from 'bcryptjs';
 import { Wallet } from 'src/deposit/deposit.model';
-import { IpAddress } from 'src/ip/ip.model';
 import { Transection } from 'src/transection/transection.model';
+import { IpAddress } from 'src/ip/ip.model';
 
 @Injectable()
 export class UserService {
@@ -25,6 +25,8 @@ export class UserService {
     @InjectRepository(Transection)
     private readonly transectionRepository: Repository<Transection>,
     private readonly authservice: AuthService,
+    @InjectRepository(IpAddress)
+    private readonly ipAddressRepository:Repository<IpAddress>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -70,7 +72,6 @@ export class UserService {
     newWallet.ammount = 0;
     add.wallet = newWallet;
     const user = await this.userRepository.save(add);
-    console.log(user);
     await this.authservice.sendVerificationEmail(user.email, verificationToken);
 
     return {
@@ -180,10 +181,12 @@ export class UserService {
     const usersWithIpData = await Promise.all(
       users.map(async (user) => {
         const emaildata = user.email;
+        const ip= await this.ipAddressRepository.findOne({where:{email:emaildata}});
+        const searchCount= 50-ip?.points||0
 
         return {
           ...user,
-          emaildata,
+          searchCount,
         };
       }),
     );

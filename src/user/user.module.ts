@@ -5,9 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { Transection } from 'src/transection/transection.model';
+import { IpModule } from 'src/ip/ip.module';
+import { IpAddress } from 'src/ip/ip.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Transection]), AuthModule],
+  imports: [TypeOrmModule.forFeature([User, Transection,IpAddress]), AuthModule,IpModule],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

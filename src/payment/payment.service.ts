@@ -83,7 +83,6 @@ export class PaymentService {
       cus_country: 'Bangladesh',
       cus_phone: phone,
     };
-
     return {
       url: await this.initiatePayment(paymentData, bookingId, header),
       airTicketPrice: airTicketPrice,
@@ -110,7 +109,7 @@ export class PaymentService {
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
     });
-
+  
     if (bookingSave.bookingStatus == 'Booked') {
       const data = {
         total_amount: paymentData.total_amount,
@@ -159,22 +158,22 @@ export class PaymentService {
     const validationData = {
       val_id: val_id,
     };
+  
 
     try {
       const response = await sslcommerz.validate(validationData);
 
       if (response.status === 'VALID') {
-        const bookingSave = await this.bookingSaveRepository.findOne({
-          where: { bookingId: bookingId.bookingId },
-        });
-        bookingSave.bookingStatus = 'Booked';
-        const depfrom = bookingSave?.laginfo[0]?.DepFrom;
-        const arrto =
-          bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
-        await this.bookingSaveRepository.save(bookingSave);
         const user = await this.userRepository.findOne({
           where: { email: email },
         });
+        const bookingSave = await this.bookingSaveRepository.findOne({
+          where: { bookingId:bookingId },
+        });
+        bookingSave.bookingStatus = 'IssueInProcess';
+        
+        await this.bookingSaveRepository.save(bookingSave)
+       
         const wallet = await this.walletRepository
           .createQueryBuilder('wallet')
           .innerJoinAndSelect('wallet.user', 'user')
@@ -183,7 +182,8 @@ export class PaymentService {
 
         const airPlaneName = bookingSave.Curriername;
         const tripType = bookingSave.TripType;
-
+        const depfrom = bookingSave?.laginfo[0]?.DepFrom;
+        const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
         let addTransection: Transection = new Transection();
         addTransection.tranId = response.tran_id;
         addTransection.tranDate = response.tran_date;
@@ -197,11 +197,11 @@ export class PaymentService {
         addTransection.cardIssuerCountry = response.card_issuer_country;
         addTransection.validationDate = response.validated_on;
         addTransection.status = 'Purchase';
-        addTransection.walletBalance=wallet.ammount
-        addTransection.paymentType='Payment for air ticket'
+        addTransection.walletBalance = wallet.ammount;
+        addTransection.paymentType = 'Payment for air ticket';
         addTransection.currierName = airPlaneName;
         addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
-        addTransection.bookingId=bookingId
+        addTransection.bookingId = bookingId;
         addTransection.user = user;
         await this.transectionRepository.save(addTransection);
       }
@@ -211,6 +211,4 @@ export class PaymentService {
       throw new Error('Payment validation failed.');
     }
   }
-
-
 }

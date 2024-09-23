@@ -14,12 +14,14 @@ const typeorm_1 = require("@nestjs/typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const auth_module_1 = require("../auth/auth.module");
 const transection_model_1 = require("../transection/transection.model");
+const ip_module_1 = require("../ip/ip.module");
+const ip_model_1 = require("../ip/ip.model");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, transection_model_1.Transection]), auth_module_1.AuthModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress]), auth_module_1.AuthModule, ip_module_1.IpModule],
         controllers: [user_controller_1.UserController],
         providers: [user_service_1.UserService],
         exports: [user_service_1.UserService],

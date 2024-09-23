@@ -451,7 +451,6 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
-        const walletPayment = await this.transectionService.paymentWithWallet(header, fisId);
         return {
             bookingData: FlightItenary,
             sslpaymentLink,
@@ -660,10 +659,11 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
+        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
         await this.saveBookingData(FlightItenary, header);
         return {
             bookingData: FlightItenary,
-            sslpaymentLink: await this.paymentService.dataModification(FlightItenary, header),
+            sslpaymentLink
         };
     }
     async saveBookingData(SearchResponse, header, bookingId) {

@@ -13,6 +13,7 @@ const ip_service_1 = require("./ip.service");
 const ip_model_1 = require("./ip.model");
 const schedule_1 = require("@nestjs/schedule");
 const ip_cleanup_service_1 = require("./ip-cleanup.service");
+const ip_controller_1 = require("./ip.controller");
 let IpModule = class IpModule {
 };
 exports.IpModule = IpModule;
@@ -21,6 +22,7 @@ exports.IpModule = IpModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([ip_model_1.IpAddress]), schedule_1.ScheduleModule.forRoot()],
         providers: [ip_service_1.IpService, ip_cleanup_service_1.IpCleanupService],
         exports: [ip_service_1.IpService, ip_cleanup_service_1.IpCleanupService],
+        controllers: [ip_controller_1.IpController]
     })
 ], IpModule);
 //# sourceMappingURL=ip.module.js.map

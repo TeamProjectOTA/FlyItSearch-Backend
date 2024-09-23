@@ -21,11 +21,13 @@ const auth_service_1 = require("../auth/auth.service");
 const bcrypt = require("bcryptjs");
 const deposit_model_1 = require("../deposit/deposit.model");
 const transection_model_1 = require("../transection/transection.model");
+const ip_model_1 = require("../ip/ip.model");
 let UserService = class UserService {
-    constructor(userRepository, transectionRepository, authservice) {
+    constructor(userRepository, transectionRepository, authservice, ipAddressRepository) {
         this.userRepository = userRepository;
         this.transectionRepository = transectionRepository;
         this.authservice = authservice;
+        this.ipAddressRepository = ipAddressRepository;
     }
     async create(createUserDto) {
         let add = new user_entity_1.User();
@@ -63,7 +65,6 @@ let UserService = class UserService {
         newWallet.ammount = 0;
         add.wallet = newWallet;
         const user = await this.userRepository.save(add);
-        console.log(user);
         await this.authservice.sendVerificationEmail(user.email, verificationToken);
         return {
             fullName: user.fullName,
@@ -153,9 +154,11 @@ let UserService = class UserService {
         });
         const usersWithIpData = await Promise.all(users.map(async (user) => {
             const emaildata = user.email;
+            const ip = await this.ipAddressRepository.findOne({ where: { email: emaildata } });
+            const searchCount = 50 - ip?.points || 0;
             return {
                 ...user,
-                emaildata,
+                searchCount,
             };
         }));
         return usersWithIpData;
@@ -237,8 +240,10 @@ exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(1, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
+    __param(3, (0, typeorm_1.InjectRepository)(ip_model_1.IpAddress)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        auth_service_1.AuthService])
+        auth_service_1.AuthService,
+        typeorm_2.Repository])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

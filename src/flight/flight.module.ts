@@ -32,7 +32,7 @@ import { Transection } from 'src/transection/transection.model';
       User,
       BookingSave,
       BookingIdSave,
-      Transection
+      Transection,
     ]),
     HttpModule,
     AirportsModule,
@@ -40,7 +40,7 @@ import { Transection } from 'src/transection/transection.model';
     AuthModule,
     PaymentModule,
     MailModule,
-    TransectionModule
+    TransectionModule,
   ],
   controllers: [FlightController],
   providers: [
@@ -53,7 +53,6 @@ import { Transection } from 'src/transection/transection.model';
     FlyHubService,
     Test,
     BookingService,
-    
   ],
 
   exports: [FlyHubService, FlyHubUtil],

@@ -17,8 +17,6 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { User } from './entities/user.entity';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
