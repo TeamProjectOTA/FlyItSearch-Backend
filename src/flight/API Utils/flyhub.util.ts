@@ -6,6 +6,8 @@ import { PaymentService } from 'src/payment/payment.service';
 import { BookingIdSave } from '../flight.model';
 import { Repository } from 'typeorm';
 import { TransectionService } from 'src/transection/transection.service';
+import { Wallet } from 'src/deposit/deposit.model';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class FlyHubUtil {
@@ -13,9 +15,12 @@ export class FlyHubUtil {
     private readonly BookService: BookingService,
     private readonly mailService: MailService,
     private readonly paymentService: PaymentService,
+    private readonly authService:AuthService,
     private readonly transectionService: TransectionService,
     @InjectRepository(BookingIdSave)
     private readonly bookingIdSave: Repository<BookingIdSave>,
+    @InjectRepository(Wallet)
+    private readonly walletRepository:Repository<Wallet>
   ) {}
   async restBFMParser(
     SearchResponse: any,
@@ -565,16 +570,19 @@ export class FlyHubUtil {
       FlightItenary,
       header,
     );
-    // const walletPayment = await this.transectionService.paymentWithWallet(
-    //   header,
-    //   fisId,
-    //   FlightItenary
-    // );
+    const price = FlightItenary[0].NetFare
+   const email= await this.authService.decodeToken(header)
+   let wallet = await this.walletRepository
+   .createQueryBuilder('wallet')
+   .innerJoinAndSelect('wallet.user', 'user')
+   .where('user.email = :email', { email })
+   .getOne();
+   const walletAmmount=wallet.ammount
+   const priceAfterPayment=walletAmmount-price
     return {
       bookingData: FlightItenary,
       sslpaymentLink,
-      // walletPayment
-
+      walletPayment:{walletAmmount,price,priceAfterPayment}
     };
   }
 

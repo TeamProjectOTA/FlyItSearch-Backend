@@ -198,7 +198,7 @@ export class PaymentService {
         addTransection.validationDate = response.validated_on;
         addTransection.status = 'Purchase';
         addTransection.walletBalance = wallet.ammount;
-        addTransection.paymentType = 'Payment for air ticket';
+        addTransection.paymentType = 'Instaint Payment ';
         addTransection.currierName = airPlaneName;
         addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
         addTransection.bookingId = bookingId;

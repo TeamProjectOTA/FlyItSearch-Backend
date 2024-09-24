@@ -21,13 +21,17 @@ const payment_service_1 = require("../../payment/payment.service");
 const flight_model_1 = require("../flight.model");
 const typeorm_2 = require("typeorm");
 const transection_service_1 = require("../../transection/transection.service");
+const deposit_model_1 = require("../../deposit/deposit.model");
+const auth_service_1 = require("../../auth/auth.service");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService, mailService, paymentService, transectionService, bookingIdSave) {
+    constructor(BookService, mailService, paymentService, authService, transectionService, bookingIdSave, walletRepository) {
         this.BookService = BookService;
         this.mailService = mailService;
         this.paymentService = paymentService;
+        this.authService = authService;
         this.transectionService = transectionService;
         this.bookingIdSave = bookingIdSave;
+        this.walletRepository = walletRepository;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -451,9 +455,19 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
+        const price = FlightItenary[0].NetFare;
+        const email = await this.authService.decodeToken(header);
+        let wallet = await this.walletRepository
+            .createQueryBuilder('wallet')
+            .innerJoinAndSelect('wallet.user', 'user')
+            .where('user.email = :email', { email })
+            .getOne();
+        const walletAmmount = wallet.ammount;
+        const priceAfterPayment = walletAmmount - price;
         return {
             bookingData: FlightItenary,
             sslpaymentLink,
+            walletPayment: { walletAmmount, price, priceAfterPayment }
         };
     }
     async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp) {
@@ -916,11 +930,14 @@ let FlyHubUtil = class FlyHubUtil {
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
-    __param(4, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(5, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(6, (0, typeorm_1.InjectRepository)(deposit_model_1.Wallet)),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
         mail_service_1.MailService,
         payment_service_1.PaymentService,
+        auth_service_1.AuthService,
         transection_service_1.TransectionService,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], FlyHubUtil);
 //# sourceMappingURL=flyhub.util.js.map

@@ -22,6 +22,7 @@ import { PaymentModule } from 'src/payment/payment.module';
 import { MailModule } from 'src/mail/mail.module';
 import { TransectionModule } from 'src/transection/transection.module';
 import { Transection } from 'src/transection/transection.model';
+import { Wallet } from 'src/deposit/deposit.model';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { Transection } from 'src/transection/transection.model';
       BookingSave,
       BookingIdSave,
       Transection,
+      Wallet
     ]),
     HttpModule,
     AirportsModule,

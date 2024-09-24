@@ -42,13 +42,17 @@ export class TransectionService {
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
+    const arrto=booking.laginfo[0].ArrTo
+    const depfrom=booking.laginfo[0].DepFrom
+    const tripType=booking.TripType
+    
    
     let add:Transection=new Transection()
     add.tranId=tran_id
     add.bookingId=transectiondto.bookingId
     add.user=user
     add.paymentType='FlyIt Wallet'
-    add.requestType=' air ticket'
+    add.requestType=`${depfrom}-${arrto},${tripType} Air Ticket `
     add.currierName=transectiondto.currierName
     add.validationDate=dhakaTimeFormatted
     add.tranDate=dhakaTimeFormatted
@@ -56,11 +60,13 @@ export class TransectionService {
     add.offerAmmount=transectiondto.offerAmmount
     add.riskTitle='Safe'
     add.cardType='Deducted from Deposit'
-    add.status='Purches'
+    add.status='Purchase'
     add.currierName=transectiondto.currierName
     add.walletBalance=wallet.ammount-transectiondto.paidAmount
     wallet.ammount=add.walletBalance
+    booking.bookingStatus='IssueInProcess'
     await this.walletRepository.save(wallet)
+    await this.bookingRepository.save(booking)
     return await this.transectionRepoistory.save(add)
   }
 }

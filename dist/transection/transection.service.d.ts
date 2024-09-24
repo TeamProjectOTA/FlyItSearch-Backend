@@ -11,5 +11,5 @@ export declare class TransectionService {
     private readonly walletRepository;
     private readonly transectionRepoistory;
     constructor(authService: AuthService, bookingRepository: Repository<BookingSave>, userRepository: Repository<User>, walletRepository: Repository<Wallet>, transectionRepoistory: Repository<Transection>);
-    paymentWithWallet(header: any, transectiondto: CreateTransectionDto): Promise<"Low Balance" | Transection>;
+    paymentWithWallet(header: any, transectiondto: CreateTransectionDto): Promise<Transection | "Low Balance">;
 }
