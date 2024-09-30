@@ -18,13 +18,15 @@ const auth_module_1 = require("../auth/auth.module");
 const agents_entity_1 = require("../agents/entities/agents.entity");
 const agents_module_1 = require("../agents/agents.module");
 const booking_model_1 = require("../book/booking.model");
+const transection_model_1 = require("../transection/transection.model");
+const deposit_model_1 = require("../deposit/deposit.model");
 let AdminModule = class AdminModule {
 };
 exports.AdminModule = AdminModule;
 exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, agents_entity_1.Agents, booking_model_1.BookingSave]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, agents_entity_1.Agents, booking_model_1.BookingSave, transection_model_1.Transection, deposit_model_1.Wallet]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
             agents_module_1.AgentsModule,

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Admin, Repository } from 'typeorm';
 import { BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
@@ -9,7 +9,7 @@ import { AuthService } from 'src/auth/auth.service';
 export class BookingService {
   constructor(
     @InjectRepository(User)
-    private userRepository: Repository<User>,
+    private readonly userRepository: Repository<User>,
     private readonly authservice: AuthService,
 
     @InjectRepository(BookingSave)
@@ -70,13 +70,21 @@ export class BookingService {
   }
 
   async findAllBooking(bookingStatus?: string) {
-    if (bookingStatus && bookingStatus !== 'all') {
+    
+    if (bookingStatus !== 'all') {
       return await this.bookingSaveRepository.find({
         where: { bookingStatus: bookingStatus },
         relations: ['user'],
+        order: { bookingDate: 'DESC' },
+      
       });
     } else {
-      return await this.bookingSaveRepository.find({ relations: ['user'] });
+      return await this.bookingSaveRepository.find({
+        relations: ['user'],
+        order: { bookingDate: 'DESC' }, 
+      });
     }
   }
+
+ 
 }

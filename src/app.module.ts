@@ -25,6 +25,7 @@ import { TermsAndConditionsModule } from './terms-and-conditions/terms-and-condi
 import { DepositModule } from './deposit/deposit.module';
 import { TravelBuddyModule } from './travel-buddy/travel-buddy.module';
 import { TransectionModule } from './transection/transection.module';
+import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 require('dotenv').config();
 
 @Module({
@@ -83,6 +84,7 @@ require('dotenv').config();
     DepositModule,
     TravelBuddyModule,
     TransectionModule,
+    AdminDashboardModule,
   ],
 
   providers: [

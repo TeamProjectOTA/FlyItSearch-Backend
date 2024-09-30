@@ -26,7 +26,7 @@ export class TravelBuddyService {
     const email = await this.authservice.decodeToken(header);
 
     const user = await this.userRepository.findOne({
-      where: { email },
+      where: { email:email },
     });
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
@@ -49,6 +49,7 @@ export class TravelBuddyService {
   async updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto): Promise<any> {
     return;
   }
+ 
   async deleteTravelBuddy(id: number) {
     const travelBuddy = await this.travelBuddyRepository.findOne({
       where: { id: id },

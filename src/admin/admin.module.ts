@@ -9,13 +9,17 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Agents } from 'src/agents/entities/agents.entity';
 import { AgentsModule } from 'src/agents/agents.module';
 import { BookingSave } from 'src/book/booking.model';
+import { Transection } from 'src/transection/transection.model';
+import { Wallet } from 'src/deposit/deposit.model';
+import { TransectionModule } from 'src/transection/transection.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, Agents, BookingSave]),
+    TypeOrmModule.forFeature([Admin, User, Agents, BookingSave,Transection,Wallet]),
     UserModule,
     AuthModule,
     AgentsModule,
+    
   ],
   controllers: [AdminController],
   providers: [AdminService],

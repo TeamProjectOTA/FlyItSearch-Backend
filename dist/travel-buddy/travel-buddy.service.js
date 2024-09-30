@@ -28,7 +28,7 @@ let TravelBuddyService = class TravelBuddyService {
     async createTravelBuddy(createTravelBuddyDto, header) {
         const email = await this.authservice.decodeToken(header);
         const user = await this.userRepository.findOne({
-            where: { email },
+            where: { email: email },
         });
         if (!user) {
             throw new common_1.NotFoundException('No Booking data available for the user');

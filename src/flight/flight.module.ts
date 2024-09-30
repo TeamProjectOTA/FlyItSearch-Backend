@@ -34,7 +34,7 @@ import { Wallet } from 'src/deposit/deposit.model';
       BookingSave,
       BookingIdSave,
       Transection,
-      Wallet
+      Wallet,
     ]),
     HttpModule,
     AirportsModule,

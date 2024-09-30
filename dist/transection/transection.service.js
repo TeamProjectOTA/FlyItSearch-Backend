@@ -36,12 +36,19 @@ let TransectionService = class TransectionService {
             .innerJoinAndSelect('wallet.user', 'user')
             .where('user.email = :email', { email })
             .getOne();
-        const booking = await this.bookingRepository.findOne({ where: { bookingId: transectiondto.bookingId } });
+        const booking = await this.bookingRepository.findOne({
+            where: { bookingId: transectiondto.bookingId },
+            relations: ['user'],
+        });
         if (!booking) {
             throw new common_1.NotFoundException(`No booking found with  this ${transectiondto.bookingId} id`);
         }
+        const isSameUser = booking.user.email === email;
+        if (!isSameUser) {
+            throw new Error('Booking does not belong to this user');
+        }
         if (wallet.ammount < transectiondto.paidAmount) {
-            return 'Low Balance';
+            throw new common_1.NotAcceptableException('Insufficient balance');
         }
         const user = await this.userRepository.findOne({ where: { email: email } });
         const timestamp = Date.now();
@@ -72,6 +79,8 @@ let TransectionService = class TransectionService {
         add.walletBalance = wallet.ammount - transectiondto.paidAmount;
         wallet.ammount = add.walletBalance;
         booking.bookingStatus = 'IssueInProcess';
+        booking.actionAt = dhakaTimeFormatted;
+        booking.actionBy = user.fullName;
         await this.walletRepository.save(wallet);
         await this.bookingRepository.save(booking);
         return await this.transectionRepoistory.save(add);

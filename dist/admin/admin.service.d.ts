@@ -6,13 +6,15 @@ import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import { Agents } from 'src/agents/entities/agents.entity';
 import { BookingSave } from 'src/book/booking.model';
+import { Transection } from 'src/transection/transection.model';
 export declare class AdminService {
     private readonly adminRepository;
     private readonly userRepository;
     private readonly agentRepository;
     private readonly bookingSaveRepository;
+    private readonly transectionRepository;
     private readonly authservice;
-    constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, agentRepository: Repository<Agents>, bookingSaveRepository: Repository<BookingSave>, authservice: AuthService);
+    constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, agentRepository: Repository<Agents>, bookingSaveRepository: Repository<BookingSave>, transectionRepository: Repository<Transection>, authservice: AuthService);
     create(createAdminDto: CreateAdminDto, header: any): Promise<Admin>;
     findAll(header: any): Promise<Admin[]>;
     findOne(header: any, uuid: string): Promise<Admin>;
@@ -24,4 +26,5 @@ export declare class AdminService {
         userToDelete: import("typeorm").DeleteResult;
     }>;
     allbooking(): Promise<BookingSave[]>;
+    ticketCancel(bookingId: string, reason: string, header: any): Promise<Transection>;
 }

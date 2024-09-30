@@ -17,6 +17,7 @@ export declare class BookingSave {
     netAmmount: string;
     actionAt: string;
     actionBy: String;
+    reason: string;
     laginfo: any;
     user: User;
 }

@@ -109,7 +109,7 @@ export class PaymentService {
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
     });
-  
+
     if (bookingSave.bookingStatus == 'Booked') {
       const data = {
         total_amount: paymentData.total_amount,
@@ -158,7 +158,6 @@ export class PaymentService {
     const validationData = {
       val_id: val_id,
     };
-  
 
     try {
       const response = await sslcommerz.validate(validationData);
@@ -168,12 +167,12 @@ export class PaymentService {
           where: { email: email },
         });
         const bookingSave = await this.bookingSaveRepository.findOne({
-          where: { bookingId:bookingId },
+          where: { bookingId: bookingId },
         });
         bookingSave.bookingStatus = 'IssueInProcess';
-        
-        await this.bookingSaveRepository.save(bookingSave)
-       
+
+        await this.bookingSaveRepository.save(bookingSave);
+
         const wallet = await this.walletRepository
           .createQueryBuilder('wallet')
           .innerJoinAndSelect('wallet.user', 'user')
@@ -183,7 +182,8 @@ export class PaymentService {
         const airPlaneName = bookingSave.Curriername;
         const tripType = bookingSave.TripType;
         const depfrom = bookingSave?.laginfo[0]?.DepFrom;
-        const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
+        const arrto =
+          bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
         let addTransection: Transection = new Transection();
         addTransection.tranId = response.tran_id;
         addTransection.tranDate = response.tran_date;
@@ -211,4 +211,20 @@ export class PaymentService {
       throw new Error('Payment validation failed.');
     }
   }
+
+  // async queryRefund(tranId: string) {
+  //   // Prepare data for refund query
+  //   const data = {
+  //     store_id: process.env.SSL_STORE_ID,
+  //     store_passwd: process.env.SSL_STORE_PASSWORD,
+  //     bank_tran_id: tranId,  // Transaction ID of the payment
+  //   };
+
+  //   try {
+  //     const response = await this.sslcommerz.refundQuery(data);
+  //     return response;
+  //   } catch (error) {
+  //     throw new Error(`Refund query failed: ${error.message}`);
+  //   }
+  // }
 }

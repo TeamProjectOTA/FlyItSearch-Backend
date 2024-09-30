@@ -1,9 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsEnum,
-  IsString,
-  max,
-  MAX_LENGTH,
+
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -15,8 +12,8 @@ export class CreateUserDto {
   phone: string;
   @ApiProperty({ default: 'hasibul.dev506@gmail.com' })
   email: string;
-  @MaxLength(15)
-  @MinLength(6)
+  // @MaxLength(15)
+  // @MinLength(6)
   @ApiProperty({ default: '1234' })
   password: string;
   @ApiProperty({ default: '1-2-1998' })

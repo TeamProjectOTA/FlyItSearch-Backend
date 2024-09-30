@@ -253,7 +253,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async airRetriveDataTransformer(SearchResponse, fisId, bookingStatus, header) {
+    async airRetriveDataTransformer(SearchResponse, fisId, bookingStatus, tripType, bookingDate, header) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -429,6 +429,7 @@ let FlyHubUtil = class FlyHubUtil {
                         ResultId: Result.ResultID,
                         BookingId: fisId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
+                        TripType: tripType,
                         SearchId: SearchResponse?.SearchId,
                         BookingStatus: BookingStatus,
                         InstantPayment: Instant_Payment,
@@ -445,6 +446,7 @@ let FlyHubUtil = class FlyHubUtil {
                         PartialOption: partialoption,
                         PartialFare: Math.ceil(PartialAmount),
                         TimeLimit: TimeLimit,
+                        BookingDate: bookingDate,
                         Refundable: Refundable,
                         ExtraService: Result?.ExtraServices || null,
                         PriceBreakDown: PriceBreakDown,
@@ -463,11 +465,14 @@ let FlyHubUtil = class FlyHubUtil {
             .where('user.email = :email', { email })
             .getOne();
         const walletAmmount = wallet.ammount;
-        const priceAfterPayment = walletAmmount - price;
+        let priceAfterPayment = walletAmmount - price;
+        if (priceAfterPayment < 0) {
+            priceAfterPayment = 0;
+        }
         return {
             bookingData: FlightItenary,
             sslpaymentLink,
-            walletPayment: { walletAmmount, price, priceAfterPayment }
+            walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
     async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp) {
@@ -673,11 +678,10 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
-        await this.saveBookingData(FlightItenary, header);
+        const save = await this.saveBookingData(FlightItenary, header);
         return {
             bookingData: FlightItenary,
-            sslpaymentLink
+            save: save
         };
     }
     async saveBookingData(SearchResponse, header, bookingId) {
@@ -722,7 +726,7 @@ let FlyHubUtil = class FlyHubUtil {
                     ArrTo: leg?.ArrTo,
                 })),
             };
-            await this.mailService.sendMail(booking);
+            const mail = await this.mailService.sendMail(booking);
             return await this.BookService.saveBooking(convertedData, header);
         }
         else {

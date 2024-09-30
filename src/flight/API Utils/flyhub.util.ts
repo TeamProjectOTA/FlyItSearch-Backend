@@ -15,12 +15,12 @@ export class FlyHubUtil {
     private readonly BookService: BookingService,
     private readonly mailService: MailService,
     private readonly paymentService: PaymentService,
-    private readonly authService:AuthService,
+    private readonly authService: AuthService,
     private readonly transectionService: TransectionService,
     @InjectRepository(BookingIdSave)
     private readonly bookingIdSave: Repository<BookingIdSave>,
     @InjectRepository(Wallet)
-    private readonly walletRepository:Repository<Wallet>
+    private readonly walletRepository: Repository<Wallet>,
   ) {}
   async restBFMParser(
     SearchResponse: any,
@@ -310,6 +310,8 @@ export class FlyHubUtil {
     SearchResponse: any,
     fisId: string,
     bookingStatus?: any,
+    tripType?:any,
+    bookingDate?:any,
     header?: any,
   ): Promise<any> {
     const FlightItenary = [];
@@ -540,6 +542,7 @@ export class FlyHubUtil {
             ResultId: Result.ResultID,
             BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
+            TripType:tripType,
             SearchId: SearchResponse?.SearchId,
             BookingStatus: BookingStatus,
             InstantPayment: Instant_Payment,
@@ -556,6 +559,7 @@ export class FlyHubUtil {
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
             TimeLimit: TimeLimit,
+            BookingDate:bookingDate,
             Refundable: Refundable,
             ExtraService: Result?.ExtraServices || null,
             PriceBreakDown: PriceBreakDown,
@@ -570,19 +574,23 @@ export class FlyHubUtil {
       FlightItenary,
       header,
     );
-    const price = FlightItenary[0].NetFare
-   const email= await this.authService.decodeToken(header)
-   let wallet = await this.walletRepository
-   .createQueryBuilder('wallet')
-   .innerJoinAndSelect('wallet.user', 'user')
-   .where('user.email = :email', { email })
-   .getOne();
-   const walletAmmount=wallet.ammount
-   const priceAfterPayment=walletAmmount-price
+    const price = FlightItenary[0].NetFare;
+    const email = await this.authService.decodeToken(header);
+    let wallet = await this.walletRepository
+      .createQueryBuilder('wallet')
+      .innerJoinAndSelect('wallet.user', 'user')
+      .where('user.email = :email', { email })
+      .getOne();
+    const walletAmmount = wallet.ammount;
+    let priceAfterPayment: number = walletAmmount - price;
+
+    if (priceAfterPayment < 0) {
+      priceAfterPayment = 0;
+    }
     return {
       bookingData: FlightItenary,
       sslpaymentLink,
-      walletPayment:{walletAmmount,price,priceAfterPayment}
+      walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
 
@@ -849,14 +857,17 @@ export class FlyHubUtil {
         }
       }
     }
-    const sslpaymentLink = await this.paymentService.dataModification(
-      FlightItenary,
-      header,
-    );
-    await this.saveBookingData(FlightItenary, header);
+    // const sslpaymentLink = await this.paymentService.dataModification(
+    //   FlightItenary,
+    //   header,
+    // );
+    
+    const save=await this.saveBookingData(FlightItenary, header);
+    //console.log(save)
     return {
       bookingData: FlightItenary,
-      sslpaymentLink
+      save:save
+      //sslpaymentLink,
     };
   }
 
@@ -912,7 +923,8 @@ export class FlyHubUtil {
         })),
       };
 
-      await this.mailService.sendMail(booking);
+      const mail=await this.mailService.sendMail(booking);
+      // console.log(mail,convertedData)
       return await this.BookService.saveBooking(convertedData, header);
     } else {
       return 'Booking data is unvalid';

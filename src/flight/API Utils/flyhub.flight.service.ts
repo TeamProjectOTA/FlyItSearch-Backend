@@ -156,9 +156,10 @@ export class FlyHubService {
         response?.data,
         BookingID.BookingID,
         findBooking.bookingStatus,
+        findBooking.TripType,
+        findBooking.bookingDate,
         header,
       );
-      
     } catch (error) {
       throw error?.response?.data;
     }

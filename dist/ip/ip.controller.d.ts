@@ -1,4 +1,4 @@
-import { IpService } from "./ip.service";
+import { IpService } from './ip.service';
 export declare class IpController {
     private readonly ipService;
     constructor(ipService: IpService);

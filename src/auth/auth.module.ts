@@ -11,7 +11,7 @@ import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, Transection,IpAddress]),
+    TypeOrmModule.forFeature([Admin, User, Transection, IpAddress]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

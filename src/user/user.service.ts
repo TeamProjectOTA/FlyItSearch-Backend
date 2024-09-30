@@ -26,7 +26,7 @@ export class UserService {
     private readonly transectionRepository: Repository<Transection>,
     private readonly authservice: AuthService,
     @InjectRepository(IpAddress)
-    private readonly ipAddressRepository:Repository<IpAddress>
+    private readonly ipAddressRepository: Repository<IpAddress>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -181,8 +181,10 @@ export class UserService {
     const usersWithIpData = await Promise.all(
       users.map(async (user) => {
         const emaildata = user.email;
-        const ip= await this.ipAddressRepository.findOne({where:{email:emaildata}});
-        const searchCount= 50-ip?.points||0
+        const ip = await this.ipAddressRepository.findOne({
+          where: { email: emaildata },
+        });
+        const searchCount = 50 - ip?.points || 0;
 
         return {
           ...user,
@@ -249,6 +251,7 @@ export class UserService {
     }
     return {
       travelBuddies: user.travelBuddy,
+      
     };
   }
 

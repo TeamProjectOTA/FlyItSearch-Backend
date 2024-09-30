@@ -123,7 +123,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketRetrive);
-            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID, findBooking.bookingStatus, header);
+            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID, findBooking.bookingStatus, findBooking.TripType, findBooking.bookingDate, header);
         }
         catch (error) {
             throw error?.response?.data;

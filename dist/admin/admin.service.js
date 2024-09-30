@@ -22,18 +22,25 @@ const auth_service_1 = require("../auth/auth.service");
 const uuid_1 = require("uuid");
 const agents_entity_1 = require("../agents/entities/agents.entity");
 const booking_model_1 = require("../book/booking.model");
+const transection_model_1 = require("../transection/transection.model");
 let AdminService = class AdminService {
-    constructor(adminRepository, userRepository, agentRepository, bookingSaveRepository, authservice) {
+    constructor(adminRepository, userRepository, agentRepository, bookingSaveRepository, transectionRepository, authservice) {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
         this.agentRepository = agentRepository;
         this.bookingSaveRepository = bookingSaveRepository;
+        this.transectionRepository = transectionRepository;
         this.authservice = authservice;
     }
     async create(createAdminDto, header) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);
         if (!verifyAdmin) {
             throw new common_1.UnauthorizedException();
+        }
+        const email = await this.authservice.decodeToken(header);
+        const adminFind = await this.adminRepository.findOne({ where: { email: email } });
+        if (adminFind.role != 'superAdmin') {
+            throw new common_1.UnauthorizedException(`You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`);
         }
         const adminAllReadyExisted = await this.adminRepository.findOne({
             where: { email: createAdminDto.email },
@@ -73,7 +80,12 @@ let AdminService = class AdminService {
         if (!verifyAdmin) {
             throw new common_1.UnauthorizedException();
         }
-        return await this.adminRepository.find();
+        const email = await this.authservice.decodeToken(header);
+        const adminFind = await this.adminRepository.findOne({ where: { email: email } });
+        if (adminFind.role != 'superAdmin') {
+            throw new common_1.UnauthorizedException(`You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`);
+        }
+        return await this.adminRepository.find({ order: { id: 'DESC' } });
     }
     async findOne(header, uuid) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);
@@ -162,6 +174,45 @@ let AdminService = class AdminService {
     async allbooking() {
         return await this.bookingSaveRepository.find();
     }
+    async ticketCancel(bookingId, reason, header) {
+        const email = await this.authservice.decodeToken(header);
+        const admin = await this.adminRepository.findOne({ where: { email: email } });
+        const booking = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId }, relations: ['user'] });
+        const wallet = await this.userRepository.findOne({ where: { email: booking.user.email }, relations: ['wallet'] });
+        const timestamp = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const tran_id = `SSM${timestamp}${randomNumber}`;
+        const nowdate = new Date(Date.now());
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+        const dhakaTimeFormatted = dhakaTime.toISOString();
+        const arrto = booking.laginfo[0].ArrTo;
+        const depfrom = booking.laginfo[0].DepFrom;
+        const tripType = booking.TripType;
+        let add = new transection_model_1.Transection();
+        add.tranId = tran_id;
+        add.bookingId = bookingId;
+        add.user = wallet;
+        add.paymentType = 'FlyIt Wallet';
+        add.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
+        add.currierName = booking.Curriername;
+        add.validationDate = dhakaTimeFormatted;
+        add.tranDate = dhakaTimeFormatted;
+        add.paidAmount = booking.netAmmount.toString();
+        add.offerAmmount = booking.netAmmount;
+        add.riskTitle = 'Safe';
+        add.cardType = 'Adjusted Money Added';
+        add.status = 'Adjusted';
+        add.walletBalance = wallet.wallet.ammount + Number(booking.netAmmount);
+        wallet.wallet.ammount = wallet.wallet.ammount + Number(booking.netAmmount);
+        booking.bookingStatus = 'Cancelled';
+        booking.reason = reason;
+        booking.actionBy = `${admin.firstName} ${admin.lastName}`;
+        booking.actionAt = dhakaTimeFormatted;
+        await this.userRepository.save(wallet);
+        await this.bookingSaveRepository.save(booking);
+        return await this.transectionRepository.save(add);
+    }
 };
 exports.AdminService = AdminService;
 exports.AdminService = AdminService = __decorate([
@@ -170,7 +221,9 @@ exports.AdminService = AdminService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(2, (0, typeorm_1.InjectRepository)(agents_entity_1.Agents)),
     __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(4, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,

@@ -9,9 +9,12 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { TransectionController } from './transection.controller';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transection, BookingSave,User,Wallet]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([Transection, BookingSave, User, Wallet]),
+    AuthModule,
+  ],
   providers: [TransectionService],
   exports: [TransectionService],
-  controllers:[TransectionController]
+  controllers: [TransectionController],
 })
 export class TransectionModule {}

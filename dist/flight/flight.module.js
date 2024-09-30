@@ -46,7 +46,7 @@ exports.FlightModule = FlightModule = __decorate([
                 booking_model_1.BookingSave,
                 flight_model_1.BookingIdSave,
                 transection_model_1.Transection,
-                deposit_model_1.Wallet
+                deposit_model_1.Wallet,
             ]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,

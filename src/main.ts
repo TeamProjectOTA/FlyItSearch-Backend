@@ -45,7 +45,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  app.use(bodyParser.json({ limit: '50mb' }));
+  app.use(bodyParser.json({ limit: '50mb' })); //document size increased
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   const port = 8080;
   await app.listen(port);

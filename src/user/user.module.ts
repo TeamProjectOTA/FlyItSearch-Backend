@@ -9,7 +9,11 @@ import { IpModule } from 'src/ip/ip.module';
 import { IpAddress } from 'src/ip/ip.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Transection,IpAddress]), AuthModule,IpModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Transection, IpAddress]),
+    AuthModule,
+    IpModule,
+  ],
   controllers: [UserController],
   providers: [UserService],
   exports: [UserService],

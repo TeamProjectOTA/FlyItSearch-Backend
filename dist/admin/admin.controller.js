@@ -43,8 +43,8 @@ let AdminController = class AdminController {
     removeuser(header, passengerId) {
         return this.adminService.removeUser(passengerId, header);
     }
-    async allBooking() {
-        return this.adminService.allbooking();
+    async allBooking(header, bookingId, reason) {
+        return this.adminService.ticketCancel(bookingId, reason, header);
     }
 };
 exports.AdminController = AdminController;
@@ -113,9 +113,12 @@ __decorate([
 ], AdminController.prototype, "removeuser", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)('/allBooking2'),
+    (0, common_1.Post)('/cancelTicket/:bookingId'),
+    __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Param)('bookingId')),
+    __param(2, (0, common_1.Body)('reason')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], AdminController.prototype, "allBooking", null);
 exports.AdminController = AdminController = __decorate([

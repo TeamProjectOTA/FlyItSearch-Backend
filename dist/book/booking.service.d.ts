@@ -3,7 +3,7 @@ import { BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 export declare class BookingService {
-    private userRepository;
+    private readonly userRepository;
     private readonly authservice;
     private readonly bookingSaveRepository;
     constructor(userRepository: Repository<User>, authservice: AuthService, bookingSaveRepository: Repository<BookingSave>);

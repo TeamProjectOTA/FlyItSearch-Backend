@@ -5,11 +5,12 @@ import { IpAddress } from './ip.model';
 import { ScheduleModule } from '@nestjs/schedule';
 import { IpCleanupService } from './ip-cleanup.service';
 import { IpController } from './ip.controller';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IpAddress]), ScheduleModule.forRoot()],
+  imports: [TypeOrmModule.forFeature([IpAddress]), ScheduleModule.forRoot(),AuthModule],
   providers: [IpService, IpCleanupService],
   exports: [IpService, IpCleanupService],
-  controllers:[IpController]
+  controllers: [IpController],
 })
 export class IpModule {}

@@ -11,7 +11,7 @@ export class Transection {
   tranId: string;
   @Column({ nullable: true })
   tranDate: string;
-  @Column({nullable:true})
+  @Column({ nullable: true })
   bookingId: string;
   @Column({ nullable: true })
   paidAmount: string;
@@ -37,7 +37,7 @@ export class Transection {
   currierName: string;
   @Column()
   requestType: string;
-  @Column({nullable:true})
+  @Column({ nullable: true })
   walletBalance: number;
   @Column()
   paymentType: string;
@@ -45,7 +45,6 @@ export class Transection {
   user: User;
 }
 export class CreateTransectionDto {
-
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -60,10 +59,8 @@ export class CreateTransectionDto {
   @IsString()
   offerAmmount?: string;
 
-
   @ApiProperty()
   @IsOptional()
   @IsString()
   currierName?: string;
-
 }

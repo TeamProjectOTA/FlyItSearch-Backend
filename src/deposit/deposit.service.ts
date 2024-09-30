@@ -118,15 +118,14 @@ export class DepositService {
       addTransection.validationDate = moment
         .utc(deposit.actionAt)
         .format('YYYY-MM-DD HH:mm:ss');
-
       const findUser = await this.userRepository.findOne({
         where: { email: userEmail },
         relations: ['wallet'],
       });
-      findUser.wallet.ammount = findUser.wallet.ammount + deposit.ammount;
-      await this.walletRepository.save(findUser.wallet);
       addTransection.walletBalance = findUser.wallet.ammount + deposit.ammount;
+      findUser.wallet.ammount = findUser.wallet.ammount + deposit.ammount;
       addTransection.paymentType = 'Money added';
+      await this.walletRepository.save(findUser.wallet);
       await this.transectionRepository.save(addTransection);
     }
     return await this.depositRepository.save(deposit);
