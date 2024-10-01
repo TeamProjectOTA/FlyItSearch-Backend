@@ -11,7 +11,9 @@ export declare class AdminDashboardService {
             Booked: number;
             Cancelled: number;
             Ticketed: number;
-            Flydetails: BookingSave[];
+            TodayFly: number;
+            TomorrowFly: number;
+            DayAfterTomorrowFly: number;
         };
         Deposit: {
             pending: number;

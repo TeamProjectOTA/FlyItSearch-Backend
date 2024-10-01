@@ -8,7 +8,9 @@ export declare class AdminDashboardController {
             Booked: number;
             Cancelled: number;
             Ticketed: number;
-            Flydetails: import("../book/booking.model").BookingSave[];
+            TodayFly: number;
+            TomorrowFly: number;
+            DayAfterTomorrowFly: number;
         };
         Deposit: {
             pending: number;

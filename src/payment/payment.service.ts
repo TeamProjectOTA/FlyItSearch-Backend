@@ -1,17 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import axios from 'axios';
 import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
 import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { User } from 'src/user/entities/user.entity';
 import { SslCommerzPayment } from 'sslcommerz';
+import { createPayment, executePayment, queryPayment, searchTransaction, refundTransaction } from 'bkash-payment';
 import { Repository } from 'typeorm';
 @Injectable()
 export class PaymentService {
-  private readonly storeId: string;
-  private readonly storePassword: string;
+  private readonly sslcommerzsslcommerzStoreId: string;
+  private readonly sslcommerzStorePwd: string;
   private readonly isLive: boolean;
+  private bkashBaseUrl:string; // Update this with the correct URL from bKash
+  private bkashAppKey :string;
+  private bkashAppSecret :string;
+  private bkashUserName:string;
+  private bkashPwd:string;
+  private bkashConfig: any
+
 
   constructor(
     @InjectRepository(BookingSave)
@@ -24,10 +33,17 @@ export class PaymentService {
     private readonly walletRepository: Repository<Wallet>,
     private readonly authService: AuthService,
   ) {
-    this.storeId = process.env.STORE_ID;
-    this.storePassword = process.env.STORE_PASSWORD;
+    this.sslcommerzsslcommerzStoreId = process.env.STORE_ID;
+    this.sslcommerzStorePwd = process.env.STORE_PASSWORD;
     this.isLive = false; // Use true for live environment
-  }
+    this.bkashConfig = {
+      base_url : process.env.BKASH_BASE_URL,
+      username: process.env.BKASH_USERNAME,
+      password:  process.env.BKASH_USERNAME,
+      app_key: process.env.BKASH_APP_KEY,
+      app_secret: process.env.BKASH_APP_SECRET,
+     }
+    }
   async dataModification(SearchResponse: any, header: any): Promise<any> {
     const booking = SearchResponse[0];
     let tripType: string;
@@ -96,8 +112,8 @@ export class PaymentService {
     header: any,
   ): Promise<string> {
     const sslcommerz = new SslCommerzPayment(
-      this.storeId,
-      this.storePassword,
+      this.sslcommerzsslcommerzStoreId,
+      this.sslcommerzStorePwd,
       this.isLive,
     );
     const timestamp = Date.now();
@@ -150,8 +166,8 @@ export class PaymentService {
 
   async validateOrder(val_id: string, bookingId?: any, email?: any) {
     const sslcommerz = new SslCommerzPayment(
-      this.storeId,
-      this.storePassword,
+      this.sslcommerzsslcommerzStoreId,
+      this.sslcommerzStorePwd,
       this.isLive,
     );
 
@@ -212,19 +228,83 @@ export class PaymentService {
     }
   }
 
-  // async queryRefund(tranId: string) {
-  //   // Prepare data for refund query
-  //   const data = {
-  //     store_id: process.env.SSL_STORE_ID,
-  //     store_passwd: process.env.SSL_STORE_PASSWORD,
-  //     bank_tran_id: tranId,  // Transaction ID of the payment
-  //   };
+  async initiatePaymentBkash(amount: number) {
+    const createPaymentRequest = {
+      amount: amount.toString(),
+      currency: 'BDT',
+      intent: 'sale',
+      callbackURL : process.env.BKASH_CALLBACKURL,
+      merchantInvoiceNumber: 'INV123456', // Replace with your invoice number
+    };
 
-  //   try {
-  //     const response = await this.sslcommerz.refundQuery(data);
-  //     return response;
-  //   } catch (error) {
-  //     throw new Error(`Refund query failed: ${error.message}`);
-  //   }
-  // }
+    try {
+      const response = await createPayment(this.bkashConfig, createPaymentRequest);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to create payment: ${error.message}`);
+    }
+  }
+
+  async executeBkashPayment(paymentID: string) {
+    try {
+      const response = await executePayment(this.bkashConfig, paymentID);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to execute payment: ${error.message}`);
+    }
+  }
+
+  async queryBkashPayment(paymentID: string) {
+    try {
+      const response = await queryPayment(this.bkashConfig, paymentID);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to query payment: ${error.message}`);
+    }
+  }
+
+  async searchTransaction(trxID: string) {
+    try {
+      const response = await searchTransaction(this.bkashConfig, trxID);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to search transaction: ${error.message}`);
+    }
+  }
+
+  async refundTransaction(paymentID: string, amount: number, trxID: string) {
+    try {
+      const response = await refundTransaction(this.bkashConfig, paymentID, amount.toString(), trxID);
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to refund transaction: ${error.message}`);
+    }
+  }
+
+
+  async checkCredentials() {
+    const url = `${this.bkashBaseUrl}/tokenized/checkout/token/grant`;
+    const data = {
+      app_key: this.bkashAppKey,
+      app_secret: this.bkashAppSecret,
+    };
+  
+    try {
+      const response = await axios.post(url, data, {
+        auth: {
+          username: this.bkashUserName,
+          password: this.bkashPwd,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to validate credentials:', error);
+      throw new Error('Invalid credentials');
+    }
+  }  
+
+
 }

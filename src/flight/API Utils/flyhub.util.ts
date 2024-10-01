@@ -857,17 +857,17 @@ export class FlyHubUtil {
         }
       }
     }
-    // const sslpaymentLink = await this.paymentService.dataModification(
-    //   FlightItenary,
-    //   header,
-    // );
+   
     
     const save=await this.saveBookingData(FlightItenary, header);
-    //console.log(save)
+    const sslpaymentLink = await this.paymentService.dataModification(
+      FlightItenary,
+      header,
+    );
     return {
       bookingData: FlightItenary,
-      save:save
-      //sslpaymentLink,
+      save:save,
+      sslpaymentLink,
     };
   }
 
@@ -1188,7 +1188,7 @@ export class FlyHubUtil {
       FlightItenary[0].BookingStatus,
       header,
     );
-
+    await this.mailService.sendMail(FlightItenary[0]);
     return FlightItenary;
   }
 }

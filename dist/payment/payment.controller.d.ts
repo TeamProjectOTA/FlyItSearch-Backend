@@ -7,4 +7,18 @@ export declare class PaymentController {
     handleFail(res: Response): void;
     handleCancel(res: Response): void;
     handleIPN(req: Request, res: Response): Promise<void>;
+    initiatePayment(amount: number): Promise<any>;
+    executePayment(paymentID: string): Promise<any>;
+    queryPayment(paymentID: string): Promise<any>;
+    searchTransaction(trxID: string): Promise<any>;
+    refundTransaction(paymentID: string, amount: number, trxID: string): Promise<any>;
+    callback(res: any): Promise<void>;
+    checkCredentials(body: {
+        username: string;
+        password: string;
+    }): Promise<{
+        success: boolean;
+        message: string;
+        data: any;
+    }>;
 }

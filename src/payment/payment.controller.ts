@@ -7,6 +7,9 @@ import {
   Body,
   Param,
   Req,
+  Get,
+  Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response, Request } from 'express';
@@ -82,6 +85,57 @@ export class PaymentController {
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send('IPN processing failed');
+    }
+  }
+
+ 
+  @Post('pay')
+  async initiatePayment(@Body('amount') amount: number) {
+    return this.paymentService.initiatePaymentBkash(amount);
+  }
+
+  @Post('execute/:paymentID')
+  async executePayment(@Param('paymentID') paymentID: string) {
+    return this.paymentService.executeBkashPayment(paymentID);
+  }
+
+  @Post('query/:paymentID')
+  async queryPayment(@Param('paymentID') paymentID: string) {
+    return this.paymentService.queryBkashPayment(paymentID);
+  }
+
+  @Post('search/:trxID')
+  async searchTransaction(@Param('trxID') trxID: string) {
+    return this.paymentService.searchTransaction(trxID);
+  }
+
+  @Post('refund')
+  async refundTransaction(
+    @Body('paymentID') paymentID: string,
+    @Body('amount') amount: number,
+    @Body('trxID') trxID: string,
+  ) {
+    return this.paymentService.refundTransaction(paymentID, amount, trxID);
+  }
+  @Get('callback')
+  async callback(@Res() res:any){
+    console.log(res)
+  }
+  @Post('check-credentials')
+  async checkCredentials(
+    @Body() body: { username: string; password: string }
+  ) {
+    try {
+      const result = await this.paymentService.checkCredentials();
+      return {
+        success: true,
+        message: 'Credentials validated successfully',
+        data: result,
+      };
+    } catch (error) {
+      console.error('Error checking credentials:', error.message);
+      // Throw an HTTP exception with status code 401 for invalid credentials
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
   }
 }

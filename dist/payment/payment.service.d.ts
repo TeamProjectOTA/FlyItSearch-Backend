@@ -10,11 +10,23 @@ export declare class PaymentService {
     private readonly userRepository;
     private readonly walletRepository;
     private readonly authService;
-    private readonly storeId;
-    private readonly storePassword;
+    private readonly sslcommerzsslcommerzStoreId;
+    private readonly sslcommerzStorePwd;
     private readonly isLive;
+    private bkashBaseUrl;
+    private bkashAppKey;
+    private bkashAppSecret;
+    private bkashUserName;
+    private bkashPwd;
+    private bkashConfig;
     constructor(bookingSaveRepository: Repository<BookingSave>, transectionRepository: Repository<Transection>, userRepository: Repository<User>, walletRepository: Repository<Wallet>, authService: AuthService);
     dataModification(SearchResponse: any, header: any): Promise<any>;
     initiatePayment(paymentData: any, bookingId: string, header: any): Promise<string>;
     validateOrder(val_id: string, bookingId?: any, email?: any): Promise<any>;
+    initiatePaymentBkash(amount: number): Promise<any>;
+    executeBkashPayment(paymentID: string): Promise<any>;
+    queryBkashPayment(paymentID: string): Promise<any>;
+    searchTransaction(trxID: string): Promise<any>;
+    refundTransaction(paymentID: string, amount: number, trxID: string): Promise<any>;
+    checkCredentials(): Promise<any>;
 }

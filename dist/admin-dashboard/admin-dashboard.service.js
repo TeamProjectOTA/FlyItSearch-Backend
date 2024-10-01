@@ -42,20 +42,29 @@ let AdminDashboardService = class AdminDashboardService {
         const booked = allBookings.filter(booking => booking.bookingStatus === 'Booked').length;
         const cancelled = allBookings.filter(booking => booking.bookingStatus === 'Cancelled').length;
         const ticketed = allBookings.filter(booking => booking.bookingStatus === 'Ticketed').length;
-        const flight = await this.bookingSaveRepository.find({
-            where: {
-                laginfo: (0, typeorm_2.Raw)(alias => `JSON_EXTRACT(${alias}, '$[0].DepDate') LIKE :datePattern`, { datePattern: `${depositDate}%` })
-            }
-        });
+        const flight = await this.bookingSaveRepository.find();
+        const todayFly = flight.filter(date1 => date1.laginfo[0].DepDate.startsWith(depositDate)).length;
+        let nextDay = new Date(depositDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        let nextDateString = nextDay.toISOString().split('T')[0];
+        const tomorrowFly = flight.filter(date1 => date1.laginfo[0].DepDate.startsWith(nextDateString)).length;
+        nextDay.setDate(nextDay.getDate() + 1);
+        let nextNextDayString = nextDay.toISOString().split('T')[0];
+        const dayAfterTomorrowFly = flight.filter(date1 => date1.laginfo[0].DepDate.startsWith(nextNextDayString)).length;
         return {
-            Booking: { IssueInProcess: requestTicket,
+            Booking: {
+                IssueInProcess: requestTicket,
                 Booked: booked,
                 Cancelled: cancelled,
                 Ticketed: ticketed,
-                Flydetails: flight,
+                TodayFly: todayFly,
+                TomorrowFly: tomorrowFly,
+                DayAfterTomorrowFly: dayAfterTomorrowFly
             },
-            Deposit: { pending: pending,
-                TotalDeposit: totalAmount },
+            Deposit: {
+                pending: pending,
+                TotalDeposit: totalAmount
+            },
         };
     }
 };

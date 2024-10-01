@@ -74,6 +74,38 @@ let PaymentController = class PaymentController {
                 .send('IPN processing failed');
         }
     }
+    async initiatePayment(amount) {
+        return this.paymentService.initiatePaymentBkash(amount);
+    }
+    async executePayment(paymentID) {
+        return this.paymentService.executeBkashPayment(paymentID);
+    }
+    async queryPayment(paymentID) {
+        return this.paymentService.queryBkashPayment(paymentID);
+    }
+    async searchTransaction(trxID) {
+        return this.paymentService.searchTransaction(trxID);
+    }
+    async refundTransaction(paymentID, amount, trxID) {
+        return this.paymentService.refundTransaction(paymentID, amount, trxID);
+    }
+    async callback(res) {
+        console.log(res);
+    }
+    async checkCredentials(body) {
+        try {
+            const result = await this.paymentService.checkCredentials();
+            return {
+                success: true,
+                message: 'Credentials validated successfully',
+                data: result,
+            };
+        }
+        catch (error) {
+            console.error('Error checking credentials:', error.message);
+            throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);
+        }
+    }
 };
 exports.PaymentController = PaymentController;
 __decorate([
@@ -108,6 +140,57 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleIPN", null);
+__decorate([
+    (0, common_1.Post)('pay'),
+    __param(0, (0, common_1.Body)('amount')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "initiatePayment", null);
+__decorate([
+    (0, common_1.Post)('execute/:paymentID'),
+    __param(0, (0, common_1.Param)('paymentID')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "executePayment", null);
+__decorate([
+    (0, common_1.Post)('query/:paymentID'),
+    __param(0, (0, common_1.Param)('paymentID')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "queryPayment", null);
+__decorate([
+    (0, common_1.Post)('search/:trxID'),
+    __param(0, (0, common_1.Param)('trxID')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "searchTransaction", null);
+__decorate([
+    (0, common_1.Post)('refund'),
+    __param(0, (0, common_1.Body)('paymentID')),
+    __param(1, (0, common_1.Body)('amount')),
+    __param(2, (0, common_1.Body)('trxID')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "refundTransaction", null);
+__decorate([
+    (0, common_1.Get)('callback'),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "callback", null);
+__decorate([
+    (0, common_1.Post)('check-credentials'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "checkCredentials", null);
 exports.PaymentController = PaymentController = __decorate([
     (0, swagger_1.ApiTags)('SSLCOMMERZ'),
     (0, common_1.Controller)('payment'),

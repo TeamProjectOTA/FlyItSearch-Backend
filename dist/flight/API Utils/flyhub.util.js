@@ -679,9 +679,11 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         const save = await this.saveBookingData(FlightItenary, header);
+        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
         return {
             bookingData: FlightItenary,
-            save: save
+            save: save,
+            sslpaymentLink,
         };
     }
     async saveBookingData(SearchResponse, header, bookingId) {
@@ -928,6 +930,7 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         await this.BookService.cancelDataSave(FlightItenary[0].BookingId, FlightItenary[0].BookingStatus, header);
+        await this.mailService.sendMail(FlightItenary[0]);
         return FlightItenary;
     }
 };
