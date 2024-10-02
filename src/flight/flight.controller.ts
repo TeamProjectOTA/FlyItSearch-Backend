@@ -51,14 +51,14 @@ export class FlightController {
     return this.bdFareService.airShopping(flightSearchModel);
   }
 
-  // @Post()
-  // search(@Body() flightdto: FlightSearchModel) {
-  //   const sabre = this.sabreService.shoppingBranded(flightdto);
-  //   const BDFare = this.bdFareService.airShopping(flightdto);
-  //   return {
-  //     BdFare: BDFare,
-  //   };
-  // }
+  @Post()
+  search(@Body() flightdto: FlightSearchModel) {
+    //const sabre = this.sabreService.shoppingBranded(flightdto);
+   const BDFare = this.bdFareService.airShopping(flightdto);
+    return {
+      BdFare: BDFare,
+    };
+  }
   @Get('/:pnr')
   getpnr(@Param('pnr') pnr: string) {
     return this.sabreService.checkpnr(pnr);

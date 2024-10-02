@@ -70,21 +70,17 @@ export class BookingService {
   }
 
   async findAllBooking(bookingStatus?: string) {
-    
     if (bookingStatus !== 'all') {
       return await this.bookingSaveRepository.find({
         where: { bookingStatus: bookingStatus },
         relations: ['user'],
         order: { bookingDate: 'DESC' },
-      
       });
     } else {
       return await this.bookingSaveRepository.find({
         relations: ['user'],
-        order: { bookingDate: 'DESC' }, 
+        order: { bookingDate: 'DESC' },
       });
     }
   }
-
- 
 }

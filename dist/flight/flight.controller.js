@@ -37,6 +37,12 @@ let FlightController = class FlightController {
     async searchFlights(flightSearchModel) {
         return this.bdFareService.airShopping(flightSearchModel);
     }
+    search(flightdto) {
+        const BDFare = this.bdFareService.airShopping(flightdto);
+        return {
+            BdFare: BDFare,
+        };
+    }
     getpnr(pnr) {
         return this.sabreService.checkpnr(pnr);
     }
@@ -84,6 +90,13 @@ __decorate([
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlights", null);
+__decorate([
+    (0, common_1.Post)(),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
+    __metadata("design:returntype", void 0)
+], FlightController.prototype, "search", null);
 __decorate([
     (0, common_1.Get)('/:pnr'),
     __param(0, (0, common_1.Param)('pnr')),

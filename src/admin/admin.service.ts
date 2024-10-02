@@ -32,7 +32,7 @@ export class AdminService {
     @InjectRepository(BookingSave)
     private readonly bookingSaveRepository: Repository<BookingSave>,
     @InjectRepository(Transection)
-    private readonly transectionRepository:Repository<Transection>,
+    private readonly transectionRepository: Repository<Transection>,
     private readonly authservice: AuthService,
   ) {}
 
@@ -41,10 +41,14 @@ export class AdminService {
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
-    const email = await this.authservice.decodeToken(header)
-    const adminFind= await this.adminRepository.findOne({where:{email:email}})
-    if(adminFind.role!='superAdmin'){
-      throw new UnauthorizedException(`You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`)
+    const email = await this.authservice.decodeToken(header);
+    const adminFind = await this.adminRepository.findOne({
+      where: { email: email },
+    });
+    if (adminFind.role != 'superAdmin') {
+      throw new UnauthorizedException(
+        `You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`,
+      );
     }
     const adminAllReadyExisted = await this.adminRepository.findOne({
       where: { email: createAdminDto.email },
@@ -85,12 +89,16 @@ export class AdminService {
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
-    const email = await this.authservice.decodeToken(header)
-    const adminFind= await this.adminRepository.findOne({where:{email:email}})
-    if(adminFind.role!='superAdmin'){
-      throw new UnauthorizedException(`You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`)
+    const email = await this.authservice.decodeToken(header);
+    const adminFind = await this.adminRepository.findOne({
+      where: { email: email },
+    });
+    if (adminFind.role != 'superAdmin') {
+      throw new UnauthorizedException(
+        `You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`,
+      );
     }
-    return await this.adminRepository.find({order:{id:'DESC'}});
+    return await this.adminRepository.find({ order: { id: 'DESC' } });
   }
 
   async findOne(header: any, uuid: string) {
@@ -172,7 +180,7 @@ export class AdminService {
 
     const adminToDelete = await this.adminRepository.delete({
       uuid: uuid,
-    }); 
+    });
     return { adminToFind, adminToDelete };
   }
 
@@ -195,13 +203,19 @@ export class AdminService {
     return await this.bookingSaveRepository.find();
   }
 
-
-
-  async ticketCancel(bookingId:string,reason:string,header:any){
-    const email=await this.authservice.decodeToken(header)
-    const admin= await this.adminRepository.findOne({where:{email:email}})
-    const booking= await this.bookingSaveRepository.findOne({where:{bookingId:bookingId},relations:['user']})
-    const wallet=await this.userRepository.findOne({where:{email:booking.user.email},relations:['wallet']})
+  async ticketCancel(bookingId: string, reason: string, header: any) {
+    const email = await this.authservice.decodeToken(header);
+    const admin = await this.adminRepository.findOne({
+      where: { email: email },
+    });
+    const booking = await this.bookingSaveRepository.findOne({
+      where: { bookingId: bookingId },
+      relations: ['user'],
+    });
+    const wallet = await this.userRepository.findOne({
+      where: { email: booking.user.email },
+      relations: ['wallet'],
+    });
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `SSM${timestamp}${randomNumber}`;
@@ -227,12 +241,12 @@ export class AdminService {
     add.cardType = 'Adjusted Money Added';
     add.status = 'Adjusted';
     add.walletBalance = wallet.wallet.ammount + Number(booking.netAmmount);
-    wallet.wallet.ammount=wallet.wallet.ammount+Number(booking.netAmmount)
-    booking.bookingStatus='Cancelled'
-    booking.reason=reason
-    booking.actionBy=`${admin.firstName} ${admin.lastName}`
-    
-    booking.actionAt=dhakaTimeFormatted
+    wallet.wallet.ammount = wallet.wallet.ammount + Number(booking.netAmmount);
+    booking.bookingStatus = 'Cancelled';
+    booking.reason = reason;
+    booking.actionBy = `${admin.firstName} ${admin.lastName}`;
+
+    booking.actionAt = dhakaTimeFormatted;
     await this.userRepository.save(wallet);
     await this.bookingSaveRepository.save(booking);
     return await this.transectionRepository.save(add);

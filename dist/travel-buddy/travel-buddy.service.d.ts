@@ -8,7 +8,7 @@ export declare class TravelBuddyService {
     private readonly authservice;
     constructor(travelBuddyRepository: Repository<TravelBuddy>, userRepository: Repository<User>, authservice: AuthService);
     createTravelBuddy(createTravelBuddyDto: TravelBuddyDto, header: any): Promise<any>;
-    updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto): Promise<any>;
+    updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto, id: number): Promise<any>;
     deleteTravelBuddy(id: number): Promise<{
         message: string;
     }>;

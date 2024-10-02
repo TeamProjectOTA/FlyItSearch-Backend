@@ -54,6 +54,7 @@ export class PaymentController {
     }
   }
 
+
   @Post('/fail')
   handleFail(@Res() res: Response) {
     res.status(HttpStatus.BAD_REQUEST).json({
@@ -88,7 +89,6 @@ export class PaymentController {
     }
   }
 
- 
   @Post('pay')
   async initiatePayment(@Body('amount') amount: number) {
     return this.paymentService.initiatePaymentBkash(amount);
@@ -118,13 +118,11 @@ export class PaymentController {
     return this.paymentService.refundTransaction(paymentID, amount, trxID);
   }
   @Get('callback')
-  async callback(@Res() res:any){
-    console.log(res)
+  async callback(@Res() res: any) {
+    console.log(res);
   }
   @Post('check-credentials')
-  async checkCredentials(
-    @Body() body: { username: string; password: string }
-  ) {
+  async checkCredentials(@Body() body: { username: string; password: string }) {
     try {
       const result = await this.paymentService.checkCredentials();
       return {

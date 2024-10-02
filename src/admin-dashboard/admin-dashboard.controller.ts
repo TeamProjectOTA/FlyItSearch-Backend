@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, UseGuards} from '@nestjs/common';
+import { Body, Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { AdminDashboardService } from './admin-dashboard.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
@@ -8,10 +8,9 @@ import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 export class AdminDashboardController {
   constructor(private readonly adminDashboardService: AdminDashboardService) {}
 
-
- //@UseGuards(AdmintokenGuard)
- @Get('allStateOfToday/:date')
- async findAllDeposit(@Param('date') date:string){
-  return await this.adminDashboardService.findAll(date)
- }
+  //@UseGuards(AdmintokenGuard)
+  @Get('allStateOfToday/:date')
+  async findAllDeposit(@Param('date') date: string) {
+    return await this.adminDashboardService.findAll(date);
+  }
 }

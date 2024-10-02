@@ -8,7 +8,11 @@ import { IpController } from './ip.controller';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([IpAddress]), ScheduleModule.forRoot(),AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([IpAddress]),
+    ScheduleModule.forRoot(),
+    AuthModule,
+  ],
   providers: [IpService, IpCleanupService],
   exports: [IpService, IpCleanupService],
   controllers: [IpController],

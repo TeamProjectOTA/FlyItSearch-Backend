@@ -7,20 +7,25 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { User } from 'src/user/entities/user.entity';
 import { SslCommerzPayment } from 'sslcommerz';
-import { createPayment, executePayment, queryPayment, searchTransaction, refundTransaction } from 'bkash-payment';
+import {
+  createPayment,
+  executePayment,
+  queryPayment,
+  searchTransaction,
+  refundTransaction,
+} from 'bkash-payment';
 import { Repository } from 'typeorm';
 @Injectable()
 export class PaymentService {
   private readonly sslcommerzsslcommerzStoreId: string;
   private readonly sslcommerzStorePwd: string;
   private readonly isLive: boolean;
-  private bkashBaseUrl:string; // Update this with the correct URL from bKash
-  private bkashAppKey :string;
-  private bkashAppSecret :string;
-  private bkashUserName:string;
-  private bkashPwd:string;
-  private bkashConfig: any
-
+  private bkashBaseUrl: string; // Update this with the correct URL from bKash
+  private bkashAppKey: string;
+  private bkashAppSecret: string;
+  private bkashUserName: string;
+  private bkashPwd: string;
+  private bkashConfig: any;
 
   constructor(
     @InjectRepository(BookingSave)
@@ -37,13 +42,13 @@ export class PaymentService {
     this.sslcommerzStorePwd = process.env.STORE_PASSWORD;
     this.isLive = false; // Use true for live environment
     this.bkashConfig = {
-      base_url : process.env.BKASH_BASE_URL,
+      base_url: process.env.BKASH_BASE_URL,
       username: process.env.BKASH_USERNAME,
-      password:  process.env.BKASH_USERNAME,
+      password: process.env.BKASH_USERNAME,
       app_key: process.env.BKASH_APP_KEY,
       app_secret: process.env.BKASH_APP_SECRET,
-     }
-    }
+    };
+  }
   async dataModification(SearchResponse: any, header: any): Promise<any> {
     const booking = SearchResponse[0];
     let tripType: string;
@@ -233,12 +238,15 @@ export class PaymentService {
       amount: amount.toString(),
       currency: 'BDT',
       intent: 'sale',
-      callbackURL : process.env.BKASH_CALLBACKURL,
+      callbackURL: process.env.BKASH_CALLBACKURL,
       merchantInvoiceNumber: 'INV123456', // Replace with your invoice number
     };
 
     try {
-      const response = await createPayment(this.bkashConfig, createPaymentRequest);
+      const response = await createPayment(
+        this.bkashConfig,
+        createPaymentRequest,
+      );
       return response;
     } catch (error) {
       throw new Error(`Failed to create payment: ${error.message}`);
@@ -274,13 +282,17 @@ export class PaymentService {
 
   async refundTransaction(paymentID: string, amount: number, trxID: string) {
     try {
-      const response = await refundTransaction(this.bkashConfig, paymentID, amount.toString(), trxID);
+      const response = await refundTransaction(
+        this.bkashConfig,
+        paymentID,
+        amount.toString(),
+        trxID,
+      );
       return response;
     } catch (error) {
       throw new Error(`Failed to refund transaction: ${error.message}`);
     }
   }
-
 
   async checkCredentials() {
     const url = `${this.bkashBaseUrl}/tokenized/checkout/token/grant`;
@@ -288,7 +300,7 @@ export class PaymentService {
       app_key: this.bkashAppKey,
       app_secret: this.bkashAppSecret,
     };
-  
+
     try {
       const response = await axios.post(url, data, {
         auth: {
@@ -304,7 +316,5 @@ export class PaymentService {
       console.error('Failed to validate credentials:', error);
       throw new Error('Invalid credentials');
     }
-  }  
-
-
+  }
 }

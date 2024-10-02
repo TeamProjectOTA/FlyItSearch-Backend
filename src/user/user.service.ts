@@ -251,7 +251,6 @@ export class UserService {
     }
     return {
       travelBuddies: user.travelBuddy,
-      
     };
   }
 

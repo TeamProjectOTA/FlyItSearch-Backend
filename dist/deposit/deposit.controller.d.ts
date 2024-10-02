@@ -1,5 +1,6 @@
 import { DepositService } from './deposit.service';
 import { Deposit } from './deposit.model';
+import { Response, Request } from 'express';
 export declare class DepositController {
     private readonly depositService;
     constructor(depositService: DepositService);
@@ -11,4 +12,6 @@ export declare class DepositController {
         rejectionReason: string;
     }, depositId: string): Promise<Deposit>;
     wallet(header: any): Promise<import("./deposit.model").Wallet>;
+    sslcommerz(header: any, ammount: number): Promise<any>;
+    depositSuccess(email: string, req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
 }

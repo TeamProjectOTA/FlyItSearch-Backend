@@ -7,7 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class MailService {
-  private transporter;
+  private transporter:any;
 
   constructor(private readonly authService: AuthService) {
     this.transporter = nodemailer.createTransport({

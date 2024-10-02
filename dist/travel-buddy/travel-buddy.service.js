@@ -47,8 +47,17 @@ let TravelBuddyService = class TravelBuddyService {
         }
         return await this.travelBuddyRepository.save(saveTravelBuddy);
     }
-    async updateTravelBuddy(createTravelBuddyDto) {
-        return;
+    async updateTravelBuddy(createTravelBuddyDto, id) {
+        const travelBuddy = await this.travelBuddyRepository.findOne({ where: { id: id }, relations: ['user'] });
+        travelBuddy.firstName = createTravelBuddyDto.firstName;
+        travelBuddy.lastName = createTravelBuddyDto.lastName;
+        travelBuddy.gender = createTravelBuddyDto.gender;
+        travelBuddy.title = createTravelBuddyDto.title;
+        travelBuddy.dob = createTravelBuddyDto.dob;
+        travelBuddy.nationility = travelBuddy.nationility;
+        travelBuddy.passport = travelBuddy.passport;
+        travelBuddy.passportexp = travelBuddy.passportexp;
+        return await this.travelBuddyRepository.save(travelBuddy);
     }
     async deleteTravelBuddy(id) {
         const travelBuddy = await this.travelBuddyRepository.findOne({

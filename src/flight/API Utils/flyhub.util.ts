@@ -310,8 +310,8 @@ export class FlyHubUtil {
     SearchResponse: any,
     fisId: string,
     bookingStatus?: any,
-    tripType?:any,
-    bookingDate?:any,
+    tripType?: any,
+    bookingDate?: any,
     header?: any,
   ): Promise<any> {
     const FlightItenary = [];
@@ -536,13 +536,13 @@ export class FlyHubUtil {
           } else {
             BookingStatus = SearchResponse?.BookingStatus;
           }
-
+          const passportRequired=!!(SearchResponse?.Passengers[0]?.PassportNumber);
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
             BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
-            TripType:tripType,
+            TripType: tripType,
             SearchId: SearchResponse?.SearchId,
             BookingStatus: BookingStatus,
             InstantPayment: Instant_Payment,
@@ -559,12 +559,13 @@ export class FlyHubUtil {
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
             TimeLimit: TimeLimit,
-            BookingDate:bookingDate,
+            BookingDate: bookingDate,
             Refundable: Refundable,
             ExtraService: Result?.ExtraServices || null,
             PriceBreakDown: PriceBreakDown,
             AllLegsInfo: AllLegsInfo,
             PassengerList: SearchResponse?.Passengers,
+            PassportRequired:passportRequired
           });
         }
       }
@@ -844,7 +845,7 @@ export class FlyHubUtil {
             Taxes: Taxes,
             SerViceFee: extraService + servicefee || 0,
             NetFare: Math.ceil(TotalFare), //change this before deploy
-            GrossFare: NetFare,
+            GrossFare: Math.ceil(NetFare),
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
             TimeLimit: TimeLimit,
@@ -857,16 +858,15 @@ export class FlyHubUtil {
         }
       }
     }
-   
-    
-    const save=await this.saveBookingData(FlightItenary, header);
+
+    const save = await this.saveBookingData(FlightItenary, header);
     const sslpaymentLink = await this.paymentService.dataModification(
       FlightItenary,
       header,
     );
     return {
       bookingData: FlightItenary,
-      save:save,
+      save: save,
       sslpaymentLink,
     };
   }
@@ -923,7 +923,7 @@ export class FlyHubUtil {
         })),
       };
 
-      const mail=await this.mailService.sendMail(booking);
+      const mail = await this.mailService.sendMail(booking);
       // console.log(mail,convertedData)
       return await this.BookService.saveBooking(convertedData, header);
     } else {

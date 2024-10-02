@@ -59,8 +59,8 @@ export class BookingSave {
   actionAt: string;
   @Column({ nullable: true })
   actionBy: String;
-  @Column({nullable:true})
-  reason:string
+  @Column({ nullable: true })
+  reason: string;
   @Column('json', { nullable: true })
   laginfo: any; // Store laginfo as a JSON object
 

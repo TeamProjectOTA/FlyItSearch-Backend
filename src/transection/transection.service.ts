@@ -80,8 +80,8 @@ export class TransectionService {
     add.walletBalance = wallet.ammount - transectiondto.paidAmount;
     wallet.ammount = add.walletBalance;
     booking.bookingStatus = 'IssueInProcess';
-    booking.actionAt=dhakaTimeFormatted
-    booking.actionBy=user.fullName
+    booking.actionAt = dhakaTimeFormatted;
+    booking.actionBy = user.fullName;
     await this.walletRepository.save(wallet);
     await this.bookingRepository.save(booking);
     return await this.transectionRepoistory.save(add);

@@ -15,6 +15,9 @@ export declare class FlightController {
     constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: FlyHubUtil);
     getApiResponse(bdfaredto: RequestDto): Promise<any>;
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
+    search(flightdto: FlightSearchModel): {
+        BdFare: Promise<any>;
+    };
     getpnr(pnr: string): Promise<any>;
     airvoid(pnr: string): Promise<any>;
     get_ticket(pnr: string): Promise<any>;

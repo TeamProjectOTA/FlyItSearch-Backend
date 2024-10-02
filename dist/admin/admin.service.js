@@ -38,7 +38,9 @@ let AdminService = class AdminService {
             throw new common_1.UnauthorizedException();
         }
         const email = await this.authservice.decodeToken(header);
-        const adminFind = await this.adminRepository.findOne({ where: { email: email } });
+        const adminFind = await this.adminRepository.findOne({
+            where: { email: email },
+        });
         if (adminFind.role != 'superAdmin') {
             throw new common_1.UnauthorizedException(`You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`);
         }
@@ -81,7 +83,9 @@ let AdminService = class AdminService {
             throw new common_1.UnauthorizedException();
         }
         const email = await this.authservice.decodeToken(header);
-        const adminFind = await this.adminRepository.findOne({ where: { email: email } });
+        const adminFind = await this.adminRepository.findOne({
+            where: { email: email },
+        });
         if (adminFind.role != 'superAdmin') {
             throw new common_1.UnauthorizedException(`You are not permitted to create an admin account ${adminFind.firstName} ${adminFind.lastName}`);
         }
@@ -176,9 +180,17 @@ let AdminService = class AdminService {
     }
     async ticketCancel(bookingId, reason, header) {
         const email = await this.authservice.decodeToken(header);
-        const admin = await this.adminRepository.findOne({ where: { email: email } });
-        const booking = await this.bookingSaveRepository.findOne({ where: { bookingId: bookingId }, relations: ['user'] });
-        const wallet = await this.userRepository.findOne({ where: { email: booking.user.email }, relations: ['wallet'] });
+        const admin = await this.adminRepository.findOne({
+            where: { email: email },
+        });
+        const booking = await this.bookingSaveRepository.findOne({
+            where: { bookingId: bookingId },
+            relations: ['user'],
+        });
+        const wallet = await this.userRepository.findOne({
+            where: { email: booking.user.email },
+            relations: ['wallet'],
+        });
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `SSM${timestamp}${randomNumber}`;

@@ -67,12 +67,10 @@ export class AdminController {
   @ApiBearerAuth('access_token')
   @Post('/cancelTicket/:bookingId')
   async allBooking(
-  @Headers() header: Headers,
-  @Param('bookingId') bookingId: string,
-  @Body('reason') reason:string
-) {
-    return this.adminService.ticketCancel(bookingId,reason,header);
+    @Headers() header: Headers,
+    @Param('bookingId') bookingId: string,
+    @Body('reason') reason: string,
+  ) {
+    return this.adminService.ticketCancel(bookingId, reason, header);
   }
-
-
 }

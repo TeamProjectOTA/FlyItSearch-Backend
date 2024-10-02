@@ -40,6 +40,25 @@ let DepositController = class DepositController {
     async wallet(header) {
         return await this.depositService.wallet(header);
     }
+    async sslcommerz(header, ammount) {
+        return await this.depositService.sslcommerzPaymentInit(header, ammount);
+    }
+    async depositSuccess(email, req, res) {
+        try {
+            const { val_id } = req.body;
+            const validationResponse = await this.depositService.validateOrder(val_id, email);
+            if (validationResponse?.status === 'VALID') {
+                return res.status(200).json({ message: 'Payment successful', validationResponse });
+            }
+            else {
+                return res.status(400).json({ message: 'Payment validation failed', validationResponse });
+            }
+        }
+        catch (error) {
+            console.error('Error during payment validation:', error);
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
+    }
 };
 exports.DepositController = DepositController;
 __decorate([
@@ -86,6 +105,25 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "wallet", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('sslcommerz/deposit'),
+    __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Body)('ammount')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:returntype", Promise)
+], DepositController.prototype, "sslcommerz", null);
+__decorate([
+    (0, common_1.Post)('/success/:email'),
+    __param(0, (0, common_1.Param)('email')),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", Promise)
+], DepositController.prototype, "depositSuccess", null);
 exports.DepositController = DepositController = __decorate([
     (0, swagger_1.ApiTags)('Deposit Api'),
     (0, common_1.Controller)('deposit'),

@@ -26,7 +26,14 @@ exports.AdminModule = AdminModule;
 exports.AdminModule = AdminModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, agents_entity_1.Agents, booking_model_1.BookingSave, transection_model_1.Transection, deposit_model_1.Wallet]),
+            typeorm_1.TypeOrmModule.forFeature([
+                admin_entity_1.Admin,
+                user_entity_1.User,
+                agents_entity_1.Agents,
+                booking_model_1.BookingSave,
+                transection_model_1.Transection,
+                deposit_model_1.Wallet,
+            ]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
             agents_module_1.AgentsModule,

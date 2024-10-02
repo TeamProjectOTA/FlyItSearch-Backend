@@ -7,7 +7,7 @@ import { Deposit } from 'src/deposit/deposit.model';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([BookingSave,Deposit]),AuthModule],
+  imports: [TypeOrmModule.forFeature([BookingSave, Deposit]), AuthModule],
   controllers: [AdminDashboardController],
   providers: [AdminDashboardService],
 })

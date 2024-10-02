@@ -424,6 +424,7 @@ let FlyHubUtil = class FlyHubUtil {
                     else {
                         BookingStatus = SearchResponse?.BookingStatus;
                     }
+                    const passportRequired = !!(SearchResponse?.Passengers[0]?.PassportNumber);
                     FlightItenary.push({
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
@@ -452,6 +453,7 @@ let FlyHubUtil = class FlyHubUtil {
                         PriceBreakDown: PriceBreakDown,
                         AllLegsInfo: AllLegsInfo,
                         PassengerList: SearchResponse?.Passengers,
+                        PassportRequired: passportRequired
                     });
                 }
             }
@@ -665,7 +667,7 @@ let FlyHubUtil = class FlyHubUtil {
                         Taxes: Taxes,
                         SerViceFee: extraService + servicefee || 0,
                         NetFare: Math.ceil(TotalFare),
-                        GrossFare: NetFare,
+                        GrossFare: Math.ceil(NetFare),
                         PartialOption: partialoption,
                         PartialFare: Math.ceil(PartialAmount),
                         TimeLimit: TimeLimit,

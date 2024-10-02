@@ -26,7 +26,7 @@ export class TravelBuddyService {
     const email = await this.authservice.decodeToken(header);
 
     const user = await this.userRepository.findOne({
-      where: { email:email },
+      where: { email: email },
     });
     if (!user) {
       throw new NotFoundException('No Booking data available for the user');
@@ -46,10 +46,19 @@ export class TravelBuddyService {
 
     return await this.travelBuddyRepository.save(saveTravelBuddy);
   }
-  async updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto): Promise<any> {
-    return;
+  async updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto, id:number): Promise<any> {
+    const travelBuddy= await this.travelBuddyRepository.findOne({where:{id:id},relations:['user']})
+    travelBuddy.firstName=createTravelBuddyDto.firstName
+    travelBuddy.lastName=createTravelBuddyDto.lastName
+    travelBuddy.gender=createTravelBuddyDto.gender
+    travelBuddy.title=createTravelBuddyDto.title
+    travelBuddy.dob=createTravelBuddyDto.dob
+    travelBuddy.nationility=travelBuddy.nationility
+    travelBuddy.passport=travelBuddy.passport
+    travelBuddy.passportexp=travelBuddy.passportexp
+    return await this.travelBuddyRepository.save(travelBuddy);
   }
- 
+
   async deleteTravelBuddy(id: number) {
     const travelBuddy = await this.travelBuddyRepository.findOne({
       where: { id: id },

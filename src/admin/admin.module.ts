@@ -15,11 +15,17 @@ import { TransectionModule } from 'src/transection/transection.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, Agents, BookingSave,Transection,Wallet]),
+    TypeOrmModule.forFeature([
+      Admin,
+      User,
+      Agents,
+      BookingSave,
+      Transection,
+      Wallet,
+    ]),
     UserModule,
     AuthModule,
     AgentsModule,
-    
   ],
   controllers: [AdminController],
   providers: [AdminService],
