@@ -6,4 +6,8 @@ export declare class MailController {
         message: string;
         info: any;
     }>;
+    test(data: any): Promise<{
+        message: string;
+        info: any;
+    }>;
 }

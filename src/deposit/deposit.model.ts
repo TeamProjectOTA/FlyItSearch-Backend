@@ -1,3 +1,4 @@
+
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -42,6 +43,8 @@ export class Deposit {
   createdAt: string;
   @Column({ type: 'timestamp', nullable: true })
   actionAt: string;
+  @Column()
+  receiptImage:string;
   @Column({ nullable: true, default: 'NA' })
   rejectionReason: string;
   @ManyToOne(() => User, (user) => user.deposit, { onDelete: 'CASCADE' })

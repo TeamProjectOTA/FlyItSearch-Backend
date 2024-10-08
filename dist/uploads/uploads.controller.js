@@ -28,18 +28,12 @@ let UploadsController = class UploadsController {
         }
         return await this.uploadsService.create(header, file);
     }
-    async deletePicture(header) {
-        const picture = await this.uploadsService.delete(header);
-        return { message: 'Profile picture deleted successfully', picture };
-    }
 };
 exports.UploadsController = UploadsController;
 __decorate([
     (0, common_1.Post)('upload/'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
-        storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
-        }),
+        storage: (0, multer_1.memoryStorage)(),
         limits: { fileSize: 5 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
             const allowedMimeTypes = [
@@ -62,14 +56,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UploadsController.prototype, "uploadFile", null);
-__decorate([
-    (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Delete)('/delete-profile-picture'),
-    __param(0, (0, common_1.Headers)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UploadsController.prototype, "deletePicture", null);
 exports.UploadsController = UploadsController = __decorate([
     (0, swagger_1.ApiTags)('Uploads'),
     (0, common_1.Controller)('uploads'),

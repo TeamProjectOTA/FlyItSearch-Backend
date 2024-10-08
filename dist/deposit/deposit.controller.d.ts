@@ -4,7 +4,7 @@ import { Response, Request } from 'express';
 export declare class DepositController {
     private readonly depositService;
     constructor(depositService: DepositService);
-    createDeposit(depositData: Partial<Deposit>, header: any): Promise<Deposit>;
+    createDeposit(file: Express.Multer.File, depositData: Partial<Deposit>, header: any): Promise<Deposit>;
     findAllDepositForUser(header: any): Promise<any>;
     findAllDepositForAdmin(): Promise<Deposit[]>;
     actionOnDeposit(updateData: {
@@ -12,6 +12,8 @@ export declare class DepositController {
         rejectionReason: string;
     }, depositId: string): Promise<Deposit>;
     wallet(header: any): Promise<import("./deposit.model").Wallet>;
-    sslcommerz(header: any, ammount: number): Promise<any>;
-    depositSuccess(email: string, req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+    sslcommerz(header: any, ammount: number): Promise<{
+        sslcommerz: any;
+    }>;
+    depositSuccess(email: string, amount: number, req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
 }

@@ -43,6 +43,9 @@ let TransectionService = class TransectionService {
         if (!booking) {
             throw new common_1.NotFoundException(`No booking found with  this ${transectiondto.bookingId} id`);
         }
+        if (booking.bookingStatus !== 'Booked') {
+            return `You can Not pay for a Ticket That is Alreaday ${booking.bookingStatus}`;
+        }
         const isSameUser = booking.user.email === email;
         if (!isSameUser) {
             throw new Error('Booking does not belong to this user');

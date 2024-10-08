@@ -89,4 +89,7 @@ export class MailService {
       throw error;
     }
   }
+  async mailDataConvert(data:any){
+    return await this.sendMail(data[0])
+  }
 }

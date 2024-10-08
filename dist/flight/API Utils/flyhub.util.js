@@ -458,22 +458,23 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header);
-        const price = FlightItenary[0].NetFare;
-        const email = await this.authService.decodeToken(header);
+        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header).catch(() => null);
+        const price = FlightItenary?.[0]?.NetFare || 0;
+        const email = await this.authService.decodeToken(header).catch(() => 'NA');
         let wallet = await this.walletRepository
             .createQueryBuilder('wallet')
             .innerJoinAndSelect('wallet.user', 'user')
             .where('user.email = :email', { email })
-            .getOne();
-        const walletAmmount = wallet.ammount;
+            .getOne()
+            .catch(() => null);
+        const walletAmmount = wallet?.ammount || 0;
         let priceAfterPayment = walletAmmount - price;
         if (priceAfterPayment < 0) {
             priceAfterPayment = 0;
         }
         return {
             bookingData: FlightItenary,
-            sslpaymentLink,
+            sslpaymentLink: sslpaymentLink,
             walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
@@ -685,7 +686,7 @@ let FlyHubUtil = class FlyHubUtil {
         return {
             bookingData: FlightItenary,
             save: save,
-            sslpaymentLink,
+            sslpaymentLink: sslpaymentLink,
         };
     }
     async saveBookingData(SearchResponse, header, bookingId) {
@@ -730,8 +731,9 @@ let FlyHubUtil = class FlyHubUtil {
                     ArrTo: leg?.ArrTo,
                 })),
             };
-            const mail = await this.mailService.sendMail(booking);
-            return await this.BookService.saveBooking(convertedData, header);
+            await this.mailService.mailDataConvert(booking);
+            const save = await this.BookService.saveBooking(convertedData, header);
+            return save;
         }
         else {
             return 'Booking data is unvalid';

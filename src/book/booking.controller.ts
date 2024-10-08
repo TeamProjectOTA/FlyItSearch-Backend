@@ -48,6 +48,7 @@ export class BookingController {
   }
 
   @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
   @Post('flh/airRetrive')
   async airRetrive(
     @Body() bookingIdDto: BookingID,
@@ -55,7 +56,8 @@ export class BookingController {
   ): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto, header);
   }
-
+  
+  @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Post('admin/flh/airRetrive')
   async airRetriveAdmin(@Body() bookingIdDto: BookingID): Promise<any> {

@@ -3,5 +3,5 @@ import { CreateTransectionDto } from './transection.model';
 export declare class TransectionController {
     private readonly TranserctionService;
     constructor(TranserctionService: TransectionService);
-    walletTransection(header: Headers, transectionDto: CreateTransectionDto): Promise<import("./transection.model").Transection>;
+    walletTransection(header: Headers, transectionDto: CreateTransectionDto): Promise<string | import("./transection.model").Transection>;
 }

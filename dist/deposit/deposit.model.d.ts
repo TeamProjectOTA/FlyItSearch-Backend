@@ -16,6 +16,7 @@ export declare class Deposit {
     status: string;
     createdAt: string;
     actionAt: string;
+    receiptImage: string;
     rejectionReason: string;
     user: User;
 }

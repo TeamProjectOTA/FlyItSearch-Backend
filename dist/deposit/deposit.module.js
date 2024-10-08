@@ -22,7 +22,7 @@ exports.DepositModule = DepositModule;
 exports.DepositModule = DepositModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([deposit_model_1.Deposit, user_entity_1.User, deposit_model_1.Wallet, transection_model_1.Transection]),
+            typeorm_1.TypeOrmModule.forFeature([deposit_model_1.Deposit, user_entity_1.User, deposit_model_1.Wallet, transection_model_1.Transection,]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
         ],

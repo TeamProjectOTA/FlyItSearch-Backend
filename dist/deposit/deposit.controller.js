@@ -18,15 +18,23 @@ const deposit_service_1 = require("./deposit.service");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 const swagger_1 = require("@nestjs/swagger");
 const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
 let DepositController = class DepositController {
     constructor(depositService) {
         this.depositService = depositService;
     }
-    async createDeposit(depositData, header) {
-        if (!depositData || Object.keys(depositData).length === 0) {
-            throw new common_1.NotFoundException('Deposit data cannot be empty');
+    async createDeposit(file, depositData, header) {
+        if (!file) {
+            throw new common_1.BadRequestException('Receipt image is required');
         }
-        return this.depositService.createDeposit(depositData, header);
+        try {
+            return await this.depositService.createDeposit(depositData, header, file);
+        }
+        catch (error) {
+            console.error('Error in createDeposit:', error.message);
+            throw new common_1.InternalServerErrorException('Failed to create deposit');
+        }
     }
     async findAllDepositForUser(header) {
         return this.depositService.getDepositforUser(header);
@@ -43,10 +51,10 @@ let DepositController = class DepositController {
     async sslcommerz(header, ammount) {
         return await this.depositService.sslcommerzPaymentInit(header, ammount);
     }
-    async depositSuccess(email, req, res) {
+    async depositSuccess(email, amount, req, res) {
         try {
             const { val_id } = req.body;
-            const validationResponse = await this.depositService.validateOrder(val_id, email);
+            const validationResponse = await this.depositService.validateOrder(val_id, email, amount);
             if (validationResponse?.status === 'VALID') {
                 return res.status(200).json({ message: 'Payment successful', validationResponse });
             }
@@ -64,10 +72,24 @@ exports.DepositController = DepositController;
 __decorate([
     (0, common_1.Post)('/createDeposit'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Headers)()),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('receiptImage', {
+        storage: (0, multer_1.memoryStorage)(),
+        limits: { fileSize: 5 * 1024 * 1024 },
+        fileFilter: (req, file, cb) => {
+            const allowedMimeTypes = ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'];
+            if (allowedMimeTypes.includes(file.mimetype)) {
+                cb(null, true);
+            }
+            else {
+                cb(new common_1.BadRequestException('File type must be jpeg, jpg, png, gif'), false);
+            }
+        },
+    })),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "createDeposit", null);
 __decorate([
@@ -116,12 +138,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "sslcommerz", null);
 __decorate([
-    (0, common_1.Post)('/success/:email'),
+    (0, common_1.Post)('/success/:email/:amount'),
     __param(0, (0, common_1.Param)('email')),
-    __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Res)()),
+    __param(1, (0, common_1.Param)('amount')),
+    __param(2, (0, common_1.Req)()),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, Number, Object, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "depositSuccess", null);
 exports.DepositController = DepositController = __decorate([

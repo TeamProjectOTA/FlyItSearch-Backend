@@ -8,22 +8,30 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProfilePicture } from './uploads.model';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
-
-import { extname, join } from 'path';
+import path, { extname, join } from 'path';
 import { promises as fs } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
-import { UserTokenGuard } from 'src/auth/user-tokens.guard';
+import { Storage } from '@google-cloud/storage';
+import { v4 as uuidv4 } from 'uuid';
+
 
 @Injectable()
 export class UploadsService {
+  private storage: Storage;
+  private bucket: string;
   constructor(
     @InjectRepository(ProfilePicture)
     private profilePictureRepository: Repository<ProfilePicture>,
     private readonly authservice: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
-  @UseGuards(UserTokenGuard)
+  ) {
+    this.storage = new Storage({
+      keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+    });
+    this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
+  }
+  
   async create(
     header: any,
     file: Express.Multer.File,
@@ -32,50 +40,54 @@ export class UploadsService {
     const user = await this.userRepository.findOne({
       where: { email: decodeToken },
     });
-
+  
     if (!user) {
       throw new BadRequestException('User not found.');
     }
+  
     const existingProfilePicture = await this.profilePictureRepository.findOne({
       where: { user },
     });
-
+  
     if (existingProfilePicture) {
       try {
-        await fs.unlink(existingProfilePicture.path);
-      } catch (error) {}
-      await this.profilePictureRepository.remove(existingProfilePicture);
+        const bucketFile = this.storage
+          .bucket(this.bucket)
+          .file(existingProfilePicture.filename);
+        await bucketFile.delete();
+        await this.profilePictureRepository.remove(existingProfilePicture);
+      } catch (error) {
+        console.error('Error deleting file from Google Cloud:', error.message);
+        throw new BadRequestException('Failed to delete existing profile picture.');
+      }
     }
+  
     const fileExtension = extname(file.originalname);
-    const filename = `${user.passengerId}-ProfilePicture_of-${user.fullName}${fileExtension}`;
-    const path = join('uploads', filename);
+    const filename = `${user.passengerId}-ProfilePicture${fileExtension}`;
+  
     try {
-      await fs.rename(file.path, path);
+      const bucketFile = this.storage.bucket(this.bucket).file(filename);
+  
+      
+      await bucketFile.save(file.buffer, {
+        contentType: file.mimetype,
+        public: true, 
+      });
+
+      const publicUrl = `https://storage.googleapis.com/${this.bucket}/${filename}`;
+  
+      const profilePicture = this.profilePictureRepository.create({
+        user,
+        filename,
+        path: publicUrl,
+        size: file.size,
+      });
+  
+      return await this.profilePictureRepository.save(profilePicture);
     } catch (error) {
-      throw new BadRequestException('Failed to save file.');
+      console.error('Error uploading file to Google Cloud:', error.message);
+      throw new BadRequestException('Failed to upload and save profile picture.');
     }
-    const size = file.size;
-    const profilePicture = this.profilePictureRepository.create({
-      user,
-      filename,
-      path,
-      size,
-    });
-    return this.profilePictureRepository.save(profilePicture);
   }
-  async delete(header: any): Promise<any> {
-    const decodeToken = await this.authservice.decodeToken(header);
-    const user = await this.userRepository.findOne({
-      where: { email: decodeToken },
-    });
-    const profilePicture = await this.profilePictureRepository.findOne({
-      where: { user },
-    });
-
-    if (!profilePicture) {
-      throw new NotFoundException('Profile picture not found');
-    }
-
-    return await this.profilePictureRepository.remove(profilePicture);
-  }
+  
 }

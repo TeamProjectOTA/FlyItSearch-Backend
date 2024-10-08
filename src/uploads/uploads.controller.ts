@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import {  memoryStorage } from 'multer';
+import {  ApiTags } from '@nestjs/swagger';
 @ApiTags('Uploads')
 @Controller('uploads')
 export class UploadsController {
@@ -18,9 +18,7 @@ export class UploadsController {
   @Post('upload/')
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads',
-      }),
+      storage: memoryStorage(),
       limits: { fileSize: 5 * 1024 * 1024 },
       fileFilter: (req, file, cb) => {
         const allowedMimeTypes = [
@@ -51,10 +49,5 @@ export class UploadsController {
     return await this.uploadsService.create(header, file);
   }
 
-  @ApiBearerAuth('access_token')
-  @Delete('/delete-profile-picture')
-  async deletePicture(@Headers() header: Headers) {
-    const picture = await this.uploadsService.delete(header);
-    return { message: 'Profile picture deleted successfully', picture };
-  }
+
 }

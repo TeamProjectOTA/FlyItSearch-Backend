@@ -80,6 +80,10 @@ __decorate([
     __metadata("design:type", String)
 ], Deposit.prototype, "actionAt", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Deposit.prototype, "receiptImage", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true, default: 'NA' }),
     __metadata("design:type", String)
 ], Deposit.prototype, "rejectionReason", void 0);

@@ -83,6 +83,9 @@ let MailService = class MailService {
             throw error;
         }
     }
+    async mailDataConvert(data) {
+        return await this.sendMail(data[0]);
+    }
 };
 exports.MailService = MailService;
 exports.MailService = MailService = __decorate([

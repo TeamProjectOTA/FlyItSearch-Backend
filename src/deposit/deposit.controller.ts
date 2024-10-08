@@ -3,13 +3,16 @@ import {
   Controller,
   Post,
   Headers,
-  NotFoundException,
   UseGuards,
   Get,
   Patch,
   Param,
   Req,
   Res,
+  BadRequestException,
+  UseInterceptors,
+  UploadedFile,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { DepositService } from './deposit.service';
 import { Deposit } from './deposit.model';
@@ -17,23 +20,48 @@ import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 import { Response, Request } from 'express';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @ApiTags('Deposit Api')
 @Controller('deposit')
 export class DepositController {
   constructor(private readonly depositService: DepositService) {}
 
-  @Post('/createDeposit')
-  @UseGuards(UserTokenGuard)
-  async createDeposit(
-    @Body() depositData: Partial<Deposit>,
-    @Headers() header: any,
-  ): Promise<Deposit> {
-    if (!depositData || Object.keys(depositData).length === 0) {
-      throw new NotFoundException('Deposit data cannot be empty');
-    }
-    return this.depositService.createDeposit(depositData, header);
+@Post('/createDeposit')
+@UseGuards(UserTokenGuard)
+@UseInterceptors(
+  FileInterceptor('receiptImage', {  // Ensure this matches your form data field name
+    storage: memoryStorage(),        // Storing in memory
+    limits: { fileSize: 5 * 1024 * 1024 },  // Limiting file size to 5MB
+    fileFilter: (req, file, cb) => {
+      const allowedMimeTypes = ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'];
+      if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new BadRequestException('File type must be jpeg, jpg, png, gif'), false);
+      }
+    },
+  }),
+)
+async createDeposit(
+  @UploadedFile() file: Express.Multer.File,
+  @Body() depositData: Partial<Deposit>,
+  @Headers() header: any,
+): Promise<Deposit> { 
+
+  if (!file) {
+    throw new BadRequestException('Receipt image is required');
   }
+  try {
+    return await this.depositService.createDeposit(depositData, header, file);
+  } catch (error) {
+    console.error('Error in createDeposit:', error.message);  
+    throw new InternalServerErrorException('Failed to create deposit');
+  }
+}
+
+  
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('user/findAll')
@@ -66,15 +94,16 @@ export class DepositController {
   async sslcommerz(@Headers() header:any,@Body('ammount') ammount:number){
     return await this.depositService.sslcommerzPaymentInit(header,ammount)
   }
-  @Post('/success/:email')
+  @Post('/success/:email/:amount')
   async depositSuccess(
     @Param('email') email:string,
+    @Param('amount') amount:number,
     @Req() req: Request,
     @Res() res: Response
   ) {
     try {
       const { val_id } = req.body;  
-      const validationResponse = await this.depositService.validateOrder(val_id,email);
+      const validationResponse = await this.depositService.validateOrder(val_id,email,amount);
       if (validationResponse?.status === 'VALID') {
       
         return res.status(200).json({ message: 'Payment successful', validationResponse });

@@ -69,6 +69,7 @@ __decorate([
 ], BookingController.prototype, "aircanel", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('flh/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
@@ -77,6 +78,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetrive", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Post)('admin/flh/airRetrive'),
     __param(0, (0, common_1.Body)()),

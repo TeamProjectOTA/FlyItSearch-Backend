@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const transection_service_1 = require("./transection.service");
 const transection_model_1 = require("./transection.model");
 const swagger_1 = require("@nestjs/swagger");
+const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 let TransectionController = class TransectionController {
     constructor(TranserctionService) {
         this.TranserctionService = TranserctionService;
@@ -27,6 +28,8 @@ let TransectionController = class TransectionController {
 };
 exports.TransectionController = TransectionController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('Wallet'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),

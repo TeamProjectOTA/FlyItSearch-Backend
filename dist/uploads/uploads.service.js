@@ -19,14 +19,17 @@ const uploads_model_1 = require("./uploads.model");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../user/entities/user.entity");
 const path_1 = require("path");
-const fs_1 = require("fs");
 const auth_service_1 = require("../auth/auth.service");
-const user_tokens_guard_1 = require("../auth/user-tokens.guard");
+const storage_1 = require("@google-cloud/storage");
 let UploadsService = class UploadsService {
     constructor(profilePictureRepository, authservice, userRepository) {
         this.profilePictureRepository = profilePictureRepository;
         this.authservice = authservice;
         this.userRepository = userRepository;
+        this.storage = new storage_1.Storage({
+            keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+        });
+        this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
     }
     async create(header, file) {
         const decodeToken = await this.authservice.decodeToken(header);
@@ -41,50 +44,41 @@ let UploadsService = class UploadsService {
         });
         if (existingProfilePicture) {
             try {
-                await fs_1.promises.unlink(existingProfilePicture.path);
+                const bucketFile = this.storage
+                    .bucket(this.bucket)
+                    .file(existingProfilePicture.filename);
+                await bucketFile.delete();
+                await this.profilePictureRepository.remove(existingProfilePicture);
             }
-            catch (error) { }
-            await this.profilePictureRepository.remove(existingProfilePicture);
+            catch (error) {
+                console.error('Error deleting file from Google Cloud:', error.message);
+                throw new common_1.BadRequestException('Failed to delete existing profile picture.');
+            }
         }
         const fileExtension = (0, path_1.extname)(file.originalname);
-        const filename = `${user.passengerId}-ProfilePicture_of-${user.fullName}${fileExtension}`;
-        const path = (0, path_1.join)('uploads', filename);
+        const filename = `${user.passengerId}-ProfilePicture${fileExtension}`;
         try {
-            await fs_1.promises.rename(file.path, path);
+            const bucketFile = this.storage.bucket(this.bucket).file(filename);
+            await bucketFile.save(file.buffer, {
+                contentType: file.mimetype,
+                public: true,
+            });
+            const publicUrl = `https://storage.googleapis.com/${this.bucket}/${filename}`;
+            const profilePicture = this.profilePictureRepository.create({
+                user,
+                filename,
+                path: publicUrl,
+                size: file.size,
+            });
+            return await this.profilePictureRepository.save(profilePicture);
         }
         catch (error) {
-            throw new common_1.BadRequestException('Failed to save file.');
+            console.error('Error uploading file to Google Cloud:', error.message);
+            throw new common_1.BadRequestException('Failed to upload and save profile picture.');
         }
-        const size = file.size;
-        const profilePicture = this.profilePictureRepository.create({
-            user,
-            filename,
-            path,
-            size,
-        });
-        return this.profilePictureRepository.save(profilePicture);
-    }
-    async delete(header) {
-        const decodeToken = await this.authservice.decodeToken(header);
-        const user = await this.userRepository.findOne({
-            where: { email: decodeToken },
-        });
-        const profilePicture = await this.profilePictureRepository.findOne({
-            where: { user },
-        });
-        if (!profilePicture) {
-            throw new common_1.NotFoundException('Profile picture not found');
-        }
-        return await this.profilePictureRepository.remove(profilePicture);
     }
 };
 exports.UploadsService = UploadsService;
-__decorate([
-    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], UploadsService.prototype, "create", null);
 exports.UploadsService = UploadsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),

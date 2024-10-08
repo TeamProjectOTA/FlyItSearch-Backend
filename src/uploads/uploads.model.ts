@@ -1,3 +1,4 @@
+import { Deposit } from 'src/deposit/deposit.model';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -25,3 +26,4 @@ export class ProfilePicture {
   @JoinColumn()
   user: User;
 }
+

@@ -8,4 +8,8 @@ export declare class MailService {
         message: string;
         info: any;
     }>;
+    mailDataConvert(data: any): Promise<{
+        message: string;
+        info: any;
+    }>;
 }

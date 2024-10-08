@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
@@ -11,12 +12,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { Transection } from 'src/transection/transection.model';
 import { SslCommerzPayment } from 'sslcommerz';
+import { Storage } from '@google-cloud/storage';
 
 @Injectable()
 export class DepositService {
   private readonly sslcommerzsslcommerzStoreId: string;
   private readonly sslcommerzStorePwd: string;
   private readonly isLive: boolean;
+  private storage: Storage;
+  private bucket: string;
   constructor(
     @InjectRepository(Deposit)
     private readonly depositRepository: Repository<Deposit>,
@@ -32,35 +36,71 @@ export class DepositService {
     this.sslcommerzsslcommerzStoreId = process.env.STORE_ID;
     this.sslcommerzStorePwd = process.env.STORE_PASSWORD;
     this.isLive = false;
+    this.storage = new Storage({
+        keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+      });
+      this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
+    
   }
 
   async createDeposit(
     depositData: Partial<Deposit>,
     header: any,
+    file: Express.Multer.File, // Handle the file here
   ): Promise<Deposit> {
     const email = await this.authService.decodeToken(header);
     const user = await this.userRepository.findOne({ where: { email: email } });
-
+  
     if (!user) {
       throw new NotFoundException('User not found');
     }
+  
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
-    const random_id = `SSMD${timestamp}${randomNumber}`;
+    const random_id = `FSD${timestamp}${randomNumber}`;
+  
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
+  
+    const receiptFilename = `${random_id}_receipt.jpg`;
+    const gcsFile = this.storage.bucket(this.bucket).file(receiptFilename);
+  
+    try {
+     
+      await gcsFile.save(file.buffer, {
+        metadata: {
+          contentType: file.mimetype, 
+        },
+        resumable: false,
+        public: true,
+      });
+    } catch (error) {
+      console.error('Error uploading to GCS:', error.message); 
+      throw new Error('Failed to upload receipt image');
+    }
+  
+  
+    const receiptImageUrl = `https://storage.googleapis.com/${this.bucket}/${receiptFilename}`;
+  
     const deposit = this.depositRepository.create({
       ...depositData,
       depositId: random_id,
       createdAt: dhakaTimeFormatted,
       status: 'Pending',
       user,
+      receiptImage: receiptImageUrl, 
     });
-
-    return await this.depositRepository.save(deposit);
+  
+    try {
+      return await this.depositRepository.save(deposit);
+    } catch (error) {
+      console.error('Error saving deposit:', error.message);  
+      throw new InternalServerErrorException('Failed to save deposit');
+    }
   }
+  
 
   async getDepositforUser(header: any): Promise<any> {
     const email = await this.authService.decodeToken(header);
@@ -109,9 +149,6 @@ export class DepositService {
     deposit.status = updateData.status;
     deposit.actionAt = dhakaTimeFormatted;
     deposit.rejectionReason = updateData.rejectionReason;
-    // if(!deposit.rejectionReason&&){
-    //     throw new NotFoundException('Rejection Reason Cannot be empty')
-    // }
     if (updateData.status == 'Approved') {
       let addTransection: Transection = new Transection();
       addTransection.tranId = deposit.depositId;
@@ -155,16 +192,15 @@ export class DepositService {
     );
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
-    const tran_id = `SSD${timestamp}${randomNumber}`;
-
+    const tran_id = `FSD${timestamp}${randomNumber}`;
     const email = await this.authService.decodeToken(header);
     const user = await this.userRepository.findOne({where:{email:email}})
-   
+    
     const data = {
       total_amount:amount,
       currency: 'BDT',
       tran_id: tran_id,
-      success_url: `http://localhost:8080/deposit/success/${email}`,
+      success_url: `http://192.168.10.91:8080/deposit/success/${email}/${amount}`,
       fail_url: 'http://localhost:8080/payment/fail',
       cancel_url: 'http://localhost:8080/payment/cancel',
       ipn_url: 'http://localhost:8080/payment/ipn',
@@ -178,15 +214,16 @@ export class DepositService {
       cus_phone: user.phone,
     };
     const apiResponse = await sslcommerz.init(data);
-    return apiResponse?.GatewayPageURL;
+    return {sslcommerz:apiResponse?.GatewayPageURL};
 
   }
-  async validateOrder(val_id: string,email:string) {
+  async validateOrder(val_id: string,email:string,amount:number) {
     const sslcommerz = new SslCommerzPayment(
       this.sslcommerzsslcommerzStoreId,
       this.sslcommerzStorePwd,
       this.isLive,
     );
+    
     const validationData = {
       val_id: val_id,
     };
@@ -200,7 +237,7 @@ export class DepositService {
     let addTransection: Transection = new Transection();
         addTransection.tranId = response.tran_id;
         addTransection.tranDate = response.tran_date;
-        addTransection.paidAmount = response.amount;
+        addTransection.paidAmount = String(amount);
         addTransection.offerAmmount = response.store_amount;
         addTransection.bankTranId = response.bank_tran_id;
         addTransection.riskTitle = response.risk_title;
@@ -214,8 +251,8 @@ export class DepositService {
           where: { email: email },
           relations: ['wallet'],
         });
-        addTransection.walletBalance = findUser.wallet.ammount + Number(response.amount);
-        findUser.wallet.ammount = findUser.wallet.ammount + Number(response.amount);
+        addTransection.walletBalance = findUser.wallet.ammount + Number(amount);
+        findUser.wallet.ammount = findUser.wallet.ammount + Number(amount);
         addTransection.paymentType = 'Instaint Payment ';
         addTransection.requestType = `Instaint Money added `;
         addTransection.user = user;
@@ -224,7 +261,7 @@ export class DepositService {
         await this.transectionRepository.save(addTransection);
         let addDeposit: Deposit = new Deposit();
         addDeposit.user=user
-        addDeposit.ammount= response?.amount
+        addDeposit.ammount=amount
         addDeposit.depositId= response?.tran_id
         addDeposit.depositedFrom=response?.card_brand
         addDeposit.branch=response?.card_issuer
