@@ -9,39 +9,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Header = exports.HeaderDto = void 0;
+exports.HomePage = void 0;
 const typeorm_1 = require("typeorm");
-class HeaderDto {
-}
-exports.HeaderDto = HeaderDto;
-let Header = class Header {
+let HomePage = class HomePage {
 };
-exports.Header = Header;
+exports.HomePage = HomePage;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Header.prototype, "id", void 0);
+], HomePage.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Header.prototype, "filename", void 0);
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Object)
+], HomePage.prototype, "banner", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Header.prototype, "tag", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Header.prototype, "path", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", Number)
-], Header.prototype, "size", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Header.prototype, "mimetype", void 0);
-exports.Header = Header = __decorate([
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Array)
+], HomePage.prototype, "sliderImage", void 0);
+exports.HomePage = HomePage = __decorate([
     (0, typeorm_1.Entity)()
-], Header);
-//# sourceMappingURL=header.model.js.map
+], HomePage);
+//# sourceMappingURL=homepage.model.js.map

@@ -11,13 +11,14 @@ const common_1 = require("@nestjs/common");
 const homepage_controller_1 = require("./homepage.controller");
 const homepage_service_1 = require("./homepage.service");
 const typeorm_1 = require("@nestjs/typeorm");
-const header_model_1 = require("./header.model");
+const homepage_model_1 = require("./homepage.model");
+const auth_module_1 = require("../auth/auth.module");
 let HomepageModule = class HomepageModule {
 };
 exports.HomepageModule = HomepageModule;
 exports.HomepageModule = HomepageModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([header_model_1.Header])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([homepage_model_1.HomePage]), auth_module_1.AuthModule],
         controllers: [homepage_controller_1.HomepageController],
         providers: [homepage_service_1.HomepageService],
     })

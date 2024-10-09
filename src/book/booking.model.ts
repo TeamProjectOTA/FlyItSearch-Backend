@@ -15,40 +15,28 @@ import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 export class BookingSave {
   @PrimaryGeneratedColumn()
   id: number;
-
   @Column()
   system: string;
-
   @Column()
   bookingId: string;
-
   @Column()
   paxCount: number;
-
   @Column()
   Curriername: string;
-
   @Column()
   CurrierCode: string;
-
   @Column()
   flightNumber: string;
-
   @Column()
   isRefundable: boolean;
-
   @Column({ nullable: true })
   bookingDate: string;
-
   @Column()
   expireDate: Date;
-
   @Column()
   bookingStatus: string;
-
   @Column()
   TripType: string;
-
   @Column()
   PNR: string;
   @Column()

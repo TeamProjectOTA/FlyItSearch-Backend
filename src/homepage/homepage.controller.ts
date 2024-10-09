@@ -1,63 +1,41 @@
 import {
-  Controller,
-  Param,
-  Post,
-  Res,
-  UploadedFiles,
-  UseInterceptors,
-  Get,
-  Query,
   BadRequestException,
   Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HomepageService } from './homepage.service';
+import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { Header, HeaderDto } from './header.model';
-import { ApiTags } from '@nestjs/swagger';
-import { join } from 'path';
-import { Response } from 'express';
-
+import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 @ApiTags('Homepage-Api')
 @Controller('homepage')
 export class HomepageController {
-  constructor(private readonly fileupload: HomepageService) {}
-
-  @Post()
+  constructor(private readonly homePageService:HomepageService){}
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Post('upload')
   @UseInterceptors(
-    FilesInterceptor('files', 10, {
-      storage: diskStorage({
-        destination: './src/AllFile/sliderHomepage',
-        filename: (req, file, cb) => {
-          cb(null, `${Date.now()}-${file.originalname}`);
-        },
-      }),
-    }),
+    FileFieldsInterceptor([
+      { name: 'banner', maxCount: 1 },
+      { name: 'slider', maxCount: 5 },
+    ]),
   )
-  async uploadFiles(
-    @UploadedFiles() files: Express.Multer.File[],
-  ): Promise<Header[]> {
-    console.log('Files:', files);
-    return await this.fileupload.saveFiles(files);
+  async uploadBannerAndSlider(
+    @UploadedFiles()
+    files: { banner?: Express.Multer.File[]; slider?: Express.Multer.File[] },
+  ) {
+    return this.homePageService.uploadBannerAndSlider(files);
   }
-  @Get(':id')
-  async getFile(@Param('id') id: number, @Res() res: Response): Promise<void> {
-    const file = await this.fileupload.getFileById(id);
-    if (!file) {
-      res.status(404).send('File not found');
-      return;
-    }
-    const filePath = join(process.cwd(), file.path);
-    res.sendFile(filePath);
-  }
-  @Get()
-  async findMultiple(@Query('ids') ids: string): Promise<Partial<Header>[]> {
-    const idArray = ids.split(',').map((id) => parseInt(id, 10));
-
-    if (idArray.some(isNaN)) {
-      throw new BadRequestException('Invalid ids provided');
-    }
-
-    return this.fileupload.findMultiple(idArray);
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Get('data')
+  async data(){
+    return this.homePageService.getalldata()
   }
 }

@@ -70,6 +70,7 @@ let DepositController = class DepositController {
 };
 exports.DepositController = DepositController;
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Post)('/createDeposit'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('receiptImage', {

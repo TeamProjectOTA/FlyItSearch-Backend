@@ -20,12 +20,13 @@ import { AirportsModule } from './airports/airports.module';
 import { AirlinesModule } from './airlines/airlines.module';
 import { BookingModule } from './book/booking.module';
 import { UploadsModule } from './uploads/uploads.module';
-import { HotDealsModule } from './homepage/hotdeals/hotdeals.module';
+
 import { TermsAndConditionsModule } from './terms-and-conditions/terms-and-conditions.module';
 import { DepositModule } from './deposit/deposit.module';
 import { TravelBuddyModule } from './travel-buddy/travel-buddy.module';
 import { TransectionModule } from './transection/transection.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
+import { BankAddModule } from './bank-add/bank-add.module';
 require('dotenv').config();
 
 @Module({
@@ -74,7 +75,6 @@ require('dotenv').config();
     BookingModule,
     HomepageModule,
     PdfModule,
-    HotDealsModule,
     IpModule,
     TourPackageModule,
     AirlinesModule,
@@ -85,6 +85,7 @@ require('dotenv').config();
     TravelBuddyModule,
     TransectionModule,
     AdminDashboardModule,
+    BankAddModule,
   ],
 
   providers: [

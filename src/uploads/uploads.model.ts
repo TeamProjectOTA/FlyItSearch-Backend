@@ -17,7 +17,7 @@ export class ProfilePicture {
   filename: string;
 
   @Column()
-  path: string;
+  link: string;
 
   @Column()
   size: number;
@@ -26,4 +26,5 @@ export class ProfilePicture {
   @JoinColumn()
   user: User;
 }
+
 

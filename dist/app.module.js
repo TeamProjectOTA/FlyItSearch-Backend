@@ -29,12 +29,12 @@ const airports_module_1 = require("./airports/airports.module");
 const airlines_module_1 = require("./airlines/airlines.module");
 const booking_module_1 = require("./book/booking.module");
 const uploads_module_1 = require("./uploads/uploads.module");
-const hotdeals_module_1 = require("./homepage/hotdeals/hotdeals.module");
 const terms_and_conditions_module_1 = require("./terms-and-conditions/terms-and-conditions.module");
 const deposit_module_1 = require("./deposit/deposit.module");
 const travel_buddy_module_1 = require("./travel-buddy/travel-buddy.module");
 const transection_module_1 = require("./transection/transection.module");
 const admin_dashboard_module_1 = require("./admin-dashboard/admin-dashboard.module");
+const bank_add_module_1 = require("./bank-add/bank-add.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -77,7 +77,6 @@ exports.AppModule = AppModule = __decorate([
             booking_module_1.BookingModule,
             homepage_module_1.HomepageModule,
             pdf_module_1.PdfModule,
-            hotdeals_module_1.HotDealsModule,
             ip_module_1.IpModule,
             tour_package_module_1.TourPackageModule,
             airlines_module_1.AirlinesModule,
@@ -88,6 +87,7 @@ exports.AppModule = AppModule = __decorate([
             travel_buddy_module_1.TravelBuddyModule,
             transection_module_1.TransectionModule,
             admin_dashboard_module_1.AdminDashboardModule,
+            bank_add_module_1.BankAddModule,
         ],
         providers: [
             {

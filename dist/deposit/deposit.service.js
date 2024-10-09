@@ -51,7 +51,8 @@ let DepositService = class DepositService {
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
         const dhakaTimeFormatted = dhakaTime.toISOString();
-        const receiptFilename = `${random_id}_receipt.jpg`;
+        const folderName = 'DepositImage';
+        const receiptFilename = `${folderName}/${random_id}_receipt.jpg`;
         const gcsFile = this.storage.bucket(this.bucket).file(receiptFilename);
         try {
             await gcsFile.save(file.buffer, {

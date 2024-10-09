@@ -14,67 +14,43 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HomepageController = void 0;
 const common_1 = require("@nestjs/common");
-const homepage_service_1 = require("./homepage.service");
-const multer_1 = require("multer");
-const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
-const path_1 = require("path");
+const homepage_service_1 = require("./homepage.service");
+const platform_express_1 = require("@nestjs/platform-express");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let HomepageController = class HomepageController {
-    constructor(fileupload) {
-        this.fileupload = fileupload;
+    constructor(homePageService) {
+        this.homePageService = homePageService;
     }
-    async uploadFiles(files) {
-        console.log('Files:', files);
-        return await this.fileupload.saveFiles(files);
+    async uploadBannerAndSlider(files) {
+        return this.homePageService.uploadBannerAndSlider(files);
     }
-    async getFile(id, res) {
-        const file = await this.fileupload.getFileById(id);
-        if (!file) {
-            res.status(404).send('File not found');
-            return;
-        }
-        const filePath = (0, path_1.join)(process.cwd(), file.path);
-        res.sendFile(filePath);
-    }
-    async findMultiple(ids) {
-        const idArray = ids.split(',').map((id) => parseInt(id, 10));
-        if (idArray.some(isNaN)) {
-            throw new common_1.BadRequestException('Invalid ids provided');
-        }
-        return this.fileupload.findMultiple(idArray);
+    async data() {
+        return this.homePageService.getalldata();
     }
 };
 exports.HomepageController = HomepageController;
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 10, {
-        storage: (0, multer_1.diskStorage)({
-            destination: './src/AllFile/sliderHomepage',
-            filename: (req, file, cb) => {
-                cb(null, `${Date.now()}-${file.originalname}`);
-            },
-        }),
-    })),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Post)('upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
+        { name: 'banner', maxCount: 1 },
+        { name: 'slider', maxCount: 5 },
+    ])),
     __param(0, (0, common_1.UploadedFiles)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], HomepageController.prototype, "uploadFiles", null);
+], HomepageController.prototype, "uploadBannerAndSlider", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Res)()),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Get)('data'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], HomepageController.prototype, "getFile", null);
-__decorate([
-    (0, common_1.Get)(),
-    __param(0, (0, common_1.Query)('ids')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], HomepageController.prototype, "findMultiple", null);
+], HomepageController.prototype, "data", null);
 exports.HomepageController = HomepageController = __decorate([
     (0, swagger_1.ApiTags)('Homepage-Api'),
     (0, common_1.Controller)('homepage'),

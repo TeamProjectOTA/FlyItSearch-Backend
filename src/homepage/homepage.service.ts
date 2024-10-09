@@ -1,54 +1,119 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Header, HeaderDto } from './header.model';
-import { In, Repository } from 'typeorm';
+import { HomePage } from './homepage.model';
+import { Repository } from 'typeorm';
+import { Storage } from '@google-cloud/storage';
+import { v4 as uuidv4 } from 'uuid';
+import * as path from 'path';
 
 @Injectable()
 export class HomepageService {
-  private counter = 0;
+  private storage: Storage;
+  private bucket: any;
+
   constructor(
-    @InjectRepository(Header)
-    private readonly headerRepository: Repository<Header>,
-  ) {}
+    @InjectRepository(HomePage)
+    private readonly homePageRepository: Repository<HomePage>,
+  ) {
+    this.storage = new Storage({
+      keyFilename: process.env.GOOGLE_CLOUD_KEYFILE, 
+    });
+    this.bucket = this.storage.bucket(process.env.GOOGLE_CLOUD_BUCKET_NAME); 
+  }
 
-  async saveFiles(files: Express.Multer.File[]): Promise<Header[]> {
+  async uploadBannerAndSlider(files: { banner?: Express.Multer.File[]; slider?: Express.Multer.File[] }) {
+    let bannerData: { imageUrl: string; size: string; type: string } | null = null;
+    const sliderImages = [];
+  
+    
+    const homePage = await this.homePageRepository.findOne({ where: { id: 1 } });
+    if (!homePage) {
+      throw new NotFoundException('HomePage record not found.');
+    }
+  
+    
+    if (files.banner && files.banner.length > 0) {
+      const bannerFile = files.banner[0];
+      if (homePage.banner && homePage.banner.imageUrl) {
+        await this.deleteFileFromGoogleCloud(homePage.banner.imageUrl);
+      }
+      bannerData = await this.uploadFileToGoogleCloud(bannerFile);
+    } else if (homePage.banner) {
+      
+      bannerData = homePage.banner;
+    }
+    if (files.slider && files.slider.length > 0) {
+      
+      if (homePage.sliderImage && homePage.sliderImage.length > 0) {
+        for (const sliderImage of homePage.sliderImage) {
+          await this.deleteFileFromGoogleCloud(sliderImage.imageUrl);
+        }
+      }
+      for (const sliderFile of files.slider) {
+        const sliderImageData = await this.uploadFileToGoogleCloud(sliderFile);
+        sliderImages.push(sliderImageData);
+      }
+    } else {
+      
+      sliderImages.push(...homePage.sliderImage);
+    }
+  
+    if (!bannerData) {
+      throw new BadRequestException('Banner image is required.');
+    }
+  
+    if (sliderImages.length > 5) {
+      throw new BadRequestException('A maximum of 5 slider images are allowed.');
+    }
+    homePage.banner = bannerData;
+    homePage.sliderImage = sliderImages;
+    return this.homePageRepository.save(homePage);
+  }
+  
+  async uploadFileToGoogleCloud(file: Express.Multer.File): Promise<{ imageUrl: string; size: string; type: string }> {
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    if (!['.jpg', '.jpeg', '.png'].includes(fileExtension)) {
+      throw new BadRequestException('Invalid file type. Only JPG, JPEG, and PNG files are allowed.');
+    }
+
+    const fileSizeKB = (file.size / 1024).toFixed(2);
+    const folderName = 'SiteHomePage';
+    const fileName = `${folderName}/${uuidv4()}${fileExtension}`;
+    const bucketFile = this.bucket.file(fileName);
+
     try {
-      const newFiles = files.map((file) => {
-        this.counter += 1;
-        const filename = `SliderImage-${this.counter}`;
-        return this.headerRepository.create({
-          filename: filename,
-          path: file.path,
-          size: file.size,
-          mimetype: file.mimetype,
-        });
+     
+      await bucketFile.save(file.buffer, {
+        contentType: file.mimetype,
+        public: true,
       });
-
-      return this.headerRepository.save(newFiles);
     } catch (error) {
-      console.log(error);
-      throw new NotFoundException();
+      throw new BadRequestException(`Failed to upload file to Google Cloud: ${error.message}`);
     }
-  }
 
-  async getFileById(id: number): Promise<Header> {
-    const file = await this.headerRepository.findOne({ where: { id: id } });
-    if (!file) {
-      throw new NotFoundException(`File with ID ${id} not found`);
-    }
-    return file;
-  }
-  async findMultiple(ids: number[]) {
-    const headers = await this.headerRepository.findBy({ id: In(ids) });
-    const partialHeader = headers.map((header) => ({
-      id: header.id,
-      name: header.filename,
-      path: header.path,
-    }));
 
-    if (headers.length === 0) {
-      throw new NotFoundException(`No headers found for the given IDs`);
-    }
-    return partialHeader;
+    const publicUrl = `https://storage.googleapis.com/${this.bucket.name}/${fileName}`;
+    return {
+      imageUrl: publicUrl,
+      size: `${fileSizeKB} KB`,
+      type: fileExtension,
+    };
   }
+ 
+async deleteFileFromGoogleCloud(imageUrl: string): Promise<void> {
+  const fileName = imageUrl.split('/').pop(); 
+  const file = this.bucket.file(fileName);
+
+  try {
+    await file.delete();
+    console.log(`Successfully deleted file: ${fileName}`);
+  } catch (error) {
+    console.error(`Failed to delete file: ${fileName}`, error.message);
+    throw new BadRequestException(`Failed to delete previous file: ${error.message}`);
+  }
+}
+async getalldata(){
+  return await this.homePageRepository.findOne({ where: { id: 1 } });
+}
+  
 }

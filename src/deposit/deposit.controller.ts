@@ -27,7 +27,7 @@ import { memoryStorage } from 'multer';
 @Controller('deposit')
 export class DepositController {
   constructor(private readonly depositService: DepositService) {}
-
+@ApiBearerAuth('access_token')
 @Post('/createDeposit')
 @UseGuards(UserTokenGuard)
 @UseInterceptors(

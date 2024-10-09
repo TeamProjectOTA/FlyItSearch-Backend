@@ -26,7 +26,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], ProfilePicture.prototype, "path", void 0);
+], ProfilePicture.prototype, "link", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)

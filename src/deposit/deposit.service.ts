@@ -63,12 +63,11 @@ export class DepositService {
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
-  
-    const receiptFilename = `${random_id}_receipt.jpg`;
+    const folderName = 'DepositImage';
+    const receiptFilename = `${folderName}/${random_id}_receipt.jpg`;
     const gcsFile = this.storage.bucket(this.bucket).file(receiptFilename);
   
     try {
-     
       await gcsFile.save(file.buffer, {
         metadata: {
           contentType: file.mimetype, 
@@ -80,10 +79,7 @@ export class DepositService {
       console.error('Error uploading to GCS:', error.message); 
       throw new Error('Failed to upload receipt image');
     }
-  
-  
     const receiptImageUrl = `https://storage.googleapis.com/${this.bucket}/${receiptFilename}`;
-  
     const deposit = this.depositRepository.create({
       ...depositData,
       depositId: random_id,
@@ -148,6 +144,9 @@ export class DepositService {
     const dhakaTimeFormatted = dhakaTime.toISOString();
     deposit.status = updateData.status;
     deposit.actionAt = dhakaTimeFormatted;
+    // if(deposit.status='Approved'&& !deposit.rejectionReason){
+    //   return 
+    // }
     deposit.rejectionReason = updateData.rejectionReason;
     if (updateData.status == 'Approved') {
       let addTransection: Transection = new Transection();

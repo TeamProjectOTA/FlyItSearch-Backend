@@ -2,7 +2,7 @@ import { User } from 'src/user/entities/user.entity';
 export declare class ProfilePicture {
     id: number;
     filename: string;
-    path: string;
+    link: string;
     size: number;
     user: User;
 }

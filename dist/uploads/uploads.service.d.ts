@@ -9,5 +9,5 @@ export declare class UploadsService {
     private storage;
     private bucket;
     constructor(profilePictureRepository: Repository<ProfilePicture>, authservice: AuthService, userRepository: Repository<User>);
-    create(header: any, file: Express.Multer.File): Promise<ProfilePicture>;
+    create(header: any, file: Express.Multer.File): Promise<any>;
 }

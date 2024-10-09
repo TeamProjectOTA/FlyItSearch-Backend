@@ -21,6 +21,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const path_1 = require("path");
 const auth_service_1 = require("../auth/auth.service");
 const storage_1 = require("@google-cloud/storage");
+const uuid_1 = require("uuid");
 let UploadsService = class UploadsService {
     constructor(profilePictureRepository, authservice, userRepository) {
         this.profilePictureRepository = profilePictureRepository;
@@ -56,7 +57,8 @@ let UploadsService = class UploadsService {
             }
         }
         const fileExtension = (0, path_1.extname)(file.originalname);
-        const filename = `${user.passengerId}-ProfilePicture${fileExtension}`;
+        const folderName = 'ProfilePicture';
+        const filename = `${folderName}/${user.passengerId}-ProfilePicture${fileExtension}${(0, uuid_1.v4)()}`;
         try {
             const bucketFile = this.storage.bucket(this.bucket).file(filename);
             await bucketFile.save(file.buffer, {
@@ -67,10 +69,11 @@ let UploadsService = class UploadsService {
             const profilePicture = this.profilePictureRepository.create({
                 user,
                 filename,
-                path: publicUrl,
+                link: publicUrl,
                 size: file.size,
             });
-            return await this.profilePictureRepository.save(profilePicture);
+            const save = await this.profilePictureRepository.save(profilePicture);
+            return { Message: "Image Uploaded Successful", save };
         }
         catch (error) {
             console.error('Error uploading file to Google Cloud:', error.message);

@@ -6,20 +6,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HotDealsModule = void 0;
+exports.BankAddModule = void 0;
 const common_1 = require("@nestjs/common");
+const bank_add_service_1 = require("./bank-add.service");
+const bank_add_controller_1 = require("./bank-add.controller");
 const typeorm_1 = require("@nestjs/typeorm");
-const hotdeals_model_1 = require("./hotdeals.model");
-const hotdeals_service_1 = require("./hotdeals.service");
-const hotdeals_controller_1 = require("./hotdeals.controller");
-let HotDealsModule = class HotDealsModule {
+const bank_add_model_1 = require("./bank-add.model");
+let BankAddModule = class BankAddModule {
 };
-exports.HotDealsModule = HotDealsModule;
-exports.HotDealsModule = HotDealsModule = __decorate([
+exports.BankAddModule = BankAddModule;
+exports.BankAddModule = BankAddModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([hotdeals_model_1.HotDeals])],
-        providers: [hotdeals_service_1.HotDealsService],
-        controllers: [hotdeals_controller_1.HotDealsController],
+        imports: [typeorm_1.TypeOrmModule.forFeature([bank_add_model_1.BankAdd])],
+        controllers: [bank_add_controller_1.BankAddController],
+        providers: [bank_add_service_1.BankAddService],
     })
-], HotDealsModule);
-//# sourceMappingURL=hotdeals.module.js.map
+], BankAddModule);
+//# sourceMappingURL=bank-add.module.js.map

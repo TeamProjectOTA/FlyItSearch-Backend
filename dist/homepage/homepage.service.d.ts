@@ -1,14 +1,19 @@
-import { Header } from './header.model';
+import { HomePage } from './homepage.model';
 import { Repository } from 'typeorm';
 export declare class HomepageService {
-    private readonly headerRepository;
-    private counter;
-    constructor(headerRepository: Repository<Header>);
-    saveFiles(files: Express.Multer.File[]): Promise<Header[]>;
-    getFileById(id: number): Promise<Header>;
-    findMultiple(ids: number[]): Promise<{
-        id: number;
-        name: string;
-        path: string;
-    }[]>;
+    private readonly homePageRepository;
+    private storage;
+    private bucket;
+    constructor(homePageRepository: Repository<HomePage>);
+    uploadBannerAndSlider(files: {
+        banner?: Express.Multer.File[];
+        slider?: Express.Multer.File[];
+    }): Promise<HomePage>;
+    uploadFileToGoogleCloud(file: Express.Multer.File): Promise<{
+        imageUrl: string;
+        size: string;
+        type: string;
+    }>;
+    deleteFileFromGoogleCloud(imageUrl: string): Promise<void>;
+    getalldata(): Promise<HomePage>;
 }

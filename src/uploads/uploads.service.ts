@@ -15,6 +15,7 @@ import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
 
 
+
 @Injectable()
 export class UploadsService {
   private storage: Storage;
@@ -35,7 +36,7 @@ export class UploadsService {
   async create(
     header: any,
     file: Express.Multer.File,
-  ): Promise<ProfilePicture> {
+  ): Promise<any> {
     const decodeToken = await this.authservice.decodeToken(header);
     const user = await this.userRepository.findOne({
       where: { email: decodeToken },
@@ -63,7 +64,8 @@ export class UploadsService {
     }
   
     const fileExtension = extname(file.originalname);
-    const filename = `${user.passengerId}-ProfilePicture${fileExtension}`;
+    const folderName = 'ProfilePicture';
+    const filename = `${folderName}/${user.passengerId}-ProfilePicture${fileExtension}${uuidv4()}`;
   
     try {
       const bucketFile = this.storage.bucket(this.bucket).file(filename);
@@ -79,11 +81,11 @@ export class UploadsService {
       const profilePicture = this.profilePictureRepository.create({
         user,
         filename,
-        path: publicUrl,
+        link: publicUrl,
         size: file.size,
       });
-  
-      return await this.profilePictureRepository.save(profilePicture);
+     const save= await this.profilePictureRepository.save(profilePicture)
+      return {Message:"Image Uploaded Successful",save} ;
     } catch (error) {
       console.error('Error uploading file to Google Cloud:', error.message);
       throw new BadRequestException('Failed to upload and save profile picture.');

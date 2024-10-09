@@ -58,7 +58,7 @@ __decorate([
 ], UploadsController.prototype, "uploadFile", null);
 exports.UploadsController = UploadsController = __decorate([
     (0, swagger_1.ApiTags)('Uploads'),
-    (0, common_1.Controller)('uploads'),
+    (0, common_1.Controller)('profilePicture'),
     __metadata("design:paramtypes", [uploads_service_1.UploadsService])
 ], UploadsController);
 //# sourceMappingURL=uploads.controller.js.map

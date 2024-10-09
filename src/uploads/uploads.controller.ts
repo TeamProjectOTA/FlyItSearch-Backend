@@ -6,13 +6,14 @@ import {
   UseInterceptors,
   Headers,
   Delete,
+  Get,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {  memoryStorage } from 'multer';
 import {  ApiTags } from '@nestjs/swagger';
 @ApiTags('Uploads')
-@Controller('uploads')
+@Controller('profilePicture')
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
   @Post('upload/')
@@ -48,6 +49,4 @@ export class UploadsController {
 
     return await this.uploadsService.create(header, file);
   }
-
-
 }
