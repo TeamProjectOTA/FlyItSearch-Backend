@@ -41,6 +41,10 @@ let PaymentService = class PaymentService {
             app_key: process.env.BKASH_APP_KEY,
             app_secret: process.env.BKASH_APP_SECRET,
         };
+        this.surjoBaseUrl = process.env.SURJO_API_Url;
+        this.surjoUserName = process.env.SURJO_API_USRNAME;
+        this.surjoPassword = process.env.SURJO_API_PASSWORD;
+        this.surjoPrefix = process.env.SURJO_API_PREFIX;
     }
     async dataModification(SearchResponse, header) {
         const booking = SearchResponse[0];
@@ -273,6 +277,102 @@ let PaymentService = class PaymentService {
             console.error('Failed to validate credentials:', error);
             throw new Error('Invalid credentials');
         }
+    }
+    async formdata(SearchResponse, header) {
+        const email = await this.authService.decodeToken(header);
+        const user = await this.userRepository.findOne({
+            where: { email: email },
+        });
+        const booking = SearchResponse[0];
+        const airTicketPrice = booking?.NetFare;
+        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.02);
+        const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
+        const bookingID = booking.BookingId;
+        const data = {
+            amount: total_amount,
+            currency: "BDT",
+            customer_name: user.fullName,
+            customer_address: "Dhaka",
+            customer_phone: user.phone,
+            customer_city: "Dhaka",
+            customer_email: email,
+        };
+        return { url: await this.surjoMakePayment(data, bookingID, header),
+            airTicketPrice: airTicketPrice,
+            paymentGatwayCharge: paymentGatwayCharge,
+            total_amount: total_amount, };
+    }
+    async surjoAuthentication() {
+        let details;
+        try {
+            const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/get_token`, {
+                username: this.surjoUserName,
+                password: this.surjoPassword,
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+            details = response.data;
+        }
+        catch (error) {
+            console.error("Error authenticating:", error.response ? error.response.data : error.message);
+        }
+        return details;
+    }
+    async surjoMakePayment(data, bookingId, header) {
+        const tokenDetails = await this.surjoAuthentication();
+        const { token, token_type, store_id } = tokenDetails;
+        const bookingID = bookingId;
+        const email = await this.authService.decodeToken(header);
+        const timestamp = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const tran_id = `SSM${timestamp}${randomNumber}`;
+        const formData = data;
+        try {
+            const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/secret-pay`, {
+                prefix: this.surjoPrefix,
+                store_id: store_id,
+                token: token,
+                return_url: `http://localhost:8080/payment/return/${bookingID}/${email}`,
+                cancel_url: 'http://localhost:8080/payment/cancel',
+                order_id: tran_id,
+                client_ip: '192.67.2',
+                ...formData,
+            }, {
+                headers: {
+                    authorization: `${token_type} ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            return response.data.checkout_url;
+        }
+        catch (error) {
+            console.error("Error making payment:", error.response ? error.response.data : error.message);
+            return "Payment Failed";
+        }
+    }
+    async surjoVerifyPayment(sp_order_id, bookingID, email) {
+        console.log('From surjopay' + bookingID, email);
+        const tokenDetails = await this.surjoAuthentication();
+        const { token, token_type } = tokenDetails;
+        let verify_status = " ";
+        try {
+            const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/verification`, {
+                order_id: sp_order_id,
+            }, {
+                headers: {
+                    authorization: `${token_type} ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            verify_status = response.data;
+        }
+        catch (error) {
+            console.error("Error verifying payment:", error.response ? error.response.data : error.message);
+            return "Payment Verification Failed";
+        }
+        return verify_status;
     }
 };
 exports.PaymentService = PaymentService;

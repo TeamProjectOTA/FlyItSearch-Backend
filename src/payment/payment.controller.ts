@@ -62,7 +62,7 @@ export class PaymentController {
     });
   }
 
-  @Post('/cancel')
+  @Get('/cancel')
   handleCancel(@Res() res: Response) {
     res.status(HttpStatus.BAD_REQUEST).json({
       message: 'Payment was cancelled.',
@@ -132,8 +132,26 @@ export class PaymentController {
       };
     } catch (error) {
       console.error('Error checking credentials:', error.message);
-      // Throw an HTTP exception with status code 401 for invalid credentials
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
   }
+@Get('suth')
+async test(){
+  return this.paymentService.surjoAuthentication()
+}
+ 
+
+ @Get('return/:bookingID/:email')
+  async paymentReturn(
+    @Param('bookingID') bookingID:string,
+    @Param('email') email:string,
+    @Query('order_id') order_id: string, 
+  ) {
+    const paymentData = await this.paymentService.surjoVerifyPayment(order_id,bookingID,email);
+    return {
+      message: 'Payment successfull',
+      data: paymentData,
+    };
+  }
+ 
 }

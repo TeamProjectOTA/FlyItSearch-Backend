@@ -1,4 +1,4 @@
-import { Deposit } from 'src/deposit/deposit.model';
+import { BookingSave } from 'src/book/booking.model';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -25,6 +25,20 @@ export class ProfilePicture {
   @OneToOne(() => User, (user) => user.profilePicture, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
+}
+
+
+@Entity()
+export class VisaPassport{
+  @PrimaryGeneratedColumn()
+  id:number
+  @Column({nullable:true})
+  passportLink:string
+  @Column()
+  visaLink:string
+  @OneToOne(() => BookingSave, (bookingSave) => bookingSave.visaPassport, { onDelete: 'CASCADE' },)
+  @JoinColumn()
+  bookingSave: BookingSave;
 }
 
 

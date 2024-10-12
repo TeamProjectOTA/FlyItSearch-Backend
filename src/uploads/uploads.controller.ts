@@ -5,18 +5,21 @@ import {
   UploadedFile,
   UseInterceptors,
   Headers,
-  Delete,
-  Get,
+  Param,
+  UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import {  memoryStorage } from 'multer';
 import {  ApiTags } from '@nestjs/swagger';
+import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 @ApiTags('Uploads')
-@Controller('profilePicture')
+@Controller('upload')
 export class UploadsController {
   constructor(private readonly uploadsService: UploadsService) {}
-  @Post('upload/')
+  @UseGuards(UserTokenGuard)
+  @Post('profilePicture/')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
@@ -48,5 +51,23 @@ export class UploadsController {
     }
 
     return await this.uploadsService.create(header, file);
+  }
+
+  @UseGuards(UserTokenGuard)
+  @Post(':bookingId/upload')
+  @UseInterceptors(FilesInterceptor('files', 2)) 
+  async uploadVisaAndPassport(
+    @Param('bookingId') bookingId: string,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    if(!files){
+      throw new BadRequestException('no file is given');
+    }
+    if (files.length !== 2) {
+      throw new BadRequestException('Exactly two files (passport and visa) are required');
+    }
+    const passportFile = files[0];
+    const visaFile = files[1];
+    return this.uploadsService.uploadVisaAndPassportImages(bookingId, passportFile, visaFile);
   }
 }

@@ -22,11 +22,35 @@ let BankAddService = class BankAddService {
         this.bankAddRepository = bankAddRepository;
     }
     async create(createBankAddDto) {
-        const bankAdd = this.bankAddRepository.create(createBankAddDto);
+        const bankAdd = this.bankAddRepository.create({
+            ...createBankAddDto,
+            accountHolderName: createBankAddDto.accountHolderName.toUpperCase(),
+            bankName: createBankAddDto.bankName.toUpperCase(),
+            branchName: createBankAddDto.branchName.toUpperCase(),
+        });
         return await this.bankAddRepository.save(bankAdd);
     }
     async getallBank() {
-        return this.bankAddRepository.find();
+        return this.bankAddRepository
+            .createQueryBuilder('bank')
+            .select(['bank.accountHolderName', 'bank.bankName', 'bank.branchName', 'bank.accountNumber'])
+            .getMany();
+    }
+    async getOne(id) {
+        return await this.bankAddRepository.findOne({ where: { id: id } });
+    }
+    async getAllAccount() {
+        return await this.bankAddRepository.find({ order: {
+                id: 'DESC'
+            } });
+    }
+    async update(id, updateBankAddDto) {
+        const bankAccount = await this.bankAddRepository.findOne({ where: { id: id } });
+        if (!bankAccount) {
+            throw new common_1.NotFoundException(`Bank account with ID ${id} not found`);
+        }
+        Object.assign(bankAccount, updateBankAddDto);
+        return this.bankAddRepository.save(bankAccount);
     }
 };
 exports.BankAddService = BankAddService;

@@ -18,6 +18,7 @@ const uploads_service_1 = require("./uploads.service");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const swagger_1 = require("@nestjs/swagger");
+const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 let UploadsController = class UploadsController {
     constructor(uploadsService) {
         this.uploadsService = uploadsService;
@@ -28,10 +29,22 @@ let UploadsController = class UploadsController {
         }
         return await this.uploadsService.create(header, file);
     }
+    async uploadVisaAndPassport(bookingId, files) {
+        if (!files) {
+            throw new common_1.BadRequestException('no file is given');
+        }
+        if (files.length !== 2) {
+            throw new common_1.BadRequestException('Exactly two files (passport and visa) are required');
+        }
+        const passportFile = files[0];
+        const visaFile = files[1];
+        return this.uploadsService.uploadVisaAndPassportImages(bookingId, passportFile, visaFile);
+    }
 };
 exports.UploadsController = UploadsController;
 __decorate([
-    (0, common_1.Post)('upload/'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('profilePicture/'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
         storage: (0, multer_1.memoryStorage)(),
         limits: { fileSize: 5 * 1024 * 1024 },
@@ -56,9 +69,19 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], UploadsController.prototype, "uploadFile", null);
+__decorate([
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)(':bookingId/upload'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('files', 2)),
+    __param(0, (0, common_1.Param)('bookingId')),
+    __param(1, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", Promise)
+], UploadsController.prototype, "uploadVisaAndPassport", null);
 exports.UploadsController = UploadsController = __decorate([
     (0, swagger_1.ApiTags)('Uploads'),
-    (0, common_1.Controller)('profilePicture'),
+    (0, common_1.Controller)('upload'),
     __metadata("design:paramtypes", [uploads_service_1.UploadsService])
 ], UploadsController);
 //# sourceMappingURL=uploads.controller.js.map

@@ -21,4 +21,9 @@ export declare class PaymentController {
         message: string;
         data: any;
     }>;
+    test(): Promise<any>;
+    paymentReturn(bookingID: string, email: string, order_id: string): Promise<{
+        message: string;
+        data: string;
+    }>;
 }

@@ -7,6 +7,8 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { User } from 'src/user/entities/user.entity';
 import { SslCommerzPayment } from 'sslcommerz';
+import * as ShurjoPay from 'shurjopay-js';
+
 import {
   createPayment,
   executePayment,
@@ -26,6 +28,10 @@ export class PaymentService {
   private bkashUserName: string;
   private bkashPwd: string;
   private bkashConfig: any;
+  private surjoBaseUrl:string
+  private surjoUserName:string
+  private surjoPassword:string
+  private surjoPrefix:string
 
   constructor(
     @InjectRepository(BookingSave)
@@ -48,6 +54,10 @@ export class PaymentService {
       app_key: process.env.BKASH_APP_KEY,
       app_secret: process.env.BKASH_APP_SECRET,
     };
+    this.surjoBaseUrl = process.env.SURJO_API_Url;
+    this.surjoUserName=process.env.SURJO_API_USRNAME;
+    this.surjoPassword=process.env.SURJO_API_PASSWORD;
+    this.surjoPrefix=process.env.SURJO_API_PREFIX
   }
   async dataModification(SearchResponse: any, header: any): Promise<any> {
     const booking = SearchResponse[0];
@@ -239,7 +249,7 @@ export class PaymentService {
       currency: 'BDT',
       intent: 'sale',
       callbackURL: process.env.BKASH_CALLBACKURL,
-      merchantInvoiceNumber: 'INV123456', // Replace with your invoice number
+      merchantInvoiceNumber: 'INV123456', 
     };
 
     try {
@@ -317,4 +327,107 @@ export class PaymentService {
       throw new Error('Invalid credentials');
     }
   }
+
+
+async formdata(SearchResponse?: any, header?: any){
+  const email = await this.authService.decodeToken(header);
+  const user = await this.userRepository.findOne({
+    where: { email: email },
+  });
+  const booking = SearchResponse[0];
+  const airTicketPrice = booking?.NetFare;
+  const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.02); // !Important some check the validation before adding the ammont. 2.5% charge added in sslcomerz
+  const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
+  const bookingID=booking.BookingId
+ const data={
+    amount: total_amount,
+    currency: "BDT",
+    customer_name: user.fullName,
+    customer_address: "Dhaka",
+    customer_phone: user.phone,
+    customer_city: "Dhaka",
+    customer_email: email,
 }
+return{ url: await this.surjoMakePayment(data,bookingID,header),
+  airTicketPrice: airTicketPrice,
+  paymentGatwayCharge: paymentGatwayCharge,
+  total_amount: total_amount,}
+
+}
+
+  async surjoAuthentication() {
+    let details:any
+    try {
+      const response = await axios.post(`${this.surjoBaseUrl}/api/get_token`, {
+        username: this.surjoUserName,
+        password: this.surjoPassword,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      details=response.data
+    } catch (error) {
+      console.error("Error authenticating:", error.response ? error.response.data : error.message);
+    }
+    return details ;
+  }
+
+  async surjoMakePayment(data:any,bookingId:string,header:any) {
+    const tokenDetails = await this.surjoAuthentication();
+    const { token, token_type, store_id } = tokenDetails;
+    const bookingID=bookingId
+    const email = await this.authService.decodeToken(header);
+    const timestamp = Date.now();
+    const randomNumber = Math.floor(Math.random() * 1000);
+    const tran_id = `SSM${timestamp}${randomNumber}`;
+    const formData= data
+    try {
+      const response = await axios.post(`${this.surjoBaseUrl}/api/secret-pay`, {
+        prefix: this.surjoPrefix,
+        store_id: store_id,
+        token: token,
+        return_url: `http://localhost:8080/payment/return/${bookingID}/${email}`, // Dynamic return URL
+        cancel_url: 'http://localhost:8080/payment/cancel',
+        order_id: tran_id,
+        client_ip:'192.67.2',
+        ...formData,
+      }, {
+        headers: {
+          authorization: `${token_type} ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return response.data.checkout_url; // Payment response
+    } catch (error) {
+      console.error("Error making payment:", error.response ? error.response.data : error.message);
+      return "Payment Failed";
+    }
+  }
+
+
+  async surjoVerifyPayment(sp_order_id: string,bookingID:string,email:string) {
+    console.log('From surjopay'+bookingID,email)
+    const tokenDetails = await this.surjoAuthentication();
+    const { token, token_type } = tokenDetails;
+    let verify_status = " ";
+
+    try {
+      const response = await axios.post(`${this.surjoBaseUrl}/api/verification`, {
+        order_id: sp_order_id,
+      }, {
+        headers: {
+          authorization: `${token_type} ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      verify_status = response.data;
+    } catch (error) {
+      console.error("Error verifying payment:", error.response ? error.response.data : error.message);
+      return "Payment Verification Failed";
+    }
+
+    return verify_status;
+  }
+}
+

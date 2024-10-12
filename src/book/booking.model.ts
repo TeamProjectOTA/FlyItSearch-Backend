@@ -8,8 +8,9 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { VisaPassport } from 'src/uploads/uploads.model';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class BookingSave {
@@ -51,10 +52,12 @@ export class BookingSave {
   reason: string;
   @Column('json', { nullable: true })
   laginfo: any; // Store laginfo as a JSON object
-
+  @OneToOne(() => VisaPassport, (visaPassport) => visaPassport.bookingSave)
+  visaPassport: VisaPassport;
   @ManyToOne(() => User, (user) => user.bookingSave, { onDelete: 'CASCADE' })
   user: User;
 }
+
 
 class CreateLagInfoDto {
   @IsString()

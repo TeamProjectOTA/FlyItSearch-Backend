@@ -572,6 +572,7 @@ export class FlyHubUtil {
     }
 
     const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header).catch(() => null);
+    const surjopay=await this.paymentService.formdata(FlightItenary, header)
 
     const price = FlightItenary?.[0]?.NetFare || 0; 
     
@@ -594,6 +595,7 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       sslpaymentLink:sslpaymentLink,
+      surjopay:surjopay,
       walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }

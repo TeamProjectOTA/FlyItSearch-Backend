@@ -1,11 +1,12 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProfilePicture } from './uploads.model';
+import { ProfilePicture, VisaPassport } from './uploads.model';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import path, { extname, join } from 'path';
@@ -13,6 +14,7 @@ import { promises as fs } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
 import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
+import { BookingSave } from 'src/book/booking.model';
 
 
 
@@ -26,6 +28,10 @@ export class UploadsService {
     private readonly authservice: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(BookingSave)
+    private readonly bookingSaveRepository:Repository<BookingSave>,
+    @InjectRepository(VisaPassport)
+    private readonly visaPassportRepository:Repository<VisaPassport>
   ) {
     this.storage = new Storage({
       keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
@@ -91,5 +97,53 @@ export class UploadsService {
       throw new BadRequestException('Failed to upload and save profile picture.');
     }
   }
+
+
+  async uploadVisaAndPassportImages(bookingId: string, passportFile: Express.Multer.File, visaFile: Express.Multer.File) {
+    const bookingSave = await this.bookingSaveRepository.findOne({
+      where: { bookingId: bookingId },
+      relations: ['visaPassport'], 
+    });
+
+    if (!bookingSave) {
+      throw new BadRequestException('Booking not found');
+    }
+    if (bookingSave.visaPassport) {
+      throw new ConflictException('You can only upload the visa and passport copy once');
+    }
+
+    
+    const [passportLink, visaLink] = await Promise.all([
+      this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
+      this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
+    ]);
+    const visaPassport = new VisaPassport();
+    visaPassport.passportLink = passportLink;
+    visaPassport.visaLink = visaLink;
+    visaPassport.bookingSave = bookingSave;
+
+    return await this.visaPassportRepository.save(visaPassport);
+  }
+
+  private async uploadImage(file: Express.Multer.File, type: string): Promise<string> {
+    const folderName = 'PassportVisa';
+    const fileName = `${folderName}/${type}`;
+    const blob = this.storage.bucket(this.bucket).file(fileName);
+
+    const blobStream = blob.createWriteStream({
+      metadata: { contentType: file.mimetype },
+      public: true, 
+    });
+
+    return new Promise((resolve, reject) => {
+      blobStream.on('error', (err) => reject(err));
+      blobStream.on('finish', () => {
+        const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
+        resolve(publicUrl);
+      });
+      blobStream.end(file.buffer);
+    });
+  }
+
   
 }

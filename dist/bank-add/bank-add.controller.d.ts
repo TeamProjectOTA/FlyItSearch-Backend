@@ -5,4 +5,7 @@ export declare class BankAddController {
     constructor(bankAddService: BankAddService);
     create(createBankAddDto: CreateBankAddDto): Promise<BankAdd>;
     getAll(): Promise<BankAdd[]>;
+    getAllaccount(): Promise<BankAdd[]>;
+    geOne(id: number): Promise<BankAdd>;
+    update(id: number, createBankAddDto: CreateBankAddDto): Promise<BankAdd>;
 }

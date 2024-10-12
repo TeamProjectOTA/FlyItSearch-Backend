@@ -18,8 +18,6 @@ export class Deposit {
   @Column()
   depositId: string;
   @Column({ nullable: true })
-  branch: string;
-  @Column({ nullable: true })
   senderName: string;
   @Column({ nullable: true })
   referance: string; //reachiver employid
@@ -37,6 +35,8 @@ export class Deposit {
   transferDate: string;
   @Column({ nullable: true })
   depositedFrom: string;
+  @Column({nullable:true})
+  transectionId:string
   @Column()
   status: string;
   @Column()

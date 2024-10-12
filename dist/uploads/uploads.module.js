@@ -15,13 +15,14 @@ const uploads_model_1 = require("./uploads.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const user_module_1 = require("../user/user.module");
 const auth_module_1 = require("../auth/auth.module");
+const booking_model_1 = require("../book/booking.model");
 let UploadsModule = class UploadsModule {
 };
 exports.UploadsModule = UploadsModule;
 exports.UploadsModule = UploadsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([uploads_model_1.ProfilePicture, user_entity_1.User]),
+            typeorm_1.TypeOrmModule.forFeature([uploads_model_1.ProfilePicture, user_entity_1.User, booking_model_1.BookingSave, uploads_model_1.VisaPassport]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
         ],

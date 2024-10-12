@@ -19,6 +19,10 @@ export declare class PaymentService {
     private bkashUserName;
     private bkashPwd;
     private bkashConfig;
+    private surjoBaseUrl;
+    private surjoUserName;
+    private surjoPassword;
+    private surjoPrefix;
     constructor(bookingSaveRepository: Repository<BookingSave>, transectionRepository: Repository<Transection>, userRepository: Repository<User>, walletRepository: Repository<Wallet>, authService: AuthService);
     dataModification(SearchResponse: any, header: any): Promise<any>;
     initiatePayment(paymentData: any, bookingId: string, header: any): Promise<string>;
@@ -29,4 +33,13 @@ export declare class PaymentService {
     searchTransaction(trxID: string): Promise<any>;
     refundTransaction(paymentID: string, amount: number, trxID: string): Promise<any>;
     checkCredentials(): Promise<any>;
+    formdata(SearchResponse?: any, header?: any): Promise<{
+        url: any;
+        airTicketPrice: any;
+        paymentGatwayCharge: number;
+        total_amount: number;
+    }>;
+    surjoAuthentication(): Promise<any>;
+    surjoMakePayment(data: any, bookingId: string, header: any): Promise<any>;
+    surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string): Promise<string>;
 }

@@ -1,3 +1,4 @@
+import { VisaPassport } from 'src/uploads/uploads.model';
 import { User } from 'src/user/entities/user.entity';
 export declare class BookingSave {
     id: number;
@@ -19,6 +20,7 @@ export declare class BookingSave {
     actionBy: String;
     reason: string;
     laginfo: any;
+    visaPassport: VisaPassport;
     user: User;
 }
 declare class CreateLagInfoDto {

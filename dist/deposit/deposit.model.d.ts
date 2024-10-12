@@ -3,7 +3,6 @@ export declare class Deposit {
     id: number;
     depositType: string;
     depositId: string;
-    branch: string;
     senderName: string;
     referance: string;
     ammount: number;
@@ -13,6 +12,7 @@ export declare class Deposit {
     depositedAccount: string;
     transferDate: string;
     depositedFrom: string;
+    transectionId: string;
     status: string;
     createdAt: string;
     actionAt: string;

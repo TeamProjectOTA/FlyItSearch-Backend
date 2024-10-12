@@ -263,7 +263,6 @@ export class DepositService {
         addDeposit.ammount=amount
         addDeposit.depositId= response?.tran_id
         addDeposit.depositedFrom=response?.card_brand
-        addDeposit.branch=response?.card_issuer
         addDeposit.senderName=user.fullName
         addDeposit.createdAt=moment
         .utc(response.tran_date)

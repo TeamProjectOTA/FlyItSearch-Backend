@@ -106,6 +106,16 @@ let PaymentController = class PaymentController {
             throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);
         }
     }
+    async test() {
+        return this.paymentService.surjoAuthentication();
+    }
+    async paymentReturn(bookingID, email, order_id) {
+        const paymentData = await this.paymentService.surjoVerifyPayment(order_id, bookingID, email);
+        return {
+            message: 'Payment successfull',
+            data: paymentData,
+        };
+    }
 };
 exports.PaymentController = PaymentController;
 __decorate([
@@ -126,7 +136,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PaymentController.prototype, "handleFail", null);
 __decorate([
-    (0, common_1.Post)('/cancel'),
+    (0, common_1.Get)('/cancel'),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -191,6 +201,21 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "checkCredentials", null);
+__decorate([
+    (0, common_1.Get)('suth'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "test", null);
+__decorate([
+    (0, common_1.Get)('return/:bookingID/:email'),
+    __param(0, (0, common_1.Param)('bookingID')),
+    __param(1, (0, common_1.Param)('email')),
+    __param(2, (0, common_1.Query)('order_id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "paymentReturn", null);
 exports.PaymentController = PaymentController = __decorate([
     (0, swagger_1.ApiTags)('SSLCOMMERZ'),
     (0, common_1.Controller)('payment'),

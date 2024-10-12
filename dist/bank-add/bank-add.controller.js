@@ -27,6 +27,15 @@ let BankAddController = class BankAddController {
     async getAll() {
         return this.bankAddService.getallBank();
     }
+    async getAllaccount() {
+        return this.bankAddService.getAllAccount();
+    }
+    async geOne(id) {
+        return this.bankAddService.getOne(id);
+    }
+    async update(id, createBankAddDto) {
+        return this.bankAddService.update(id, createBankAddDto);
+    }
 };
 exports.BankAddController = BankAddController;
 __decorate([
@@ -42,6 +51,27 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BankAddController.prototype, "getAll", null);
+__decorate([
+    (0, common_1.Get)('admin/allBank'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], BankAddController.prototype, "getAllaccount", null);
+__decorate([
+    (0, common_1.Get)('admin/oneBank/:id'),
+    __param(0, (0, common_1.Param)("id")),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", Promise)
+], BankAddController.prototype, "geOne", null);
+__decorate([
+    (0, common_1.Patch)('admin/update/:id'),
+    __param(0, (0, common_1.Param)("id")),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, bank_add_model_1.CreateBankAddDto]),
+    __metadata("design:returntype", Promise)
+], BankAddController.prototype, "update", null);
 exports.BankAddController = BankAddController = __decorate([
     (0, swagger_1.ApiTags)("AddBank"),
     (0, common_1.Controller)('bankAdd'),

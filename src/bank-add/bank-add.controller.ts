@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { BankAddService } from './bank-add.service';
 import { BankAdd, CreateBankAddDto } from './bank-add.model';
 import { ApiTags } from '@nestjs/swagger';
@@ -16,4 +16,16 @@ export class BankAddController {
   async getAll(){
     return this.bankAddService.getallBank()
   }
+  @Get('admin/allBank')
+  async getAllaccount(){
+    return this.bankAddService.getAllAccount()
+  }
+  @Get('admin/oneBank/:id')
+  async geOne(@Param("id") id:number){
+    return this.bankAddService.getOne(id)
+  }
+  @Patch('admin/update/:id')
+async update(@Param("id") id:number,@Body() createBankAddDto: CreateBankAddDto){
+  return this.bankAddService.update(id,createBankAddDto)
+}
 }

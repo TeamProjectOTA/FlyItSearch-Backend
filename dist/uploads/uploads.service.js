@@ -22,11 +22,14 @@ const path_1 = require("path");
 const auth_service_1 = require("../auth/auth.service");
 const storage_1 = require("@google-cloud/storage");
 const uuid_1 = require("uuid");
+const booking_model_1 = require("../book/booking.model");
 let UploadsService = class UploadsService {
-    constructor(profilePictureRepository, authservice, userRepository) {
+    constructor(profilePictureRepository, authservice, userRepository, bookingSaveRepository, visaPassportRepository) {
         this.profilePictureRepository = profilePictureRepository;
         this.authservice = authservice;
         this.userRepository = userRepository;
+        this.bookingSaveRepository = bookingSaveRepository;
+        this.visaPassportRepository = visaPassportRepository;
         this.storage = new storage_1.Storage({
             keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
         });
@@ -80,14 +83,56 @@ let UploadsService = class UploadsService {
             throw new common_1.BadRequestException('Failed to upload and save profile picture.');
         }
     }
+    async uploadVisaAndPassportImages(bookingId, passportFile, visaFile) {
+        const bookingSave = await this.bookingSaveRepository.findOne({
+            where: { bookingId: bookingId },
+            relations: ['visaPassport'],
+        });
+        if (!bookingSave) {
+            throw new common_1.BadRequestException('Booking not found');
+        }
+        if (bookingSave.visaPassport) {
+            throw new common_1.ConflictException('You can only upload the visa and passport copy once');
+        }
+        const [passportLink, visaLink] = await Promise.all([
+            this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
+            this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
+        ]);
+        const visaPassport = new uploads_model_1.VisaPassport();
+        visaPassport.passportLink = passportLink;
+        visaPassport.visaLink = visaLink;
+        visaPassport.bookingSave = bookingSave;
+        return await this.visaPassportRepository.save(visaPassport);
+    }
+    async uploadImage(file, type) {
+        const folderName = 'PassportVisa';
+        const fileName = `${folderName}/${type}`;
+        const blob = this.storage.bucket(this.bucket).file(fileName);
+        const blobStream = blob.createWriteStream({
+            metadata: { contentType: file.mimetype },
+            public: true,
+        });
+        return new Promise((resolve, reject) => {
+            blobStream.on('error', (err) => reject(err));
+            blobStream.on('finish', () => {
+                const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
+                resolve(publicUrl);
+            });
+            blobStream.end(file.buffer);
+        });
+    }
 };
 exports.UploadsService = UploadsService;
 exports.UploadsService = UploadsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),
     __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(4, (0, typeorm_1.InjectRepository)(uploads_model_1.VisaPassport)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         auth_service_1.AuthService,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], UploadsService);
 //# sourceMappingURL=uploads.service.js.map

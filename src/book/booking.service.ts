@@ -73,12 +73,12 @@ export class BookingService {
     if (bookingStatus !== 'all') {
       return await this.bookingSaveRepository.find({
         where: { bookingStatus: bookingStatus },
-        relations: ['user'],
+        relations: ['user','visaPassport'],
         order: { bookingDate: 'DESC' },
       });
     } else {
       return await this.bookingSaveRepository.find({
-        relations: ['user'],
+        relations: ['user','visaPassport'],
         order: { bookingDate: 'DESC' },
       });
     }

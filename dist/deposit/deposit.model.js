@@ -30,10 +30,6 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], Deposit.prototype, "branch", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
 ], Deposit.prototype, "senderName", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -67,6 +63,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Deposit.prototype, "depositedFrom", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Deposit.prototype, "transectionId", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
