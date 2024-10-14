@@ -20,7 +20,6 @@ import { AirportsModule } from './airports/airports.module';
 import { AirlinesModule } from './airlines/airlines.module';
 import { BookingModule } from './book/booking.module';
 import { UploadsModule } from './uploads/uploads.module';
-
 import { TermsAndConditionsModule } from './terms-and-conditions/terms-and-conditions.module';
 import { DepositModule } from './deposit/deposit.module';
 import { TravelBuddyModule } from './travel-buddy/travel-buddy.module';

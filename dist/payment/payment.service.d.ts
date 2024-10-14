@@ -41,5 +41,5 @@ export declare class PaymentService {
     }>;
     surjoAuthentication(): Promise<any>;
     surjoMakePayment(data: any, bookingId: string, header: any): Promise<any>;
-    surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string): Promise<string>;
+    surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string): Promise<any>;
 }

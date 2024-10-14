@@ -139,14 +139,6 @@ let UserService = class UserService {
         const nowdate = new Date(Date.now());
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
-        const dhakaTimeFormatted = new Date(dhakaTime.toISOString());
-        for (const booking of userUpdate.bookingSave) {
-            const timeLeft = new Date(booking.expireDate);
-            if (dhakaTimeFormatted.getTime() >= timeLeft.getTime() && booking.bookingStatus !== 'Cancelled') {
-                booking.bookingStatus = 'Cancelled';
-            }
-        }
-        await this.userRepository.save(userUpdate);
         const user = await this.userRepository
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.bookingSave', 'bookingSave')

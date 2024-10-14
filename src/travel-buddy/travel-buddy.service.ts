@@ -46,16 +46,22 @@ export class TravelBuddyService {
 
     return await this.travelBuddyRepository.save(saveTravelBuddy);
   }
-  async updateTravelBuddy(createTravelBuddyDto: TravelBuddyDto, id:number): Promise<any> {
-    const travelBuddy= await this.travelBuddyRepository.findOne({where:{id:id},relations:['user']})
-    travelBuddy.firstName=createTravelBuddyDto.firstName
-    travelBuddy.lastName=createTravelBuddyDto.lastName
-    travelBuddy.gender=createTravelBuddyDto.gender
-    travelBuddy.title=createTravelBuddyDto.title
-    travelBuddy.dob=createTravelBuddyDto.dob
-    travelBuddy.nationility=travelBuddy.nationility
-    travelBuddy.passport=travelBuddy.passport
-    travelBuddy.passportexp=travelBuddy.passportexp
+  async updateTravelBuddy(
+    createTravelBuddyDto: TravelBuddyDto,
+    id: number,
+  ): Promise<any> {
+    const travelBuddy = await this.travelBuddyRepository.findOne({
+      where: { id: id },
+      relations: ['user'],
+    });
+    travelBuddy.firstName = createTravelBuddyDto.firstName;
+    travelBuddy.lastName = createTravelBuddyDto.lastName;
+    travelBuddy.gender = createTravelBuddyDto.gender;
+    travelBuddy.title = createTravelBuddyDto.title;
+    travelBuddy.dob = createTravelBuddyDto.dob;
+    travelBuddy.nationility = travelBuddy.nationility;
+    travelBuddy.passport = travelBuddy.passport;
+    travelBuddy.passportexp = travelBuddy.passportexp;
     return await this.travelBuddyRepository.save(travelBuddy);
   }
 

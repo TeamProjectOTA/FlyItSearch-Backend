@@ -265,8 +265,10 @@ export class FlyHubService {
     };
     try {
       const response0 = await axios.request(Price);
-      if (response0.data.Results[0].FareType=='InstantTicketing'){
-        throw new ForbiddenException('Sorry You can not book this ticket Contect Our help line for more update')
+      if (response0.data.Results[0].FareType == 'InstantTicketing') {
+        throw new ForbiddenException(
+          'Sorry You can not book this ticket Contect Our help line for more update',
+        );
       }
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);

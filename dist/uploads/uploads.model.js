@@ -56,7 +56,9 @@ __decorate([
     __metadata("design:type", String)
 ], VisaPassport.prototype, "visaLink", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => booking_model_1.BookingSave, (bookingSave) => bookingSave.visaPassport, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.OneToOne)(() => booking_model_1.BookingSave, (bookingSave) => bookingSave.visaPassport, {
+        onDelete: 'CASCADE',
+    }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", booking_model_1.BookingSave)
 ], VisaPassport.prototype, "bookingSave", void 0);

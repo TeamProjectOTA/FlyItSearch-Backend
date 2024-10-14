@@ -16,8 +16,6 @@ import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
 import { BookingSave } from 'src/book/booking.model';
 
-
-
 @Injectable()
 export class UploadsService {
   private storage: Storage;
@@ -29,33 +27,30 @@ export class UploadsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     @InjectRepository(BookingSave)
-    private readonly bookingSaveRepository:Repository<BookingSave>,
+    private readonly bookingSaveRepository: Repository<BookingSave>,
     @InjectRepository(VisaPassport)
-    private readonly visaPassportRepository:Repository<VisaPassport>
+    private readonly visaPassportRepository: Repository<VisaPassport>,
   ) {
     this.storage = new Storage({
       keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
     });
     this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
   }
-  
-  async create(
-    header: any,
-    file: Express.Multer.File,
-  ): Promise<any> {
+
+  async create(header: any, file: Express.Multer.File): Promise<any> {
     const decodeToken = await this.authservice.decodeToken(header);
     const user = await this.userRepository.findOne({
       where: { email: decodeToken },
     });
-  
+
     if (!user) {
       throw new BadRequestException('User not found.');
     }
-  
+
     const existingProfilePicture = await this.profilePictureRepository.findOne({
       where: { user },
     });
-  
+
     if (existingProfilePicture) {
       try {
         const bucketFile = this.storage
@@ -65,54 +60,61 @@ export class UploadsService {
         await this.profilePictureRepository.remove(existingProfilePicture);
       } catch (error) {
         console.error('Error deleting file from Google Cloud:', error.message);
-        throw new BadRequestException('Failed to delete existing profile picture.');
+        throw new BadRequestException(
+          'Failed to delete existing profile picture.',
+        );
       }
     }
-  
+
     const fileExtension = extname(file.originalname);
     const folderName = 'ProfilePicture';
     const filename = `${folderName}/${user.passengerId}-ProfilePicture${fileExtension}${uuidv4()}`;
-  
+
     try {
       const bucketFile = this.storage.bucket(this.bucket).file(filename);
-  
-      
+
       await bucketFile.save(file.buffer, {
         contentType: file.mimetype,
-        public: true, 
+        public: true,
       });
 
       const publicUrl = `https://storage.googleapis.com/${this.bucket}/${filename}`;
-  
+
       const profilePicture = this.profilePictureRepository.create({
         user,
         filename,
         link: publicUrl,
         size: file.size,
       });
-     const save= await this.profilePictureRepository.save(profilePicture)
-      return {Message:"Image Uploaded Successful",save} ;
+      const save = await this.profilePictureRepository.save(profilePicture);
+      return { Message: 'Image Uploaded Successful', save };
     } catch (error) {
       console.error('Error uploading file to Google Cloud:', error.message);
-      throw new BadRequestException('Failed to upload and save profile picture.');
+      throw new BadRequestException(
+        'Failed to upload and save profile picture.',
+      );
     }
   }
 
-
-  async uploadVisaAndPassportImages(bookingId: string, passportFile: Express.Multer.File, visaFile: Express.Multer.File) {
+  async uploadVisaAndPassportImages(
+    bookingId: string,
+    passportFile: Express.Multer.File,
+    visaFile: Express.Multer.File,
+  ) {
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
-      relations: ['visaPassport'], 
+      relations: ['visaPassport'],
     });
 
     if (!bookingSave) {
       throw new BadRequestException('Booking not found');
     }
     if (bookingSave.visaPassport) {
-      throw new ConflictException('You can only upload the visa and passport copy once');
+      throw new ConflictException(
+        'You can only upload the visa and passport copy once',
+      );
     }
 
-    
     const [passportLink, visaLink] = await Promise.all([
       this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
       this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
@@ -125,14 +127,17 @@ export class UploadsService {
     return await this.visaPassportRepository.save(visaPassport);
   }
 
-  private async uploadImage(file: Express.Multer.File, type: string): Promise<string> {
+  private async uploadImage(
+    file: Express.Multer.File,
+    type: string,
+  ): Promise<string> {
     const folderName = 'PassportVisa';
     const fileName = `${folderName}/${type}`;
     const blob = this.storage.bucket(this.bucket).file(fileName);
 
     const blobStream = blob.createWriteStream({
       metadata: { contentType: file.mimetype },
-      public: true, 
+      public: true,
     });
 
     return new Promise((resolve, reject) => {
@@ -144,6 +149,4 @@ export class UploadsService {
       blobStream.end(file.buffer);
     });
   }
-
-  
 }

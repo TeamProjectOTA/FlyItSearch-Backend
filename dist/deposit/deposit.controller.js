@@ -56,15 +56,21 @@ let DepositController = class DepositController {
             const { val_id } = req.body;
             const validationResponse = await this.depositService.validateOrder(val_id, email, amount);
             if (validationResponse?.status === 'VALID') {
-                return res.status(200).json({ message: 'Payment successful', validationResponse });
+                return res
+                    .status(200)
+                    .json({ message: 'Payment successful', validationResponse });
             }
             else {
-                return res.status(400).json({ message: 'Payment validation failed', validationResponse });
+                return res
+                    .status(400)
+                    .json({ message: 'Payment validation failed', validationResponse });
             }
         }
         catch (error) {
             console.error('Error during payment validation:', error);
-            return res.status(500).json({ message: 'Internal server error', error: error.message });
+            return res
+                .status(500)
+                .json({ message: 'Internal server error', error: error.message });
         }
     }
 };
@@ -77,7 +83,12 @@ __decorate([
         storage: (0, multer_1.memoryStorage)(),
         limits: { fileSize: 5 * 1024 * 1024 },
         fileFilter: (req, file, cb) => {
-            const allowedMimeTypes = ['image/jpg', 'image/png', 'image/jpeg', 'image/gif'];
+            const allowedMimeTypes = [
+                'image/jpg',
+                'image/png',
+                'image/jpeg',
+                'image/gif',
+            ];
             if (allowedMimeTypes.includes(file.mimetype)) {
                 cb(null, true);
             }

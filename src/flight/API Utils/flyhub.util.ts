@@ -536,7 +536,8 @@ export class FlyHubUtil {
           } else {
             BookingStatus = SearchResponse?.BookingStatus;
           }
-          const passportRequired=!!(SearchResponse?.Passengers[0]?.PassportNumber);
+          const passportRequired =
+            !!SearchResponse?.Passengers[0]?.PassportNumber;
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
@@ -565,37 +566,39 @@ export class FlyHubUtil {
             PriceBreakDown: PriceBreakDown,
             AllLegsInfo: AllLegsInfo,
             PassengerList: SearchResponse?.Passengers,
-            PassportRequired:passportRequired
+            PassportRequired: passportRequired,
           });
         }
       }
     }
 
-    const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header).catch(() => null);
-    const surjopay=await this.paymentService.formdata(FlightItenary, header)
+    const sslpaymentLink = await this.paymentService
+      .dataModification(FlightItenary, header)
+      .catch(() => null);
+    const surjopay = await this.paymentService.formdata(FlightItenary, header);
 
-    const price = FlightItenary?.[0]?.NetFare || 0; 
-    
+    const price = FlightItenary?.[0]?.NetFare || 0;
+
     const email = await this.authService.decodeToken(header).catch(() => 'NA');
-    
+
     let wallet = await this.walletRepository
       .createQueryBuilder('wallet')
       .innerJoinAndSelect('wallet.user', 'user')
       .where('user.email = :email', { email })
       .getOne()
-      .catch(() => null);  
-    
-    const walletAmmount = wallet?.ammount || 0; 
-    
+      .catch(() => null);
+
+    const walletAmmount = wallet?.ammount || 0;
+
     let priceAfterPayment: number = walletAmmount - price;
-    
+
     if (priceAfterPayment < 0) {
       priceAfterPayment = 0;
     }
     return {
       bookingData: FlightItenary,
-      sslpaymentLink:sslpaymentLink,
-      surjopay:surjopay,
+      sslpaymentLink: sslpaymentLink,
+      surjopay: surjopay,
       walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
@@ -872,7 +875,7 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       save: save,
-      sslpaymentLink:sslpaymentLink,
+      sslpaymentLink: sslpaymentLink,
     };
   }
 
@@ -928,11 +931,10 @@ export class FlyHubUtil {
         })),
       };
 
-     await this.mailService.mailDataConvert(booking);
-     
-     const save= await this.BookService.saveBooking(convertedData, header);
-      return save
-      
+      await this.mailService.mailDataConvert(booking);
+
+      const save = await this.BookService.saveBooking(convertedData, header);
+      return save;
     } else {
       return 'Booking data is unvalid';
     }
@@ -1198,6 +1200,4 @@ export class FlyHubUtil {
     await this.mailService.sendMail(FlightItenary[0]);
     return FlightItenary;
   }
-
- 
 }

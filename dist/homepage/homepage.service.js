@@ -31,7 +31,9 @@ let HomepageService = class HomepageService {
     async uploadBannerAndSlider(files) {
         let bannerData = null;
         const sliderImages = [];
-        const homePage = await this.homePageRepository.findOne({ where: { id: 1 } });
+        const homePage = await this.homePageRepository.findOne({
+            where: { id: 1 },
+        });
         if (!homePage) {
             throw new common_1.NotFoundException('HomePage record not found.');
         }

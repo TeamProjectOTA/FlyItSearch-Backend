@@ -33,19 +33,28 @@ let BankAddService = class BankAddService {
     async getallBank() {
         return this.bankAddRepository
             .createQueryBuilder('bank')
-            .select(['bank.accountHolderName', 'bank.bankName', 'bank.branchName', 'bank.accountNumber'])
+            .select([
+            'bank.accountHolderName',
+            'bank.bankName',
+            'bank.branchName',
+            'bank.accountNumber',
+        ])
             .getMany();
     }
     async getOne(id) {
         return await this.bankAddRepository.findOne({ where: { id: id } });
     }
     async getAllAccount() {
-        return await this.bankAddRepository.find({ order: {
-                id: 'DESC'
-            } });
+        return await this.bankAddRepository.find({
+            order: {
+                id: 'DESC',
+            },
+        });
     }
     async update(id, updateBankAddDto) {
-        const bankAccount = await this.bankAddRepository.findOne({ where: { id: id } });
+        const bankAccount = await this.bankAddRepository.findOne({
+            where: { id: id },
+        });
         if (!bankAccount) {
             throw new common_1.NotFoundException(`Bank account with ID ${id} not found`);
         }

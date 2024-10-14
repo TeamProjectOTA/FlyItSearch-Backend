@@ -23,7 +23,6 @@ import { Admin } from 'src/admin/entities/admin.entity';
 
 @Injectable()
 export class TourPackageService {
-  
   constructor(
     @InjectRepository(TourPackage)
     private tourPackageRepository: Repository<TourPackage>,

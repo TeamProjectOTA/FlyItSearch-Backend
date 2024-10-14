@@ -7,14 +7,14 @@ import { AuthModule } from 'src/auth/auth.module';
 import { Transection } from 'src/transection/transection.model';
 import { IpModule } from 'src/ip/ip.module';
 import { IpAddress } from 'src/ip/ip.model';
-
+import { BookingSave } from 'src/book/booking.model';
+import { BookingModule } from 'src/book/booking.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Transection, IpAddress]),
     AuthModule,
     IpModule,
-    
   ],
   controllers: [UserController],
   providers: [UserService],

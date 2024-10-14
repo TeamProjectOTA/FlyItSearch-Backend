@@ -16,6 +16,7 @@ import * as bcrypt from 'bcryptjs';
 import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
+import { BookingSave } from 'src/book/booking.model';
 
 @Injectable()
 export class UserService {
@@ -147,38 +148,35 @@ export class UserService {
   }
 
   async findUserWithBookings(header: any, bookingStatus: string): Promise<any> {
-    // Verify the user token and retrieve email
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
+
     const email = await this.authservice.decodeToken(header);
-  
-    // Fetch user and related bookings
     const userUpdate = await this.userRepository.findOne({
       where: { email: email },
       relations: ['bookingSave'],
     });
-  
+
     if (!userUpdate) {
       throw new NotFoundException('User not found');
     }
-  
-    const nowdate = new Date(Date.now());
-    const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
-    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
-    const dhakaTimeFormatted = new Date(dhakaTime.toISOString());
-    for (const booking of userUpdate.bookingSave) {
-      const timeLeft = new Date(booking.expireDate);
-      if (dhakaTimeFormatted.getTime() >= timeLeft.getTime() && booking.bookingStatus !== 'Cancelled') {
-        booking.bookingStatus = 'Cancelled'; 
-      }
-    }
-  
 
-   await this.userRepository.save(userUpdate);
-  
- //console.log(saveBooking)
+    const nowdate = new Date(Date.now());
+    const dhakaOffset = 6 * 60 * 60 * 1000; // Offset for Dhaka time
+    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+
+    // for (const booking of userUpdate.bookingSave) {
+    //     const timeLeft = new Date(booking.expireDate);
+    //     if (dhakaTime.getTime() >= timeLeft.getTime() && booking.bookingStatus !== 'Cancelled') {
+    //         booking.bookingStatus = 'Cancelled';
+
+    //         await this.userRepository.save(booking);
+    //         console.log(`Booking ID ${booking.id} updated to Cancelled`);
+    //     }
+    // }
+
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.bookingSave', 'bookingSave')
@@ -188,19 +186,16 @@ export class UserService {
       })
       .orderBy('bookingSave.id', 'DESC')
       .getOne();
-  
+
     if (!user) {
       throw new NotFoundException(`No ${bookingStatus} Available for the user`);
     }
-  
-  
+
     return {
       saveBookings: user.bookingSave,
     };
   }
-  
-  
-  
+
   async findAllUserWithBookings(): Promise<any> {
     const users = await this.userRepository.find({
       relations: ['bookingSave', 'wallet'],

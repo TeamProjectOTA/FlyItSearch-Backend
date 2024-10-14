@@ -56,7 +56,7 @@ export class BookingController {
   ): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto, header);
   }
-  
+
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Post('admin/flh/airRetrive')
@@ -96,5 +96,15 @@ export class BookingController {
   @Get('admin/allBooking/:bookingStatus')
   async findAll(@Param('bookingStatus') bookingStatus?: string) {
     return await this.bookingService.findAllBooking(bookingStatus);
+  }
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
+  @Get('/user/:bookingStatus')
+  async findUserWithBookings(
+    @Headers() header: Headers,
+    @Param('bookingStatus') bookingStatus: string,
+  ): Promise<any> {
+    return this.bookingService.findUserWithBookings(header, bookingStatus);
   }
 }

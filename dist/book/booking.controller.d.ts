@@ -11,4 +11,5 @@ export declare class BookingController {
     airRetrive(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetriveAdmin(bookingIdDto: BookingID): Promise<any>;
     findAll(bookingStatus?: string): Promise<import("./booking.model").BookingSave[]>;
+    findUserWithBookings(header: Headers, bookingStatus: string): Promise<any>;
 }

@@ -76,7 +76,7 @@ let UploadsService = class UploadsService {
                 size: file.size,
             });
             const save = await this.profilePictureRepository.save(profilePicture);
-            return { Message: "Image Uploaded Successful", save };
+            return { Message: 'Image Uploaded Successful', save };
         }
         catch (error) {
             console.error('Error uploading file to Google Cloud:', error.message);

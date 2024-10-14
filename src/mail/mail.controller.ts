@@ -12,7 +12,7 @@ export class MailController {
     return this.mailerService.sendMail(mailData);
   }
   @Post('test')
-  async test(@Body()data:any){
-    return this.mailerService.mailDataConvert(data)
+  async test(@Body() data: any) {
+    return this.mailerService.mailDataConvert(data);
   }
 }

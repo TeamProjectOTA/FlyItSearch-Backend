@@ -27,18 +27,17 @@ export class ProfilePicture {
   user: User;
 }
 
-
 @Entity()
-export class VisaPassport{
+export class VisaPassport {
   @PrimaryGeneratedColumn()
-  id:number
-  @Column({nullable:true})
-  passportLink:string
+  id: number;
+  @Column({ nullable: true })
+  passportLink: string;
   @Column()
-  visaLink:string
-  @OneToOne(() => BookingSave, (bookingSave) => bookingSave.visaPassport, { onDelete: 'CASCADE' },)
+  visaLink: string;
+  @OneToOne(() => BookingSave, (bookingSave) => bookingSave.visaPassport, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   bookingSave: BookingSave;
 }
-
-

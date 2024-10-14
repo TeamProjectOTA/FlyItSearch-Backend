@@ -10,7 +10,14 @@ import {
 } from 'class-validator';
 import { VisaPassport } from 'src/uploads/uploads.model';
 import { User } from 'src/user/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class BookingSave {
@@ -57,7 +64,6 @@ export class BookingSave {
   @ManyToOne(() => User, (user) => user.bookingSave, { onDelete: 'CASCADE' })
   user: User;
 }
-
 
 class CreateLagInfoDto {
   @IsString()

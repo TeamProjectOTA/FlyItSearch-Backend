@@ -13,7 +13,7 @@ import { BookingController } from './booking.controller';
 import { VisaPassport } from 'src/uploads/uploads.model';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, BookingSave,VisaPassport]),
+    TypeOrmModule.forFeature([Admin, User, BookingSave, VisaPassport]),
     UserModule,
     AuthModule,
     FlightModule,

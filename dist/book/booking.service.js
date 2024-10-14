@@ -82,6 +82,48 @@ let BookingService = class BookingService {
             });
         }
     }
+    async findUserWithBookings(header, bookingStatus) {
+        const verifyUser = await this.authservice.verifyUserToken(header);
+        if (!verifyUser) {
+            throw new common_1.UnauthorizedException();
+        }
+        const email = await this.authservice.decodeToken(header);
+        const userUpdate = await this.userRepository.findOne({
+            where: { email: email },
+            relations: ['bookingSave'],
+        });
+        if (!userUpdate) {
+            throw new common_1.NotFoundException('User not found');
+        }
+        const nowdate = new Date(Date.now());
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+        for (const booking of userUpdate.bookingSave) {
+            const timeLeft = new Date(booking.expireDate);
+            if (dhakaTime.getTime() >= timeLeft.getTime()) {
+                const userBooking = await this.bookingSaveRepository.findOne({
+                    where: { bookingId: booking.bookingId },
+                });
+                userBooking.bookingStatus = 'Cancelled';
+                await this.bookingSaveRepository.save(userBooking);
+            }
+        }
+        const user = await this.userRepository
+            .createQueryBuilder('user')
+            .leftJoinAndSelect('user.bookingSave', 'bookingSave')
+            .where('user.email = :email', { email })
+            .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
+            bookingStatus,
+        })
+            .orderBy('bookingSave.id', 'DESC')
+            .getOne();
+        if (!user) {
+            throw new common_1.NotFoundException(`No ${bookingStatus} Available for the user`);
+        }
+        return {
+            saveBookings: user.bookingSave,
+        };
+    }
 };
 exports.BookingService = BookingService;
 exports.BookingService = BookingService = __decorate([

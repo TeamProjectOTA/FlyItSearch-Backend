@@ -192,7 +192,9 @@ let DepositService = class DepositService {
         try {
             const response = await sslcommerz.validate(validationData);
             if (response?.status === 'VALID') {
-                const user = await this.userRepository.findOne({ where: { email: email } });
+                const user = await this.userRepository.findOne({
+                    where: { email: email },
+                });
                 let addTransection = new transection_model_1.Transection();
                 addTransection.tranId = response.tran_id;
                 addTransection.tranDate = response.tran_date;

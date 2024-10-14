@@ -7,7 +7,7 @@ import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class MailService {
-  private transporter:any;
+  private transporter: any;
 
   constructor(private readonly authService: AuthService) {
     this.transporter = nodemailer.createTransport({
@@ -89,7 +89,7 @@ export class MailService {
       throw error;
     }
   }
-  async mailDataConvert(data:any){
-    return await this.sendMail(data[0])
+  async mailDataConvert(data: any) {
+    return await this.sendMail(data[0]);
   }
 }

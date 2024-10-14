@@ -353,10 +353,8 @@ let PaymentService = class PaymentService {
         }
     }
     async surjoVerifyPayment(sp_order_id, bookingID, email) {
-        console.log('From surjopay' + bookingID, email);
         const tokenDetails = await this.surjoAuthentication();
         const { token, token_type } = tokenDetails;
-        let verify_status = " ";
         try {
             const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/verification`, {
                 order_id: sp_order_id,
@@ -366,13 +364,52 @@ let PaymentService = class PaymentService {
                     "Content-Type": "application/json",
                 },
             });
-            verify_status = response.data;
+            const data = response.data[0];
+            if (data.sp_message === 'Success') {
+                const user = await this.userRepository.findOne({
+                    where: { email: email },
+                });
+                const bookingSave = await this.bookingSaveRepository.findOne({
+                    where: { bookingId: bookingID },
+                });
+                bookingSave.bookingStatus = 'IssueInProcess';
+                await this.bookingSaveRepository.save(bookingSave);
+                const wallet = await this.walletRepository
+                    .createQueryBuilder('wallet')
+                    .innerJoinAndSelect('wallet.user', 'user')
+                    .where('user.email = :email', { email })
+                    .getOne();
+                const airPlaneName = bookingSave.Curriername;
+                const tripType = bookingSave.TripType;
+                const depfrom = bookingSave?.laginfo[0]?.DepFrom;
+                const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
+                let addTransection = new transection_model_1.Transection();
+                addTransection.tranId = data.customer_order_id;
+                addTransection.tranDate = data.date_time;
+                addTransection.paidAmount = data.amount;
+                addTransection.offerAmmount = data.received_amount;
+                addTransection.bankTranId = data.bank_trx_id;
+                addTransection.riskTitle = 'safe';
+                addTransection.cardType = 'Surjo-Pay';
+                addTransection.cardIssuer = `${data.method}-InternetBanking`;
+                addTransection.cardBrand = data.method;
+                addTransection.cardIssuerCountry = 'BD';
+                addTransection.validationDate = data.date_time;
+                addTransection.status = 'Purchase';
+                addTransection.walletBalance = wallet.ammount;
+                addTransection.paymentType = 'Instaint Payment ';
+                addTransection.currierName = airPlaneName;
+                addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
+                addTransection.bookingId = bookingID;
+                addTransection.user = user;
+                await this.transectionRepository.save(addTransection);
+            }
+            return data;
         }
         catch (error) {
             console.error("Error verifying payment:", error.response ? error.response.data : error.message);
             return "Payment Verification Failed";
         }
-        return verify_status;
     }
 };
 exports.PaymentService = PaymentService;

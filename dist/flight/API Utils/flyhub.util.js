@@ -424,7 +424,7 @@ let FlyHubUtil = class FlyHubUtil {
                     else {
                         BookingStatus = SearchResponse?.BookingStatus;
                     }
-                    const passportRequired = !!(SearchResponse?.Passengers[0]?.PassportNumber);
+                    const passportRequired = !!SearchResponse?.Passengers[0]?.PassportNumber;
                     FlightItenary.push({
                         System: 'FLYHUB',
                         ResultId: Result.ResultID,
@@ -453,12 +453,14 @@ let FlyHubUtil = class FlyHubUtil {
                         PriceBreakDown: PriceBreakDown,
                         AllLegsInfo: AllLegsInfo,
                         PassengerList: SearchResponse?.Passengers,
-                        PassportRequired: passportRequired
+                        PassportRequired: passportRequired,
                     });
                 }
             }
         }
-        const sslpaymentLink = await this.paymentService.dataModification(FlightItenary, header).catch(() => null);
+        const sslpaymentLink = await this.paymentService
+            .dataModification(FlightItenary, header)
+            .catch(() => null);
         const surjopay = await this.paymentService.formdata(FlightItenary, header);
         const price = FlightItenary?.[0]?.NetFare || 0;
         const email = await this.authService.decodeToken(header).catch(() => 'NA');

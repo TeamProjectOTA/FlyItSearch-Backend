@@ -54,7 +54,7 @@ export class FlightController {
   @Post()
   search(@Body() flightdto: FlightSearchModel) {
     //const sabre = this.sabreService.shoppingBranded(flightdto);
-   const BDFare = this.bdFareService.airShopping(flightdto);
+    const BDFare = this.bdFareService.airShopping(flightdto);
     return {
       BdFare: BDFare,
     };

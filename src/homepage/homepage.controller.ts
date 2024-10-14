@@ -10,13 +10,16 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HomepageService } from './homepage.service';
-import { FileFieldsInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 @ApiTags('Homepage-Api')
 @Controller('homepage')
 export class HomepageController {
-  constructor(private readonly homePageService:HomepageService){}
+  constructor(private readonly homePageService: HomepageService) {}
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Post('upload')
@@ -28,14 +31,17 @@ export class HomepageController {
   )
   async uploadBannerAndSlider(
     @UploadedFiles()
-    files: { banner?: Express.Multer.File[]; slider?: Express.Multer.File[] },
+    files: {
+      banner?: Express.Multer.File[];
+      slider?: Express.Multer.File[];
+    },
   ) {
     return this.homePageService.uploadBannerAndSlider(files);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Get('data')
-  async data(){
-    return this.homePageService.getalldata()
+  async data() {
+    return this.homePageService.getalldata();
   }
 }

@@ -24,6 +24,6 @@ export declare class PaymentController {
     test(): Promise<any>;
     paymentReturn(bookingID: string, email: string, order_id: string): Promise<{
         message: string;
-        data: string;
+        data: any;
     }>;
 }

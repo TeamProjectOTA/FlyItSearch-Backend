@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin, Repository } from 'typeorm';
 import { BookingSave, CreateSaveBookingDto } from './booking.model';
@@ -73,14 +77,59 @@ export class BookingService {
     if (bookingStatus !== 'all') {
       return await this.bookingSaveRepository.find({
         where: { bookingStatus: bookingStatus },
-        relations: ['user','visaPassport'],
+        relations: ['user', 'visaPassport'],
         order: { bookingDate: 'DESC' },
       });
     } else {
       return await this.bookingSaveRepository.find({
-        relations: ['user','visaPassport'],
+        relations: ['user', 'visaPassport'],
         order: { bookingDate: 'DESC' },
       });
     }
+  }
+  async findUserWithBookings(header: any, bookingStatus: string): Promise<any> {
+    const verifyUser = await this.authservice.verifyUserToken(header);
+    if (!verifyUser) {
+      throw new UnauthorizedException();
+    }
+
+    const email = await this.authservice.decodeToken(header);
+    const userUpdate = await this.userRepository.findOne({
+      where: { email: email },
+      relations: ['bookingSave'],
+    });
+    if (!userUpdate) {
+      throw new NotFoundException('User not found');
+    }
+    const nowdate = new Date(Date.now());
+    const dhakaOffset = 6 * 60 * 60 * 1000;
+    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+    for (const booking of userUpdate.bookingSave) {
+      const timeLeft = new Date(booking.expireDate);
+      if (dhakaTime.getTime() >= timeLeft.getTime()) {
+        const userBooking = await this.bookingSaveRepository.findOne({
+          where: { bookingId: booking.bookingId },
+        });
+        userBooking.bookingStatus = 'Cancelled';
+        await this.bookingSaveRepository.save(userBooking);
+      }
+    }
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.bookingSave', 'bookingSave')
+      .where('user.email = :email', { email })
+      .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
+        bookingStatus,
+      })
+      .orderBy('bookingSave.id', 'DESC')
+      .getOne();
+
+    if (!user) {
+      throw new NotFoundException(`No ${bookingStatus} Available for the user`);
+    }
+
+    return {
+      saveBookings: user.bookingSave,
+    };
   }
 }

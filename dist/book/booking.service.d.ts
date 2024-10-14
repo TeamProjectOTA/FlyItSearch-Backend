@@ -10,4 +10,5 @@ export declare class BookingService {
     saveBooking(createSaveBookingDto: CreateSaveBookingDto, header: any): Promise<any>;
     cancelDataSave(fsid: string, status: string, header: any): Promise<any>;
     findAllBooking(bookingStatus?: string): Promise<BookingSave[]>;
+    findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
 }

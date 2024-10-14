@@ -45,6 +45,9 @@ let BookingController = class BookingController {
     async findAll(bookingStatus) {
         return await this.bookingService.findAllBooking(bookingStatus);
     }
+    async findUserWithBookings(header, bookingStatus) {
+        return this.bookingService.findUserWithBookings(header, bookingStatus);
+    }
 };
 exports.BookingController = BookingController;
 __decorate([
@@ -95,6 +98,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "findAll", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Get)('/user/:bookingStatus'),
+    __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Param)('bookingStatus')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "findUserWithBookings", null);
 exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('booking'),

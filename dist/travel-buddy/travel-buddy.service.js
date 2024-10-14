@@ -48,7 +48,10 @@ let TravelBuddyService = class TravelBuddyService {
         return await this.travelBuddyRepository.save(saveTravelBuddy);
     }
     async updateTravelBuddy(createTravelBuddyDto, id) {
-        const travelBuddy = await this.travelBuddyRepository.findOne({ where: { id: id }, relations: ['user'] });
+        const travelBuddy = await this.travelBuddyRepository.findOne({
+            where: { id: id },
+            relations: ['user'],
+        });
         travelBuddy.firstName = createTravelBuddyDto.firstName;
         travelBuddy.lastName = createTravelBuddyDto.lastName;
         travelBuddy.gender = createTravelBuddyDto.gender;

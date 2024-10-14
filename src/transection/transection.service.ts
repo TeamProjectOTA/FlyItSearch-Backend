@@ -33,7 +33,7 @@ export class TransectionService {
       .getOne();
     const booking = await this.bookingRepository.findOne({
       where: { bookingId: transectiondto.bookingId },
-      relations: ['user'], 
+      relations: ['user'],
     });
 
     if (!booking) {
@@ -41,8 +41,8 @@ export class TransectionService {
         `No booking found with  this ${transectiondto.bookingId} id`,
       );
     }
-    if(booking.bookingStatus!=='Booked'){
-      return `You can Not pay for a Ticket That is Alreaday ${booking.bookingStatus}`
+    if (booking.bookingStatus !== 'Booked') {
+      return `You can Not pay for a Ticket That is Alreaday ${booking.bookingStatus}`;
     }
     const isSameUser = booking.user.email === email;
 
