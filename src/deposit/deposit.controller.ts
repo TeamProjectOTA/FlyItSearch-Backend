@@ -13,11 +13,12 @@ import {
   UseInterceptors,
   UploadedFile,
   InternalServerErrorException,
+  Query,
 } from '@nestjs/common';
 import { DepositService } from './deposit.service';
-import { Deposit } from './deposit.model';
+import { Deposit, DepositDto } from './deposit.model';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 import { Response, Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -98,11 +99,11 @@ export class DepositController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Post('sslcommerz/deposit')
-  async sslcommerz(@Headers() header: any, @Body('ammount') ammount: number) {
-    return await this.depositService.sslcommerzPaymentInit(header, ammount);
+  async sslcommerz(@Headers() header: any, @Body() depositDto: DepositDto) {
+    return await this.depositService.sslcommerzPaymentInit(header, depositDto.amount);
   }
-  @Post('/success/:email/:amount')
-  async depositSuccess(
+  @Post('sslcommerz/success/:email/:amount')
+  async depositSuccessSSLCommerz(
     @Param('email') email: string,
     @Param('amount') amount: number,
     @Req() req: Request,
@@ -132,4 +133,28 @@ export class DepositController {
         .json({ message: 'Internal server error', error: error.message });
     }
   }
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
+  @Post('surjo/deposit')
+  async surjoPay(@Headers() header: any, @Body() depositDto: DepositDto) {
+    return await this.depositService.surjoPayInit(header, depositDto.amount);
+  }
+  @Get('surjo/success/:email/:amount')
+  async depositSuccessSurjoPay(
+    @Param('email') email: string,
+    @Param('amount') amount: number,
+    @Query('order_id') order_id: string,
+  ) {
+    const paymentData = await this.depositService.surjoVerifyPayment(
+      order_id,
+      email,
+      amount
+    );
+    return {
+      message: 'Payment successfull',
+      data: paymentData,
+    };
+  }
+
 }

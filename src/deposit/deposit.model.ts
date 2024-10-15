@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { User } from 'src/user/entities/user.entity';
 import {
   Column,
@@ -42,7 +43,7 @@ export class Deposit {
   createdAt: string;
   @Column({ type: 'timestamp', nullable: true })
   actionAt: string;
-  @Column()
+  @Column({nullable:true})
   receiptImage: string;
   @Column({ nullable: true, default: 'NA' })
   rejectionReason: string;
@@ -59,4 +60,9 @@ export class Wallet {
   @OneToOne(() => User, (user) => user.wallet, { onDelete: 'CASCADE' })
   @JoinColumn()
   user: User;
+}
+
+export class DepositDto {
+  @ApiProperty({ description: 'Amount to deposit', example: 100 })
+  amount: number;
 }

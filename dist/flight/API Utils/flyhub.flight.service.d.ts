@@ -19,6 +19,7 @@ export declare class FlyHubService {
     airPrice(data: searchResultDto): Promise<any[]>;
     airRules(data: searchResultDto): Promise<any>;
     airbook(data: FlbFlightSearchDto, header?: any, currentTimestamp?: any): Promise<any>;
+    airRetriveAdmin(BookingID: BookingID): Promise<any>;
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, userIp: string): Promise<any>;
     private determineJourneyType;
 }

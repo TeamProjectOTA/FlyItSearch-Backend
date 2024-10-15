@@ -234,6 +234,37 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
+    async airRetriveAdmin(BookingID) {
+        const findBooking = await this.bookingSaveRepository.findOne({
+            where: { bookingId: BookingID.BookingID },
+            relations: ['user'],
+        });
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID.BookingID },
+        });
+        if (!bookingId) {
+            throw new common_1.NotFoundException(`No Booking Found with ${BookingID.BookingID}`);
+        }
+        const flyhubId = bookingId.flyhubId;
+        const token = await this.getToken();
+        const ticketRetrive = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirRetrieve`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: { BookingID: flyhubId },
+        };
+        try {
+            const response = await axios_1.default.request(ticketRetrive);
+            return this.flyHubUtil.airRetriveDataTransformerAdmin(response?.data, BookingID.BookingID, findBooking.bookingStatus, findBooking.TripType, findBooking.bookingDate);
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
     async convertToFlyAirSearchDto(flightSearchModel, userIp) {
         const segments = flightSearchModel.segments.map((segment) => ({
             Origin: segment.depfrom,

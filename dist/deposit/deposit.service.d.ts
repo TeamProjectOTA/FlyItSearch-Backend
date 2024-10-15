@@ -3,18 +3,22 @@ import { Repository } from 'typeorm';
 import { Deposit, Wallet } from './deposit.model';
 import { AuthService } from 'src/auth/auth.service';
 import { Transection } from 'src/transection/transection.model';
+import { PaymentService } from 'src/payment/payment.service';
 export declare class DepositService {
     private readonly depositRepository;
     private readonly userRepository;
     private readonly walletRepository;
     private readonly transectionRepository;
     private readonly authService;
+    private readonly paymentService;
     private readonly sslcommerzsslcommerzStoreId;
     private readonly sslcommerzStorePwd;
     private readonly isLive;
     private storage;
     private bucket;
-    constructor(depositRepository: Repository<Deposit>, userRepository: Repository<User>, walletRepository: Repository<Wallet>, transectionRepository: Repository<Transection>, authService: AuthService);
+    private surjoBaseUrl;
+    private surjoPrefix;
+    constructor(depositRepository: Repository<Deposit>, userRepository: Repository<User>, walletRepository: Repository<Wallet>, transectionRepository: Repository<Transection>, authService: AuthService, paymentService: PaymentService);
     createDeposit(depositData: Partial<Deposit>, header: any, file: Express.Multer.File): Promise<Deposit>;
     getDepositforUser(header: any): Promise<any>;
     findAllDeposit(): Promise<Deposit[]>;
@@ -27,4 +31,8 @@ export declare class DepositService {
         sslcommerz: any;
     }>;
     validateOrder(val_id: string, email: string, amount: number): Promise<any>;
+    surjoPayInit(header: any, amount: number): Promise<"Payment Failed" | {
+        surjoPay: any;
+    }>;
+    surjoVerifyPayment(sp_order_id: string, email: string, amount: number): Promise<any>;
 }

@@ -25,3 +25,6 @@ export declare class Wallet {
     ammount: number;
     user: User;
 }
+export declare class DepositDto {
+    amount: number;
+}

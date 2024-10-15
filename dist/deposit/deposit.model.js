@@ -9,7 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Wallet = exports.Deposit = void 0;
+exports.DepositDto = exports.Wallet = exports.Deposit = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let Deposit = class Deposit {
@@ -80,7 +81,7 @@ __decorate([
     __metadata("design:type", String)
 ], Deposit.prototype, "actionAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Deposit.prototype, "receiptImage", void 0);
 __decorate([
@@ -113,4 +114,11 @@ __decorate([
 exports.Wallet = Wallet = __decorate([
     (0, typeorm_1.Entity)()
 ], Wallet);
+class DepositDto {
+}
+exports.DepositDto = DepositDto;
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Amount to deposit', example: 100 }),
+    __metadata("design:type", Number)
+], DepositDto.prototype, "amount", void 0);
 //# sourceMappingURL=deposit.model.js.map

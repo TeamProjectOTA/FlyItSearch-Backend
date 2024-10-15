@@ -51,13 +51,12 @@ export class FlightController {
     return this.bdFareService.airShopping(flightSearchModel);
   }
 
-  @Post()
+  @Post('/sabre')
   search(@Body() flightdto: FlightSearchModel) {
-    //const sabre = this.sabreService.shoppingBranded(flightdto);
-    const BDFare = this.bdFareService.airShopping(flightdto);
-    return {
-      BdFare: BDFare,
-    };
+    const sabre = this.sabreService.shoppingBranded(flightdto);
+    // const BDFare = this.bdFareService.airShopping(flightdto);
+    return sabre
+    
   }
   @Get('/:pnr')
   getpnr(@Param('pnr') pnr: string) {

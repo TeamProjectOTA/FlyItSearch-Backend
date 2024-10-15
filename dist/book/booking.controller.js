@@ -40,7 +40,7 @@ let BookingController = class BookingController {
         return await this.flyHubService.airRetrive(bookingIdDto, header);
     }
     async airRetriveAdmin(bookingIdDto) {
-        return await this.flyHubService.airRetrive(bookingIdDto);
+        return await this.flyHubService.airRetriveAdmin(bookingIdDto);
     }
     async findAll(bookingStatus) {
         return await this.bookingService.findAllBooking(bookingStatus);
@@ -82,7 +82,6 @@ __decorate([
 ], BookingController.prototype, "airRetrive", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Post)('admin/flh/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

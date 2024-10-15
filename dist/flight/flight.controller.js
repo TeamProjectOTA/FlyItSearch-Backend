@@ -38,10 +38,8 @@ let FlightController = class FlightController {
         return this.bdFareService.airShopping(flightSearchModel);
     }
     search(flightdto) {
-        const BDFare = this.bdFareService.airShopping(flightdto);
-        return {
-            BdFare: BDFare,
-        };
+        const sabre = this.sabreService.shoppingBranded(flightdto);
+        return sabre;
     }
     getpnr(pnr) {
         return this.sabreService.checkpnr(pnr);
@@ -91,7 +89,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlights", null);
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Post)('/sabre'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),

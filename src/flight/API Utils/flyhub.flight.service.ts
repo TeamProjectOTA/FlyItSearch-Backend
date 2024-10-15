@@ -153,6 +153,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketRetrive);
+      // return response.data
       return this.flyHubUtil.airRetriveDataTransformer(
         response?.data,
         BookingID.BookingID,
@@ -277,6 +278,47 @@ export class FlyHubService {
         response.data,
         header,
         currentTimestamp,
+      );
+    } catch (error) {
+      throw error?.response?.data;
+    }
+  }
+
+  async airRetriveAdmin(BookingID: BookingID,): Promise<any> {
+    const findBooking = await this.bookingSaveRepository.findOne({
+      where: { bookingId: BookingID.BookingID },
+      relations: ['user'],
+    });
+    const bookingId = await this.bookingIdSave.findOne({
+      where: { flyitSearchId: BookingID.BookingID },
+    });
+    if (!bookingId) {
+      throw new NotFoundException(
+        `No Booking Found with ${BookingID.BookingID}`,
+      );
+    }
+
+    const flyhubId = bookingId.flyhubId;
+    const token = await this.getToken();
+    const ticketRetrive = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${this.apiUrl}/AirRetrieve`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: { BookingID: flyhubId },
+    };
+
+    try {
+      const response = await axios.request(ticketRetrive);
+      return this.flyHubUtil.airRetriveDataTransformerAdmin(
+        response?.data,
+        BookingID.BookingID,
+        findBooking.bookingStatus,
+        findBooking.TripType,
+        findBooking.bookingDate,
       );
     } catch (error) {
       throw error?.response?.data;

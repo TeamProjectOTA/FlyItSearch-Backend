@@ -6,7 +6,7 @@ export declare class AirlinesService {
     private readonly authService;
     constructor(airlinesRepository: Repository<AirlinesModel>, authService: AuthService);
     create(header: any, createAirlineDto: AirlinesModel): Promise<AirlinesModel>;
-    getAirlines(code: string): Promise<AirlinesModel | "">;
+    getAirlines(code: string): Promise<"" | AirlinesModel>;
     getAirlinesName(code: string): Promise<string>;
     findAll(header: any): Promise<AirlinesModel[]>;
     findOne(header: any, id: number): Promise<AirlinesModel>;

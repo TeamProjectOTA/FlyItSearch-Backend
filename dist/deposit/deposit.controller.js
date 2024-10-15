@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DepositController = void 0;
 const common_1 = require("@nestjs/common");
 const deposit_service_1 = require("./deposit.service");
+const deposit_model_1 = require("./deposit.model");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 const swagger_1 = require("@nestjs/swagger");
 const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
@@ -48,10 +49,10 @@ let DepositController = class DepositController {
     async wallet(header) {
         return await this.depositService.wallet(header);
     }
-    async sslcommerz(header, ammount) {
-        return await this.depositService.sslcommerzPaymentInit(header, ammount);
+    async sslcommerz(header, depositDto) {
+        return await this.depositService.sslcommerzPaymentInit(header, depositDto.amount);
     }
-    async depositSuccess(email, amount, req, res) {
+    async depositSuccessSSLCommerz(email, amount, req, res) {
         try {
             const { val_id } = req.body;
             const validationResponse = await this.depositService.validateOrder(val_id, email, amount);
@@ -72,6 +73,16 @@ let DepositController = class DepositController {
                 .status(500)
                 .json({ message: 'Internal server error', error: error.message });
         }
+    }
+    async surjoPay(header, depositDto) {
+        return await this.depositService.surjoPayInit(header, depositDto.amount);
+    }
+    async depositSuccessSurjoPay(email, amount, order_id) {
+        const paymentData = await this.depositService.surjoVerifyPayment(order_id, email, amount);
+        return {
+            message: 'Payment successfull',
+            data: paymentData,
+        };
     }
 };
 exports.DepositController = DepositController;
@@ -144,13 +155,13 @@ __decorate([
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('sslcommerz/deposit'),
     __param(0, (0, common_1.Headers)()),
-    __param(1, (0, common_1.Body)('ammount')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Number]),
+    __metadata("design:paramtypes", [Object, deposit_model_1.DepositDto]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "sslcommerz", null);
 __decorate([
-    (0, common_1.Post)('/success/:email/:amount'),
+    (0, common_1.Post)('sslcommerz/success/:email/:amount'),
     __param(0, (0, common_1.Param)('email')),
     __param(1, (0, common_1.Param)('amount')),
     __param(2, (0, common_1.Req)()),
@@ -158,7 +169,26 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Number, Object, Object]),
     __metadata("design:returntype", Promise)
-], DepositController.prototype, "depositSuccess", null);
+], DepositController.prototype, "depositSuccessSSLCommerz", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('surjo/deposit'),
+    __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, deposit_model_1.DepositDto]),
+    __metadata("design:returntype", Promise)
+], DepositController.prototype, "surjoPay", null);
+__decorate([
+    (0, common_1.Get)('surjo/success/:email/:amount'),
+    __param(0, (0, common_1.Param)('email')),
+    __param(1, (0, common_1.Param)('amount')),
+    __param(2, (0, common_1.Query)('order_id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number, String]),
+    __metadata("design:returntype", Promise)
+], DepositController.prototype, "depositSuccessSurjoPay", null);
 exports.DepositController = DepositController = __decorate([
     (0, swagger_1.ApiTags)('Deposit Api'),
     (0, common_1.Controller)('deposit'),

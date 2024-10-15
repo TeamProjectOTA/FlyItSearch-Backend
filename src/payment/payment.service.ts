@@ -422,7 +422,6 @@ return{ url: await this.surjoMakePayment(data,bookingID,header),
         },
       });
       const data= response.data[0];
-      //console.log(data.sp_message)
       if (data.sp_message === 'Success') {
         const user = await this.userRepository.findOne({
           where: { email: email },

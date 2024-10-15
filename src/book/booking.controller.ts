@@ -58,10 +58,10 @@ export class BookingController {
   }
 
   @ApiBearerAuth('access_token')
-  @UseGuards(AdmintokenGuard)
+  //@UseGuards(AdmintokenGuard)
   @Post('admin/flh/airRetrive')
   async airRetriveAdmin(@Body() bookingIdDto: BookingID): Promise<any> {
-    return await this.flyHubService.airRetrive(bookingIdDto);
+    return await this.flyHubService.airRetriveAdmin(bookingIdDto);
   }
 
   // @ApiBearerAuth('access_token')
