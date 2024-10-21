@@ -8,17 +8,22 @@ import { Admin, Repository } from 'typeorm';
 import { BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
+import { Storage } from '@google-cloud/storage';
 
 @Injectable()
 export class BookingService {
+  private storage: Storage;
+  private bucket: string;
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly authservice: AuthService,
-
     @InjectRepository(BookingSave)
     private readonly bookingSaveRepository: Repository<BookingSave>,
-  ) {}
+  ) {this.storage = new Storage({
+    keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+  });
+  this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;}
 
   async saveBooking(
     createSaveBookingDto: CreateSaveBookingDto,
@@ -131,5 +136,27 @@ export class BookingService {
     return {
       saveBookings: user.bookingSave,
     };
+  }
+  async uploadImage(
+    file: Express.Multer.File,
+    type: string,
+  ): Promise<string> {
+    const folderName = 'PassportVisa';
+    const fileName = `${folderName}/${type}`;
+    const blob = this.storage.bucket(this.bucket).file(fileName);
+  
+    const blobStream = blob.createWriteStream({
+      metadata: { contentType: file.mimetype },
+      public: true,
+    });
+  
+    return new Promise((resolve, reject) => {
+      blobStream.on('error', (err) => reject(err));
+      blobStream.on('finish', () => {
+        const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
+        resolve(publicUrl);
+      });
+      blobStream.end(file.buffer);
+    });
   }
 }

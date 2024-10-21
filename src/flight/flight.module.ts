@@ -23,6 +23,7 @@ import { MailModule } from 'src/mail/mail.module';
 import { TransectionModule } from 'src/transection/transection.module';
 import { Transection } from 'src/transection/transection.model';
 import { Wallet } from 'src/deposit/deposit.model';
+import { VisaPassport } from 'src/uploads/uploads.model';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { Wallet } from 'src/deposit/deposit.model';
       BookingIdSave,
       Transection,
       Wallet,
+      VisaPassport
     ]),
     HttpModule,
     AirportsModule,

@@ -1,30 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingService } from 'src/book/booking.service';
 import { MailService } from 'src/mail/mail.service';
 import { PaymentService } from 'src/payment/payment.service';
 import { BookingIdSave } from '../flight.model';
 import { Repository } from 'typeorm';
-import { TransectionService } from 'src/transection/transection.service';
 import { Wallet } from 'src/deposit/deposit.model';
 import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
+import { Storage } from '@google-cloud/storage';
+import { VisaPassport } from 'src/uploads/uploads.model';
 
 @Injectable()
 export class FlyHubUtil {
+  private storage: Storage;
+  private bucket: string;
   constructor(
     private readonly BookService: BookingService,
     private readonly mailService: MailService,
     private readonly paymentService: PaymentService,
     private readonly authService: AuthService,
-    private readonly transectionService: TransectionService,
     @InjectRepository(BookingIdSave)
     private readonly bookingIdSave: Repository<BookingIdSave>,
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
     @InjectRepository(BookingSave)
-    private readonly bookingSave:Repository<BookingSave>
-  ) {}
+    private readonly bookingSave:Repository<BookingSave>,
+    @InjectRepository(VisaPassport)
+    private readonly visaPassportRepository: Repository<VisaPassport>,
+  ) {this.storage = new Storage({
+    keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+  });
+  this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;}
   async restBFMParser(
     SearchResponse: any,
     journeyType?: string,
@@ -579,6 +586,7 @@ export class FlyHubUtil {
       .dataModification(FlightItenary, header)
       .catch(() => null);
     const surjopay = await this.paymentService.formdata(FlightItenary, header);
+    const bkash=await this.paymentService.bkashInit(FlightItenary, header)
 
     const price = FlightItenary?.[0]?.NetFare || 0;
 
@@ -602,6 +610,7 @@ export class FlyHubUtil {
       bookingData: FlightItenary,
       sslpaymentLink: sslpaymentLink,
       surjopay: surjopay,
+      bkash:bkash,
       walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
@@ -878,14 +887,13 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       save: save,
-      //sslpaymentLink: sslpaymentLink,
+     
     };
   }
 
   async saveBookingData(
     SearchResponse: any,
-    header?: any,
-    bookingId?: string,
+    header: any,
   ): Promise<any> {
     const booking = SearchResponse[0];
     if (booking) {
@@ -913,7 +921,7 @@ export class FlyHubUtil {
 
       const convertedData = {
         system: booking?.System,
-        bookingId: bookingId ?? booking?.BookingId,
+        bookingId: booking?.BookingId,
         paxCount: paxCount,
         Curriername: booking?.CarrierName,
         CurrierCode: booking?.Carrier,
@@ -935,6 +943,7 @@ export class FlyHubUtil {
       };
       //console.log(convertedData)
       const save = await this.BookService.saveBooking(convertedData, header);
+      //const link=await this                        save the link json here 
       await this.mailService.sendMail(booking);
       return save;
     } else {
@@ -1469,5 +1478,55 @@ export class FlyHubUtil {
 
     
     return FlightItenary
+  }
+
+  async uploadVisaAndPassportImages(
+    bookingId: string,
+   file:Express.Multer.File[]
+  ) {
+    const bookingSave = await this.bookingSave.findOne({
+      where: { bookingId: bookingId },
+      relations: ['visaPassport'],
+    });
+    if (bookingSave.visaPassport) {
+      throw new ConflictException(
+        'You can only upload the visa and passport copy once',
+      );
+    }
+    let passportFile=file[0]
+    let visaFile=file[1] || null;
+    const [passportLink, visaLink] = await Promise.all([
+      this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
+      this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
+    ]);
+    const visaPassport = new VisaPassport();
+    visaPassport.passportLink = passportLink;
+    visaPassport.visaLink = visaLink;
+    visaPassport.bookingSave = bookingSave;
+
+    return await this.visaPassportRepository.save(visaPassport);
+  }
+
+  private async uploadImage(
+    file: Express.Multer.File,
+    type: string,
+  ): Promise<string> {
+    const folderName = 'PassportVisa';
+    const fileName = `${folderName}/${type}`;
+    const blob = this.storage.bucket(this.bucket).file(fileName);
+
+    const blobStream = blob.createWriteStream({
+      metadata: { contentType: file.mimetype },
+      public: true,
+    });
+
+    return new Promise((resolve, reject) => {
+      blobStream.on('error', (err) => reject(err));
+      blobStream.on('finish', () => {
+        const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
+        resolve(publicUrl);
+      });
+      blobStream.end(file.buffer);
+    });
   }
 }

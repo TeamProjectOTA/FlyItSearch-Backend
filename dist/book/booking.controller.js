@@ -52,7 +52,6 @@ let BookingController = class BookingController {
 exports.BookingController = BookingController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('flh/airBook/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),

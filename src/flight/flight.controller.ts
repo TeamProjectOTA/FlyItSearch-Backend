@@ -63,8 +63,8 @@ export class FlightController {
     return this.sabreService.checkpnr(pnr);
   }
   @Get('/airVoid/:pnr')
-  airvoid(@Param('pnr') pnr: string) {
-    return this.sabreService.airvoid(pnr);
+  async airvoid(@Param('pnr') pnr: string) {
+    return await this.sabreService.airvoid(pnr);
   }
   @Get('/ticket/:pnr')
   get_ticket(@Param('pnr') pnr: string) {
@@ -122,4 +122,8 @@ export class FlightController {
   //     fisId
   //   );
   // }
+  @Get('token')
+  async sabreToken(){
+    return await this.sabreService.restToken()
+  }
 }

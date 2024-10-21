@@ -32,6 +32,7 @@ const mail_module_1 = require("../mail/mail.module");
 const transection_module_1 = require("../transection/transection.module");
 const transection_model_1 = require("../transection/transection.model");
 const deposit_model_1 = require("../deposit/deposit.model");
+const uploads_model_1 = require("../uploads/uploads.model");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -47,6 +48,7 @@ exports.FlightModule = FlightModule = __decorate([
                 flight_model_1.BookingIdSave,
                 transection_model_1.Transection,
                 deposit_model_1.Wallet,
+                uploads_model_1.VisaPassport
             ]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,

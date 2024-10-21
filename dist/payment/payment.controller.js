@@ -74,40 +74,9 @@ let PaymentController = class PaymentController {
                 .send('IPN processing failed');
         }
     }
-    async initiatePayment(amount) {
-        return this.paymentService.initiatePaymentBkash(amount);
-    }
-    async executePayment(paymentID) {
-        return this.paymentService.executeBkashPayment(paymentID);
-    }
-    async queryPayment(paymentID) {
-        return this.paymentService.queryBkashPayment(paymentID);
-    }
-    async searchTransaction(trxID) {
-        return this.paymentService.searchTransaction(trxID);
-    }
-    async refundTransaction(paymentID, amount, trxID) {
-        return this.paymentService.refundTransaction(paymentID, amount, trxID);
-    }
-    async callback(res) {
-        console.log(res);
-    }
-    async checkCredentials(body) {
-        try {
-            const result = await this.paymentService.checkCredentials();
-            return {
-                success: true,
-                message: 'Credentials validated successfully',
-                data: result,
-            };
-        }
-        catch (error) {
-            console.error('Error checking credentials:', error.message);
-            throw new common_1.HttpException('Invalid credentials', common_1.HttpStatus.UNAUTHORIZED);
-        }
-    }
-    async test() {
-        return this.paymentService.surjoAuthentication();
+    async handlePaymentCallback(bookingId, paymentID, status, signature, res) {
+        const result = await this.paymentService.executePaymentBkash(paymentID, status, bookingId);
+        return result;
     }
     async paymentReturn(bookingID, email, order_id) {
         const paymentData = await this.paymentService.surjoVerifyPayment(order_id, bookingID, email);
@@ -115,6 +84,18 @@ let PaymentController = class PaymentController {
             message: 'Payment successfull',
             data: paymentData,
         };
+    }
+    async createPayment(amount, header, bookingId) {
+        return this.paymentService.createPaymentBkash(amount, bookingId, header);
+    }
+    async queryPayment(paymentId) {
+        return this.paymentService.queryPayment(paymentId);
+    }
+    async searchTransaction(transactionId) {
+        return this.paymentService.searchTransaction(transactionId);
+    }
+    async refundTransaction(paymentId, amount) {
+        return this.paymentService.refundTransaction(paymentId, amount);
     }
 };
 exports.PaymentController = PaymentController;
@@ -151,62 +132,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleIPN", null);
 __decorate([
-    (0, common_1.Post)('pay'),
-    __param(0, (0, common_1.Body)('amount')),
+    (0, common_1.Get)('callback/:bookingId'),
+    __param(0, (0, common_1.Param)('bookingId')),
+    __param(1, (0, common_1.Query)('paymentID')),
+    __param(2, (0, common_1.Query)('status')),
+    __param(3, (0, common_1.Query)('signature')),
+    __param(4, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
-], PaymentController.prototype, "initiatePayment", null);
-__decorate([
-    (0, common_1.Post)('execute/:paymentID'),
-    __param(0, (0, common_1.Param)('paymentID')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "executePayment", null);
-__decorate([
-    (0, common_1.Post)('query/:paymentID'),
-    __param(0, (0, common_1.Param)('paymentID')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "queryPayment", null);
-__decorate([
-    (0, common_1.Post)('search/:trxID'),
-    __param(0, (0, common_1.Param)('trxID')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "searchTransaction", null);
-__decorate([
-    (0, common_1.Post)('refund'),
-    __param(0, (0, common_1.Body)('paymentID')),
-    __param(1, (0, common_1.Body)('amount')),
-    __param(2, (0, common_1.Body)('trxID')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, String]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "refundTransaction", null);
-__decorate([
-    (0, common_1.Get)('callback'),
-    __param(0, (0, common_1.Res)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "callback", null);
-__decorate([
-    (0, common_1.Post)('check-credentials'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "checkCredentials", null);
-__decorate([
-    (0, common_1.Get)('suth'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "test", null);
+], PaymentController.prototype, "handlePaymentCallback", null);
 __decorate([
     (0, common_1.Get)('return/:bookingID/:email'),
     __param(0, (0, common_1.Param)('bookingID')),
@@ -216,6 +151,38 @@ __decorate([
     __metadata("design:paramtypes", [String, String, String]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "paymentReturn", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Post)('bkashCreate/:amount/:bookingId'),
+    __param(0, (0, common_1.Param)('amount')),
+    __param(1, (0, common_1.Headers)()),
+    __param(2, (0, common_1.Param)('bookingId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object, String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "createPayment", null);
+__decorate([
+    (0, common_1.Post)('query/:paymentId'),
+    __param(0, (0, common_1.Param)('paymentId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "queryPayment", null);
+__decorate([
+    (0, common_1.Post)('search/:transactionId'),
+    __param(0, (0, common_1.Param)('transactionId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "searchTransaction", null);
+__decorate([
+    (0, common_1.Post)('refund'),
+    __param(0, (0, common_1.Body)('paymentId')),
+    __param(1, (0, common_1.Body)('amount')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "refundTransaction", null);
 exports.PaymentController = PaymentController = __decorate([
     (0, swagger_1.ApiTags)('SSLCOMMERZ'),
     (0, common_1.Controller)('payment'),

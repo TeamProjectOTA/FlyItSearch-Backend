@@ -40,57 +40,98 @@ class PassengerDto {
 }
 exports.PassengerDto = PassengerDto;
 __decorate([
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "Title", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "FirstName", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "LastName", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "PaxType", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], PassengerDto.prototype, "DateOfBirth", void 0);
+__decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "Gender", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "PassportNumber", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Date)
+], PassengerDto.prototype, "PassportExpiryDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "PassportNationality", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "Address1", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "Address2", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "CountryCode", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "Nationality", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "ContactNumber", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "Email", void 0);
 __decorate([
     (0, class_validator_1.IsBoolean)(),
+    (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Boolean)
 ], PassengerDto.prototype, "IsLeadPassenger", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "FFAirline", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "FFNumber", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Array)
+], PassengerDto.prototype, "Baggage", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Array)
+], PassengerDto.prototype, "Meal", void 0);
 class FlbFlightSearchDto {
 }
 exports.FlbFlightSearchDto = FlbFlightSearchDto;
@@ -98,4 +139,16 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", String)
 ], FlbFlightSearchDto.prototype, "SearchID", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], FlbFlightSearchDto.prototype, "ResultID", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Array)
+], FlbFlightSearchDto.prototype, "Passengers", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], FlbFlightSearchDto.prototype, "PromotionCode", void 0);
 //# sourceMappingURL=flyhub.model.js.map

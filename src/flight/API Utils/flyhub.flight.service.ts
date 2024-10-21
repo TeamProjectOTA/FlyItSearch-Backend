@@ -231,6 +231,7 @@ export class FlyHubService {
     data: FlbFlightSearchDto,
     header?: any,
     currentTimestamp?: any,
+  
   ) {
     const token = await this.getToken();
 
@@ -266,11 +267,13 @@ export class FlyHubService {
     };
     try {
       const response0 = await axios.request(Price);
-      if (response0.data.Results[0].FareType == 'InstantTicketing') {
-        throw new ForbiddenException(
-          'Sorry You can not book this ticket Contect Our help line for more update',
-        );
-      }
+      // console.log(response0.data.Results[0].FareType)
+      // if (response0.data.Results[0].FareType == 'InstantTicketing') {  
+      //   throw new ForbiddenException(
+      //     'Sorry, you cannot book this ticket. Contact our help line for more updates',
+      //   );
+      // }
+      //  return response0.data
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
 
@@ -278,6 +281,7 @@ export class FlyHubService {
         response.data,
         header,
         currentTimestamp,
+       
       );
     } catch (error) {
       throw error?.response?.data;

@@ -44,8 +44,8 @@ let FlightController = class FlightController {
     getpnr(pnr) {
         return this.sabreService.checkpnr(pnr);
     }
-    airvoid(pnr) {
-        return this.sabreService.airvoid(pnr);
+    async airvoid(pnr) {
+        return await this.sabreService.airvoid(pnr);
     }
     get_ticket(pnr) {
         return this.sabreService.get_ticket(pnr);
@@ -71,6 +71,9 @@ let FlightController = class FlightController {
     }
     async airRules(data) {
         return await this.flyHubService.airRules(data);
+    }
+    async sabreToken() {
+        return await this.sabreService.restToken();
     }
 };
 exports.FlightController = FlightController;
@@ -107,7 +110,7 @@ __decorate([
     __param(0, (0, common_1.Param)('pnr')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airvoid", null);
 __decorate([
     (0, common_1.Get)('/ticket/:pnr'),
@@ -162,6 +165,12 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRules", null);
+__decorate([
+    (0, common_1.Get)('token'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "sabreToken", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),

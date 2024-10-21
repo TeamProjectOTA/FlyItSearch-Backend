@@ -10,10 +10,11 @@ import {
   Get,
   Query,
   NotFoundException,
+  Headers
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response, Request } from 'express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('SSLCOMMERZ')
 @Controller('payment')
@@ -88,56 +89,27 @@ export class PaymentController {
     }
   }
 
-  @Post('pay')
-  async initiatePayment(@Body('amount') amount: number) {
-    return this.paymentService.initiatePaymentBkash(amount);
-  }
+ 
 
-  @Post('execute/:paymentID')
-  async executePayment(@Param('paymentID') paymentID: string) {
-    return this.paymentService.executeBkashPayment(paymentID);
-  }
-
-  @Post('query/:paymentID')
-  async queryPayment(@Param('paymentID') paymentID: string) {
-    return this.paymentService.queryBkashPayment(paymentID);
-  }
-
-  @Post('search/:trxID')
-  async searchTransaction(@Param('trxID') trxID: string) {
-    return this.paymentService.searchTransaction(trxID);
-  }
-
-  @Post('refund')
-  async refundTransaction(
-    @Body('paymentID') paymentID: string,
-    @Body('amount') amount: number,
-    @Body('trxID') trxID: string,
+ 
+  @Get('callback/:bookingId')
+  async handlePaymentCallback(
+    @Param('bookingId') bookingId:string,
+    @Query('paymentID') paymentID: string, 
+    @Query('status') status: string, 
+    @Query('signature') signature: string,
+    @Res() res: Response
   ) {
-    return this.paymentService.refundTransaction(paymentID, amount, trxID);
+    
+        const result = await this.paymentService.executePaymentBkash(paymentID, status,bookingId);
+       return result
+      
   }
-  @Get('callback')
-  async callback(@Res() res: any) {
-    console.log(res);
-  }
-  @Post('check-credentials')
-  async checkCredentials(@Body() body: { username: string; password: string }) {
-    try {
-      const result = await this.paymentService.checkCredentials();
-      return {
-        success: true,
-        message: 'Credentials validated successfully',
-        data: result,
-      };
-    } catch (error) {
-      console.error('Error checking credentials:', error.message);
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-    }
-  }
-  @Get('suth')
-  async test() {
-    return this.paymentService.surjoAuthentication();
-  }
+ 
+  // @Get('suth')
+  // async test() {
+  //   return this.paymentService.surjoAuthentication();
+  // }
 
   @Get('return/:bookingID/:email')
   async paymentReturn(
@@ -154,5 +126,32 @@ export class PaymentController {
       message: 'Payment successfull',
       data: paymentData,
     };
+  }
+
+
+  @ApiBearerAuth('access_token')
+  @Post('bkashCreate/:amount/:bookingId')
+  async createPayment( @Param('amount') amount: number, @Headers() header: Headers,@Param('bookingId') bookingId:string) {
+
+    return this.paymentService.createPaymentBkash(amount,bookingId,header);
+  }
+
+
+  @Post('query/:paymentId')
+  async queryPayment(@Param('paymentId') paymentId: string) {
+    return this.paymentService.queryPayment(paymentId);
+  }
+
+  @Post('search/:transactionId')
+  async searchTransaction(@Param('transactionId') transactionId: string) {
+    return this.paymentService.searchTransaction(transactionId);
+  }
+
+  @Post('refund')
+  async refundTransaction(
+    @Body('paymentId') paymentId: string,
+    @Body('amount') amount: number,
+  ) {
+    return this.paymentService.refundTransaction(paymentId, amount);
   }
 }

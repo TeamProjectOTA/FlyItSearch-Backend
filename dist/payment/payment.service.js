@@ -37,10 +37,15 @@ let PaymentService = class PaymentService {
         this.bkashConfig = {
             base_url: process.env.BKASH_BASE_URL,
             username: process.env.BKASH_USERNAME,
-            password: process.env.BKASH_USERNAME,
+            password: process.env.BAKSH_PASSWORD,
             app_key: process.env.BKASH_APP_KEY,
             app_secret: process.env.BKASH_APP_SECRET,
         };
+        this.bkashBaseUrl = process.env.BKASH_BASE_URL;
+        this.bkashAppKey = process.env.BKASH_APP_KEY;
+        this.bkashAppSecret = process.env.BKASH_APP_SECRET;
+        this.bkashUserName = process.env.BKASH_USERNAME;
+        this.bkashPwd = process.env.BAKSH_PASSWORD;
         this.surjoBaseUrl = process.env.SURJO_API_Url;
         this.surjoUserName = process.env.SURJO_API_USRNAME;
         this.surjoPassword = process.env.SURJO_API_PASSWORD;
@@ -70,7 +75,7 @@ let PaymentService = class PaymentService {
         const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
         const minutesDifference = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
         const airTicketPrice = booking?.NetFare;
-        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.035);
+        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025);
         const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
         const hours_till_departure = ` ${hoursDifference} hrs ${minutesDifference} mins`;
         const pnr = booking?.PNR;
@@ -203,79 +208,107 @@ let PaymentService = class PaymentService {
             throw new Error('Payment validation failed.');
         }
     }
-    async initiatePaymentBkash(amount) {
-        const createPaymentRequest = {
-            amount: amount.toString(),
-            currency: 'BDT',
-            intent: 'sale',
-            callbackURL: process.env.BKASH_CALLBACKURL,
-            merchantInvoiceNumber: 'INV123456',
+    async bkashInit(SearchResponse, header) {
+        const booking = SearchResponse[0];
+        const airTicketPrice = booking?.NetFare;
+        const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125);
+        const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
+        const bookingId = booking?.BookingId;
+        return {
+            url: await this.createPaymentBkash(total_amount, bookingId, header),
+            airTicketPrice: airTicketPrice,
+            paymentGatwayCharge: paymentGatwayCharge,
+            total_amount: total_amount,
         };
+    }
+    async createPaymentBkash(amount, bookingId, header) {
+        const email = await this.authService.decodeToken(header);
+        console.log(bookingId);
         try {
-            const response = await (0, bkash_payment_1.createPayment)(this.bkashConfig, createPaymentRequest);
-            return response;
+            const timestamp = Date.now();
+            const randomNumber = Math.floor(Math.random() * 1000);
+            const tran_id = `SSM${timestamp}${randomNumber}`;
+            const paymentDetails = {
+                amount: amount || 10,
+                callbackURL: `${process.env.BKASH_CALLBACKURL}/${bookingId}`,
+                orderID: tran_id || 'Order_101',
+                reference: `${email}`
+            };
+            const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
+            return result.bkashURL;
         }
-        catch (error) {
-            throw new Error(`Failed to create payment: ${error.message}`);
+        catch (e) {
+            console.log(e);
         }
     }
-    async executeBkashPayment(paymentID) {
+    async executePaymentBkash(paymentID, status, bookingId) {
+        console.log(status, paymentID);
         try {
-            const response = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
-            return response;
+            if (status === 'success') {
+                const result = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
+                if (result.transactionStatus == 'Completed') {
+                    console.log(bookingId);
+                }
+                console.log('Execute Payment Result:', result);
+                return result.data;
+            }
+            else {
+                console.log('Payment not successful, skipping execution.');
+                return null;
+            }
         }
-        catch (error) {
-            throw new Error(`Failed to execute payment: ${error.message}`);
+        catch (e) {
+            console.error('Error executing payment:', e);
+            throw new Error('Payment execution failed');
         }
     }
-    async queryBkashPayment(paymentID) {
+    async queryPayment(paymentId) {
         try {
-            const response = await (0, bkash_payment_1.queryPayment)(this.bkashConfig, paymentID);
-            return response;
-        }
-        catch (error) {
-            throw new Error(`Failed to query payment: ${error.message}`);
-        }
-    }
-    async searchTransaction(trxID) {
-        try {
-            const response = await (0, bkash_payment_1.searchTransaction)(this.bkashConfig, trxID);
-            return response;
-        }
-        catch (error) {
-            throw new Error(`Failed to search transaction: ${error.message}`);
-        }
-    }
-    async refundTransaction(paymentID, amount, trxID) {
-        try {
-            const response = await (0, bkash_payment_1.refundTransaction)(this.bkashConfig, paymentID, amount.toString(), trxID);
-            return response;
-        }
-        catch (error) {
-            throw new Error(`Failed to refund transaction: ${error.message}`);
-        }
-    }
-    async checkCredentials() {
-        const url = `${this.bkashBaseUrl}/tokenized/checkout/token/grant`;
-        const data = {
-            app_key: this.bkashAppKey,
-            app_secret: this.bkashAppSecret,
-        };
-        try {
-            const response = await axios_1.default.post(url, data, {
-                auth: {
-                    username: this.bkashUserName,
-                    password: this.bkashPwd,
-                },
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            const queryResponse = await (0, bkash_payment_1.queryPayment)({
+                paymentID: paymentId,
+                bkashBaseUrl: this.bkashBaseUrl,
+                bkashAppKey: this.bkashAppKey,
+                bkashAppSecret: this.bkashAppSecret,
+                bkashUserName: this.bkashUserName,
+                bkashPwd: this.bkashPwd,
             });
-            return response.data;
+            return queryResponse;
         }
         catch (error) {
-            console.error('Failed to validate credentials:', error);
-            throw new Error('Invalid credentials');
+            throw new Error(`Error querying payment: ${error.message}`);
+        }
+    }
+    async searchTransaction(transactionId) {
+        try {
+            const searchResponse = await (0, bkash_payment_1.searchTransaction)({
+                trxID: transactionId,
+                bkashBaseUrl: this.bkashBaseUrl,
+                bkashAppKey: this.bkashAppKey,
+                bkashAppSecret: this.bkashAppSecret,
+                bkashUserName: this.bkashUserName,
+                bkashPwd: this.bkashPwd,
+            });
+            return searchResponse;
+        }
+        catch (error) {
+            throw new Error(`Error searching transaction: ${error.message}`);
+        }
+    }
+    async refundTransaction(paymentId, amount) {
+        try {
+            const refundResponse = await (0, bkash_payment_1.refundTransaction)({
+                paymentID: paymentId,
+                amount,
+                bkashBaseUrl: this.bkashBaseUrl,
+                bkashAppKey: this.bkashAppKey,
+                bkashAppSecret: this.bkashAppSecret,
+                bkashUserName: this.bkashUserName,
+                bkashPwd: this.bkashPwd,
+            });
+            return refundResponse;
+        }
+        catch (error) {
+            throw new Error(`Error refunding transaction: ${error.message}`);
         }
     }
     async formdata(SearchResponse, header) {
@@ -409,6 +442,24 @@ let PaymentService = class PaymentService {
         catch (error) {
             console.error("Error verifying payment:", error.response ? error.response.data : error.message);
             return "Payment Verification Failed";
+        }
+    }
+    async createPayment(amount) {
+        try {
+            const now = new Date();
+            const unixTimestampSeconds = Math.floor(now.getTime() / 1000);
+            const orderID = 'MFSB' + unixTimestampSeconds;
+            const paymentDetails = {
+                amount: amount || 10,
+                callbackURL: process.env.BKASH_CALLBACKURL,
+                orderID: orderID || 'Order_101',
+                reference: 'x'
+            };
+            const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
+            return result;
+        }
+        catch (e) {
+            console.log(e);
         }
     }
 };

@@ -34,13 +34,13 @@ export class SabreService {
     const client_secret = base64.encode(process.env.SABRE_PASSWORD);
     const token = base64.encode(`${client_id}:${client_secret}`);
     const data = 'grant_type=client_credentials';
-
+    
     const headers = {
       Authorization: `Basic ${token}`,
       Accept: '/',
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-
+    console.log(client_id_raw,process.env.SABRE_AUTH_ENDPOINT,client_secret)//remove
     try {
       const response = await axios.post(process.env.SABRE_AUTH_ENDPOINT, data, {
         headers,
@@ -99,6 +99,7 @@ export class SabreService {
   }
 
   async sabreSessionLessTokenSoap() {
+    
     const payload = `<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
       <SOAP-ENV:Header>
           <MessageHeader xmlns="http://www.ebxml.org/namespaces/messageHeader">

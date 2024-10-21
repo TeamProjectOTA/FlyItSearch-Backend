@@ -20,20 +20,25 @@ const mail_service_1 = require("../../mail/mail.service");
 const payment_service_1 = require("../../payment/payment.service");
 const flight_model_1 = require("../flight.model");
 const typeorm_2 = require("typeorm");
-const transection_service_1 = require("../../transection/transection.service");
 const deposit_model_1 = require("../../deposit/deposit.model");
 const auth_service_1 = require("../../auth/auth.service");
 const booking_model_1 = require("../../book/booking.model");
+const storage_1 = require("@google-cloud/storage");
+const uploads_model_1 = require("../../uploads/uploads.model");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService, mailService, paymentService, authService, transectionService, bookingIdSave, walletRepository, bookingSave) {
+    constructor(BookService, mailService, paymentService, authService, bookingIdSave, walletRepository, bookingSave, visaPassportRepository) {
         this.BookService = BookService;
         this.mailService = mailService;
         this.paymentService = paymentService;
         this.authService = authService;
-        this.transectionService = transectionService;
         this.bookingIdSave = bookingIdSave;
         this.walletRepository = walletRepository;
         this.bookingSave = bookingSave;
+        this.visaPassportRepository = visaPassportRepository;
+        this.storage = new storage_1.Storage({
+            keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+        });
+        this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -464,6 +469,7 @@ let FlyHubUtil = class FlyHubUtil {
             .dataModification(FlightItenary, header)
             .catch(() => null);
         const surjopay = await this.paymentService.formdata(FlightItenary, header);
+        const bkash = await this.paymentService.bkashInit(FlightItenary, header);
         const price = FlightItenary?.[0]?.NetFare || 0;
         const email = await this.authService.decodeToken(header).catch(() => 'NA');
         let wallet = await this.walletRepository
@@ -481,6 +487,7 @@ let FlyHubUtil = class FlyHubUtil {
             bookingData: FlightItenary,
             sslpaymentLink: sslpaymentLink,
             surjopay: surjopay,
+            bkash: bkash,
             walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
@@ -693,7 +700,7 @@ let FlyHubUtil = class FlyHubUtil {
             save: save,
         };
     }
-    async saveBookingData(SearchResponse, header, bookingId) {
+    async saveBookingData(SearchResponse, header) {
         const booking = SearchResponse[0];
         if (booking) {
             const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
@@ -716,7 +723,7 @@ let FlyHubUtil = class FlyHubUtil {
             const paxCount = booking.PriceBreakDown.reduce((sum, breakdown) => sum + breakdown.PaxCount, 0);
             const convertedData = {
                 system: booking?.System,
-                bookingId: bookingId ?? booking?.BookingId,
+                bookingId: booking?.BookingId,
                 paxCount: paxCount,
                 Curriername: booking?.CarrierName,
                 CurrierCode: booking?.Carrier,
@@ -1148,18 +1155,56 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
+    async uploadVisaAndPassportImages(bookingId, file) {
+        const bookingSave = await this.bookingSave.findOne({
+            where: { bookingId: bookingId },
+            relations: ['visaPassport'],
+        });
+        if (bookingSave.visaPassport) {
+            throw new common_1.ConflictException('You can only upload the visa and passport copy once');
+        }
+        let passportFile = file[0];
+        let visaFile = file[1] || null;
+        const [passportLink, visaLink] = await Promise.all([
+            this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
+            this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
+        ]);
+        const visaPassport = new uploads_model_1.VisaPassport();
+        visaPassport.passportLink = passportLink;
+        visaPassport.visaLink = visaLink;
+        visaPassport.bookingSave = bookingSave;
+        return await this.visaPassportRepository.save(visaPassport);
+    }
+    async uploadImage(file, type) {
+        const folderName = 'PassportVisa';
+        const fileName = `${folderName}/${type}`;
+        const blob = this.storage.bucket(this.bucket).file(fileName);
+        const blobStream = blob.createWriteStream({
+            metadata: { contentType: file.mimetype },
+            public: true,
+        });
+        return new Promise((resolve, reject) => {
+            blobStream.on('error', (err) => reject(err));
+            blobStream.on('finish', () => {
+                const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
+                resolve(publicUrl);
+            });
+            blobStream.end(file.buffer);
+        });
+    }
 };
 exports.FlyHubUtil = FlyHubUtil;
 exports.FlyHubUtil = FlyHubUtil = __decorate([
     (0, common_1.Injectable)(),
-    __param(5, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
-    __param(6, (0, typeorm_1.InjectRepository)(deposit_model_1.Wallet)),
-    __param(7, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(4, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(5, (0, typeorm_1.InjectRepository)(deposit_model_1.Wallet)),
+    __param(6, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(7, (0, typeorm_1.InjectRepository)(uploads_model_1.VisaPassport)),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
         mail_service_1.MailService,
         payment_service_1.PaymentService,
         auth_service_1.AuthService,
-        transection_service_1.TransectionService,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])

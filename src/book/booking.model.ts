@@ -15,6 +15,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -59,7 +60,7 @@ export class BookingSave {
   reason: string;
   @Column('json', { nullable: true })
   laginfo: any; // Store laginfo as a JSON object
-  @OneToOne(() => VisaPassport, (visaPassport) => visaPassport.bookingSave)
+  @OneToMany(() => VisaPassport, (visaPassport) => visaPassport.bookingSave)
   visaPassport: VisaPassport;
   @ManyToOne(() => User, (user) => user.bookingSave, { onDelete: 'CASCADE' })
   user: User;

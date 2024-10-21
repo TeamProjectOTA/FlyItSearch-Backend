@@ -4,6 +4,7 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -35,7 +36,7 @@ export class VisaPassport {
   passportLink: string;
   @Column()
   visaLink: string;
-  @OneToOne(() => BookingSave, (bookingSave) => bookingSave.visaPassport, {
+  @ManyToOne(() => BookingSave, (bookingSave) => bookingSave.visaPassport, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()

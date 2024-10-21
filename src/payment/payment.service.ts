@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { AuthService } from 'src/auth/auth.service';
@@ -7,7 +7,6 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { User } from 'src/user/entities/user.entity';
 import { SslCommerzPayment } from 'sslcommerz';
-import * as ShurjoPay from 'shurjopay-js';
 
 import {
   createPayment,
@@ -50,10 +49,15 @@ export class PaymentService {
     this.bkashConfig = {
       base_url: process.env.BKASH_BASE_URL,
       username: process.env.BKASH_USERNAME,
-      password: process.env.BKASH_USERNAME,
+      password: process.env.BAKSH_PASSWORD,
       app_key: process.env.BKASH_APP_KEY,
       app_secret: process.env.BKASH_APP_SECRET,
     };
+    this.bkashBaseUrl=process.env.BKASH_BASE_URL
+    this.bkashAppKey=process.env.BKASH_APP_KEY;
+    this.bkashAppSecret=process.env.BKASH_APP_SECRET;
+    this.bkashUserName=process.env.BKASH_USERNAME;
+    this.bkashPwd=process.env.BAKSH_PASSWORD
     this.surjoBaseUrl = process.env.SURJO_API_Url;
     this.surjoUserName=process.env.SURJO_API_USRNAME;
     this.surjoPassword=process.env.SURJO_API_PASSWORD;
@@ -86,7 +90,7 @@ export class PaymentService {
       (timeDifference % (1000 * 60 * 60)) / (1000 * 60),
     );
     const airTicketPrice = booking?.NetFare;
-    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.035); // !Important some check the validation before adding the ammont. 2.5% charge added in sslcomerz
+    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.025); // !Important some check the validation before adding the ammont. 2.5% charge added in sslcomerz
     const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
     const hours_till_departure = ` ${hoursDifference} hrs ${minutesDifference} mins`;
     const pnr = booking?.PNR;
@@ -243,92 +247,135 @@ export class PaymentService {
     }
   }
 
-  async initiatePaymentBkash(amount: number) {
-    const createPaymentRequest = {
-      amount: amount.toString(),
-      currency: 'BDT',
-      intent: 'sale',
-      callbackURL: process.env.BKASH_CALLBACKURL,
-      merchantInvoiceNumber: 'INV123456', 
-    };
 
+
+
+async bkashInit(SearchResponse: any,header:any){
+  const booking = SearchResponse[0];
+  const airTicketPrice = booking?.NetFare;
+  const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125); // !Important some check the validation before adding the ammont. 2.5% charge added in sslcomerz
+  const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
+  const bookingId = booking?.BookingId
+  return{
+    url: await this.createPaymentBkash(total_amount, bookingId, header),
+    airTicketPrice: airTicketPrice,
+    paymentGatwayCharge: paymentGatwayCharge,
+    total_amount: total_amount,
+  };
+
+
+
+}
+
+
+
+  async createPaymentBkash(amount:number,bookingId:string,header:any) {
+    const email = await this.authService.decodeToken(header);
+    console.log(bookingId)
     try {
-      const response = await createPayment(
-        this.bkashConfig,
-        createPaymentRequest,
-      );
-      return response;
-    } catch (error) {
-      throw new Error(`Failed to create payment: ${error.message}`);
+    const timestamp = Date.now();
+    const randomNumber = Math.floor(Math.random() * 1000);
+    const tran_id = `SSM${timestamp}${randomNumber}`;
+      const paymentDetails = {
+        amount: amount || 10,
+        callbackURL : `${process.env.BKASH_CALLBACKURL}/${bookingId}`,
+        orderID : tran_id || 'Order_101',
+        reference : `${email}`
+      }
+
+      const result = await createPayment(this.bkashConfig, paymentDetails);
+      return result.bkashURL;
+    } catch (e) {
+      console.log(e)
     }
   }
 
-  async executeBkashPayment(paymentID: string) {
+  async executePaymentBkash(paymentID: string, status: string,bookingId:string) {
+    console.log(status,paymentID)
     try {
-      const response = await executePayment(this.bkashConfig, paymentID);
-      return response;
-    } catch (error) {
-      throw new Error(`Failed to execute payment: ${error.message}`);
+      if (status === 'success') {
+        const result: any = await executePayment(this.bkashConfig, paymentID);
+        if(result.transactionStatus=='Completed'){
+        console.log(bookingId)
+
+        }
+       
+        console.log('Execute Payment Result:', result);
+
+        return result.data; 
+      } else {
+        console.log('Payment not successful, skipping execution.');
+        return null;
+      }
+    } catch (e) {
+      console.error('Error executing payment:', e);
+      throw new Error('Payment execution failed');
     }
   }
 
-  async queryBkashPayment(paymentID: string) {
+  async queryPayment(paymentId: string): Promise<any> {
     try {
-      const response = await queryPayment(this.bkashConfig, paymentID);
-      return response;
-    } catch (error) {
-      throw new Error(`Failed to query payment: ${error.message}`);
-    }
-  }
-
-  async searchTransaction(trxID: string) {
-    try {
-      const response = await searchTransaction(this.bkashConfig, trxID);
-      return response;
-    } catch (error) {
-      throw new Error(`Failed to search transaction: ${error.message}`);
-    }
-  }
-
-  async refundTransaction(paymentID: string, amount: number, trxID: string) {
-    try {
-      const response = await refundTransaction(
-        this.bkashConfig,
-        paymentID,
-        amount.toString(),
-        trxID,
-      );
-      return response;
-    } catch (error) {
-      throw new Error(`Failed to refund transaction: ${error.message}`);
-    }
-  }
-
-  async checkCredentials() {
-    const url = `${this.bkashBaseUrl}/tokenized/checkout/token/grant`;
-    const data = {
-      app_key: this.bkashAppKey,
-      app_secret: this.bkashAppSecret,
-    };
-
-    try {
-      const response = await axios.post(url, data, {
-        auth: {
-          username: this.bkashUserName,
-          password: this.bkashPwd,
-        },
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const queryResponse = await queryPayment({
+        paymentID: paymentId,
+        bkashBaseUrl: this.bkashBaseUrl,
+        bkashAppKey: this.bkashAppKey,
+        bkashAppSecret: this.bkashAppSecret,
+        bkashUserName: this.bkashUserName,
+        bkashPwd: this.bkashPwd,
       });
-      return response.data;
+      return queryResponse;
     } catch (error) {
-      console.error('Failed to validate credentials:', error);
-      throw new Error('Invalid credentials');
+      throw new Error(`Error querying payment: ${error.message}`);
+    }
+  }
+
+  async searchTransaction(transactionId: string): Promise<any> {
+    try {
+      const searchResponse = await searchTransaction({
+        trxID: transactionId,
+        bkashBaseUrl: this.bkashBaseUrl,
+        bkashAppKey: this.bkashAppKey,
+        bkashAppSecret: this.bkashAppSecret,
+        bkashUserName: this.bkashUserName,
+        bkashPwd: this.bkashPwd,
+      });
+      return searchResponse;
+    } catch (error) {
+      throw new Error(`Error searching transaction: ${error.message}`);
+    }
+  }
+
+  async refundTransaction(paymentId: string, amount: number): Promise<any> {
+    try {
+      const refundResponse = await refundTransaction({
+        paymentID: paymentId,
+        amount,
+        bkashBaseUrl: this.bkashBaseUrl,
+        bkashAppKey: this.bkashAppKey,
+        bkashAppSecret: this.bkashAppSecret,
+        bkashUserName: this.bkashUserName,
+        bkashPwd: this.bkashPwd,
+      });
+      return refundResponse;
+    } catch (error) {
+      throw new Error(`Error refunding transaction: ${error.message}`);
     }
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+//surjo 
 async formdata(SearchResponse?: any, header?: any){
   const email = await this.authService.decodeToken(header);
   const user = await this.userRepository.findOne({
@@ -472,6 +519,27 @@ return{ url: await this.surjoMakePayment(data,bookingID,header),
     }
     
     
+  }
+
+
+  async createPayment( amount: number) {
+
+    try {
+      const now = new Date();
+      const unixTimestampSeconds = Math.floor(now.getTime() / 1000);
+      const orderID : string = 'MFSB'+unixTimestampSeconds;
+      const paymentDetails = {
+        amount: amount || 10,
+        callbackURL : process.env.BKASH_CALLBACKURL,
+        orderID : orderID || 'Order_101',
+        reference : 'x'
+      }
+
+      const result = await createPayment(this.bkashConfig, paymentDetails);
+      return result;
+    } catch (e) {
+      console.log(e)
+    }
   }
 }
 

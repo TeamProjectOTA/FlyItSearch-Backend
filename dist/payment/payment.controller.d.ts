@@ -7,23 +7,13 @@ export declare class PaymentController {
     handleFail(res: Response): void;
     handleCancel(res: Response): void;
     handleIPN(req: Request, res: Response): Promise<void>;
-    initiatePayment(amount: number): Promise<any>;
-    executePayment(paymentID: string): Promise<any>;
-    queryPayment(paymentID: string): Promise<any>;
-    searchTransaction(trxID: string): Promise<any>;
-    refundTransaction(paymentID: string, amount: number, trxID: string): Promise<any>;
-    callback(res: any): Promise<void>;
-    checkCredentials(body: {
-        username: string;
-        password: string;
-    }): Promise<{
-        success: boolean;
-        message: string;
-        data: any;
-    }>;
-    test(): Promise<any>;
+    handlePaymentCallback(bookingId: string, paymentID: string, status: string, signature: string, res: Response): Promise<any>;
     paymentReturn(bookingID: string, email: string, order_id: string): Promise<{
         message: string;
         data: any;
     }>;
+    createPayment(amount: number, header: Headers, bookingId: string): Promise<any>;
+    queryPayment(paymentId: string): Promise<any>;
+    searchTransaction(transactionId: string): Promise<any>;
+    refundTransaction(paymentId: string, amount: number): Promise<any>;
 }

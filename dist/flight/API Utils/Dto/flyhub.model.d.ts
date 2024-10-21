@@ -42,6 +42,8 @@ export declare class PassengerDto {
     FFNumber?: string;
     Baggage?: BaggageDto[];
     Meal?: MealDto[];
+    passport?: any;
+    visa?: any;
 }
 export declare class FlbFlightSearchDto {
     SearchID: string;

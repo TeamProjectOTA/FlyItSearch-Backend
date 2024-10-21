@@ -27,12 +27,17 @@ export declare class PaymentService {
     dataModification(SearchResponse: any, header: any): Promise<any>;
     initiatePayment(paymentData: any, bookingId: string, header: any): Promise<string>;
     validateOrder(val_id: string, bookingId?: any, email?: any): Promise<any>;
-    initiatePaymentBkash(amount: number): Promise<any>;
-    executeBkashPayment(paymentID: string): Promise<any>;
-    queryBkashPayment(paymentID: string): Promise<any>;
-    searchTransaction(trxID: string): Promise<any>;
-    refundTransaction(paymentID: string, amount: number, trxID: string): Promise<any>;
-    checkCredentials(): Promise<any>;
+    bkashInit(SearchResponse: any, header: any): Promise<{
+        url: any;
+        airTicketPrice: any;
+        paymentGatwayCharge: number;
+        total_amount: number;
+    }>;
+    createPaymentBkash(amount: number, bookingId: string, header: any): Promise<any>;
+    executePaymentBkash(paymentID: string, status: string, bookingId: string): Promise<any>;
+    queryPayment(paymentId: string): Promise<any>;
+    searchTransaction(transactionId: string): Promise<any>;
+    refundTransaction(paymentId: string, amount: number): Promise<any>;
     formdata(SearchResponse?: any, header?: any): Promise<{
         url: any;
         airTicketPrice: any;
@@ -42,4 +47,5 @@ export declare class PaymentService {
     surjoAuthentication(): Promise<any>;
     surjoMakePayment(data: any, bookingId: string, header: any): Promise<any>;
     surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string): Promise<any>;
+    createPayment(amount: number): Promise<any>;
 }

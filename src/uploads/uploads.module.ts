@@ -6,7 +6,6 @@ import { ProfilePicture, VisaPassport } from './uploads.model';
 import { User } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
-import { BookingModule } from 'src/book/booking.module';
 import { BookingSave } from 'src/book/booking.model';
 
 @Module({

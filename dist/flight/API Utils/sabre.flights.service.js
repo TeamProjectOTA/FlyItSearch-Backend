@@ -33,6 +33,7 @@ let SabreService = class SabreService {
             Accept: '/',
             'Content-Type': 'application/x-www-form-urlencoded',
         };
+        console.log(client_id_raw, process.env.SABRE_AUTH_ENDPOINT, client_secret);
         try {
             const response = await axios_1.default.post(process.env.SABRE_AUTH_ENDPOINT, data, {
                 headers,

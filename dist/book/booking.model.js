@@ -96,7 +96,7 @@ __decorate([
     __metadata("design:type", Object)
 ], BookingSave.prototype, "laginfo", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => uploads_model_1.VisaPassport, (visaPassport) => visaPassport.bookingSave),
+    (0, typeorm_1.OneToMany)(() => uploads_model_1.VisaPassport, (visaPassport) => visaPassport.bookingSave),
     __metadata("design:type", uploads_model_1.VisaPassport)
 ], BookingSave.prototype, "visaPassport", void 0);
 __decorate([
