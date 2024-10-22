@@ -34,7 +34,7 @@ export declare class PaymentService {
         total_amount: number;
     }>;
     createPaymentBkash(amount: number, bookingId: string, header: any): Promise<any>;
-    executePaymentBkash(paymentID: string, status: string, bookingId: string): Promise<any>;
+    executePaymentBkash(paymentID: string, status: string, bookingId: string, res: any, email: string): Promise<any>;
     queryPayment(paymentId: string): Promise<any>;
     searchTransaction(transactionId: string): Promise<any>;
     refundTransaction(paymentId: string, amount: number): Promise<any>;

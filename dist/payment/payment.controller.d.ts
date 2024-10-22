@@ -7,7 +7,7 @@ export declare class PaymentController {
     handleFail(res: Response): void;
     handleCancel(res: Response): void;
     handleIPN(req: Request, res: Response): Promise<void>;
-    handlePaymentCallback(bookingId: string, paymentID: string, status: string, signature: string, res: Response): Promise<any>;
+    handlePaymentCallback(bookingId: string, email: string, paymentID: string, status: string, signature: string, res: Response): Promise<any>;
     paymentReturn(bookingID: string, email: string, order_id: string): Promise<{
         message: string;
         data: any;

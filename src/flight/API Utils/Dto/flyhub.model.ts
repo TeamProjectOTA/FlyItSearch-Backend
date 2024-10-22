@@ -102,8 +102,7 @@ export class PassengerDto {
   Baggage?: BaggageDto[];
   @ApiProperty()
   Meal?: MealDto[];
-  passport?:any
-  visa?:any
+ personId?:string
 
 }
 

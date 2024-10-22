@@ -271,14 +271,14 @@ async bkashInit(SearchResponse: any,header:any){
 
   async createPaymentBkash(amount:number,bookingId:string,header:any) {
     const email = await this.authService.decodeToken(header);
-    console.log(bookingId)
+    //console.log(bookingId)
     try {
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `SSM${timestamp}${randomNumber}`;
       const paymentDetails = {
         amount: amount || 10,
-        callbackURL : `${process.env.BKASH_CALLBACKURL}/${bookingId}`,
+        callbackURL : `${process.env.BKASH_CALLBACKURL}payment/callback/${bookingId}/${email}`,
         orderID : tran_id || 'Order_101',
         reference : `${email}`
       }
@@ -290,19 +290,59 @@ async bkashInit(SearchResponse: any,header:any){
     }
   }
 
-  async executePaymentBkash(paymentID: string, status: string,bookingId:string) {
-    console.log(status,paymentID)
+  async executePaymentBkash(paymentID: string, status: string,bookingId:string,res:any,email:string) {
+    
     try {
       if (status === 'success') {
         const result: any = await executePayment(this.bkashConfig, paymentID);
-        if(result.transactionStatus=='Completed'){
-        console.log(bookingId)
+        if(result?.transactionStatus === 'Completed' && result?.statusMessage === 'Successful'){
+          const tranDate = result.paymentExecuteTime.split(' GMT')[0].replace('T', ' ');
+          const user = await this.userRepository.findOne({
+            where: { email: email },
+          });
+          const bookingSave = await this.bookingSaveRepository.findOne({
+            where: { bookingId: bookingId },
+          });
+          bookingSave.bookingStatus = 'IssueInProcess';
+  
+          await this.bookingSaveRepository.save(bookingSave);
+  
+          const wallet = await this.walletRepository
+            .createQueryBuilder('wallet')
+            .innerJoinAndSelect('wallet.user', 'user')
+            .where('user.email = :email', { email })
+            .getOne();
+  
+          const airPlaneName = bookingSave.Curriername;
+          const tripType = bookingSave.TripType;
+          const depfrom = bookingSave?.laginfo[0]?.DepFrom;
+          const arrto =
+            bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
+          let addTransection: Transection = new Transection();
+          addTransection.tranId = result.merchantInvoiceNumber;
+          addTransection.tranDate = tranDate;
+          addTransection.paidAmount = result.amount;
+
+          const airTicketPrice = bookingSave?.netAmmount;
+          addTransection.offerAmmount = airTicketPrice;
+          addTransection.bankTranId = result.paymentID;
+          addTransection.riskTitle = 'Safe';
+          addTransection.cardType = 'Bkash';
+          addTransection.cardIssuer = 'Bkash';
+          addTransection.cardBrand = result.payerAccount;
+          addTransection.cardIssuerCountry = 'Bangladesh';
+          addTransection.validationDate = tranDate;
+          addTransection.status = 'Purchase';
+          addTransection.walletBalance = wallet.ammount;
+          addTransection.paymentType = 'Instaint Payment ';
+          addTransection.currierName = airPlaneName;
+          addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
+          addTransection.bookingId = bookingId;
+          addTransection.user = user;
+          await this.transectionRepository.save(addTransection);
 
         }
-       
-        console.log('Execute Payment Result:', result);
-
-        return result.data; 
+        return res.redirect('http://192.168.10.30:3000/'); 
       } else {
         console.log('Payment not successful, skipping execution.');
         return null;

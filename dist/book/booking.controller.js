@@ -31,7 +31,15 @@ let BookingController = class BookingController {
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
         const dhakaTimeFormatted = dhakaTime.toISOString();
-        return await this.flyHubService.airbook(data, header, dhakaTimeFormatted);
+        const { Passengers } = data;
+        const personIds = [];
+        Passengers.forEach((passenger) => {
+            if (passenger.personId) {
+                personIds.push(passenger.personId);
+            }
+            delete passenger.personId;
+        });
+        return await this.flyHubService.airbook(data, header, dhakaTimeFormatted, personIds);
     }
     async aircanel(bookingIdDto, header) {
         return this.flyHubService.aircancel(bookingIdDto, header);

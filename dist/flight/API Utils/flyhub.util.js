@@ -23,7 +23,6 @@ const typeorm_2 = require("typeorm");
 const deposit_model_1 = require("../../deposit/deposit.model");
 const auth_service_1 = require("../../auth/auth.service");
 const booking_model_1 = require("../../book/booking.model");
-const storage_1 = require("@google-cloud/storage");
 const uploads_model_1 = require("../../uploads/uploads.model");
 let FlyHubUtil = class FlyHubUtil {
     constructor(BookService, mailService, paymentService, authService, bookingIdSave, walletRepository, bookingSave, visaPassportRepository) {
@@ -35,10 +34,6 @@ let FlyHubUtil = class FlyHubUtil {
         this.walletRepository = walletRepository;
         this.bookingSave = bookingSave;
         this.visaPassportRepository = visaPassportRepository;
-        this.storage = new storage_1.Storage({
-            keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
-        });
-        this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -491,7 +486,7 @@ let FlyHubUtil = class FlyHubUtil {
             walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
-    async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp) {
+    async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp, personIds) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -694,13 +689,13 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const save = await this.saveBookingData(FlightItenary, header);
+        const save = await this.saveBookingData(FlightItenary, header, personIds);
         return {
             bookingData: FlightItenary,
             save: save,
         };
     }
-    async saveBookingData(SearchResponse, header) {
+    async saveBookingData(SearchResponse, header, personIds) {
         const booking = SearchResponse[0];
         if (booking) {
             const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
@@ -736,6 +731,7 @@ let FlyHubUtil = class FlyHubUtil {
                 grossAmmount: booking?.GrossFare,
                 netAmmount: booking?.NetFare,
                 TripType: tripType,
+                personId: personIds,
                 laginfo: booking?.AllLegsInfo.map((leg) => ({
                     DepDate: leg?.DepDate,
                     DepFrom: leg?.DepFrom,
@@ -1154,43 +1150,6 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         return FlightItenary;
-    }
-    async uploadVisaAndPassportImages(bookingId, file) {
-        const bookingSave = await this.bookingSave.findOne({
-            where: { bookingId: bookingId },
-            relations: ['visaPassport'],
-        });
-        if (bookingSave.visaPassport) {
-            throw new common_1.ConflictException('You can only upload the visa and passport copy once');
-        }
-        let passportFile = file[0];
-        let visaFile = file[1] || null;
-        const [passportLink, visaLink] = await Promise.all([
-            this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
-            this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
-        ]);
-        const visaPassport = new uploads_model_1.VisaPassport();
-        visaPassport.passportLink = passportLink;
-        visaPassport.visaLink = visaLink;
-        visaPassport.bookingSave = bookingSave;
-        return await this.visaPassportRepository.save(visaPassport);
-    }
-    async uploadImage(file, type) {
-        const folderName = 'PassportVisa';
-        const fileName = `${folderName}/${type}`;
-        const blob = this.storage.bucket(this.bucket).file(fileName);
-        const blobStream = blob.createWriteStream({
-            metadata: { contentType: file.mimetype },
-            public: true,
-        });
-        return new Promise((resolve, reject) => {
-            blobStream.on('error', (err) => reject(err));
-            blobStream.on('finish', () => {
-                const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
-                resolve(publicUrl);
-            });
-            blobStream.end(file.buffer);
-        });
     }
 };
 exports.FlyHubUtil = FlyHubUtil;

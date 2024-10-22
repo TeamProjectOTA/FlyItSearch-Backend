@@ -18,6 +18,7 @@ export declare class DepositService {
     private bucket;
     private surjoBaseUrl;
     private surjoPrefix;
+    private bkashConfig;
     constructor(depositRepository: Repository<Deposit>, userRepository: Repository<User>, walletRepository: Repository<Wallet>, transectionRepository: Repository<Transection>, authService: AuthService, paymentService: PaymentService);
     createDeposit(depositData: Partial<Deposit>, header: any, file: Express.Multer.File): Promise<Deposit>;
     getDepositforUser(header: any): Promise<any>;
@@ -35,4 +36,8 @@ export declare class DepositService {
         surjoPay: any;
     }>;
     surjoVerifyPayment(sp_order_id: string, email: string, amount: number): Promise<any>;
+    createPaymentBkash(amount: number, header: any): Promise<{
+        bkash: any;
+    }>;
+    executePaymentBkash(paymentID: string, status: string, amount: number, res: any, email: string): Promise<any>;
 }

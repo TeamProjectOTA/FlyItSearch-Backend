@@ -19,16 +19,11 @@ const typeorm_2 = require("typeorm");
 const booking_model_1 = require("./booking.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
-const storage_1 = require("@google-cloud/storage");
 let BookingService = class BookingService {
     constructor(userRepository, authservice, bookingSaveRepository) {
         this.userRepository = userRepository;
         this.authservice = authservice;
         this.bookingSaveRepository = bookingSaveRepository;
-        this.storage = new storage_1.Storage({
-            keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
-        });
-        this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
@@ -76,13 +71,13 @@ let BookingService = class BookingService {
         if (bookingStatus !== 'all') {
             return await this.bookingSaveRepository.find({
                 where: { bookingStatus: bookingStatus },
-                relations: ['user', 'visaPassport'],
+                relations: ['user',],
                 order: { bookingDate: 'DESC' },
             });
         }
         else {
             return await this.bookingSaveRepository.find({
-                relations: ['user', 'visaPassport'],
+                relations: ['user',],
                 order: { bookingDate: 'DESC' },
             });
         }
@@ -105,7 +100,7 @@ let BookingService = class BookingService {
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
         for (const booking of userUpdate.bookingSave) {
             const timeLeft = new Date(booking.expireDate);
-            if (dhakaTime.getTime() >= timeLeft.getTime()) {
+            if (dhakaTime.getTime() >= timeLeft.getTime() && booking.bookingStatus === 'Booked') {
                 const userBooking = await this.bookingSaveRepository.findOne({
                     where: { bookingId: booking.bookingId },
                 });
@@ -128,23 +123,6 @@ let BookingService = class BookingService {
         return {
             saveBookings: user.bookingSave,
         };
-    }
-    async uploadImage(file, type) {
-        const folderName = 'PassportVisa';
-        const fileName = `${folderName}/${type}`;
-        const blob = this.storage.bucket(this.bucket).file(fileName);
-        const blobStream = blob.createWriteStream({
-            metadata: { contentType: file.mimetype },
-            public: true,
-        });
-        return new Promise((resolve, reject) => {
-            blobStream.on('error', (err) => reject(err));
-            blobStream.on('finish', () => {
-                const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
-                resolve(publicUrl);
-            });
-            blobStream.end(file.buffer);
-        });
     }
 };
 exports.BookingService = BookingService;

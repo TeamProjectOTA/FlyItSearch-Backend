@@ -189,7 +189,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data, header, currentTimestamp) {
+    async airbook(data, header, currentTimestamp, personIds) {
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -225,7 +225,7 @@ let FlyHubService = class FlyHubService {
             const response0 = await axios_1.default.request(Price);
             const response1 = await axios_1.default.request(PreBookticket);
             const response = await axios_1.default.request(Bookticket);
-            return await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp);
+            return await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp, personIds);
         }
         catch (error) {
             throw error?.response?.data;

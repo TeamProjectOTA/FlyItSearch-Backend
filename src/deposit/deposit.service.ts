@@ -15,7 +15,13 @@ import { SslCommerzPayment } from 'sslcommerz';
 import { Storage } from '@google-cloud/storage';
 import { PaymentService } from 'src/payment/payment.service';
 import axios from 'axios';
-
+import {
+  createPayment,
+  executePayment,
+  queryPayment,
+  searchTransaction,
+  refundTransaction,
+} from 'bkash-payment';
 @Injectable()
 export class DepositService {
   private readonly sslcommerzsslcommerzStoreId: string;
@@ -24,8 +30,8 @@ export class DepositService {
   private storage: Storage;
   private bucket: string;
   private surjoBaseUrl:string
- 
   private surjoPrefix:string
+  private bkashConfig: any;
   constructor(
     @InjectRepository(Deposit)
     private readonly depositRepository: Repository<Deposit>,
@@ -43,6 +49,13 @@ export class DepositService {
     this.surjoBaseUrl = process.env.SURJO_API_Url;
     this.surjoPrefix=process.env.SURJO_API_PREFIX
     this.isLive = false;
+    this.bkashConfig = {
+      base_url: process.env.BKASH_BASE_URL,
+      username: process.env.BKASH_USERNAME,
+      password: process.env.BAKSH_PASSWORD,
+      app_key: process.env.BKASH_APP_KEY,
+      app_secret: process.env.BKASH_APP_SECRET,
+    };
     this.storage = new Storage({
       keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
     });
@@ -397,5 +410,96 @@ export class DepositService {
     console.error("Error verifying payment:", error.response ? error.response.data : error.message);
     return "Payment Verification Failed";
   }
+  }
+  async createPaymentBkash(amount:number,header:any) {
+    const timestamp = Date.now();
+    const randomNumber = Math.floor(Math.random() * 1000);
+    const tran_id = `FSD${timestamp}${randomNumber}`;
+    const email = await this.authService.decodeToken(header);
+    try {
+      const paymentDetails = {
+        amount: amount || 10,
+        callbackURL : `${process.env.BKASH_CALLBACKURL}deposit/bkash/callback/${email}/${amount}`,
+        orderID : tran_id || 'Order_101',
+        reference : `${email}`
+      }
+
+      const result = await createPayment(this.bkashConfig, paymentDetails);
+      return {bkash:result.bkashURL};
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  async executePaymentBkash(paymentID: string, status: string,amount:number,res:any,email:string) {
+    try {
+      if (status === 'success') {
+        const response: any = await executePayment(this.bkashConfig, paymentID);
+        if(response?.transactionStatus === 'Completed' && response?.statusMessage === 'Successful'){
+          const user = await this.userRepository.findOne({
+            where: { email: email },
+          });
+          const tranDate = response.paymentExecuteTime.split(' GMT')[0].replace('T', ' ');
+          const airTicketPrice = amount;
+          const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125); // !Important some check the validation before adding the ammont. 2.5% charge added in sslcomerz
+          const store_amount = Math.ceil(airTicketPrice - paymentGatwayCharge);
+          let addTransection: Transection = new Transection();
+          addTransection.tranId = response.merchantInvoiceNumber;
+          addTransection.tranDate = tranDate;
+          addTransection.paidAmount = String(amount);
+          addTransection.offerAmmount = String(Math.floor(store_amount));
+          addTransection.bankTranId = response.paymentID;
+          addTransection.riskTitle = 'Safe';
+          addTransection.cardType = 'Bkash';
+          addTransection.cardIssuer = 'Bkash';
+          addTransection.cardBrand = response.payerAccount;
+          addTransection.cardIssuerCountry = 'BD';
+          addTransection.validationDate = tranDate;
+          addTransection.status = 'Deposited';
+          console.log(email)
+          const findUser = await this.userRepository.findOne({
+            where: { email: email },
+            relations: ['wallet'],
+          });
+
+          
+          addTransection.walletBalance = findUser.wallet.ammount + Math.floor(store_amount);
+          findUser.wallet.ammount = findUser.wallet.ammount + Math.floor(store_amount);
+          addTransection.paymentType = 'Instaint Payment ';
+          addTransection.requestType = `Instaint Money added `;
+          addTransection.user = user;
+  
+          await this.walletRepository.save(findUser.wallet);
+          await this.transectionRepository.save(addTransection);
+          let addDeposit: Deposit = new Deposit();
+          addDeposit.user = user;
+          addDeposit.ammount = Math.floor(store_amount);
+          addDeposit.depositId = response.merchantInvoiceNumber;
+          addDeposit.depositedFrom = response.payerAccount;
+          addDeposit.senderName = user.fullName;
+          addDeposit.createdAt = moment
+            .utc(tranDate)
+            .format('YYYY-MM-DD HH:mm:ss');
+          addDeposit.actionAt = moment
+            .utc(tranDate)
+            .format('YYYY-MM-DD HH:mm:ss');
+          addDeposit.status = 'Instant Deposit';
+          addDeposit.depositType ='Bkash-MoneyAdd';
+  
+          await this.depositRepository.save(addDeposit);
+         
+
+        }
+       
+        console.log('Execute Payment Result:', response);
+
+        return res.redirect('http://192.168.10.30:3000/'); 
+      } else {
+        console.log('Payment not successful, skipping execution.');
+        return null;
+      }
+    } catch (e) {
+      console.error('Error executing payment:', e);
+      throw new Error('Payment execution failed');
+    }
   }
 }

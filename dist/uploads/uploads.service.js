@@ -83,25 +83,18 @@ let UploadsService = class UploadsService {
             throw new common_1.BadRequestException('Failed to upload and save profile picture.');
         }
     }
-    async uploadVisaAndPassportImages(bookingId, passportFile, visaFile) {
-        const bookingSave = await this.bookingSaveRepository.findOne({
-            where: { bookingId: bookingId },
-            relations: ['visaPassport'],
-        });
-        if (!bookingSave) {
-            throw new common_1.BadRequestException('Booking not found');
-        }
-        if (bookingSave.visaPassport) {
-            throw new common_1.ConflictException('You can only upload the visa and passport copy once');
-        }
+    async uploadVisaAndPassportImages(passportFile, visaFile) {
+        const timestamp = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const tran_id = `${timestamp}${randomNumber}`;
         const [passportLink, visaLink] = await Promise.all([
-            this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
-            this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
+            this.uploadImage(passportFile, `${tran_id}-passport`),
+            this.uploadImage(visaFile, `${tran_id}-visa`),
         ]);
         const visaPassport = new uploads_model_1.VisaPassport();
+        visaPassport.personId = tran_id;
         visaPassport.passportLink = passportLink;
         visaPassport.visaLink = visaLink;
-        visaPassport.bookingSave = bookingSave;
         return await this.visaPassportRepository.save(visaPassport);
     }
     async uploadImage(file, type) {

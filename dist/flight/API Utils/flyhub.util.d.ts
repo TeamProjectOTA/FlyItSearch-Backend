@@ -16,15 +16,11 @@ export declare class FlyHubUtil {
     private readonly walletRepository;
     private readonly bookingSave;
     private readonly visaPassportRepository;
-    private storage;
-    private bucket;
     constructor(BookService: BookingService, mailService: MailService, paymentService: PaymentService, authService: AuthService, bookingIdSave: Repository<BookingIdSave>, walletRepository: Repository<Wallet>, bookingSave: Repository<BookingSave>, visaPassportRepository: Repository<VisaPassport>);
     restBFMParser(SearchResponse: any, journeyType?: string): Promise<any[]>;
     airRetriveDataTransformer(SearchResponse: any, fisId: string, bookingStatus?: any, tripType?: any, bookingDate?: any, header?: any): Promise<any>;
-    bookingDataTransformerFlyhb(SearchResponse: any, header?: any, currentTimestamp?: any): Promise<any>;
-    saveBookingData(SearchResponse: any, header: any): Promise<any>;
+    bookingDataTransformerFlyhb(SearchResponse: any, header: any, currentTimestamp: any, personIds: any): Promise<any>;
+    saveBookingData(SearchResponse: any, header: any, personIds: any): Promise<any>;
     bookingCancelDataTranformerFlyhub(SearchResponse: any, fisId: string, header?: any): Promise<any>;
     airRetriveDataTransformerAdmin(SearchResponse: any, fisId: string, bookingStatus?: any, tripType?: any, bookingDate?: any): Promise<any>;
-    uploadVisaAndPassportImages(bookingId: string, file: Express.Multer.File[]): Promise<VisaPassport>;
-    private uploadImage;
 }

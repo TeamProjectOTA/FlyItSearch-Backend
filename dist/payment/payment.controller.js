@@ -74,8 +74,8 @@ let PaymentController = class PaymentController {
                 .send('IPN processing failed');
         }
     }
-    async handlePaymentCallback(bookingId, paymentID, status, signature, res) {
-        const result = await this.paymentService.executePaymentBkash(paymentID, status, bookingId);
+    async handlePaymentCallback(bookingId, email, paymentID, status, signature, res) {
+        const result = await this.paymentService.executePaymentBkash(paymentID, status, bookingId, res, email);
         return result;
     }
     async paymentReturn(bookingID, email, order_id) {
@@ -132,14 +132,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleIPN", null);
 __decorate([
-    (0, common_1.Get)('callback/:bookingId'),
+    (0, common_1.Get)('callback/:bookingId/:email'),
     __param(0, (0, common_1.Param)('bookingId')),
-    __param(1, (0, common_1.Query)('paymentID')),
-    __param(2, (0, common_1.Query)('status')),
-    __param(3, (0, common_1.Query)('signature')),
-    __param(4, (0, common_1.Res)()),
+    __param(1, (0, common_1.Param)('email')),
+    __param(2, (0, common_1.Query)('paymentID')),
+    __param(3, (0, common_1.Query)('status')),
+    __param(4, (0, common_1.Query)('signature')),
+    __param(5, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handlePaymentCallback", null);
 __decorate([

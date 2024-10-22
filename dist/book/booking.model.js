@@ -13,7 +13,6 @@ exports.data = exports.BookingID = exports.CreateSaveBookingDto = exports.Bookin
 const swagger_1 = require("@nestjs/swagger");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
-const uploads_model_1 = require("../uploads/uploads.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let BookingSave = class BookingSave {
@@ -96,9 +95,9 @@ __decorate([
     __metadata("design:type", Object)
 ], BookingSave.prototype, "laginfo", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => uploads_model_1.VisaPassport, (visaPassport) => visaPassport.bookingSave),
-    __metadata("design:type", uploads_model_1.VisaPassport)
-], BookingSave.prototype, "visaPassport", void 0);
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Array)
+], BookingSave.prototype, "personId", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.bookingSave, { onDelete: 'CASCADE' }),
     __metadata("design:type", user_entity_1.User)

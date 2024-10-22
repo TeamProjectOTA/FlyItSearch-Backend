@@ -23,4 +23,8 @@ export declare class DepositController {
         message: string;
         data: any;
     }>;
+    bkash(header: any, depositDto: DepositDto): Promise<{
+        bkash: any;
+    }>;
+    handlePaymentCallback(amount: number, email: string, paymentID: string, status: string, signature: string, res: Response): Promise<any>;
 }

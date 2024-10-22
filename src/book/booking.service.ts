@@ -12,18 +12,14 @@ import { Storage } from '@google-cloud/storage';
 
 @Injectable()
 export class BookingService {
-  private storage: Storage;
-  private bucket: string;
+  
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly authservice: AuthService,
     @InjectRepository(BookingSave)
     private readonly bookingSaveRepository: Repository<BookingSave>,
-  ) {this.storage = new Storage({
-    keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
-  });
-  this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;}
+  ) {}
 
   async saveBooking(
     createSaveBookingDto: CreateSaveBookingDto,
@@ -82,12 +78,12 @@ export class BookingService {
     if (bookingStatus !== 'all') {
       return await this.bookingSaveRepository.find({
         where: { bookingStatus: bookingStatus },
-        relations: ['user', 'visaPassport'],
+        relations: ['user',],
         order: { bookingDate: 'DESC' },
       });
     } else {
       return await this.bookingSaveRepository.find({
-        relations: ['user', 'visaPassport'],
+        relations: ['user',],
         order: { bookingDate: 'DESC' },
       });
     }
@@ -111,7 +107,7 @@ export class BookingService {
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     for (const booking of userUpdate.bookingSave) {
       const timeLeft = new Date(booking.expireDate);
-      if (dhakaTime.getTime() >= timeLeft.getTime()) {
+      if (dhakaTime.getTime() >= timeLeft.getTime() && booking.bookingStatus === 'Booked') {
         const userBooking = await this.bookingSaveRepository.findOne({
           where: { bookingId: booking.bookingId },
         });
@@ -129,34 +125,22 @@ export class BookingService {
       .orderBy('bookingSave.id', 'DESC')
       .getOne();
 
+      //const personIds = user.bookingSave.flatMap(booking => booking.personId);
+
+// Fetch VisaPassport entries based on personIds
+// const visaPassports = await this.visaPassportRepository
+//   .createQueryBuilder('visaPassport')
+//   .where('visaPassport.personId IN (:...personIds)', { personIds })
+//   .getMany();
+
     if (!user) {
       throw new NotFoundException(`No ${bookingStatus} Available for the user`);
     }
+
 
     return {
       saveBookings: user.bookingSave,
     };
   }
-  async uploadImage(
-    file: Express.Multer.File,
-    type: string,
-  ): Promise<string> {
-    const folderName = 'PassportVisa';
-    const fileName = `${folderName}/${type}`;
-    const blob = this.storage.bucket(this.bucket).file(fileName);
   
-    const blobStream = blob.createWriteStream({
-      metadata: { contentType: file.mimetype },
-      public: true,
-    });
-  
-    return new Promise((resolve, reject) => {
-      blobStream.on('error', (err) => reject(err));
-      blobStream.on('finish', () => {
-        const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
-        resolve(publicUrl);
-      });
-      blobStream.end(file.buffer);
-    });
-  }
 }

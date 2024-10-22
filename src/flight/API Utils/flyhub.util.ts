@@ -13,8 +13,6 @@ import { VisaPassport } from 'src/uploads/uploads.model';
 
 @Injectable()
 export class FlyHubUtil {
-  private storage: Storage;
-  private bucket: string;
   constructor(
     private readonly BookService: BookingService,
     private readonly mailService: MailService,
@@ -28,10 +26,7 @@ export class FlyHubUtil {
     private readonly bookingSave:Repository<BookingSave>,
     @InjectRepository(VisaPassport)
     private readonly visaPassportRepository: Repository<VisaPassport>,
-  ) {this.storage = new Storage({
-    keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
-  });
-  this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;}
+  ) {}
   async restBFMParser(
     SearchResponse: any,
     journeyType?: string,
@@ -617,8 +612,9 @@ export class FlyHubUtil {
 
   async bookingDataTransformerFlyhb(
     SearchResponse: any,
-    header?: any,
-    currentTimestamp?: any,
+    header: any,
+    currentTimestamp: any,
+    personIds:any
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -879,7 +875,7 @@ export class FlyHubUtil {
       }
     }
     
-    const save = await this.saveBookingData(FlightItenary, header);
+    const save = await this.saveBookingData(FlightItenary, header,personIds);
     // const sslpaymentLink = await this.paymentService.dataModification(
     //   FlightItenary,
     //   header,
@@ -894,6 +890,7 @@ export class FlyHubUtil {
   async saveBookingData(
     SearchResponse: any,
     header: any,
+    personIds:any
   ): Promise<any> {
     const booking = SearchResponse[0];
     if (booking) {
@@ -934,17 +931,17 @@ export class FlyHubUtil {
         grossAmmount: booking?.GrossFare,
         netAmmount: booking?.NetFare,
         TripType: tripType,
-
+        personId:personIds,
         laginfo: booking?.AllLegsInfo.map((leg: any) => ({
           DepDate: leg?.DepDate,
           DepFrom: leg?.DepFrom,
           ArrTo: leg?.ArrTo,
         })),
       };
-      //console.log(convertedData)
       const save = await this.BookService.saveBooking(convertedData, header);
-      //const link=await this                        save the link json here 
+     
       await this.mailService.sendMail(booking);
+      
       return save;
     } else {
       return 'Booking data is unvalid';
@@ -1480,53 +1477,5 @@ export class FlyHubUtil {
     return FlightItenary
   }
 
-  async uploadVisaAndPassportImages(
-    bookingId: string,
-   file:Express.Multer.File[]
-  ) {
-    const bookingSave = await this.bookingSave.findOne({
-      where: { bookingId: bookingId },
-      relations: ['visaPassport'],
-    });
-    if (bookingSave.visaPassport) {
-      throw new ConflictException(
-        'You can only upload the visa and passport copy once',
-      );
-    }
-    let passportFile=file[0]
-    let visaFile=file[1] || null;
-    const [passportLink, visaLink] = await Promise.all([
-      this.uploadImage(passportFile, `${bookingSave.bookingId}-passport`),
-      this.uploadImage(visaFile, `${bookingSave.bookingId}-visa`),
-    ]);
-    const visaPassport = new VisaPassport();
-    visaPassport.passportLink = passportLink;
-    visaPassport.visaLink = visaLink;
-    visaPassport.bookingSave = bookingSave;
-
-    return await this.visaPassportRepository.save(visaPassport);
-  }
-
-  private async uploadImage(
-    file: Express.Multer.File,
-    type: string,
-  ): Promise<string> {
-    const folderName = 'PassportVisa';
-    const fileName = `${folderName}/${type}`;
-    const blob = this.storage.bucket(this.bucket).file(fileName);
-
-    const blobStream = blob.createWriteStream({
-      metadata: { contentType: file.mimetype },
-      public: true,
-    });
-
-    return new Promise((resolve, reject) => {
-      blobStream.on('error', (err) => reject(err));
-      blobStream.on('finish', () => {
-        const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
-        resolve(publicUrl);
-      });
-      blobStream.end(file.buffer);
-    });
-  }
+ 
 }

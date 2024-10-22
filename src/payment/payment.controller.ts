@@ -92,16 +92,17 @@ export class PaymentController {
  
 
  
-  @Get('callback/:bookingId')
+  @Get('callback/:bookingId/:email')
   async handlePaymentCallback(
     @Param('bookingId') bookingId:string,
+    @Param('email') email:string,
     @Query('paymentID') paymentID: string, 
     @Query('status') status: string, 
     @Query('signature') signature: string,
     @Res() res: Response
   ) {
     
-        const result = await this.paymentService.executePaymentBkash(paymentID, status,bookingId);
+        const result = await this.paymentService.executePaymentBkash(paymentID, status,bookingId,res,email);
        return result
       
   }

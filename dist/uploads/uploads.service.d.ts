@@ -13,6 +13,6 @@ export declare class UploadsService {
     private bucket;
     constructor(profilePictureRepository: Repository<ProfilePicture>, authservice: AuthService, userRepository: Repository<User>, bookingSaveRepository: Repository<BookingSave>, visaPassportRepository: Repository<VisaPassport>);
     create(header: any, file: Express.Multer.File): Promise<any>;
-    uploadVisaAndPassportImages(bookingId: string, passportFile: Express.Multer.File, visaFile: Express.Multer.File): Promise<VisaPassport>;
+    uploadVisaAndPassportImages(passportFile: Express.Multer.File, visaFile: Express.Multer.File): Promise<VisaPassport>;
     private uploadImage;
 }

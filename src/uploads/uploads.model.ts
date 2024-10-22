@@ -32,13 +32,11 @@ export class ProfilePicture {
 export class VisaPassport {
   @PrimaryGeneratedColumn()
   id: number;
+  @Column()
+  personId:string
   @Column({ nullable: true })
   passportLink: string;
-  @Column()
+  @Column({ nullable: true })
   visaLink: string;
-  @ManyToOne(() => BookingSave, (bookingSave) => bookingSave.visaPassport, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn()
-  bookingSave: BookingSave;
+ 
 }

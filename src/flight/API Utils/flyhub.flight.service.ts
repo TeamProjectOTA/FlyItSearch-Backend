@@ -229,10 +229,12 @@ export class FlyHubService {
 
   async airbook(
     data: FlbFlightSearchDto,
-    header?: any,
-    currentTimestamp?: any,
+    header: any,
+    currentTimestamp: any,
+    personIds:any
   
   ) {
+    // return {data:data,time:currentTimestamp,personId:personId}
     const token = await this.getToken();
 
     const Price = {
@@ -281,7 +283,7 @@ export class FlyHubService {
         response.data,
         header,
         currentTimestamp,
-       
+        personIds
       );
     } catch (error) {
       throw error?.response?.data;

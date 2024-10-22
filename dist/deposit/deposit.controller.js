@@ -84,6 +84,13 @@ let DepositController = class DepositController {
             data: paymentData,
         };
     }
+    async bkash(header, depositDto) {
+        return await this.depositService.createPaymentBkash(depositDto.amount, header);
+    }
+    async handlePaymentCallback(amount, email, paymentID, status, signature, res) {
+        const result = await this.depositService.executePaymentBkash(paymentID, status, amount, res, email);
+        return result;
+    }
 };
 exports.DepositController = DepositController;
 __decorate([
@@ -189,6 +196,28 @@ __decorate([
     __metadata("design:paramtypes", [String, Number, String]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "depositSuccessSurjoPay", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('bkash/deposit'),
+    __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, deposit_model_1.DepositDto]),
+    __metadata("design:returntype", Promise)
+], DepositController.prototype, "bkash", null);
+__decorate([
+    (0, common_1.Get)('bkash/callback/:email/:amount'),
+    __param(0, (0, common_1.Param)('amount')),
+    __param(1, (0, common_1.Param)('email')),
+    __param(2, (0, common_1.Query)('paymentID')),
+    __param(3, (0, common_1.Query)('status')),
+    __param(4, (0, common_1.Query)('signature')),
+    __param(5, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, String, String, String, String, Object]),
+    __metadata("design:returntype", Promise)
+], DepositController.prototype, "handlePaymentCallback", null);
 exports.DepositController = DepositController = __decorate([
     (0, swagger_1.ApiTags)('Deposit Api'),
     (0, common_1.Controller)('deposit'),

@@ -38,32 +38,17 @@ export class BookingController {
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
-    // const { Passengers } = data;
-    // const links = [];
-    // await Promise.all(Passengers.map(async (passenger, index) => {
-    //   const passengerLinks: any = {}; 
-  
-    //   const passportFile = files.find(file => file.fieldname === `passport_${index}`);
-    //   const visaFile = files.find(file => file.fieldname === `visa_${index}`);
-  
-    //   if (passportFile) {
-    //     const passportUrl = await this.bookingService.uploadImage(passportFile, `passport_${passenger.PassportNumber}`);
-    //     passengerLinks.passportImageUrl = passportUrl; 
-    //   }
-  
-    //   if (visaFile) {
-    //     const visaUrl = await this.bookingService.uploadImage(visaFile, `visa_${passenger.PassportNumber}`);
-    //     passengerLinks.visaImageUrl = visaUrl;
-    //   } 
-    //   links.push({
-    //     PassengerName: `${passenger.FirstName} ${passenger.LastName}-${passenger.PassportNumber}`,
-    //     ...passengerLinks, 
-    //   });
-    //   delete passenger.passport;
-    //   delete passenger.visa;
-    // }));
-    // return {data ,links}
-    return await this.flyHubService.airbook(data, header, dhakaTimeFormatted);
+    const { Passengers } = data;
+    const personIds: string[] = []; 
+
+    Passengers.forEach((passenger) => {
+      if (passenger.personId) {
+        personIds.push(passenger.personId); 
+      }
+      delete passenger.personId;
+    });
+   
+   return await this.flyHubService.airbook(data, header, dhakaTimeFormatted,personIds);
   }
   @UseGuards(UserTokenGuard)
   @ApiBearerAuth('access_token')

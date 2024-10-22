@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.VisaPassport = exports.ProfilePicture = void 0;
-const booking_model_1 = require("../book/booking.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let ProfilePicture = class ProfilePicture {
@@ -48,20 +47,17 @@ __decorate([
     __metadata("design:type", Number)
 ], VisaPassport.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], VisaPassport.prototype, "personId", void 0);
+__decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], VisaPassport.prototype, "passportLink", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], VisaPassport.prototype, "visaLink", void 0);
-__decorate([
-    (0, typeorm_1.ManyToOne)(() => booking_model_1.BookingSave, (bookingSave) => bookingSave.visaPassport, {
-        onDelete: 'CASCADE',
-    }),
-    (0, typeorm_1.JoinColumn)(),
-    __metadata("design:type", booking_model_1.BookingSave)
-], VisaPassport.prototype, "bookingSave", void 0);
 exports.VisaPassport = VisaPassport = __decorate([
     (0, typeorm_1.Entity)()
 ], VisaPassport);

@@ -157,4 +157,30 @@ export class DepositController {
     };
   }
 
+
+
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
+  @Post('bkash/deposit')
+  async bkash(@Headers() header: any, @Body() depositDto: DepositDto) {
+    return await this.depositService.createPaymentBkash( depositDto.amount,header);
+  }
+
+
+  @Get('bkash/callback/:email/:amount')
+  async handlePaymentCallback(
+    @Param('amount') amount:number,
+    @Param('email') email:string,
+    @Query('paymentID') paymentID: string, 
+    @Query('status') status: string, 
+    @Query('signature') signature: string,
+    @Res() res: Response
+  ) {
+   
+        const result = await this.depositService.executePaymentBkash(paymentID, status,amount,res,email);
+       return result
+      
+  }
+  
+
 }
