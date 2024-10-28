@@ -3,5 +3,5 @@ export declare class UploadsController {
     private readonly uploadsService;
     constructor(uploadsService: UploadsService);
     uploadFile(header: Headers, file: Express.Multer.File): Promise<any>;
-    uploadVisaAndPassport(files: Express.Multer.File[]): Promise<import("./uploads.model").VisaPassport>;
+    uploadImage(file: Express.Multer.File): Promise<any>;
 }

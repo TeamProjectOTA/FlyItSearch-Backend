@@ -19,7 +19,7 @@ let GoogleStrategy = class GoogleStrategy extends (0, passport_1.PassportStrateg
         super({
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: 'http://localhost:8080/social-site/google/redirect',
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
             scope: ['email', 'profile'],
         });
         this.authService = authService;

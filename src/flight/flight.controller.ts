@@ -55,8 +55,7 @@ export class FlightController {
   search(@Body() flightdto: FlightSearchModel) {
     const sabre = this.sabreService.shoppingBranded(flightdto);
     // const BDFare = this.bdFareService.airShopping(flightdto);
-    return sabre
-    
+    return sabre;
   }
   @Get('/:pnr')
   getpnr(@Param('pnr') pnr: string) {
@@ -79,7 +78,7 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
   @ApiBearerAuth('access_token')
-  @Post('fhb/airSearch/')
+  @Post('flh/airSearch/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
     @Req() request: Request,
@@ -89,7 +88,7 @@ export class FlightController {
       userIp = userIp.split(':').pop();
     }
 
-    return this.flyHubService.convertToFlyAirSearchDto(
+    return await this.flyHubService.convertToFlyAirSearchDto(
       flightSearchModel,
       userIp,
     );
@@ -123,7 +122,7 @@ export class FlightController {
   //   );
   // }
   @Get('token')
-  async sabreToken(){
-    return await this.sabreService.restToken()
+  async sabreToken() {
+    return await this.sabreService.restToken();
   }
 }

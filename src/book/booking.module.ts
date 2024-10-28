@@ -10,10 +10,10 @@ import { UserModule } from 'src/user/user.module';
 import { User } from 'src/user/entities/user.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { BookingController } from './booking.controller';
-import { VisaPassport } from 'src/uploads/uploads.model';
+
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, BookingSave, VisaPassport]),
+    TypeOrmModule.forFeature([Admin, User, BookingSave]),
     UserModule,
     AuthModule,
     FlightModule,

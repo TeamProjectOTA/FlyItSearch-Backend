@@ -4,11 +4,6 @@ export declare class GoogleOuthController {
     private readonly appService;
     private authService;
     constructor(appService: GoogleOuthService, authService: AuthService);
-    googleAuth(req: Request): Promise<void>;
+    googleAuth(req: any): Promise<void>;
     googleAuthRedirect(req: any): Promise<any>;
-    facebookAuth(req: any): Promise<void>;
-    facebookAuthRedirect(req: any): "No user from facebook" | {
-        message: string;
-        user: any;
-    };
 }

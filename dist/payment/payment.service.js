@@ -122,10 +122,10 @@ let PaymentService = class PaymentService {
                 total_amount: paymentData.total_amount,
                 currency: 'BDT',
                 tran_id: tran_id,
-                success_url: `http://localhost:8080/payment/success/${bookingId}/${email}`,
-                fail_url: 'http://localhost:8080/payment/fail',
-                cancel_url: 'http://localhost:8080/payment/cancel',
-                ipn_url: 'http://localhost:8080/payment/ipn',
+                success_url: `${process.env.BASE_CALLBACKURL}payment/success/${bookingId}/${email}`,
+                fail_url: `${process.env.BASE_CALLBACKURL}payment/fail`,
+                cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
+                ipn_url: `${process.env.BASE_CALLBACKURL}payment/ipn`,
                 shipping_method: 'NO',
                 product_name: 'Air Ticket',
                 product_category: 'air ticket',
@@ -223,29 +223,40 @@ let PaymentService = class PaymentService {
     }
     async createPaymentBkash(amount, bookingId, header) {
         const email = await this.authService.decodeToken(header);
-        try {
-            const timestamp = Date.now();
-            const randomNumber = Math.floor(Math.random() * 1000);
-            const tran_id = `SSM${timestamp}${randomNumber}`;
-            const paymentDetails = {
-                amount: amount || 10,
-                callbackURL: `${process.env.BKASH_CALLBACKURL}payment/callback/${bookingId}/${email}`,
-                orderID: tran_id || 'Order_101',
-                reference: `${email}`
-            };
-            const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
-            return result.bkashURL;
+        const bookingSave = await this.bookingSaveRepository.findOne({
+            where: { bookingId: bookingId },
+        });
+        if (bookingSave.bookingStatus == 'Booked') {
+            try {
+                const timestamp = Date.now();
+                const randomNumber = Math.floor(Math.random() * 1000);
+                const tran_id = `SSM${timestamp}${randomNumber}`;
+                const paymentDetails = {
+                    amount: amount || 10,
+                    callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${email}`,
+                    orderID: tran_id || 'Order_101',
+                    reference: `${email}`,
+                };
+                const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
+                return result.bkashURL;
+            }
+            catch (e) {
+                console.log(e);
+            }
         }
-        catch (e) {
-            console.log(e);
+        else {
+            return `The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`;
         }
     }
     async executePaymentBkash(paymentID, status, bookingId, res, email) {
         try {
             if (status === 'success') {
                 const result = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
-                if (result?.transactionStatus === 'Completed' && result?.statusMessage === 'Successful') {
-                    const tranDate = result.paymentExecuteTime.split(' GMT')[0].replace('T', ' ');
+                if (result?.transactionStatus === 'Completed' &&
+                    result?.statusMessage === 'Successful') {
+                    const tranDate = result.paymentExecuteTime
+                        .split(' GMT')[0]
+                        .replace('T', ' ');
                     const user = await this.userRepository.findOne({
                         where: { email: email },
                     });
@@ -285,7 +296,7 @@ let PaymentService = class PaymentService {
                     addTransection.user = user;
                     await this.transectionRepository.save(addTransection);
                 }
-                return res.redirect('http://192.168.10.30:3000/');
+                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
             }
             else {
                 console.log('Payment not successful, skipping execution.');
@@ -358,17 +369,19 @@ let PaymentService = class PaymentService {
         const bookingID = booking.BookingId;
         const data = {
             amount: total_amount,
-            currency: "BDT",
+            currency: 'BDT',
             customer_name: user.fullName,
-            customer_address: "Dhaka",
+            customer_address: 'Dhaka',
             customer_phone: user.phone,
-            customer_city: "Dhaka",
+            customer_city: 'Dhaka',
             customer_email: email,
         };
-        return { url: await this.surjoMakePayment(data, bookingID, header),
+        return {
+            url: await this.surjoMakePayment(data, bookingID, header),
             airTicketPrice: airTicketPrice,
             paymentGatwayCharge: paymentGatwayCharge,
-            total_amount: total_amount, };
+            total_amount: total_amount,
+        };
     }
     async surjoAuthentication() {
         let details;
@@ -378,13 +391,13 @@ let PaymentService = class PaymentService {
                 password: this.surjoPassword,
             }, {
                 headers: {
-                    "Content-Type": "application/json",
-                }
+                    'Content-Type': 'application/json',
+                },
             });
             details = response.data;
         }
         catch (error) {
-            console.error("Error authenticating:", error.response ? error.response.data : error.message);
+            console.error('Error authenticating:', error.response ? error.response.data : error.message);
         }
         return details;
     }
@@ -397,27 +410,35 @@ let PaymentService = class PaymentService {
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `SSM${timestamp}${randomNumber}`;
         const formData = data;
-        try {
-            const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/secret-pay`, {
-                prefix: this.surjoPrefix,
-                store_id: store_id,
-                token: token,
-                return_url: `http://localhost:8080/payment/return/${bookingID}/${email}`,
-                cancel_url: 'http://localhost:8080/payment/cancel',
-                order_id: tran_id,
-                client_ip: '192.67.2',
-                ...formData,
-            }, {
-                headers: {
-                    authorization: `${token_type} ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
-            return response.data.checkout_url;
+        const bookingSave = await this.bookingSaveRepository.findOne({
+            where: { bookingId: bookingId },
+        });
+        if (bookingSave.bookingStatus == 'Booked') {
+            try {
+                const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/secret-pay`, {
+                    prefix: this.surjoPrefix,
+                    store_id: store_id,
+                    token: token,
+                    return_url: `${process.env.BASE_CALLBACKURL}payment/return/${bookingID}/${email}`,
+                    cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
+                    order_id: tran_id,
+                    client_ip: '192.67.2',
+                    ...formData,
+                }, {
+                    headers: {
+                        authorization: `${token_type} ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                return response.data.checkout_url;
+            }
+            catch (error) {
+                console.error('Error making payment:', error.response ? error.response.data : error.message);
+                return 'Payment Failed';
+            }
         }
-        catch (error) {
-            console.error("Error making payment:", error.response ? error.response.data : error.message);
-            return "Payment Failed";
+        else {
+            return `The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`;
         }
     }
     async surjoVerifyPayment(sp_order_id, bookingID, email) {
@@ -429,7 +450,7 @@ let PaymentService = class PaymentService {
             }, {
                 headers: {
                     authorization: `${token_type} ${token}`,
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
             });
             const data = response.data[0];
@@ -475,8 +496,8 @@ let PaymentService = class PaymentService {
             return data;
         }
         catch (error) {
-            console.error("Error verifying payment:", error.response ? error.response.data : error.message);
-            return "Payment Verification Failed";
+            console.error('Error verifying payment:', error.response ? error.response.data : error.message);
+            return 'Payment Verification Failed';
         }
     }
     async createPayment(amount) {
@@ -488,7 +509,7 @@ let PaymentService = class PaymentService {
                 amount: amount || 10,
                 callbackURL: process.env.BKASH_CALLBACKURL,
                 orderID: orderID || 'Order_101',
-                reference: 'x'
+                reference: 'x',
             };
             const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
             return result;

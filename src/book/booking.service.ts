@@ -12,7 +12,6 @@ import { Storage } from '@google-cloud/storage';
 
 @Injectable()
 export class BookingService {
-  
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -78,12 +77,12 @@ export class BookingService {
     if (bookingStatus !== 'all') {
       return await this.bookingSaveRepository.find({
         where: { bookingStatus: bookingStatus },
-        relations: ['user',],
+        relations: ['user'],
         order: { bookingDate: 'DESC' },
       });
     } else {
       return await this.bookingSaveRepository.find({
-        relations: ['user',],
+        relations: ['user'],
         order: { bookingDate: 'DESC' },
       });
     }
@@ -107,7 +106,10 @@ export class BookingService {
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     for (const booking of userUpdate.bookingSave) {
       const timeLeft = new Date(booking.expireDate);
-      if (dhakaTime.getTime() >= timeLeft.getTime() && booking.bookingStatus === 'Booked') {
+      if (
+        dhakaTime.getTime() >= timeLeft.getTime() &&
+        booking.bookingStatus === 'Booked'
+      ) {
         const userBooking = await this.bookingSaveRepository.findOne({
           where: { bookingId: booking.bookingId },
         });
@@ -125,22 +127,20 @@ export class BookingService {
       .orderBy('bookingSave.id', 'DESC')
       .getOne();
 
-      //const personIds = user.bookingSave.flatMap(booking => booking.personId);
+    //const personIds = user.bookingSave.flatMap(booking => booking.personId);
 
-// Fetch VisaPassport entries based on personIds
-// const visaPassports = await this.visaPassportRepository
-//   .createQueryBuilder('visaPassport')
-//   .where('visaPassport.personId IN (:...personIds)', { personIds })
-//   .getMany();
+    // Fetch VisaPassport entries based on personIds
+    // const visaPassports = await this.visaPassportRepository
+    //   .createQueryBuilder('visaPassport')
+    //   .where('visaPassport.personId IN (:...personIds)', { personIds })
+    //   .getMany();
 
     if (!user) {
       throw new NotFoundException(`No ${bookingStatus} Available for the user`);
     }
 
-
     return {
       saveBookings: user.bookingSave,
     };
   }
-  
 }

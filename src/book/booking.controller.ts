@@ -30,25 +30,39 @@ export class BookingController {
   ) {}
 
   @ApiBearerAuth('access_token')
-  //@UseGuards(UserTokenGuard)
+  @UseGuards(UserTokenGuard)
   @Post('flh/airBook/')
- 
   async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers) {
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
     const { Passengers } = data;
-    const personIds: string[] = []; 
+    const personIds: { index: number; visa?: string; passport?: string }[] = [];
+    Passengers.forEach((passenger, index) => {
+      const personData: { index: number; visa?: string; passport?: string } = {
+        index: index + 1,
+      };
 
-    Passengers.forEach((passenger) => {
-      if (passenger.personId) {
-        personIds.push(passenger.personId); 
+      if (passenger.visa) {
+        personData.visa = passenger.visa;
       }
-      delete passenger.personId;
+
+      if (passenger.passport) {
+        personData.passport = passenger.passport;
+      }
+
+      personIds.push(personData);
+
+      delete passenger.visa;
+      delete passenger.passport;
     });
-   
-   return await this.flyHubService.airbook(data, header, dhakaTimeFormatted,personIds);
+    return await this.flyHubService.airbook(
+      data,
+      header,
+      dhakaTimeFormatted,
+      personIds,
+    );
   }
   @UseGuards(UserTokenGuard)
   @ApiBearerAuth('access_token')

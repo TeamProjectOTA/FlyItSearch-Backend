@@ -10,7 +10,7 @@ import {
   Get,
   Query,
   NotFoundException,
-  Headers
+  Headers,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response, Request } from 'express';
@@ -89,24 +89,25 @@ export class PaymentController {
     }
   }
 
- 
-
- 
   @Get('callback/:bookingId/:email')
   async handlePaymentCallback(
-    @Param('bookingId') bookingId:string,
-    @Param('email') email:string,
-    @Query('paymentID') paymentID: string, 
-    @Query('status') status: string, 
+    @Param('bookingId') bookingId: string,
+    @Param('email') email: string,
+    @Query('paymentID') paymentID: string,
+    @Query('status') status: string,
     @Query('signature') signature: string,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
-    
-        const result = await this.paymentService.executePaymentBkash(paymentID, status,bookingId,res,email);
-       return result
-      
+    const result = await this.paymentService.executePaymentBkash(
+      paymentID,
+      status,
+      bookingId,
+      res,
+      email,
+    );
+    return result;
   }
- 
+
   // @Get('suth')
   // async test() {
   //   return this.paymentService.surjoAuthentication();
@@ -129,14 +130,15 @@ export class PaymentController {
     };
   }
 
-
   @ApiBearerAuth('access_token')
   @Post('bkashCreate/:amount/:bookingId')
-  async createPayment( @Param('amount') amount: number, @Headers() header: Headers,@Param('bookingId') bookingId:string) {
-
-    return this.paymentService.createPaymentBkash(amount,bookingId,header);
+  async createPayment(
+    @Param('amount') amount: number,
+    @Headers() header: Headers,
+    @Param('bookingId') bookingId: string,
+  ) {
+    return this.paymentService.createPaymentBkash(amount, bookingId, header);
   }
-
 
   @Post('query/:paymentId')
   async queryPayment(@Param('paymentId') paymentId: string) {

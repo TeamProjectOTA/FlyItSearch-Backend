@@ -1,4 +1,8 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingService } from 'src/book/booking.service';
 import { MailService } from 'src/mail/mail.service';
@@ -9,7 +13,6 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
 import { Storage } from '@google-cloud/storage';
-import { VisaPassport } from 'src/uploads/uploads.model';
 
 @Injectable()
 export class FlyHubUtil {
@@ -23,9 +26,7 @@ export class FlyHubUtil {
     @InjectRepository(Wallet)
     private readonly walletRepository: Repository<Wallet>,
     @InjectRepository(BookingSave)
-    private readonly bookingSave:Repository<BookingSave>,
-    @InjectRepository(VisaPassport)
-    private readonly visaPassportRepository: Repository<VisaPassport>,
+    private readonly bookingSave: Repository<BookingSave>,
   ) {}
   async restBFMParser(
     SearchResponse: any,
@@ -309,7 +310,7 @@ export class FlyHubUtil {
       }
     }
 
-    return FlightItenary;
+    return  FlightItenary;
   }
   async airRetriveDataTransformer(
     SearchResponse: any,
@@ -581,7 +582,7 @@ export class FlyHubUtil {
       .dataModification(FlightItenary, header)
       .catch(() => null);
     const surjopay = await this.paymentService.formdata(FlightItenary, header);
-    const bkash=await this.paymentService.bkashInit(FlightItenary, header)
+    const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     const price = FlightItenary?.[0]?.NetFare || 0;
 
@@ -605,7 +606,7 @@ export class FlyHubUtil {
       bookingData: FlightItenary,
       sslpaymentLink: sslpaymentLink,
       surjopay: surjopay,
-      bkash:bkash,
+      bkash: bkash,
       walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
@@ -614,7 +615,7 @@ export class FlyHubUtil {
     SearchResponse: any,
     header: any,
     currentTimestamp: any,
-    personIds:any
+    personIds: any,
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -874,8 +875,8 @@ export class FlyHubUtil {
         }
       }
     }
-    
-    const save = await this.saveBookingData(FlightItenary, header,personIds);
+
+    const save = await this.saveBookingData(FlightItenary, header, personIds);
     // const sslpaymentLink = await this.paymentService.dataModification(
     //   FlightItenary,
     //   header,
@@ -883,14 +884,13 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       save: save,
-     
     };
   }
 
   async saveBookingData(
     SearchResponse: any,
     header: any,
-    personIds:any
+    personIds: any,
   ): Promise<any> {
     const booking = SearchResponse[0];
     if (booking) {
@@ -931,7 +931,7 @@ export class FlyHubUtil {
         grossAmmount: booking?.GrossFare,
         netAmmount: booking?.NetFare,
         TripType: tripType,
-        personId:personIds,
+        personId: personIds,
         laginfo: booking?.AllLegsInfo.map((leg: any) => ({
           DepDate: leg?.DepDate,
           DepFrom: leg?.DepFrom,
@@ -939,9 +939,9 @@ export class FlyHubUtil {
         })),
       };
       const save = await this.BookService.saveBooking(convertedData, header);
-     
+
       await this.mailService.sendMail(booking);
-      
+
       return save;
     } else {
       return 'Booking data is unvalid';
@@ -1253,14 +1253,16 @@ export class FlyHubUtil {
 
         //Price fixing and adding MarkUp ammount
         let discount: number = Result?.Discount;
-        const bookingData= await this.bookingSave.findOne({where:{bookingId:fisId}})
+        const bookingData = await this.bookingSave.findOne({
+          where: { bookingId: fisId },
+        });
 
         const equivalentAmount: number = AllPassenger.reduce(
           (sum, passenger) =>
             sum + (passenger?.BaseFare * passenger?.PassengerCount || 0),
           0,
         );
-        let equivalentAmount1: number = equivalentAmount ;
+        let equivalentAmount1: number = equivalentAmount;
 
         const Taxes: number = AllPassenger.reduce(
           (sum, passenger) =>
@@ -1279,8 +1281,7 @@ export class FlyHubUtil {
           0,
         );
 
-        let TotalFare: number =
-          Result?.TotalFare  || 0;
+        let TotalFare: number = Result?.TotalFare || 0;
 
         if (Result?.segments) {
           const AllSegments = Result?.segments;
@@ -1299,7 +1300,7 @@ export class FlyHubUtil {
             const PaxType = allPassenger?.PaxType;
             const paxCount = allPassenger?.PassengerCount;
             //Fixed price for less profitable tickets markup add
-            const basefare = allPassenger?.BaseFare ;
+            const basefare = allPassenger?.BaseFare;
             const othercharge = allPassenger?.OtherCharges;
 
             const servicefee = allPassenger?.ServiceFee;
@@ -1453,9 +1454,9 @@ export class FlyHubUtil {
             SerViceFee: extraService + servicefee || 0,
             FlyHubFareNetFare: Math.ceil(TotalFare), //change this before deploy
             GrossFare: NetFare,
-            CustomerInvoice:Number(bookingData.netAmmount),
-            Discount:discount,
-            Profit:Number(bookingData.netAmmount)-Math.ceil(TotalFare),
+            CustomerInvoice: Number(bookingData.netAmmount),
+            Discount: discount,
+            Profit: Number(bookingData.netAmmount) - Math.ceil(TotalFare),
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
             TimeLimit: TimeLimit,
@@ -1471,11 +1472,6 @@ export class FlyHubUtil {
       }
     }
 
-    
-
-    
-    return FlightItenary
+    return FlightItenary;
   }
-
- 
 }

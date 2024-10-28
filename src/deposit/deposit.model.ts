@@ -43,7 +43,7 @@ export class Deposit {
   createdAt: string;
   @Column({ type: 'timestamp', nullable: true })
   actionAt: string;
-  @Column({nullable:true})
+  @Column({ nullable: true })
   receiptImage: string;
   @Column({ nullable: true, default: 'NA' })
   rejectionReason: string;

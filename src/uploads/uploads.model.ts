@@ -27,16 +27,3 @@ export class ProfilePicture {
   @JoinColumn()
   user: User;
 }
-
-@Entity()
-export class VisaPassport {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  personId:string
-  @Column({ nullable: true })
-  passportLink: string;
-  @Column({ nullable: true })
-  visaLink: string;
- 
-}

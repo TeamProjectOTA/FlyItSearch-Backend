@@ -23,9 +23,8 @@ const typeorm_2 = require("typeorm");
 const deposit_model_1 = require("../../deposit/deposit.model");
 const auth_service_1 = require("../../auth/auth.service");
 const booking_model_1 = require("../../book/booking.model");
-const uploads_model_1 = require("../../uploads/uploads.model");
 let FlyHubUtil = class FlyHubUtil {
-    constructor(BookService, mailService, paymentService, authService, bookingIdSave, walletRepository, bookingSave, visaPassportRepository) {
+    constructor(BookService, mailService, paymentService, authService, bookingIdSave, walletRepository, bookingSave) {
         this.BookService = BookService;
         this.mailService = mailService;
         this.paymentService = paymentService;
@@ -33,7 +32,6 @@ let FlyHubUtil = class FlyHubUtil {
         this.bookingIdSave = bookingIdSave;
         this.walletRepository = walletRepository;
         this.bookingSave = bookingSave;
-        this.visaPassportRepository = visaPassportRepository;
     }
     async restBFMParser(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -976,7 +974,9 @@ let FlyHubUtil = class FlyHubUtil {
                 const Instant_Payment = Result?.FareType === 'InstantTicketing';
                 const IsBookable = Result?.HoldAllowed;
                 let discount = Result?.Discount;
-                const bookingData = await this.bookingSave.findOne({ where: { bookingId: fisId } });
+                const bookingData = await this.bookingSave.findOne({
+                    where: { bookingId: fisId },
+                });
                 const equivalentAmount = AllPassenger.reduce((sum, passenger) => sum + (passenger?.BaseFare * passenger?.PassengerCount || 0), 0);
                 let equivalentAmount1 = equivalentAmount;
                 const Taxes = AllPassenger.reduce((sum, passenger) => sum + (passenger?.Tax * passenger?.PassengerCount || 0), 0);
@@ -1158,12 +1158,10 @@ exports.FlyHubUtil = FlyHubUtil = __decorate([
     __param(4, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
     __param(5, (0, typeorm_1.InjectRepository)(deposit_model_1.Wallet)),
     __param(6, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
-    __param(7, (0, typeorm_1.InjectRepository)(uploads_model_1.VisaPassport)),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
         mail_service_1.MailService,
         payment_service_1.PaymentService,
         auth_service_1.AuthService,
-        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])

@@ -67,7 +67,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(shoppingrequest);
-            return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
+            return await this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
         }
         catch (error) {
             console.error(error);
@@ -163,10 +163,13 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(Price);
+            if (response.data.Results[0].HoldAllowed === false) {
+                throw new common_1.ForbiddenException('Sorry, you cannot book this ticket. Contact our help line for more updates');
+            }
             return this.flyHubUtil.restBFMParser(response.data);
         }
         catch (error) {
-            throw error?.response?.data;
+            throw error;
         }
     }
     async airRules(data) {
@@ -223,12 +226,17 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response0 = await axios_1.default.request(Price);
-            const response1 = await axios_1.default.request(PreBookticket);
-            const response = await axios_1.default.request(Bookticket);
-            return await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp, personIds);
+            if (response0.data.Results[0].HoldAllowed === false) {
+                throw new common_1.ForbiddenException('Sorry, you cannot book this ticket. Contact our help line for more updates');
+            }
+            else {
+                const response1 = await axios_1.default.request(PreBookticket);
+                const response = await axios_1.default.request(Bookticket);
+                return await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp, personIds);
+            }
         }
         catch (error) {
-            throw error?.response?.data;
+            throw error;
         }
     }
     async airRetriveAdmin(BookingID) {
@@ -279,7 +287,7 @@ let FlyHubService = class FlyHubService {
             Segments: segments,
         });
         try {
-            return this.searchFlights(flyAirSearchDto);
+            return await this.searchFlights(flyAirSearchDto);
         }
         catch (error) {
             return error;

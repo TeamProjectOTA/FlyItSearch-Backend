@@ -5,12 +5,14 @@ import {
   UploadedFile,
   UseInterceptors,
   Headers,
-  Param,
-  UploadedFiles,
   UseGuards,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
-import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  AnyFilesInterceptor,
+  FileInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { ApiTags } from '@nestjs/swagger';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
@@ -55,34 +57,23 @@ export class UploadsController {
 
   @UseGuards(UserTokenGuard)
   @Post('/uploadDocuments')
-  @UseInterceptors(AnyFilesInterceptor())
-  async uploadVisaAndPassport(
-    @UploadedFiles() files: Express.Multer.File[],
-  ) {
-    const visaImg = files.find(file => file.fieldname === 'visaImg');
-    const passImg = files.find(file => file.fieldname === 'passImg');
-    if (!passImg || !visaImg) {
-      throw new BadRequestException('Both visaImg and passImg files are required');
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('File is required');
     }
-    const allowedTypes = ['image/jpeg', 'image/png','image/jpg'];
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-  
-    // Validate visaImg
-    if (!allowedTypes.includes(visaImg.mimetype)) {
-      throw new BadRequestException('Invalid file type for visaImg. Only JPEG and PNG are allowed.');
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const maxSize = 5 * 1024 * 1024;
+    if (!allowedTypes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        'Invalid file type. Only JPEG and PNG are allowed.',
+      );
     }
-    if (visaImg.size > maxSize) {
-      throw new BadRequestException('visaImg file size exceeds the maximum limit of 5MB.');
+    if (file.size > maxSize) {
+      throw new BadRequestException(
+        'File size exceeds the maximum limit of 5MB.',
+      );
     }
-  
-    // Validate passImg
-    if (!allowedTypes.includes(passImg.mimetype)) {
-      throw new BadRequestException('Invalid file type for passImg. Only JPEG and PNG are allowed.');
-    }
-    if (passImg.size > maxSize) {
-      throw new BadRequestException('passImg file size exceeds the maximum limit of 5MB.');
-    }
-
-    return this.uploadsService.uploadVisaAndPassportImages(passImg, visaImg);
+    return this.uploadsService.uploadImage(file);
   }
 }

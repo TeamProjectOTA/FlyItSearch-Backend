@@ -6,7 +6,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProfilePicture, VisaPassport } from './uploads.model';
+import { ProfilePicture } from './uploads.model';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import path, { extname, join } from 'path';
@@ -26,10 +26,6 @@ export class UploadsService {
     private readonly authservice: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    @InjectRepository(BookingSave)
-    private readonly bookingSaveRepository: Repository<BookingSave>,
-    @InjectRepository(VisaPassport)
-    private readonly visaPassportRepository: Repository<VisaPassport>,
   ) {
     this.storage = new Storage({
       keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
@@ -96,33 +92,12 @@ export class UploadsService {
     }
   }
 
-  async uploadVisaAndPassportImages(
-    passportFile: Express.Multer.File,
-    visaFile: Express.Multer.File,
-  ) {
-   
+  async uploadImage(file: Express.Multer.File): Promise<any> {
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
-    const tran_id = `${timestamp}${randomNumber}`;
-    const [passportLink, visaLink] = await Promise.all([
-      this.uploadImage(passportFile, `${tran_id}-passport`),
-      this.uploadImage(visaFile, `${tran_id}-visa`),
-    ]);
-    const visaPassport = new VisaPassport();
-    visaPassport.personId=tran_id
-    visaPassport.passportLink = passportLink;
-    visaPassport.visaLink = visaLink;
-    
-
-    return await this.visaPassportRepository.save(visaPassport);
-  }
-
-  private async uploadImage(
-    file: Express.Multer.File,
-    type: string,
-  ): Promise<string> {
+    const random = `${timestamp}${randomNumber}`;
     const folderName = 'PassportVisa';
-    const fileName = `${folderName}/${type}`;
+    const fileName = `${folderName}/${random}-image`;
     const blob = this.storage.bucket(this.bucket).file(fileName);
 
     const blobStream = blob.createWriteStream({
@@ -130,7 +105,7 @@ export class UploadsService {
       public: true,
     });
 
-    return new Promise((resolve, reject) => {
+    const link = await new Promise((resolve, reject) => {
       blobStream.on('error', (err) => reject(err));
       blobStream.on('finish', () => {
         const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
@@ -138,5 +113,6 @@ export class UploadsService {
       });
       blobStream.end(file.buffer);
     });
+    return { link: link };
   }
 }

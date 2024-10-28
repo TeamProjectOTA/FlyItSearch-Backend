@@ -9,12 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class BookingSave {
@@ -57,7 +52,7 @@ export class BookingSave {
   @Column('json', { nullable: true })
   laginfo: any; // Store laginfo as a JSON object
   @Column('json', { nullable: true })
-  personId: string[];
+  personId: { index?: number; visa?: string; passport?: string }[];
   @ManyToOne(() => User, (user) => user.bookingSave, { onDelete: 'CASCADE' })
   user: User;
 }

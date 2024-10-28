@@ -11,10 +11,10 @@ import { PaymentModule } from 'src/payment/payment.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Deposit, User, Wallet, Transection,]),
+    TypeOrmModule.forFeature([Deposit, User, Wallet, Transection]),
     UserModule,
     AuthModule,
-    PaymentModule
+    PaymentModule,
   ],
   controllers: [DepositController],
   providers: [DepositService],

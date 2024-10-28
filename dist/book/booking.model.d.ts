@@ -19,7 +19,11 @@ export declare class BookingSave {
     actionBy: String;
     reason: string;
     laginfo: any;
-    personId: string[];
+    personId: {
+        index?: number;
+        visa?: string;
+        passport?: string;
+    }[];
     user: User;
 }
 declare class CreateLagInfoDto {

@@ -181,10 +181,10 @@ let DepositService = class DepositService {
             total_amount: amount,
             currency: 'BDT',
             tran_id: tran_id,
-            success_url: `http://192.168.10.91:8080/deposit/sslcommerz/success/${email}/${amount}`,
-            fail_url: 'http://192.168.10.91:8080/payment/fail',
-            cancel_url: 'http://192.168.10.91:8080/payment/cancel',
-            ipn_url: 'http://192.168.10.91:8080/payment/ipn',
+            success_url: `${process.env.BASE_CALLBACKURL}deposit/sslcommerz/success/${email}/${amount}`,
+            fail_url: `${process.env.BASE_CALLBACKURL}payment/fail`,
+            cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
+            ipn_url: `${process.env.BASE_CALLBACKURL}payment/ipn`,
             shipping_method: 'NO',
             product_name: 'Deposit money',
             product_category: 'Deposit money',
@@ -225,8 +225,10 @@ let DepositService = class DepositService {
                     where: { email: email },
                     relations: ['wallet'],
                 });
-                addTransection.walletBalance = findUser.wallet.ammount + Math.floor(response.store_amount);
-                findUser.wallet.ammount = findUser.wallet.ammount + Math.floor(response.store_amount);
+                addTransection.walletBalance =
+                    findUser.wallet.ammount + Math.floor(response.store_amount);
+                findUser.wallet.ammount =
+                    findUser.wallet.ammount + Math.floor(response.store_amount);
                 addTransection.paymentType = 'Instaint Payment ';
                 addTransection.requestType = `Instaint Money added `;
                 addTransection.user = user;
@@ -268,11 +270,11 @@ let DepositService = class DepositService {
         const tran_id = `FSD${timestamp}${randomNumber}`;
         const data = {
             amount: amount,
-            currency: "BDT",
+            currency: 'BDT',
             customer_name: user.fullName,
-            customer_address: "Dhaka",
+            customer_address: 'Dhaka',
             customer_phone: user.phone,
-            customer_city: "Dhaka",
+            customer_city: 'Dhaka',
             customer_email: email,
         };
         try {
@@ -280,22 +282,22 @@ let DepositService = class DepositService {
                 prefix: this.surjoPrefix,
                 store_id: store_id,
                 token: token,
-                return_url: `http://192.168.10.91:8080/deposit/surjo/success/${email}/${amount}`,
-                cancel_url: 'http://192.168.10.91:8080/payment/cancel',
+                return_url: `${process.env.BASE_CALLBACKURL}deposit/surjo/success/${email}/${amount}`,
+                cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
                 order_id: tran_id,
                 client_ip: '192.67.2',
                 ...data,
             }, {
                 headers: {
                     authorization: `${token_type} ${token}`,
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
             });
             return { surjoPay: response.data.checkout_url };
         }
         catch (error) {
-            console.error("Error making payment:", error.response ? error.response.data : error.message);
-            return "Payment Failed";
+            console.error('Error making payment:', error.response ? error.response.data : error.message);
+            return 'Payment Failed';
         }
     }
     async surjoVerifyPayment(sp_order_id, email, amount) {
@@ -307,7 +309,7 @@ let DepositService = class DepositService {
             }, {
                 headers: {
                     authorization: `${token_type} ${token}`,
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                 },
             });
             const data = response.data[0];
@@ -361,8 +363,8 @@ let DepositService = class DepositService {
             }
         }
         catch (error) {
-            console.error("Error verifying payment:", error.response ? error.response.data : error.message);
-            return "Payment Verification Failed";
+            console.error('Error verifying payment:', error.response ? error.response.data : error.message);
+            return 'Payment Verification Failed';
         }
     }
     async createPaymentBkash(amount, header) {
@@ -373,9 +375,9 @@ let DepositService = class DepositService {
         try {
             const paymentDetails = {
                 amount: amount || 10,
-                callbackURL: `${process.env.BKASH_CALLBACKURL}deposit/bkash/callback/${email}/${amount}`,
+                callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/${email}/${amount}`,
                 orderID: tran_id || 'Order_101',
-                reference: `${email}`
+                reference: `${email}`,
             };
             const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
             return { bkash: result.bkashURL };
@@ -385,14 +387,18 @@ let DepositService = class DepositService {
         }
     }
     async executePaymentBkash(paymentID, status, amount, res, email) {
+        console.log(paymentID, status, amount, res, email);
         try {
             if (status === 'success') {
                 const response = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
-                if (response?.transactionStatus === 'Completed' && response?.statusMessage === 'Successful') {
+                if (response?.transactionStatus === 'Completed' &&
+                    response?.statusMessage === 'Successful') {
                     const user = await this.userRepository.findOne({
                         where: { email: email },
                     });
-                    const tranDate = response.paymentExecuteTime.split(' GMT')[0].replace('T', ' ');
+                    const tranDate = response.paymentExecuteTime
+                        .split(' GMT')[0]
+                        .replace('T', ' ');
                     const airTicketPrice = amount;
                     const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125);
                     const store_amount = Math.ceil(airTicketPrice - paymentGatwayCharge);
@@ -409,13 +415,14 @@ let DepositService = class DepositService {
                     addTransection.cardIssuerCountry = 'BD';
                     addTransection.validationDate = tranDate;
                     addTransection.status = 'Deposited';
-                    console.log(email);
                     const findUser = await this.userRepository.findOne({
                         where: { email: email },
                         relations: ['wallet'],
                     });
-                    addTransection.walletBalance = findUser.wallet.ammount + Math.floor(store_amount);
-                    findUser.wallet.ammount = findUser.wallet.ammount + Math.floor(store_amount);
+                    addTransection.walletBalance =
+                        findUser.wallet.ammount + Math.floor(store_amount);
+                    findUser.wallet.ammount =
+                        findUser.wallet.ammount + Math.floor(store_amount);
                     addTransection.paymentType = 'Instaint Payment ';
                     addTransection.requestType = `Instaint Money added `;
                     addTransection.user = user;
@@ -437,8 +444,7 @@ let DepositService = class DepositService {
                     addDeposit.depositType = 'Bkash-MoneyAdd';
                     await this.depositRepository.save(addDeposit);
                 }
-                console.log('Execute Payment Result:', response);
-                return res.redirect('http://192.168.10.30:3000/');
+                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
             }
             else {
                 console.log('Payment not successful, skipping execution.');

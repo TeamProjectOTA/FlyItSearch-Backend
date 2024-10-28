@@ -29,27 +29,19 @@ let UploadsController = class UploadsController {
         }
         return await this.uploadsService.create(header, file);
     }
-    async uploadVisaAndPassport(files) {
-        const visaImg = files.find(file => file.fieldname === 'visaImg');
-        const passImg = files.find(file => file.fieldname === 'passImg');
-        if (!passImg || !visaImg) {
-            throw new common_1.BadRequestException('Both visaImg and passImg files are required');
+    async uploadImage(file) {
+        if (!file) {
+            throw new common_1.BadRequestException('File is required');
         }
         const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
         const maxSize = 5 * 1024 * 1024;
-        if (!allowedTypes.includes(visaImg.mimetype)) {
-            throw new common_1.BadRequestException('Invalid file type for visaImg. Only JPEG and PNG are allowed.');
+        if (!allowedTypes.includes(file.mimetype)) {
+            throw new common_1.BadRequestException('Invalid file type. Only JPEG and PNG are allowed.');
         }
-        if (visaImg.size > maxSize) {
-            throw new common_1.BadRequestException('visaImg file size exceeds the maximum limit of 5MB.');
+        if (file.size > maxSize) {
+            throw new common_1.BadRequestException('File size exceeds the maximum limit of 5MB.');
         }
-        if (!allowedTypes.includes(passImg.mimetype)) {
-            throw new common_1.BadRequestException('Invalid file type for passImg. Only JPEG and PNG are allowed.');
-        }
-        if (passImg.size > maxSize) {
-            throw new common_1.BadRequestException('passImg file size exceeds the maximum limit of 5MB.');
-        }
-        return this.uploadsService.uploadVisaAndPassportImages(passImg, visaImg);
+        return this.uploadsService.uploadImage(file);
     }
 };
 exports.UploadsController = UploadsController;
@@ -83,12 +75,12 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('/uploadDocuments'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.AnyFilesInterceptor)()),
-    __param(0, (0, common_1.UploadedFiles)()),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], UploadsController.prototype, "uploadVisaAndPassport", null);
+], UploadsController.prototype, "uploadImage", null);
 exports.UploadsController = UploadsController = __decorate([
     (0, swagger_1.ApiTags)('Uploads'),
     (0, common_1.Controller)('upload'),

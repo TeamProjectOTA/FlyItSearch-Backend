@@ -37,9 +37,6 @@ export class searchResultDto {
   @ApiProperty()
   ResultId: string;
 }
-
-//Booking dto
-
 export class BaggageDto {
   BaggageID: string;
 }
@@ -102,8 +99,8 @@ export class PassengerDto {
   Baggage?: BaggageDto[];
   @ApiProperty()
   Meal?: MealDto[];
- personId?:string
-
+  visa?: string;
+  passport?: string;
 }
 
 export class FlbFlightSearchDto {

@@ -6,9 +6,3 @@ export declare class ProfilePicture {
     size: number;
     user: User;
 }
-export declare class VisaPassport {
-    id: number;
-    personId: string;
-    passportLink: string;
-    visaLink: string;
-}

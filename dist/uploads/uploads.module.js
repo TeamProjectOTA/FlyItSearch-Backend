@@ -22,7 +22,7 @@ exports.UploadsModule = UploadsModule;
 exports.UploadsModule = UploadsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([uploads_model_1.ProfilePicture, user_entity_1.User, booking_model_1.BookingSave, uploads_model_1.VisaPassport]),
+            typeorm_1.TypeOrmModule.forFeature([uploads_model_1.ProfilePicture, user_entity_1.User, booking_model_1.BookingSave]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
         ],

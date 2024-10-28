@@ -13,8 +13,9 @@ export class GoogleOuthController {
   ) {}
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req: Request) {
-    console.log(req);
+  async googleAuth(@Req() req) {
+    console.log('User from Google:', req.user);
+    
   }
 
   @Get('google/redirect')
@@ -23,13 +24,5 @@ export class GoogleOuthController {
     return req.user;
   }
 
-  @Get('/facebook')
-  @UseGuards(AuthGuard('facebook'))
-  async facebookAuth(@Req() req: any) {}
-
-  @Get('/facebookRedirect')
-  @UseGuards(AuthGuard('facebook'))
-  facebookAuthRedirect(@Req() req: any) {
-    return this.appService.facebookLogin(req);
-  }
+ 
 }

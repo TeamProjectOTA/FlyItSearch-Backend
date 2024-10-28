@@ -24,14 +24,10 @@ let GoogleOuthController = class GoogleOuthController {
         this.authService = authService;
     }
     async googleAuth(req) {
-        console.log(req);
+        console.log('User from Google:', req.user);
     }
     async googleAuthRedirect(req) {
         return req.user;
-    }
-    async facebookAuth(req) { }
-    facebookAuthRedirect(req) {
-        return this.appService.facebookLogin(req);
     }
 };
 exports.GoogleOuthController = GoogleOuthController;
@@ -40,7 +36,7 @@ __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Request]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], GoogleOuthController.prototype, "googleAuth", null);
 __decorate([
@@ -51,22 +47,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], GoogleOuthController.prototype, "googleAuthRedirect", null);
-__decorate([
-    (0, common_1.Get)('/facebook'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], GoogleOuthController.prototype, "facebookAuth", null);
-__decorate([
-    (0, common_1.Get)('/facebookRedirect'),
-    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('facebook')),
-    __param(0, (0, common_1.Req)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], GoogleOuthController.prototype, "facebookAuthRedirect", null);
 exports.GoogleOuthController = GoogleOuthController = __decorate([
     (0, swagger_1.ApiTags)('Google-log-in'),
     (0, common_1.Controller)('social-site'),

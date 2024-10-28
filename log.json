@@ -1,0 +1,42 @@
+[{
+    "AdultQuantity": 1,
+    "ChildQuantity": 0,
+    "InfantQuantity": 0,
+    "EndUserIp": "::1",
+    "JourneyType": "1",
+    "Segments": [
+        {
+            "Origin": "DAC",
+            "Destination": "SIN",
+            "CabinClass": "1",
+            "DepartureDateTime": "2024-11-01"
+        }
+    ]
+},
+{
+    "AdultQuantity": 1,
+    "ChildQuantity": 0,
+    "InfantQuantity": 0,
+    "EndUserIp": "::1",
+    "JourneyType": "3",
+    "Segments": [
+        {
+            "Origin": "DAC",
+            "Destination": "SIN",
+            "CabinClass": "1",
+            "DepartureDateTime": "2024-11-01"
+        },
+        {
+            "Origin": "SIN",
+            "Destination": "KUL",
+            "CabinClass": "1",
+            "DepartureDateTime": "2024-11-06"
+        },
+        {
+            "Origin": "KUL",
+            "Destination": "DAC",
+            "CabinClass": "1",
+            "DepartureDateTime": "2024-11-11"
+        }
+    ]
+}]

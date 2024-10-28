@@ -29,8 +29,8 @@ export class DepositService {
   private readonly isLive: boolean;
   private storage: Storage;
   private bucket: string;
-  private surjoBaseUrl:string
-  private surjoPrefix:string
+  private surjoBaseUrl: string;
+  private surjoPrefix: string;
   private bkashConfig: any;
   constructor(
     @InjectRepository(Deposit)
@@ -42,12 +42,12 @@ export class DepositService {
     @InjectRepository(Transection)
     private readonly transectionRepository: Repository<Transection>,
     private readonly authService: AuthService,
-    private readonly paymentService:PaymentService
+    private readonly paymentService: PaymentService,
   ) {
     this.sslcommerzsslcommerzStoreId = process.env.STORE_ID;
     this.sslcommerzStorePwd = process.env.STORE_PASSWORD;
     this.surjoBaseUrl = process.env.SURJO_API_Url;
-    this.surjoPrefix=process.env.SURJO_API_PREFIX
+    this.surjoPrefix = process.env.SURJO_API_PREFIX;
     this.isLive = false;
     this.bkashConfig = {
       base_url: process.env.BKASH_BASE_URL,
@@ -217,10 +217,10 @@ export class DepositService {
       total_amount: amount,
       currency: 'BDT',
       tran_id: tran_id,
-      success_url: `http://192.168.10.91:8080/deposit/sslcommerz/success/${email}/${amount}`,
-      fail_url: 'http://192.168.10.91:8080/payment/fail',
-      cancel_url: 'http://192.168.10.91:8080/payment/cancel',
-      ipn_url: 'http://192.168.10.91:8080/payment/ipn',
+      success_url: `${process.env.BASE_CALLBACKURL}deposit/sslcommerz/success/${email}/${amount}`,
+       fail_url: `${process.env.BASE_CALLBACKURL}payment/fail`,
+        cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
+        ipn_url: `${process.env.BASE_CALLBACKURL}payment/ipn`,
       shipping_method: 'NO',
       product_name: 'Deposit money',
       product_category: 'Deposit money',
@@ -268,8 +268,10 @@ export class DepositService {
           where: { email: email },
           relations: ['wallet'],
         });
-        addTransection.walletBalance = findUser.wallet.ammount + Math.floor(response.store_amount);
-        findUser.wallet.ammount = findUser.wallet.ammount + Math.floor(response.store_amount);
+        addTransection.walletBalance =
+          findUser.wallet.ammount + Math.floor(response.store_amount);
+        findUser.wallet.ammount =
+          findUser.wallet.ammount + Math.floor(response.store_amount);
         addTransection.paymentType = 'Instaint Payment ';
         addTransection.requestType = `Instaint Money added `;
         addTransection.user = user;
@@ -301,61 +303,70 @@ export class DepositService {
       throw new Error('Error occurred during payment validation.');
     }
   }
-  async surjoPayInit(header:any,amount:number){
-    const email = await this.authService.decodeToken(header)
-    const user = await this.userRepository.findOne({where:{email:email}})
+  async surjoPayInit(header: any, amount: number) {
+    const email = await this.authService.decodeToken(header);
+    const user = await this.userRepository.findOne({ where: { email: email } });
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tokenDetails = await this.paymentService.surjoAuthentication();
     const { token, token_type, store_id } = tokenDetails;
     const tran_id = `FSD${timestamp}${randomNumber}`;
-    const data={
+    const data = {
       amount: amount,
-      currency: "BDT",
+      currency: 'BDT',
       customer_name: user.fullName,
-      customer_address: "Dhaka",
+      customer_address: 'Dhaka',
       customer_phone: user.phone,
-      customer_city: "Dhaka",
+      customer_city: 'Dhaka',
       customer_email: email,
-  } 
-  try {
-    const response = await axios.post(`${this.surjoBaseUrl}/api/secret-pay`, {
-      prefix: this.surjoPrefix,
-      store_id: store_id,
-      token: token,
-      return_url: `http://192.168.10.91:8080/deposit/surjo/success/${email}/${amount}`, // Dynamic return URL
-      cancel_url: 'http://192.168.10.91:8080/payment/cancel',
-      order_id: tran_id,
-      client_ip:'192.67.2',
-      ...data,
-    }, {
-      headers: {
-        authorization: `${token_type} ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return {surjoPay:response.data.checkout_url}; // Payment response
-  } catch (error) {
-    console.error("Error making payment:", error.response ? error.response.data : error.message);
-    return "Payment Failed";
+    };
+    try {
+      const response = await axios.post(
+        `${this.surjoBaseUrl}/api/secret-pay`,
+        {
+          prefix: this.surjoPrefix,
+          store_id: store_id,
+          token: token,
+          return_url: `${process.env.BASE_CALLBACKURL}deposit/surjo/success/${email}/${amount}`, // Dynamic return URL
+          cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
+          order_id: tran_id,
+          client_ip: '192.67.2',
+          ...data,
+        },
+        {
+          headers: {
+            authorization: `${token_type} ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      return { surjoPay: response.data.checkout_url }; // Payment response
+    } catch (error) {
+      console.error(
+        'Error making payment:',
+        error.response ? error.response.data : error.message,
+      );
+      return 'Payment Failed';
+    }
   }
-
-  }
-  async surjoVerifyPayment(sp_order_id: string,email:string,amount:number){
+  async surjoVerifyPayment(sp_order_id: string, email: string, amount: number) {
     const tokenDetails = await this.paymentService.surjoAuthentication();
     const { token, token_type } = tokenDetails;
- 
 
     try {
-      const response = await axios.post(`${this.surjoBaseUrl}/api/verification`, {
-        order_id: sp_order_id,
-      }, {
-        headers: {
-          authorization: `${token_type} ${token}`,
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        `${this.surjoBaseUrl}/api/verification`,
+        {
+          order_id: sp_order_id,
         },
-      });
-      const data= response.data[0];
+        {
+          headers: {
+            authorization: `${token_type} ${token}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const data = response.data[0];
       if (data.sp_message === 'Success') {
         const user = await this.userRepository.findOne({
           where: { email: email },
@@ -366,11 +377,11 @@ export class DepositService {
         addTransection.tranDate = data.date_time;
         addTransection.paidAmount = String(amount);
         addTransection.offerAmmount = data.received_amount;
-        addTransection.bankTranId =data.bank_trx_id;
+        addTransection.bankTranId = data.bank_trx_id;
         addTransection.riskTitle = 'safe';
-        addTransection.cardType ='Surjo-Pay';
+        addTransection.cardType = 'Surjo-Pay';
         addTransection.cardIssuer = `${data.method}-InternetBanking`;
-        addTransection.cardBrand =data.method;
+        addTransection.cardBrand = data.method;
         addTransection.cardIssuerCountry = 'BD';
         addTransection.validationDate = data.date_time;
         addTransection.status = 'Deposited';
@@ -389,7 +400,7 @@ export class DepositService {
         let addDeposit: Deposit = new Deposit();
         addDeposit.user = user;
         addDeposit.ammount = amount; // Must be changed
-        addDeposit.depositId =  data.customer_order_id;
+        addDeposit.depositId = data.customer_order_id;
         addDeposit.depositedFrom = data.method;
         addDeposit.senderName = user.fullName;
         addDeposit.createdAt = moment
@@ -406,12 +417,15 @@ export class DepositService {
       } else {
         throw new Error('Payment validation failed. Invalid status.');
       }
-  }catch (error) {
-    console.error("Error verifying payment:", error.response ? error.response.data : error.message);
-    return "Payment Verification Failed";
+    } catch (error) {
+      console.error(
+        'Error verifying payment:',
+        error.response ? error.response.data : error.message,
+      );
+      return 'Payment Verification Failed';
+    }
   }
-  }
-  async createPaymentBkash(amount:number,header:any) {
+  async createPaymentBkash(amount: number, header: any) {
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `FSD${timestamp}${randomNumber}`;
@@ -419,26 +433,38 @@ export class DepositService {
     try {
       const paymentDetails = {
         amount: amount || 10,
-        callbackURL : `${process.env.BKASH_CALLBACKURL}deposit/bkash/callback/${email}/${amount}`,
-        orderID : tran_id || 'Order_101',
-        reference : `${email}`
-      }
+        callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/${email}/${amount}`,
+        orderID: tran_id || 'Order_101',
+        reference: `${email}`,
+      };
 
       const result = await createPayment(this.bkashConfig, paymentDetails);
-      return {bkash:result.bkashURL};
+      return { bkash: result.bkashURL };
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
-  async executePaymentBkash(paymentID: string, status: string,amount:number,res:any,email:string) {
+  async executePaymentBkash(
+    paymentID: string,
+    status: string,
+    amount: number,
+    res: any,
+    email: string,
+  ) {
+    console.log(paymentID,status,amount,res,email)
     try {
       if (status === 'success') {
         const response: any = await executePayment(this.bkashConfig, paymentID);
-        if(response?.transactionStatus === 'Completed' && response?.statusMessage === 'Successful'){
+        if (
+          response?.transactionStatus === 'Completed' &&
+          response?.statusMessage === 'Successful'
+        ) {
           const user = await this.userRepository.findOne({
             where: { email: email },
           });
-          const tranDate = response.paymentExecuteTime.split(' GMT')[0].replace('T', ' ');
+          const tranDate = response.paymentExecuteTime
+            .split(' GMT')[0]
+            .replace('T', ' ');
           const airTicketPrice = amount;
           const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125); // !Important some check the validation before adding the ammont. 2.5% charge added in sslcomerz
           const store_amount = Math.ceil(airTicketPrice - paymentGatwayCharge);
@@ -455,19 +481,18 @@ export class DepositService {
           addTransection.cardIssuerCountry = 'BD';
           addTransection.validationDate = tranDate;
           addTransection.status = 'Deposited';
-          console.log(email)
           const findUser = await this.userRepository.findOne({
             where: { email: email },
             relations: ['wallet'],
           });
 
-          
-          addTransection.walletBalance = findUser.wallet.ammount + Math.floor(store_amount);
-          findUser.wallet.ammount = findUser.wallet.ammount + Math.floor(store_amount);
+          addTransection.walletBalance =
+            findUser.wallet.ammount + Math.floor(store_amount);
+          findUser.wallet.ammount =
+            findUser.wallet.ammount + Math.floor(store_amount);
           addTransection.paymentType = 'Instaint Payment ';
           addTransection.requestType = `Instaint Money added `;
           addTransection.user = user;
-  
           await this.walletRepository.save(findUser.wallet);
           await this.transectionRepository.save(addTransection);
           let addDeposit: Deposit = new Deposit();
@@ -483,16 +508,10 @@ export class DepositService {
             .utc(tranDate)
             .format('YYYY-MM-DD HH:mm:ss');
           addDeposit.status = 'Instant Deposit';
-          addDeposit.depositType ='Bkash-MoneyAdd';
-  
+          addDeposit.depositType = 'Bkash-MoneyAdd';
           await this.depositRepository.save(addDeposit);
-         
-
         }
-       
-        console.log('Execute Payment Result:', response);
-
-        return res.redirect('http://192.168.10.30:3000/'); 
+        return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
       } else {
         console.log('Payment not successful, skipping execution.');
         return null;

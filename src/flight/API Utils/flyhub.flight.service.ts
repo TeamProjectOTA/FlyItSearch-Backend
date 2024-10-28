@@ -15,12 +15,8 @@ import {
   searchResultDto,
 } from './Dto/flyhub.model';
 import { BookingIdSave, FlightSearchModel } from '../flight.model';
-
-import { Test } from './test.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Admin } from 'src/admin/entities/admin.entity';
 import { Repository } from 'typeorm';
-import { AuthService } from 'src/auth/auth.service';
 import { BookingID, BookingSave } from 'src/book/booking.model';
 
 @Injectable()
@@ -87,8 +83,8 @@ export class FlyHubService {
     try {
       const response = await axios.request(shoppingrequest);
 
-      return this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
-      //return response.data
+      return await this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
+      // return response.data
     } catch (error) {
       console.error(error);
       throw error;
@@ -202,9 +198,14 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(Price);
+      if (response.data.Results[0].HoldAllowed === false) {
+        throw new ForbiddenException(
+          'Sorry, you cannot book this ticket. Contact our help line for more updates',
+        );
+      }
       return this.flyHubUtil.restBFMParser(response.data);
     } catch (error) {
-      throw error?.response?.data;
+      throw error;
     }
   }
   async airRules(data: searchResultDto) {
@@ -231,10 +232,8 @@ export class FlyHubService {
     data: FlbFlightSearchDto,
     header: any,
     currentTimestamp: any,
-    personIds:any
-  
+    personIds: any,
   ) {
-    // return {data:data,time:currentTimestamp,personId:personId}
     const token = await this.getToken();
 
     const Price = {
@@ -269,13 +268,11 @@ export class FlyHubService {
     };
     try {
       const response0 = await axios.request(Price);
-      // console.log(response0.data.Results[0].FareType)
-      // if (response0.data.Results[0].FareType == 'InstantTicketing') {  
-      //   throw new ForbiddenException(
-      //     'Sorry, you cannot book this ticket. Contact our help line for more updates',
-      //   );
-      // }
-      //  return response0.data
+      if (response0.data.Results[0].HoldAllowed === false) {
+        throw new ForbiddenException(
+          'Sorry, you cannot book this ticket. Contact our help line for more updates',
+        );
+      }else{
       const response1 = await axios.request(PreBookticket);
       const response = await axios.request(Bookticket);
 
@@ -283,14 +280,15 @@ export class FlyHubService {
         response.data,
         header,
         currentTimestamp,
-        personIds
+        personIds,
       );
+      }
     } catch (error) {
-      throw error?.response?.data;
+      throw error
     }
   }
 
-  async airRetriveAdmin(BookingID: BookingID,): Promise<any> {
+  async airRetriveAdmin(BookingID: BookingID): Promise<any> {
     const findBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
@@ -352,9 +350,10 @@ export class FlyHubService {
       JourneyType: journeyType,
       Segments: segments,
     });
-    //console.log(flyAirSearchDto)
+ //console.log(flyAirSearchDto)
+ // return flyAirSearchDto
     try {
-      return this.searchFlights(flyAirSearchDto);
+      return await this.searchFlights(flyAirSearchDto);
     } catch (error) {
       return error;
     }

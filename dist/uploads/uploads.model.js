@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.VisaPassport = exports.ProfilePicture = void 0;
+exports.ProfilePicture = void 0;
 const user_entity_1 = require("../user/entities/user.entity");
 const typeorm_1 = require("typeorm");
 let ProfilePicture = class ProfilePicture {
@@ -39,26 +39,4 @@ __decorate([
 exports.ProfilePicture = ProfilePicture = __decorate([
     (0, typeorm_1.Entity)()
 ], ProfilePicture);
-let VisaPassport = class VisaPassport {
-};
-exports.VisaPassport = VisaPassport;
-__decorate([
-    (0, typeorm_1.PrimaryGeneratedColumn)(),
-    __metadata("design:type", Number)
-], VisaPassport.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], VisaPassport.prototype, "personId", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], VisaPassport.prototype, "passportLink", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
-], VisaPassport.prototype, "visaLink", void 0);
-exports.VisaPassport = VisaPassport = __decorate([
-    (0, typeorm_1.Entity)()
-], VisaPassport);
 //# sourceMappingURL=uploads.model.js.map

@@ -6,7 +6,6 @@ import { Repository } from 'typeorm';
 import { Wallet } from 'src/deposit/deposit.model';
 import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
-import { VisaPassport } from 'src/uploads/uploads.model';
 export declare class FlyHubUtil {
     private readonly BookService;
     private readonly mailService;
@@ -15,8 +14,7 @@ export declare class FlyHubUtil {
     private readonly bookingIdSave;
     private readonly walletRepository;
     private readonly bookingSave;
-    private readonly visaPassportRepository;
-    constructor(BookService: BookingService, mailService: MailService, paymentService: PaymentService, authService: AuthService, bookingIdSave: Repository<BookingIdSave>, walletRepository: Repository<Wallet>, bookingSave: Repository<BookingSave>, visaPassportRepository: Repository<VisaPassport>);
+    constructor(BookService: BookingService, mailService: MailService, paymentService: PaymentService, authService: AuthService, bookingIdSave: Repository<BookingIdSave>, walletRepository: Repository<Wallet>, bookingSave: Repository<BookingSave>);
     restBFMParser(SearchResponse: any, journeyType?: string): Promise<any[]>;
     airRetriveDataTransformer(SearchResponse: any, fisId: string, bookingStatus?: any, tripType?: any, bookingDate?: any, header?: any): Promise<any>;
     bookingDataTransformerFlyhb(SearchResponse: any, header: any, currentTimestamp: any, personIds: any): Promise<any>;

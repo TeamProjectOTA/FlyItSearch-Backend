@@ -100,7 +100,10 @@ export class DepositController {
   @UseGuards(UserTokenGuard)
   @Post('sslcommerz/deposit')
   async sslcommerz(@Headers() header: any, @Body() depositDto: DepositDto) {
-    return await this.depositService.sslcommerzPaymentInit(header, depositDto.amount);
+    return await this.depositService.sslcommerzPaymentInit(
+      header,
+      depositDto.amount,
+    );
   }
   @Post('sslcommerz/success/:email/:amount')
   async depositSuccessSSLCommerz(
@@ -149,7 +152,7 @@ export class DepositController {
     const paymentData = await this.depositService.surjoVerifyPayment(
       order_id,
       email,
-      amount
+      amount,
     );
     return {
       message: 'Payment successfull',
@@ -157,30 +160,32 @@ export class DepositController {
     };
   }
 
-
-
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Post('bkash/deposit')
   async bkash(@Headers() header: any, @Body() depositDto: DepositDto) {
-    return await this.depositService.createPaymentBkash( depositDto.amount,header);
+    return await this.depositService.createPaymentBkash(
+      depositDto.amount,
+      header,
+    );
   }
-
 
   @Get('bkash/callback/:email/:amount')
   async handlePaymentCallback(
-    @Param('amount') amount:number,
-    @Param('email') email:string,
-    @Query('paymentID') paymentID: string, 
-    @Query('status') status: string, 
+    @Param('amount') amount: number,
+    @Param('email') email: string,
+    @Query('paymentID') paymentID: string,
+    @Query('status') status: string,
     @Query('signature') signature: string,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
-   
-        const result = await this.depositService.executePaymentBkash(paymentID, status,amount,res,email);
-       return result
-      
+    const result = await this.depositService.executePaymentBkash(
+      paymentID,
+      status,
+      amount,
+      res,
+      email,
+    );
+    return result;
   }
-  
-
 }

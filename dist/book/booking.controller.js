@@ -33,11 +33,19 @@ let BookingController = class BookingController {
         const dhakaTimeFormatted = dhakaTime.toISOString();
         const { Passengers } = data;
         const personIds = [];
-        Passengers.forEach((passenger) => {
-            if (passenger.personId) {
-                personIds.push(passenger.personId);
+        Passengers.forEach((passenger, index) => {
+            const personData = {
+                index: index + 1,
+            };
+            if (passenger.visa) {
+                personData.visa = passenger.visa;
             }
-            delete passenger.personId;
+            if (passenger.passport) {
+                personData.passport = passenger.passport;
+            }
+            personIds.push(personData);
+            delete passenger.visa;
+            delete passenger.passport;
         });
         return await this.flyHubService.airbook(data, header, dhakaTimeFormatted, personIds);
     }
@@ -60,6 +68,7 @@ let BookingController = class BookingController {
 exports.BookingController = BookingController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('flh/airBook/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),

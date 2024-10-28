@@ -71,13 +71,13 @@ let BookingService = class BookingService {
         if (bookingStatus !== 'all') {
             return await this.bookingSaveRepository.find({
                 where: { bookingStatus: bookingStatus },
-                relations: ['user',],
+                relations: ['user'],
                 order: { bookingDate: 'DESC' },
             });
         }
         else {
             return await this.bookingSaveRepository.find({
-                relations: ['user',],
+                relations: ['user'],
                 order: { bookingDate: 'DESC' },
             });
         }
@@ -100,7 +100,8 @@ let BookingService = class BookingService {
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
         for (const booking of userUpdate.bookingSave) {
             const timeLeft = new Date(booking.expireDate);
-            if (dhakaTime.getTime() >= timeLeft.getTime() && booking.bookingStatus === 'Booked') {
+            if (dhakaTime.getTime() >= timeLeft.getTime() &&
+                booking.bookingStatus === 'Booked') {
                 const userBooking = await this.bookingSaveRepository.findOne({
                     where: { bookingId: booking.bookingId },
                 });
