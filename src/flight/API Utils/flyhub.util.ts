@@ -12,7 +12,6 @@ import { Repository } from 'typeorm';
 import { Wallet } from 'src/deposit/deposit.model';
 import { AuthService } from 'src/auth/auth.service';
 import { BookingSave } from 'src/book/booking.model';
-import { Storage } from '@google-cloud/storage';
 
 @Injectable()
 export class FlyHubUtil {
@@ -400,10 +399,15 @@ export class FlyHubUtil {
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
           let TimeLimit: string = null;
-          if (Result?.LastTicketDate) {
-            const lastTicketDate: string = Result?.LastTicketDate;
-            TimeLimit = `${lastTicketDate}`;
-          }
+          if(bookingStatus=='IssueInProcess'){
+            if (Result?.LastTicketDate) {
+              const lastTicketDate: string = Result?.LastTicketDate;
+              TimeLimit = `${lastTicketDate}`;
+            }
+          }else{
+          const timestamp=new Date(bookingDate)
+          const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+          TimeLimit = `${lastTicketDate}`;}
 
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
             const PaxType = allPassenger?.PaxType;
@@ -581,7 +585,7 @@ export class FlyHubUtil {
     const sslpaymentLink = await this.paymentService
       .dataModification(FlightItenary, header)
       .catch(() => null);
-    const surjopay = await this.paymentService.formdata(FlightItenary, header);
+   //const surjopay = await this.paymentService.formdata(FlightItenary, header);
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     const price = FlightItenary?.[0]?.NetFare || 0;
@@ -605,7 +609,7 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       sslpaymentLink: sslpaymentLink,
-      surjopay: surjopay,
+      //surjopay: surjopay,
       bkash: bkash,
       walletPayment: { walletAmmount, price, priceAfterPayment },
     };
@@ -696,12 +700,10 @@ export class FlyHubUtil {
           const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
+          const timestamp=new Date(currentTimestamp)
           let TimeLimit: string = null;
-          if (Result?.LastTicketDate) {
-            const lastTicketDate: string = Result?.LastTicketDate;
-            TimeLimit = `${lastTicketDate}`;
-          }
-
+                  const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+                  TimeLimit = `${lastTicketDate}`;
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
             const PaxType = allPassenger?.PaxType;
             const paxCount = allPassenger?.PassengerCount;
@@ -875,14 +877,14 @@ export class FlyHubUtil {
         }
       }
     }
-
+ const booking=FlightItenary
     const save = await this.saveBookingData(FlightItenary, header, personIds);
     // const sslpaymentLink = await this.paymentService.dataModification(
     //   FlightItenary,
     //   header,
     // );
     return {
-      bookingData: FlightItenary,
+      bookingData: booking,
       save: save,
     };
   }
@@ -1291,6 +1293,7 @@ export class FlyHubUtil {
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
           let TimeLimit: string = null;
+         
           if (Result?.LastTicketDate) {
             const lastTicketDate: string = Result?.LastTicketDate;
             TimeLimit = `${lastTicketDate}`;

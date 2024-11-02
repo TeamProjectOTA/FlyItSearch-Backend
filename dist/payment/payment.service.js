@@ -41,11 +41,6 @@ let PaymentService = class PaymentService {
             app_key: process.env.BKASH_APP_KEY,
             app_secret: process.env.BKASH_APP_SECRET,
         };
-        this.bkashBaseUrl = process.env.BKASH_BASE_URL;
-        this.bkashAppKey = process.env.BKASH_APP_KEY;
-        this.bkashAppSecret = process.env.BKASH_APP_SECRET;
-        this.bkashUserName = process.env.BKASH_USERNAME;
-        this.bkashPwd = process.env.BAKSH_PASSWORD;
         this.surjoBaseUrl = process.env.SURJO_API_Url;
         this.surjoUserName = process.env.SURJO_API_USRNAME;
         this.surjoPassword = process.env.SURJO_API_PASSWORD;
@@ -277,10 +272,11 @@ let PaymentService = class PaymentService {
                     let addTransection = new transection_model_1.Transection();
                     addTransection.tranId = result.merchantInvoiceNumber;
                     addTransection.tranDate = tranDate;
-                    addTransection.paidAmount = result.amount;
+                    addTransection.paidAmount = result?.amount;
                     const airTicketPrice = bookingSave?.netAmmount;
-                    addTransection.offerAmmount = airTicketPrice;
-                    addTransection.bankTranId = result.paymentID;
+                    addTransection.offerAmmount = Number(airTicketPrice);
+                    addTransection.bankTranId = result?.trxID;
+                    addTransection.paymentId = result?.paymentID;
                     addTransection.riskTitle = 'Safe';
                     addTransection.cardType = 'Bkash';
                     addTransection.cardIssuer = 'Bkash';
@@ -310,51 +306,46 @@ let PaymentService = class PaymentService {
     }
     async queryPayment(paymentId) {
         try {
-            const queryResponse = await (0, bkash_payment_1.queryPayment)({
-                paymentID: paymentId,
-                bkashBaseUrl: this.bkashBaseUrl,
-                bkashAppKey: this.bkashAppKey,
-                bkashAppSecret: this.bkashAppSecret,
-                bkashUserName: this.bkashUserName,
-                bkashPwd: this.bkashPwd,
-            });
+            if (!paymentId) {
+                throw new Error("Payment ID is required for querying payment.");
+            }
+            console.log(`Querying payment with ID: ${paymentId}`);
+            const queryResponse = await (0, bkash_payment_1.queryPayment)(this.bkashConfig, paymentId);
             return queryResponse;
         }
         catch (error) {
+            console.error(`Error querying payment: ${error.message}`);
             throw new Error(`Error querying payment: ${error.message}`);
         }
     }
     async searchTransaction(transactionId) {
         try {
-            const searchResponse = await (0, bkash_payment_1.searchTransaction)({
-                trxID: transactionId,
-                bkashBaseUrl: this.bkashBaseUrl,
-                bkashAppKey: this.bkashAppKey,
-                bkashAppSecret: this.bkashAppSecret,
-                bkashUserName: this.bkashUserName,
-                bkashPwd: this.bkashPwd,
-            });
+            const searchResponse = await (0, bkash_payment_1.searchTransaction)(this.bkashConfig, transactionId);
             return searchResponse;
         }
         catch (error) {
             throw new Error(`Error searching transaction: ${error.message}`);
         }
     }
-    async refundTransaction(paymentId, amount) {
+    async refundTransaction(paymentId, amount, trxID) {
         try {
-            const refundResponse = await (0, bkash_payment_1.refundTransaction)({
+            const refundDetails = {
                 paymentID: paymentId,
-                amount,
-                bkashBaseUrl: this.bkashBaseUrl,
-                bkashAppKey: this.bkashAppKey,
-                bkashAppSecret: this.bkashAppSecret,
-                bkashUserName: this.bkashUserName,
-                bkashPwd: this.bkashPwd,
-            });
+                trxID: trxID,
+                amount: amount,
+            };
+            const refundResponse = await (0, bkash_payment_1.refundTransaction)(this.bkashConfig, refundDetails);
             return refundResponse;
         }
         catch (error) {
-            throw new Error(`Error refunding transaction: ${error.message}`);
+            console.error("Error details:", {
+                message: error.message,
+                response: error.response ? {
+                    status: error.response.status,
+                    data: error.response.data,
+                } : null,
+            });
+            throw new Error(`Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`);
         }
     }
     async formdata(SearchResponse, header) {
@@ -422,7 +413,7 @@ let PaymentService = class PaymentService {
                     return_url: `${process.env.BASE_CALLBACKURL}payment/return/${bookingID}/${email}`,
                     cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
                     order_id: tran_id,
-                    client_ip: '192.67.2',
+                    client_ip: '192.67.5',
                     ...formData,
                 }, {
                     headers: {
@@ -441,7 +432,7 @@ let PaymentService = class PaymentService {
             return `The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`;
         }
     }
-    async surjoVerifyPayment(sp_order_id, bookingID, email) {
+    async surjoVerifyPayment(sp_order_id, bookingID, email, res) {
         const tokenDetails = await this.surjoAuthentication();
         const { token, token_type } = tokenDetails;
         try {
@@ -493,29 +484,11 @@ let PaymentService = class PaymentService {
                 addTransection.user = user;
                 await this.transectionRepository.save(addTransection);
             }
-            return data;
+            return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
         }
         catch (error) {
             console.error('Error verifying payment:', error.response ? error.response.data : error.message);
             return 'Payment Verification Failed';
-        }
-    }
-    async createPayment(amount) {
-        try {
-            const now = new Date();
-            const unixTimestampSeconds = Math.floor(now.getTime() / 1000);
-            const orderID = 'MFSB' + unixTimestampSeconds;
-            const paymentDetails = {
-                amount: amount || 10,
-                callbackURL: process.env.BKASH_CALLBACKURL,
-                orderID: orderID || 'Order_101',
-                reference: 'x',
-            };
-            const result = await (0, bkash_payment_1.createPayment)(this.bkashConfig, paymentDetails);
-            return result;
-        }
-        catch (e) {
-            console.log(e);
         }
     }
 };

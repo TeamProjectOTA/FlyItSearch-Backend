@@ -1,23 +1,32 @@
 import {
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Admin, Repository } from 'typeorm';
-import { BookingSave, CreateSaveBookingDto } from './booking.model';
+import { Repository } from 'typeorm';
+import { BookingID, BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { Storage } from '@google-cloud/storage';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { BookingIdSave } from 'src/flight/flight.model';
+import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 
 @Injectable()
 export class BookingService {
+  private readonly username: string = process.env.FLYHUB_UserName;
+  private readonly apiKey: string = process.env.FLYHUB_ApiKey;
+  private readonly apiUrl: string = process.env.FLyHub_Url;
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly authservice: AuthService,
     @InjectRepository(BookingSave)
     private readonly bookingSaveRepository: Repository<BookingSave>,
+    @InjectRepository(BookingIdSave)
+    private readonly bookingIdSave:Repository<BookingIdSave>,
   ) {}
 
   async saveBooking(
@@ -92,7 +101,6 @@ export class BookingService {
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
-
     const email = await this.authservice.decodeToken(header);
     const userUpdate = await this.userRepository.findOne({
       where: { email: email },
@@ -113,7 +121,12 @@ export class BookingService {
         const userBooking = await this.bookingSaveRepository.findOne({
           where: { bookingId: booking.bookingId },
         });
-        userBooking.bookingStatus = 'Cancelled';
+        const cancelData= await this.aircancel(booking.bookingId)
+        if(cancelData?.BookingStatus){
+        userBooking.bookingStatus = cancelData?.BookingStatus;}
+        else{
+          userBooking.bookingStatus='Cancelled'
+        }
         await this.bookingSaveRepository.save(userBooking);
       }
     }
@@ -142,5 +155,65 @@ export class BookingService {
     return {
       saveBookings: user.bookingSave,
     };
+  }
+
+  async getToken(): Promise<string> {
+    try {
+      const config: AxiosRequestConfig = {
+        method: 'post',
+        url: `${this.apiUrl}/Authenticate`,
+        data: {
+          username: this.username,
+          apiKey: this.apiKey,
+        },
+      };
+
+      const response: AxiosResponse<any> = await axios.request(config);
+
+      const token: string = response?.data?.TokenId;
+      if (!token) {
+        throw new HttpException(
+          'Token not found in response',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+      // console.log(token);
+      return token;
+    } catch (error) {
+      console.error(
+        'Error fetching token:',
+        error.response?.data || error.message,
+      );
+      throw new HttpException(
+        'Failed to authenticate',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+    
+  }
+   async aircancel(BookingID:string): Promise<any> {
+    const bookingId = await this.bookingIdSave.findOne({
+      where: { flyitSearchId: BookingID},
+    });
+    const flyhubId = bookingId.flyhubId;
+    const token = await this.getToken();
+    const ticketCancel = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: `${this.apiUrl}/AirCancel`,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      data: { BookingID: flyhubId },
+    };
+    try {
+      const response = await axios.request(ticketCancel);
+
+      return response
+      //return response.data
+    } catch (error) {
+      throw error?.response?.data;
+    }
   }
 }

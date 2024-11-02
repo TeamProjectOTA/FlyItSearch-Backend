@@ -37,6 +37,7 @@ export class BookingController {
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
+   
     const { Passengers } = data;
     const personIds: { index: number; visa?: string; passport?: string }[] = [];
     Passengers.forEach((passenger, index) => {
@@ -57,6 +58,7 @@ export class BookingController {
       delete passenger.visa;
       delete passenger.passport;
     });
+   
     return await this.flyHubService.airbook(
       data,
       header,
@@ -85,7 +87,7 @@ export class BookingController {
   }
 
   @ApiBearerAuth('access_token')
-  //@UseGuards(AdmintokenGuard)
+  @UseGuards(AdmintokenGuard)
   @Post('admin/flh/airRetrive')
   async airRetriveAdmin(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetriveAdmin(bookingIdDto);

@@ -235,8 +235,8 @@ export class AdminService {
     add.currierName = booking.Curriername;
     add.validationDate = dhakaTimeFormatted;
     add.tranDate = dhakaTimeFormatted;
-    add.paidAmount = booking.netAmmount.toString();
-    add.offerAmmount = booking.netAmmount;
+    add.paidAmount =Number( booking.netAmmount);
+    add.offerAmmount =Number( booking.netAmmount);
     add.riskTitle = 'Safe';
     add.cardType = 'Adjusted Money Added';
     add.status = 'Adjusted';
@@ -245,7 +245,6 @@ export class AdminService {
     booking.bookingStatus = 'Cancelled';
     booking.reason = reason;
     booking.actionBy = `${admin.firstName} ${admin.lastName}`;
-
     booking.actionAt = dhakaTimeFormatted;
     await this.userRepository.save(wallet);
     await this.bookingSaveRepository.save(booking);

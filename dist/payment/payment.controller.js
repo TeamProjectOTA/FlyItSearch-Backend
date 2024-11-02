@@ -20,29 +20,20 @@ let PaymentController = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
     }
-    async handleSuccess(bookingId, email, req, res) {
+    async handleSuccess(email, amount, req, res) {
         try {
             const { val_id } = req.body;
-            const response = await this.paymentService.validateOrder(val_id, bookingId, email);
-            if (response.status === 'VALID') {
-                res.status(common_1.HttpStatus.OK).json({
-                    message: 'Payment was successful.',
-                    details: response,
-                });
+            const validationResponse = await this.paymentService.validateOrder(val_id, email, amount);
+            if (validationResponse?.status === 'VALID') {
+                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
             }
             else {
-                res.status(common_1.HttpStatus.BAD_REQUEST).json({
-                    message: 'Payment validation failed.',
-                    details: response,
-                });
+                return res.status(400).json({ message: 'Payment validation failed', validationResponse });
             }
         }
         catch (error) {
-            console.error('Error handling success:', error);
-            res.status(common_1.HttpStatus.INTERNAL_SERVER_ERROR).json({
-                message: 'Failed to validate payment.',
-                error: error.message,
-            });
+            console.error('Error during payment validation:', error);
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     }
     handleFail(res) {
@@ -78,8 +69,8 @@ let PaymentController = class PaymentController {
         const result = await this.paymentService.executePaymentBkash(paymentID, status, bookingId, res, email);
         return result;
     }
-    async paymentReturn(bookingID, email, order_id) {
-        const paymentData = await this.paymentService.surjoVerifyPayment(order_id, bookingID, email);
+    async paymentReturn(bookingID, email, order_id, res) {
+        const paymentData = await this.paymentService.surjoVerifyPayment(order_id, bookingID, email, res);
         return {
             message: 'Payment successfull',
             data: paymentData,
@@ -94,19 +85,22 @@ let PaymentController = class PaymentController {
     async searchTransaction(transactionId) {
         return this.paymentService.searchTransaction(transactionId);
     }
-    async refundTransaction(paymentId, amount) {
-        return this.paymentService.refundTransaction(paymentId, amount);
+    async refundTransaction(paymentId, trxID, amount) {
+        return this.paymentService.refundTransaction(paymentId, amount, trxID);
+    }
+    async surjotest() {
+        return this.paymentService.surjoAuthentication();
     }
 };
 exports.PaymentController = PaymentController;
 __decorate([
     (0, common_1.Post)('/success/:bookingId/:email'),
-    __param(0, (0, common_1.Param)('bookingId')),
-    __param(1, (0, common_1.Param)('email')),
+    __param(0, (0, common_1.Param)('email')),
+    __param(1, (0, common_1.Param)('amount')),
     __param(2, (0, common_1.Req)()),
     __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object, Object]),
+    __metadata("design:paramtypes", [String, Number, Object, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleSuccess", null);
 __decorate([
@@ -148,8 +142,9 @@ __decorate([
     __param(0, (0, common_1.Param)('bookingID')),
     __param(1, (0, common_1.Param)('email')),
     __param(2, (0, common_1.Query)('order_id')),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:paramtypes", [String, String, String, Object]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "paymentReturn", null);
 __decorate([
@@ -177,13 +172,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "searchTransaction", null);
 __decorate([
-    (0, common_1.Post)('refund'),
-    __param(0, (0, common_1.Body)('paymentId')),
-    __param(1, (0, common_1.Body)('amount')),
+    (0, common_1.Post)('refund/:paymentId/:amount/:trxID'),
+    __param(0, (0, common_1.Param)('paymentId')),
+    __param(1, (0, common_1.Param)('trxID')),
+    __param(2, (0, common_1.Param)('amount')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number]),
+    __metadata("design:paramtypes", [String, String, Number]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "refundTransaction", null);
+__decorate([
+    (0, common_1.Get)('auth/surjo'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PaymentController.prototype, "surjotest", null);
 exports.PaymentController = PaymentController = __decorate([
     (0, swagger_1.ApiTags)('SSLCOMMERZ'),
     (0, common_1.Controller)('payment'),

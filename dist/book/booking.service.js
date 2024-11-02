@@ -19,11 +19,17 @@ const typeorm_2 = require("typeorm");
 const booking_model_1 = require("./booking.model");
 const user_entity_1 = require("../user/entities/user.entity");
 const auth_service_1 = require("../auth/auth.service");
+const axios_1 = require("axios");
+const flight_model_1 = require("../flight/flight.model");
 let BookingService = class BookingService {
-    constructor(userRepository, authservice, bookingSaveRepository) {
+    constructor(userRepository, authservice, bookingSaveRepository, bookingIdSave) {
         this.userRepository = userRepository;
         this.authservice = authservice;
         this.bookingSaveRepository = bookingSaveRepository;
+        this.bookingIdSave = bookingIdSave;
+        this.username = process.env.FLYHUB_UserName;
+        this.apiKey = process.env.FLYHUB_ApiKey;
+        this.apiUrl = process.env.FLyHub_Url;
     }
     async saveBooking(createSaveBookingDto, header) {
         const email = await this.authservice.decodeToken(header);
@@ -105,7 +111,13 @@ let BookingService = class BookingService {
                 const userBooking = await this.bookingSaveRepository.findOne({
                     where: { bookingId: booking.bookingId },
                 });
-                userBooking.bookingStatus = 'Cancelled';
+                const cancelData = await this.aircancel(booking.bookingId);
+                if (cancelData?.BookingStatus) {
+                    userBooking.bookingStatus = cancelData?.BookingStatus;
+                }
+                else {
+                    userBooking.bookingStatus = 'Cancelled';
+                }
                 await this.bookingSaveRepository.save(userBooking);
             }
         }
@@ -125,14 +137,62 @@ let BookingService = class BookingService {
             saveBookings: user.bookingSave,
         };
     }
+    async getToken() {
+        try {
+            const config = {
+                method: 'post',
+                url: `${this.apiUrl}/Authenticate`,
+                data: {
+                    username: this.username,
+                    apiKey: this.apiKey,
+                },
+            };
+            const response = await axios_1.default.request(config);
+            const token = response?.data?.TokenId;
+            if (!token) {
+                throw new common_1.HttpException('Token not found in response', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            return token;
+        }
+        catch (error) {
+            console.error('Error fetching token:', error.response?.data || error.message);
+            throw new common_1.HttpException('Failed to authenticate', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async aircancel(BookingID) {
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID },
+        });
+        const flyhubId = bookingId.flyhubId;
+        const token = await this.getToken();
+        const ticketCancel = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirCancel`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: { BookingID: flyhubId },
+        };
+        try {
+            const response = await axios_1.default.request(ticketCancel);
+            return response;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
+    }
 };
 exports.BookingService = BookingService;
 exports.BookingService = BookingService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(2, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(3, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         auth_service_1.AuthService,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], BookingService);
 //# sourceMappingURL=booking.service.js.map

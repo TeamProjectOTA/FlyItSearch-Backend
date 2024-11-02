@@ -34,12 +34,12 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "bookingId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ nullable: true, type: 'double' }),
+    __metadata("design:type", Number)
 ], Transection.prototype, "paidAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: true }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ nullable: true, type: 'double' }),
+    __metadata("design:type", Number)
 ], Transection.prototype, "offerAmmount", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -90,6 +90,10 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "paymentType", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Transection.prototype, "paymentId", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.transection, { onDelete: 'CASCADE' }),
     __metadata("design:type", user_entity_1.User)
 ], Transection.prototype, "user", void 0);
@@ -114,7 +118,7 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], CreateTransectionDto.prototype, "offerAmmount", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),

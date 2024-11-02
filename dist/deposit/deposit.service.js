@@ -144,7 +144,7 @@ let DepositService = class DepositService {
                 .format('YYYY-MM-DD HH:mm:ss');
             addTransection.requestType = `${deposit.depositType} Transfar`;
             addTransection.bankTranId = deposit.referance;
-            addTransection.paidAmount = deposit.ammount.toString();
+            addTransection.paidAmount = deposit.ammount;
             addTransection.status = 'Deposited';
             addTransection.riskTitle = 'Checked OK';
             addTransection.validationDate = moment
@@ -211,8 +211,8 @@ let DepositService = class DepositService {
                 let addTransection = new transection_model_1.Transection();
                 addTransection.tranId = response.tran_id;
                 addTransection.tranDate = response.tran_date;
-                addTransection.paidAmount = String(amount);
-                addTransection.offerAmmount = String(Math.floor(response.store_amount));
+                addTransection.paidAmount = amount;
+                addTransection.offerAmmount = Math.floor(response.store_amount);
                 addTransection.bankTranId = response.bank_tran_id;
                 addTransection.riskTitle = response.risk_title;
                 addTransection.cardType = response.card_type;
@@ -300,7 +300,7 @@ let DepositService = class DepositService {
             return 'Payment Failed';
         }
     }
-    async surjoVerifyPayment(sp_order_id, email, amount) {
+    async surjoVerifyPayment(sp_order_id, email, amount, res) {
         const tokenDetails = await this.paymentService.surjoAuthentication();
         const { token, token_type } = tokenDetails;
         try {
@@ -320,7 +320,7 @@ let DepositService = class DepositService {
                 let addTransection = new transection_model_1.Transection();
                 addTransection.tranId = data.customer_order_id;
                 addTransection.tranDate = data.date_time;
-                addTransection.paidAmount = String(amount);
+                addTransection.paidAmount = amount;
                 addTransection.offerAmmount = data.received_amount;
                 addTransection.bankTranId = data.bank_trx_id;
                 addTransection.riskTitle = 'safe';
@@ -356,7 +356,7 @@ let DepositService = class DepositService {
                 addDeposit.status = 'Instant Deposit';
                 addDeposit.depositType = 'MOBILEBANKING';
                 await this.depositRepository.save(addDeposit);
-                return data;
+                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
             }
             else {
                 throw new Error('Payment validation failed. Invalid status.');
@@ -375,7 +375,7 @@ let DepositService = class DepositService {
         try {
             const paymentDetails = {
                 amount: amount || 10,
-                callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/${email}/${amount}`,
+                callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/`,
                 orderID: tran_id || 'Order_101',
                 reference: `${email}`,
             };
@@ -386,69 +386,79 @@ let DepositService = class DepositService {
             console.log(e);
         }
     }
-    async executePaymentBkash(paymentID, status, amount, res, email) {
-        console.log(paymentID, status, amount, res, email);
+    async executePaymentBkash(paymentID, status, res) {
         try {
             if (status === 'success') {
                 const response = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
                 if (response?.transactionStatus === 'Completed' &&
                     response?.statusMessage === 'Successful') {
+                    const email = response.payerReference;
                     const user = await this.userRepository.findOne({
-                        where: { email: email },
-                    });
-                    const tranDate = response.paymentExecuteTime
-                        .split(' GMT')[0]
-                        .replace('T', ' ');
-                    const airTicketPrice = amount;
-                    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125);
-                    const store_amount = Math.ceil(airTicketPrice - paymentGatwayCharge);
-                    let addTransection = new transection_model_1.Transection();
-                    addTransection.tranId = response.merchantInvoiceNumber;
-                    addTransection.tranDate = tranDate;
-                    addTransection.paidAmount = String(amount);
-                    addTransection.offerAmmount = String(Math.floor(store_amount));
-                    addTransection.bankTranId = response.paymentID;
-                    addTransection.riskTitle = 'Safe';
-                    addTransection.cardType = 'Bkash';
-                    addTransection.cardIssuer = 'Bkash';
-                    addTransection.cardBrand = response.payerAccount;
-                    addTransection.cardIssuerCountry = 'BD';
-                    addTransection.validationDate = tranDate;
-                    addTransection.status = 'Deposited';
-                    const findUser = await this.userRepository.findOne({
                         where: { email: email },
                         relations: ['wallet'],
                     });
-                    addTransection.walletBalance =
-                        findUser.wallet.ammount + Math.floor(store_amount);
-                    findUser.wallet.ammount =
-                        findUser.wallet.ammount + Math.floor(store_amount);
-                    addTransection.paymentType = 'Instaint Payment ';
-                    addTransection.requestType = `Instaint Money added `;
-                    addTransection.user = user;
-                    await this.walletRepository.save(findUser.wallet);
-                    await this.transectionRepository.save(addTransection);
+                    if (!user || !user.wallet) {
+                        throw new Error('User or wallet not found');
+                    }
+                    const tranDate = response?.paymentExecuteTime
+                        .split(' GMT')[0]
+                        .replace('T', ' ');
+                    const amount = parseFloat(response.amount);
+                    if (isNaN(amount)) {
+                        throw new Error('Invalid amount value');
+                    }
+                    const airTicketPrice = amount;
+                    const paymentGatewayCharge = airTicketPrice * 0.0125;
+                    const storeAmount = Math.ceil(airTicketPrice - paymentGatewayCharge);
+                    let addTransaction = new transection_model_1.Transection();
+                    addTransaction.tranId = response.merchantInvoiceNumber;
+                    addTransaction.tranDate = tranDate;
+                    addTransaction.paidAmount = amount;
+                    addTransaction.offerAmmount = storeAmount;
+                    addTransaction.bankTranId = response?.trxID;
+                    addTransaction.paymentId = paymentID;
+                    addTransaction.riskTitle = 'Safe';
+                    addTransaction.cardType = 'Bkash';
+                    addTransaction.cardIssuer = 'Bkash';
+                    addTransaction.cardBrand = response?.payerAccount;
+                    addTransaction.cardIssuerCountry = 'BD';
+                    addTransaction.validationDate = tranDate;
+                    addTransaction.status = 'Deposited';
+                    addTransaction.walletBalance = user.wallet.ammount + storeAmount;
+                    addTransaction.paymentType = 'Instant Payment';
+                    addTransaction.requestType = 'Instant Money added';
+                    addTransaction.user = user;
+                    user.wallet.ammount += storeAmount;
+                    await this.walletRepository.save(user.wallet);
+                    await this.transectionRepository.save(addTransaction);
                     let addDeposit = new deposit_model_1.Deposit();
                     addDeposit.user = user;
-                    addDeposit.ammount = Math.floor(store_amount);
-                    addDeposit.depositId = response.merchantInvoiceNumber;
-                    addDeposit.depositedFrom = response.payerAccount;
+                    addDeposit.ammount = storeAmount;
+                    addDeposit.depositId = response?.merchantInvoiceNumber;
+                    addDeposit.depositedFrom = response?.payerAccount;
                     addDeposit.senderName = user.fullName;
-                    addDeposit.createdAt = moment
-                        .utc(tranDate)
-                        .format('YYYY-MM-DD HH:mm:ss');
-                    addDeposit.actionAt = moment
-                        .utc(tranDate)
-                        .format('YYYY-MM-DD HH:mm:ss');
+                    const tranDateObject = new Date(tranDate);
+                    addDeposit.createdAt = tranDateObject
+                        .toISOString()
+                        .split('T')
+                        .join(' ')
+                        .slice(0, 19);
+                    addDeposit.actionAt = tranDateObject
+                        .toISOString()
+                        .split('T')
+                        .join(' ')
+                        .slice(0, 19);
                     addDeposit.status = 'Instant Deposit';
                     addDeposit.depositType = 'Bkash-MoneyAdd';
                     await this.depositRepository.save(addDeposit);
+                    return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
                 }
-                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+                else {
+                    return res.redirect(`${process.env.BASE_CALLBACKURL}payment/cancel`);
+                }
             }
             else {
-                console.log('Payment not successful, skipping execution.');
-                return null;
+                return res.redirect(`${process.env.BASE_CALLBACKURL}payment/cancel`);
             }
         }
         catch (e) {

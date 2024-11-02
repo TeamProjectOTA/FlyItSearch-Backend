@@ -302,8 +302,15 @@ let FlyHubUtil = class FlyHubUtil {
                     const PartialAmount = NetFare * 0.3;
                     const Refundable = Result?.IsRefundable;
                     let TimeLimit = null;
-                    if (Result?.LastTicketDate) {
-                        const lastTicketDate = Result?.LastTicketDate;
+                    if (bookingStatus == 'IssueInProcess') {
+                        if (Result?.LastTicketDate) {
+                            const lastTicketDate = Result?.LastTicketDate;
+                            TimeLimit = `${lastTicketDate}`;
+                        }
+                    }
+                    else {
+                        const timestamp = new Date(bookingDate);
+                        const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
                         TimeLimit = `${lastTicketDate}`;
                     }
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
@@ -461,7 +468,6 @@ let FlyHubUtil = class FlyHubUtil {
         const sslpaymentLink = await this.paymentService
             .dataModification(FlightItenary, header)
             .catch(() => null);
-        const surjopay = await this.paymentService.formdata(FlightItenary, header);
         const bkash = await this.paymentService.bkashInit(FlightItenary, header);
         const price = FlightItenary?.[0]?.NetFare || 0;
         const email = await this.authService.decodeToken(header).catch(() => 'NA');
@@ -479,7 +485,6 @@ let FlyHubUtil = class FlyHubUtil {
         return {
             bookingData: FlightItenary,
             sslpaymentLink: sslpaymentLink,
-            surjopay: surjopay,
             bkash: bkash,
             walletPayment: { walletAmmount, price, priceAfterPayment },
         };
@@ -532,11 +537,10 @@ let FlyHubUtil = class FlyHubUtil {
                     const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
                     const PartialAmount = NetFare * 0.3;
                     const Refundable = Result?.IsRefundable;
+                    const timestamp = new Date(currentTimestamp);
                     let TimeLimit = null;
-                    if (Result?.LastTicketDate) {
-                        const lastTicketDate = Result?.LastTicketDate;
-                        TimeLimit = `${lastTicketDate}`;
-                    }
+                    const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+                    TimeLimit = `${lastTicketDate}`;
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
                         const PaxType = allPassenger?.PaxType;
                         const paxCount = allPassenger?.PassengerCount;
@@ -687,9 +691,10 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
+        const booking = FlightItenary;
         const save = await this.saveBookingData(FlightItenary, header, personIds);
         return {
-            bookingData: FlightItenary,
+            bookingData: booking,
             save: save,
         };
     }

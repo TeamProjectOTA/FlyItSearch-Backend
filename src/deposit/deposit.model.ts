@@ -55,7 +55,7 @@ export class Deposit {
 export class Wallet {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ default: 0 })
+  @Column({ type: 'double', default: 0 })
   ammount: number;
   @OneToOne(() => User, (user) => user.wallet, { onDelete: 'CASCADE' })
   @JoinColumn()

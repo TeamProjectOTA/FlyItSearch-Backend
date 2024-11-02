@@ -35,9 +35,9 @@ export declare class DepositService {
     surjoPayInit(header: any, amount: number): Promise<"Payment Failed" | {
         surjoPay: any;
     }>;
-    surjoVerifyPayment(sp_order_id: string, email: string, amount: number): Promise<any>;
+    surjoVerifyPayment(sp_order_id: string, email: string, amount: number, res: any): Promise<any>;
     createPaymentBkash(amount: number, header: any): Promise<{
         bkash: any;
     }>;
-    executePaymentBkash(paymentID: string, status: string, amount: number, res: any, email: string): Promise<any>;
+    executePaymentBkash(paymentID: string, status: string, res: any): Promise<any>;
 }

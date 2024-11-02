@@ -13,10 +13,10 @@ export class Transection {
   tranDate: string;
   @Column({ nullable: true })
   bookingId: string;
-  @Column({ nullable: true })
-  paidAmount: string;
-  @Column({ nullable: true })
-  offerAmmount: string;
+  @Column({ nullable: true,type: 'double' })
+  paidAmount: number;
+  @Column({ nullable: true,type: 'double'})
+  offerAmmount: number;
   @Column({ nullable: true })
   bankTranId: string;
   @Column({ nullable: true })
@@ -41,6 +41,8 @@ export class Transection {
   walletBalance: number;
   @Column()
   paymentType: string;
+  @Column({nullable:true})
+  paymentId:string
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
 }
@@ -57,7 +59,7 @@ export class CreateTransectionDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  offerAmmount?: string;
+  offerAmmount?: number;
 
   @ApiProperty()
   @IsOptional()

@@ -114,26 +114,16 @@ export class DepositController {
   ) {
     try {
       const { val_id } = req.body;
-      const validationResponse = await this.depositService.validateOrder(
-        val_id,
-        email,
-        amount,
-      );
+      const validationResponse = await this.depositService.validateOrder(val_id, email, amount);
+  
       if (validationResponse?.status === 'VALID') {
-        return res
-          .status(200)
-          .json({ message: 'Payment successful', validationResponse });
+        return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
       } else {
-        //console.error('Payment validation failed:', validationResponse);
-        return res
-          .status(400)
-          .json({ message: 'Payment validation failed', validationResponse });
+        return res.status(400).json({ message: 'Payment validation failed', validationResponse });
       }
     } catch (error) {
       console.error('Error during payment validation:', error);
-      return res
-        .status(500)
-        .json({ message: 'Internal server error', error: error.message });
+      return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
   }
 
@@ -148,16 +138,15 @@ export class DepositController {
     @Param('email') email: string,
     @Param('amount') amount: number,
     @Query('order_id') order_id: string,
+    @Res() res: Response,
   ) {
     const paymentData = await this.depositService.surjoVerifyPayment(
       order_id,
       email,
       amount,
+      res
     );
-    return {
-      message: 'Payment successfull',
-      data: paymentData,
-    };
+    return paymentData
   }
 
   @ApiBearerAuth('access_token')
@@ -170,22 +159,18 @@ export class DepositController {
     );
   }
 
-  @Get('bkash/callback/:email/:amount')
+  @Get('bkash/callback/')
   async handlePaymentCallback(
-    @Param('amount') amount: number,
-    @Param('email') email: string,
     @Query('paymentID') paymentID: string,
     @Query('status') status: string,
-    @Query('signature') signature: string,
     @Res() res: Response,
-  ) {
+  ) {  
     const result = await this.depositService.executePaymentBkash(
       paymentID,
       status,
-      amount,
       res,
-      email,
     );
     return result;
   }
+ 
 }

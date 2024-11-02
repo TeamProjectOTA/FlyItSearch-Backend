@@ -4,8 +4,8 @@ export declare class Transection {
     tranId: string;
     tranDate: string;
     bookingId: string;
-    paidAmount: string;
-    offerAmmount: string;
+    paidAmount: number;
+    offerAmmount: number;
     bankTranId: string;
     riskTitle: string;
     cardType: string;
@@ -18,11 +18,12 @@ export declare class Transection {
     requestType: string;
     walletBalance: number;
     paymentType: string;
+    paymentId: string;
     user: User;
 }
 export declare class CreateTransectionDto {
     bookingId?: string;
     paidAmount?: number;
-    offerAmmount?: string;
+    offerAmmount?: number;
     currierName?: string;
 }

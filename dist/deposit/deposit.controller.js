@@ -57,38 +57,29 @@ let DepositController = class DepositController {
             const { val_id } = req.body;
             const validationResponse = await this.depositService.validateOrder(val_id, email, amount);
             if (validationResponse?.status === 'VALID') {
-                return res
-                    .status(200)
-                    .json({ message: 'Payment successful', validationResponse });
+                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
             }
             else {
-                return res
-                    .status(400)
-                    .json({ message: 'Payment validation failed', validationResponse });
+                return res.status(400).json({ message: 'Payment validation failed', validationResponse });
             }
         }
         catch (error) {
             console.error('Error during payment validation:', error);
-            return res
-                .status(500)
-                .json({ message: 'Internal server error', error: error.message });
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     }
     async surjoPay(header, depositDto) {
         return await this.depositService.surjoPayInit(header, depositDto.amount);
     }
-    async depositSuccessSurjoPay(email, amount, order_id) {
-        const paymentData = await this.depositService.surjoVerifyPayment(order_id, email, amount);
-        return {
-            message: 'Payment successfull',
-            data: paymentData,
-        };
+    async depositSuccessSurjoPay(email, amount, order_id, res) {
+        const paymentData = await this.depositService.surjoVerifyPayment(order_id, email, amount, res);
+        return paymentData;
     }
     async bkash(header, depositDto) {
         return await this.depositService.createPaymentBkash(depositDto.amount, header);
     }
-    async handlePaymentCallback(amount, email, paymentID, status, signature, res) {
-        const result = await this.depositService.executePaymentBkash(paymentID, status, amount, res, email);
+    async handlePaymentCallback(paymentID, status, res) {
+        const result = await this.depositService.executePaymentBkash(paymentID, status, res);
         return result;
     }
 };
@@ -192,8 +183,9 @@ __decorate([
     __param(0, (0, common_1.Param)('email')),
     __param(1, (0, common_1.Param)('amount')),
     __param(2, (0, common_1.Query)('order_id')),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, String]),
+    __metadata("design:paramtypes", [String, Number, String, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "depositSuccessSurjoPay", null);
 __decorate([
@@ -207,15 +199,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "bkash", null);
 __decorate([
-    (0, common_1.Get)('bkash/callback/:email/:amount'),
-    __param(0, (0, common_1.Param)('amount')),
-    __param(1, (0, common_1.Param)('email')),
-    __param(2, (0, common_1.Query)('paymentID')),
-    __param(3, (0, common_1.Query)('status')),
-    __param(4, (0, common_1.Query)('signature')),
-    __param(5, (0, common_1.Res)()),
+    (0, common_1.Get)('bkash/callback/'),
+    __param(0, (0, common_1.Query)('paymentID')),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, String, String, String, String, Object]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "handlePaymentCallback", null);
 exports.DepositController = DepositController = __decorate([

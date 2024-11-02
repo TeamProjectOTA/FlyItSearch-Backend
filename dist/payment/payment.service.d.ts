@@ -13,11 +13,6 @@ export declare class PaymentService {
     private readonly sslcommerzsslcommerzStoreId;
     private readonly sslcommerzStorePwd;
     private readonly isLive;
-    private bkashBaseUrl;
-    private bkashAppKey;
-    private bkashAppSecret;
-    private bkashUserName;
-    private bkashPwd;
     private bkashConfig;
     private surjoBaseUrl;
     private surjoUserName;
@@ -37,7 +32,7 @@ export declare class PaymentService {
     executePaymentBkash(paymentID: string, status: string, bookingId: string, res: any, email: string): Promise<any>;
     queryPayment(paymentId: string): Promise<any>;
     searchTransaction(transactionId: string): Promise<any>;
-    refundTransaction(paymentId: string, amount: number): Promise<any>;
+    refundTransaction(paymentId: string, amount: number, trxID: string): Promise<any>;
     formdata(SearchResponse?: any, header?: any): Promise<{
         url: any;
         airTicketPrice: any;
@@ -46,6 +41,5 @@ export declare class PaymentService {
     }>;
     surjoAuthentication(): Promise<any>;
     surjoMakePayment(data: any, bookingId: string, header: any): Promise<any>;
-    surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string): Promise<any>;
-    createPayment(amount: number): Promise<any>;
+    surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string, res: any): Promise<any>;
 }

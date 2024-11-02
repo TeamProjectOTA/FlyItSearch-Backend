@@ -15,16 +15,13 @@ export declare class DepositController {
     sslcommerz(header: any, depositDto: DepositDto): Promise<{
         sslcommerz: any;
     }>;
-    depositSuccessSSLCommerz(email: string, amount: number, req: Request, res: Response): Promise<Response<any, Record<string, any>>>;
+    depositSuccessSSLCommerz(email: string, amount: number, req: Request, res: Response): Promise<void | Response<any, Record<string, any>>>;
     surjoPay(header: any, depositDto: DepositDto): Promise<"Payment Failed" | {
         surjoPay: any;
     }>;
-    depositSuccessSurjoPay(email: string, amount: number, order_id: string): Promise<{
-        message: string;
-        data: any;
-    }>;
+    depositSuccessSurjoPay(email: string, amount: number, order_id: string, res: Response): Promise<any>;
     bkash(header: any, depositDto: DepositDto): Promise<{
         bkash: any;
     }>;
-    handlePaymentCallback(amount: number, email: string, paymentID: string, status: string, signature: string, res: Response): Promise<any>;
+    handlePaymentCallback(paymentID: string, status: string, res: Response): Promise<any>;
 }

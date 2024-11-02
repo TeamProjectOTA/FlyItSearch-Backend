@@ -23,35 +23,23 @@ export class PaymentController {
 
   @Post('/success/:bookingId/:email')
   async handleSuccess(
-    @Param('bookingId') bookingId: string,
     @Param('email') email: string,
+    @Param('amount') amount: number,
     @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
       const { val_id } = req.body;
-      const response = await this.paymentService.validateOrder(
-        val_id,
-        bookingId,
-        email,
-      );
-      if (response.status === 'VALID') {
-        res.status(HttpStatus.OK).json({
-          message: 'Payment was successful.',
-          details: response,
-        });
+      const validationResponse = await this.paymentService.validateOrder(val_id, email, amount);
+  
+      if (validationResponse?.status === 'VALID') {
+        return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
       } else {
-        res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Payment validation failed.',
-          details: response,
-        });
+        return res.status(400).json({ message: 'Payment validation failed', validationResponse });
       }
     } catch (error) {
-      console.error('Error handling success:', error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'Failed to validate payment.',
-        error: error.message,
-      });
+      console.error('Error during payment validation:', error);
+      return res.status(500).json({ message: 'Internal server error', error: error.message });
     }
   }
 
@@ -118,11 +106,14 @@ export class PaymentController {
     @Param('bookingID') bookingID: string,
     @Param('email') email: string,
     @Query('order_id') order_id: string,
+    @Res() res: Response,
+    
   ) {
     const paymentData = await this.paymentService.surjoVerifyPayment(
       order_id,
       bookingID,
       email,
+      res
     );
     return {
       message: 'Payment successfull',
@@ -139,7 +130,6 @@ export class PaymentController {
   ) {
     return this.paymentService.createPaymentBkash(amount, bookingId, header);
   }
-
   @Post('query/:paymentId')
   async queryPayment(@Param('paymentId') paymentId: string) {
     return this.paymentService.queryPayment(paymentId);
@@ -150,11 +140,16 @@ export class PaymentController {
     return this.paymentService.searchTransaction(transactionId);
   }
 
-  @Post('refund')
+  @Post('refund/:paymentId/:amount/:trxID')
   async refundTransaction(
-    @Body('paymentId') paymentId: string,
-    @Body('amount') amount: number,
+    @Param('paymentId') paymentId: string,
+    @Param('trxID') trxID: string,
+    @Param('amount') amount: number,
   ) {
-    return this.paymentService.refundTransaction(paymentId, amount);
+    return this.paymentService.refundTransaction(paymentId, amount,trxID);
   }
+ @Get('auth/surjo')
+ async surjotest(){
+  return this.paymentService.surjoAuthentication()
+ }
 }

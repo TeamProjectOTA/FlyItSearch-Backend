@@ -78,7 +78,7 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
   @ApiBearerAuth('access_token')
-  @Post('flh/airSearch/')
+  @Post('fhb/airSearch/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
     @Req() request: Request,

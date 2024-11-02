@@ -135,7 +135,7 @@ __decorate([
 ], FlightController.prototype, "airretrieve", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('flh/airSearch/'),
+    (0, common_1.Post)('fhb/airSearch/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
