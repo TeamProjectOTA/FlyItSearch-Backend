@@ -114,7 +114,19 @@ let UserService = class UserService {
             updateUser.emailVerified = false;
             await this.authservice.sendVerificationEmail(updateUser.email, verificationToken);
         }
-        return await this.userRepository.save(updateUser);
+        await this.userRepository.save(updateUser);
+        const userResponse = {
+            id: updateUser.id,
+            fullName: updateUser.fullName,
+            email: updateUser.email,
+            phone: updateUser.phone,
+            dob: updateUser.dob,
+            nationility: updateUser.nationility,
+            gender: updateUser.gender,
+            passport: updateUser.passport,
+            passportexp: updateUser.passportexp,
+        };
+        return userResponse;
     }
     async allUser(header) {
         const verifyAdmin = await this.authservice.verifyAdminToken(header);

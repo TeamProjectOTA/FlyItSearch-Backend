@@ -6,7 +6,17 @@ export declare class UserController {
     private readonly userService;
     constructor(userService: UserService);
     create(createUserDto: CreateUserDto): Promise<any>;
-    update(header: Headers, updateUserDto: UpdateUserDto): Promise<User>;
+    update(header: Headers, updateUserDto: UpdateUserDto): Promise<{
+        id: number;
+        fullName: string;
+        email: string;
+        phone: string;
+        dob: string;
+        nationility: string;
+        gender: string;
+        passport: string;
+        passportexp: string;
+    }>;
     findAllUser(header: Headers): Promise<User[]>;
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<Partial<User>>;
     findAllUserWithBookings(): Promise<any>;

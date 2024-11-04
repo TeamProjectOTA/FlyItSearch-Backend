@@ -934,6 +934,7 @@ export class FlyHubUtil {
         netAmmount: booking?.NetFare,
         TripType: tripType,
         personId: personIds,
+        bookingData:SearchResponse,
         laginfo: booking?.AllLegsInfo.map((leg: any) => ({
           DepDate: leg?.DepDate,
           DepFrom: leg?.DepFrom,

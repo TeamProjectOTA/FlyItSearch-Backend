@@ -12,7 +12,17 @@ export declare class UserService {
     private readonly ipAddressRepository;
     constructor(userRepository: Repository<User>, transectionRepository: Repository<Transection>, authservice: AuthService, ipAddressRepository: Repository<IpAddress>);
     create(createUserDto: CreateUserDto): Promise<any>;
-    update(header: any, updateUserDto: UpdateUserDto): Promise<User>;
+    update(header: any, updateUserDto: UpdateUserDto): Promise<{
+        id: number;
+        fullName: string;
+        email: string;
+        phone: string;
+        dob: string;
+        nationility: string;
+        gender: string;
+        passport: string;
+        passportexp: string;
+    }>;
     allUser(header: any): Promise<User[]>;
     findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
     findAllUserWithBookings(): Promise<any>;

@@ -10,7 +10,6 @@ import { PaymentModule } from './payment/payment.module';
 import { FlightModule } from './flight/flight.module';
 import { GoogleOuthModule } from './google-outh/google-outh.module';
 import { HomepageModule } from './homepage/homepage.module';
-import { PdfModule } from './pdf/pdf.module';
 import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 import { IpModule } from './ip/ip.module';
@@ -73,7 +72,6 @@ require('dotenv').config();
     GoogleOuthModule,
     BookingModule,
     HomepageModule,
-    PdfModule,
     IpModule,
     TourPackageModule,
     AirlinesModule,

@@ -26,8 +26,15 @@ let GoogleOuthController = class GoogleOuthController {
     async googleAuth(req) {
         console.log('User from Google:', req.user);
     }
-    async googleAuthRedirect(req) {
-        return req.user;
+    async googleAuthRedirect(req, res) {
+        const user = req.user;
+        return res.status(200).json({
+            user,
+        });
+    }
+    async validateUser(user) {
+        const validatedUser = await this.authService.validateUser(user);
+        return validatedUser;
     }
 };
 exports.GoogleOuthController = GoogleOuthController;
@@ -43,10 +50,18 @@ __decorate([
     (0, common_1.Get)('google/redirect'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], GoogleOuthController.prototype, "googleAuthRedirect", null);
+__decorate([
+    (0, common_1.Post)('fireabaseGoogle'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], GoogleOuthController.prototype, "googleAuthRedirect", null);
+], GoogleOuthController.prototype, "validateUser", null);
 exports.GoogleOuthController = GoogleOuthController = __decorate([
     (0, swagger_1.ApiTags)('Google-log-in'),
     (0, common_1.Controller)('social-site'),

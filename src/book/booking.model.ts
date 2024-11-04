@@ -53,6 +53,8 @@ export class BookingSave {
   laginfo: any; // Store laginfo as a JSON object
   @Column('json', { nullable: true })
   personId: { index?: number; visa?: string; passport?: string }[];
+  @Column('json', { nullable: true })
+  bookingData: any;
   @ManyToOne(() => User, (user) => user.bookingSave, { onDelete: 'CASCADE' })
   user: User;
 }

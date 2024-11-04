@@ -24,6 +24,7 @@ export declare class BookingSave {
         visa?: string;
         passport?: string;
     }[];
+    bookingData: any;
     user: User;
 }
 declare class CreateLagInfoDto {

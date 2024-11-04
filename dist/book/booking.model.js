@@ -99,6 +99,10 @@ __decorate([
     __metadata("design:type", Array)
 ], BookingSave.prototype, "personId", void 0);
 __decorate([
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Object)
+], BookingSave.prototype, "bookingData", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.bookingSave, { onDelete: 'CASCADE' }),
     __metadata("design:type", user_entity_1.User)
 ], BookingSave.prototype, "user", void 0);

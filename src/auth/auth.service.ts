@@ -12,7 +12,6 @@ import { Admin } from 'src/admin/entities/admin.entity';
 import { User } from 'src/user/entities/user.entity';
 import { MoreThan, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-
 import * as nodemailer from 'nodemailer';
 import { Wallet } from 'src/deposit/deposit.model';
 
@@ -188,11 +187,10 @@ export class AuthService {
     }
   }
 
-  //  for ratelimiter
   async getUserByEmail(email: string): Promise<User> {
     return this.userRepository.findOne({ where: { email: email } });
   }
-  //for ratelimiter
+
   async getAdminByUUID(uuid: string): Promise<Admin> {
     return this.adminRepository.findOne({ where: { uuid: uuid } });
   }
@@ -321,7 +319,7 @@ export class AuthService {
     }
 
     const payload = { sub: user.email, sub2: user.passengerId };
-    const expiresInSeconds = this.time; // Adjust expiration as needed
+    const expiresInSeconds = this.time; 
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
 
     const dhakaOffset = 6 * 60 * 60 * 1000;

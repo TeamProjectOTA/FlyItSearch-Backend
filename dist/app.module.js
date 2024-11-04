@@ -19,7 +19,6 @@ const payment_module_1 = require("./payment/payment.module");
 const flight_module_1 = require("./flight/flight.module");
 const google_outh_module_1 = require("./google-outh/google-outh.module");
 const homepage_module_1 = require("./homepage/homepage.module");
-const pdf_module_1 = require("./pdf/pdf.module");
 const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
 const ip_module_1 = require("./ip/ip.module");
@@ -77,7 +76,6 @@ exports.AppModule = AppModule = __decorate([
             google_outh_module_1.GoogleOuthModule,
             booking_module_1.BookingModule,
             homepage_module_1.HomepageModule,
-            pdf_module_1.PdfModule,
             ip_module_1.IpModule,
             tour_package_module_1.TourPackageModule,
             airlines_module_1.AirlinesModule,
