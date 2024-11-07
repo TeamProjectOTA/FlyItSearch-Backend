@@ -92,34 +92,6 @@ export class BookingController {
   async airRetriveAdmin(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetriveAdmin(bookingIdDto);
   }
-
-  // @ApiBearerAuth('access_token')
-  // @Post('testBooking')
-  // async bookingtest(
-  //   @Body() data: data,
-  //   @Headers() headers: any,
-  //   @Query('bookingId') bookingId?: string,
-  // ): Promise<any> {
-  //   return await this.flyHubUtil.saveBookingData(data, headers, bookingId);
-  // }
-
-  // // @Post('one/testBooking')
-  // // async test(@Body() data: any): Promise<any> {
-  // //   return await this.flyHubUtil.restBFMParser(data);
-  // // }
-  // @ApiBearerAuth('access_token')
-  // @Post('/save-booking')
-  // async SaveBooking(
-  //   @Body() createSaveBookingDto: CreateSaveBookingDto,
-  //   @Headers() header: Headers,
-  // ) {
-  //   return this.bookingService.saveBooking(createSaveBookingDto, header);
-  // }
-  // @ApiBearerAuth('access_token')
-  // @Get('/test')
-  // async test(@Headers() header: Headers) {
-  //   return;
-  // }
   @UseGuards(AdmintokenGuard)
   @ApiBearerAuth('access_token')
   @Get('admin/allBooking/:bookingStatus')
@@ -136,4 +108,12 @@ export class BookingController {
   ): Promise<any> {
     return this.bookingService.findUserWithBookings(header, bookingStatus);
   }
+
+
+  
+  // @Post('flh/makeTicket')
+  // @UseGuards(AdmintokenGuard)
+  // async ticletMake(@Body() bookingIdDto: BookingID) {
+  //  return await this.flyHubService.makeTicket(bookingIdDto)
+  // }
 }

@@ -329,6 +329,8 @@ export class FlyHubService {
     }
   }
 
+  
+
   async convertToFlyAirSearchDto(
     flightSearchModel: FlightSearchModel,
     userIp: string,
@@ -374,4 +376,50 @@ export class FlyHubService {
     }
     return '3';
   }
+
+
+
+
+
+  // async makeTicket(BookingID: BookingID){
+  //   const findBooking = await this.bookingSaveRepository.findOne({
+  //     where: { bookingId: BookingID.BookingID },
+  //     relations: ['user'],
+  //   });
+  //   const bookingId = await this.bookingIdSave.findOne({
+  //     where: { flyitSearchId: BookingID.BookingID },
+  //   });
+  //   if (!bookingId) {
+  //     throw new NotFoundException(
+  //       `No Booking Found with ${BookingID.BookingID}`,
+  //     );
+  //   }
+  //   const flyhubId = bookingId.flyhubId;
+  //   const token = await this.getToken();
+  //   const makeTicket = {
+  //     method: 'post',
+  //     maxBodyLength: Infinity,
+  //     url: `${this.apiUrl}/AirTicketing`,
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     data: { 
+  //       BookingID: flyhubId,
+  //       IsAcceptedPriceChangeandIssueTicket:true
+  //      },
+  //   };
+  //   try {
+  //     const response = await axios.request(makeTicket);
+  //     return this.flyHubUtil.airRetriveDataTransformerAdmin(
+  //       response?.data,
+  //       BookingID.BookingID,
+  //       findBooking.bookingStatus,
+  //       findBooking.TripType,
+  //       findBooking.bookingDate,
+  //     );
+  //   } catch (error) {
+  //     throw error?.response?.data;
+  //   }
+  // }
 }

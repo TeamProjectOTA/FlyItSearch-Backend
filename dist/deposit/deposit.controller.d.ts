@@ -23,5 +23,5 @@ export declare class DepositController {
     bkash(header: any, depositDto: DepositDto): Promise<{
         bkash: any;
     }>;
-    handlePaymentCallback(paymentID: string, status: string, res: Response): Promise<any>;
+    handlePaymentCallback(paymentID: string, status: string, amount: number, res: Response): Promise<any>;
 }

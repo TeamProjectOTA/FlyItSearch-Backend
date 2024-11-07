@@ -16,12 +16,13 @@ import {
 } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
+import { dataDto } from './homepage.model';
 @ApiTags('Homepage-Api')
 @Controller('homepage')
 export class HomepageController {
   constructor(private readonly homePageService: HomepageService) {}
   @ApiBearerAuth('access_token')
-  @UseGuards(AdmintokenGuard)
+  //@UseGuards(AdmintokenGuard)
   @Post('upload')
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -35,11 +36,12 @@ export class HomepageController {
       banner?: Express.Multer.File[];
       slider?: Express.Multer.File[];
     },
+    @Body() data:dataDto
   ) {
-    return this.homePageService.uploadBannerAndSlider(files);
+    return this.homePageService.uploadBannerAndSlider(files,data);
   }
   @ApiBearerAuth('access_token')
-  @UseGuards(AdmintokenGuard)
+ // @UseGuards(AdmintokenGuard)
   @Get('data')
   async data() {
     return this.homePageService.getalldata();

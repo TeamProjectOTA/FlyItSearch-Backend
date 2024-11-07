@@ -189,7 +189,7 @@ let PaymentService = class PaymentService {
                 addTransection.validationDate = response.validated_on;
                 addTransection.status = 'Purchase';
                 addTransection.walletBalance = wallet.ammount;
-                addTransection.paymentType = 'Instaint Payment ';
+                addTransection.paymentType = 'Instant Payment ';
                 addTransection.currierName = airPlaneName;
                 addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
                 addTransection.bookingId = bookingId;
@@ -269,12 +269,18 @@ let PaymentService = class PaymentService {
                     const tripType = bookingSave.TripType;
                     const depfrom = bookingSave?.laginfo[0]?.DepFrom;
                     const arrto = bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
+                    const amount = parseFloat(result.amount);
+                    if (isNaN(amount)) {
+                        throw new Error('Invalid amount value');
+                    }
+                    const airTicketPrice = amount;
+                    const paymentGatewayCharge = airTicketPrice * 0.0125;
+                    const storeAmount = Math.ceil(airTicketPrice - paymentGatewayCharge);
                     let addTransection = new transection_model_1.Transection();
                     addTransection.tranId = result.merchantInvoiceNumber;
                     addTransection.tranDate = tranDate;
-                    addTransection.paidAmount = result?.amount;
-                    const airTicketPrice = bookingSave?.netAmmount;
-                    addTransection.offerAmmount = Number(airTicketPrice);
+                    addTransection.paidAmount = amount;
+                    addTransection.offerAmmount = storeAmount;
                     addTransection.bankTranId = result?.trxID;
                     addTransection.paymentId = result?.paymentID;
                     addTransection.riskTitle = 'Safe';
@@ -285,18 +291,18 @@ let PaymentService = class PaymentService {
                     addTransection.validationDate = tranDate;
                     addTransection.status = 'Purchase';
                     addTransection.walletBalance = wallet.ammount;
-                    addTransection.paymentType = 'Instaint Payment ';
+                    addTransection.paymentType = 'Instant Payment ';
                     addTransection.currierName = airPlaneName;
                     addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
                     addTransection.bookingId = bookingId;
                     addTransection.user = user;
                     await this.transectionRepository.save(addTransection);
+                    return res.redirect(process.env.SUCCESS_CALLBACK);
                 }
-                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+                return res.redirect(process.env.FAIELD_CALLBACK);
             }
             else {
-                console.log('Payment not successful, skipping execution.');
-                return null;
+                return res.redirect(process.env.FAIELD_CALLBACK);
             }
         }
         catch (e) {
@@ -309,7 +315,6 @@ let PaymentService = class PaymentService {
             if (!paymentId) {
                 throw new Error("Payment ID is required for querying payment.");
             }
-            console.log(`Querying payment with ID: ${paymentId}`);
             const queryResponse = await (0, bkash_payment_1.queryPayment)(this.bkashConfig, paymentId);
             return queryResponse;
         }
@@ -477,7 +482,7 @@ let PaymentService = class PaymentService {
                 addTransection.validationDate = data.date_time;
                 addTransection.status = 'Purchase';
                 addTransection.walletBalance = wallet.ammount;
-                addTransection.paymentType = 'Instaint Payment ';
+                addTransection.paymentType = 'Instant Payment ';
                 addTransection.currierName = airPlaneName;
                 addTransection.requestType = `${depfrom}-${arrto},${tripType} Air Ticket `;
                 addTransection.bookingId = bookingID;

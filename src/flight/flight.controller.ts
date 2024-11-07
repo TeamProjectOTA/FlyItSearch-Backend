@@ -121,8 +121,5 @@ export class FlightController {
   //     fisId
   //   );
   // }
-  @Get('token')
-  async sabreToken() {
-    return await this.sabreService.restToken();
-  }
+
 }

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { HomePage } from './homepage.model';
+import { dataDto, HomePage } from './homepage.model';
 import { Repository } from 'typeorm';
 import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,12 +25,14 @@ export class HomepageService {
     this.bucket = this.storage.bucket(process.env.GOOGLE_CLOUD_BUCKET_NAME);
   }
 
-  async uploadBannerAndSlider(files: {
-    banner?: Express.Multer.File[];
-    slider?: Express.Multer.File[];
-  }) {
-    let bannerData: { imageUrl: string; size: string; type: string } | null =
-      null;
+  async uploadBannerAndSlider(
+    files: {
+      banner?: Express.Multer.File[];
+      slider?: Express.Multer.File[];
+    },
+    data: dataDto,
+  ) {
+    let bannerData: { imageUrl: string; size: string; type: string } | null = null;
     const sliderImages = [];
 
     const homePage = await this.homePageRepository.findOne({
@@ -39,7 +41,6 @@ export class HomepageService {
     if (!homePage) {
       throw new NotFoundException('HomePage record not found.');
     }
-
     if (files.banner && files.banner.length > 0) {
       const bannerFile = files.banner[0];
       if (homePage.banner && homePage.banner.imageUrl) {
@@ -49,6 +50,8 @@ export class HomepageService {
     } else if (homePage.banner) {
       bannerData = homePage.banner;
     }
+
+    
     if (files.slider && files.slider.length > 0) {
       if (homePage.sliderImage && homePage.sliderImage.length > 0) {
         for (const sliderImage of homePage.sliderImage) {
@@ -59,23 +62,27 @@ export class HomepageService {
         const sliderImageData = await this.uploadFileToGoogleCloud(sliderFile);
         sliderImages.push(sliderImageData);
       }
-    } else {
+    } else if (homePage.sliderImage) {
       sliderImages.push(...homePage.sliderImage);
     }
 
+  
     if (!bannerData) {
       throw new BadRequestException('Banner image is required.');
     }
-
     if (sliderImages.length > 5) {
-      throw new BadRequestException(
-        'A maximum of 5 slider images are allowed.',
-      );
+      throw new BadRequestException('A maximum of 5 slider images are allowed.');
     }
+
+    // Update home page fields
     homePage.banner = bannerData;
     homePage.sliderImage = sliderImages;
+    homePage.mainTitle = data.maintitle;
+    homePage.subTitle = data.subtitle;
+
     return this.homePageRepository.save(homePage);
   }
+
 
   async uploadFileToGoogleCloud(
     file: Express.Multer.File,
@@ -126,6 +133,11 @@ export class HomepageService {
     }
   }
   async getalldata() {
-    return await this.homePageRepository.findOne({ where: { id: 1 } });
+    const homapage= await this.homePageRepository.findOne({ where: { id: 1 } });
+    if (!homapage) {
+      throw new NotFoundException('HomePage record not found.');
+    }
+    return homapage
+   
   }
 }

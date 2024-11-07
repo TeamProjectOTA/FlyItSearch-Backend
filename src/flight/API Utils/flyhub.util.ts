@@ -546,8 +546,7 @@ export class FlyHubUtil {
           } else {
             BookingStatus = SearchResponse?.BookingStatus;
           }
-          const passportRequired =
-            !!SearchResponse?.Passengers[0]?.PassportNumber;
+          const passportRequired = !!SearchResponse?.Passengers[0]?.PassportNumber;
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
@@ -700,10 +699,16 @@ export class FlyHubUtil {
           const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
-          const timestamp=new Date(currentTimestamp)
           let TimeLimit: string = null;
-                  const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
-                  TimeLimit = `${lastTicketDate}`;
+          
+
+
+          const timestamp=new Date(currentTimestamp)
+          const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+          TimeLimit = `${lastTicketDate}`; // changes done
+          
+
+
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
             const PaxType = allPassenger?.PaxType;
             const paxCount = allPassenger?.PassengerCount;
@@ -877,17 +882,40 @@ export class FlyHubUtil {
         }
       }
     }
- const booking=FlightItenary
-    const save = await this.saveBookingData(FlightItenary, header, personIds);
-    // const sslpaymentLink = await this.paymentService.dataModification(
-    //   FlightItenary,
-    //   header,
-    // );
-    return {
-      bookingData: booking,
-      save: save,
-    };
+    await this.saveBookingData(FlightItenary,header,personIds)
+    const sslpaymentLink = await this.paymentService
+    .dataModification(FlightItenary, header)
+    .catch(() => null);
+ //const surjopay = await this.paymentService.formdata(FlightItenary, header);
+  const bkash = await this.paymentService.bkashInit(FlightItenary, header);
+
+  const price = FlightItenary?.[0]?.NetFare || 0;
+
+  const email = await this.authService.decodeToken(header).catch(() => 'NA');
+
+  let wallet = await this.walletRepository
+    .createQueryBuilder('wallet')
+    .innerJoinAndSelect('wallet.user', 'user')
+    .where('user.email = :email', { email })
+    .getOne()
+    .catch(() => null);
+
+  const walletAmmount = wallet?.ammount || 0;
+
+  let priceAfterPayment: number = walletAmmount - price;
+
+  if (priceAfterPayment < 0) {
+    priceAfterPayment = 0;
   }
+  return {
+    bookingData: FlightItenary,
+    sslpaymentLink: sslpaymentLink,
+    //surjopay: surjopay,
+    bkash: bkash,
+    walletPayment: { walletAmmount, price, priceAfterPayment },
+  };
+}
+  
 
   async saveBookingData(
     SearchResponse: any,

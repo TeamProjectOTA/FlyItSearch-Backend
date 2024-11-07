@@ -159,16 +159,18 @@ export class DepositController {
     );
   }
 
-  @Get('bkash/callback/')
+  @Get('bkash/callback/:amount')
   async handlePaymentCallback(
     @Query('paymentID') paymentID: string,
     @Query('status') status: string,
+    @Param('amount') amount:number,
     @Res() res: Response,
-  ) {  
+  ) {
     const result = await this.depositService.executePaymentBkash(
       paymentID,
       status,
       res,
+      amount
     );
     return result;
   }

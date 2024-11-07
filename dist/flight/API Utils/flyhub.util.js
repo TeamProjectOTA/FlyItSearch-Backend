@@ -537,8 +537,8 @@ let FlyHubUtil = class FlyHubUtil {
                     const NetFare = equivalentAmount1 + Taxes + extraService + servicefee;
                     const PartialAmount = NetFare * 0.3;
                     const Refundable = Result?.IsRefundable;
-                    const timestamp = new Date(currentTimestamp);
                     let TimeLimit = null;
+                    const timestamp = new Date(currentTimestamp);
                     const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
                     TimeLimit = `${lastTicketDate}`;
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
@@ -691,11 +691,29 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const booking = FlightItenary;
-        const save = await this.saveBookingData(FlightItenary, header, personIds);
+        await this.saveBookingData(FlightItenary, header, personIds);
+        const sslpaymentLink = await this.paymentService
+            .dataModification(FlightItenary, header)
+            .catch(() => null);
+        const bkash = await this.paymentService.bkashInit(FlightItenary, header);
+        const price = FlightItenary?.[0]?.NetFare || 0;
+        const email = await this.authService.decodeToken(header).catch(() => 'NA');
+        let wallet = await this.walletRepository
+            .createQueryBuilder('wallet')
+            .innerJoinAndSelect('wallet.user', 'user')
+            .where('user.email = :email', { email })
+            .getOne()
+            .catch(() => null);
+        const walletAmmount = wallet?.ammount || 0;
+        let priceAfterPayment = walletAmmount - price;
+        if (priceAfterPayment < 0) {
+            priceAfterPayment = 0;
+        }
         return {
-            bookingData: booking,
-            save: save,
+            bookingData: FlightItenary,
+            sslpaymentLink: sslpaymentLink,
+            bkash: bkash,
+            walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
     async saveBookingData(SearchResponse, header, personIds) {

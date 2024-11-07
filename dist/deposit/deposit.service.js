@@ -372,10 +372,13 @@ let DepositService = class DepositService {
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `FSD${timestamp}${randomNumber}`;
         const email = await this.authService.decodeToken(header);
+        const airTicketPrice = amount;
+        const paymentGatewayCharge = airTicketPrice * 0.0125;
+        const storeAmount = airTicketPrice + paymentGatewayCharge;
         try {
             const paymentDetails = {
-                amount: amount || 10,
-                callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/`,
+                amount: storeAmount || 10,
+                callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/${amount}`,
                 orderID: tran_id || 'Order_101',
                 reference: `${email}`,
             };
@@ -386,7 +389,7 @@ let DepositService = class DepositService {
             console.log(e);
         }
     }
-    async executePaymentBkash(paymentID, status, res) {
+    async executePaymentBkash(paymentID, status, res, offerAmmount) {
         try {
             if (status === 'success') {
                 const response = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
@@ -403,18 +406,12 @@ let DepositService = class DepositService {
                     const tranDate = response?.paymentExecuteTime
                         .split(' GMT')[0]
                         .replace('T', ' ');
-                    const amount = parseFloat(response.amount);
-                    if (isNaN(amount)) {
-                        throw new Error('Invalid amount value');
-                    }
-                    const airTicketPrice = amount;
-                    const paymentGatewayCharge = airTicketPrice * 0.0125;
-                    const storeAmount = Math.ceil(airTicketPrice - paymentGatewayCharge);
+                    const amount = response.amount;
                     let addTransaction = new transection_model_1.Transection();
                     addTransaction.tranId = response.merchantInvoiceNumber;
                     addTransaction.tranDate = tranDate;
                     addTransaction.paidAmount = amount;
-                    addTransaction.offerAmmount = storeAmount;
+                    addTransaction.offerAmmount = offerAmmount;
                     addTransaction.bankTranId = response?.trxID;
                     addTransaction.paymentId = paymentID;
                     addTransaction.riskTitle = 'Safe';
@@ -424,16 +421,16 @@ let DepositService = class DepositService {
                     addTransaction.cardIssuerCountry = 'BD';
                     addTransaction.validationDate = tranDate;
                     addTransaction.status = 'Deposited';
-                    addTransaction.walletBalance = user.wallet.ammount + storeAmount;
+                    addTransaction.walletBalance = user.wallet.ammount + Number(offerAmmount);
                     addTransaction.paymentType = 'Instant Payment';
                     addTransaction.requestType = 'Instant Money added';
                     addTransaction.user = user;
-                    user.wallet.ammount += storeAmount;
+                    user.wallet.ammount = user.wallet.ammount + Number(offerAmmount);
                     await this.walletRepository.save(user.wallet);
                     await this.transectionRepository.save(addTransaction);
                     let addDeposit = new deposit_model_1.Deposit();
                     addDeposit.user = user;
-                    addDeposit.ammount = storeAmount;
+                    addDeposit.ammount = offerAmmount;
                     addDeposit.depositId = response?.merchantInvoiceNumber;
                     addDeposit.depositedFrom = response?.payerAccount;
                     addDeposit.senderName = user.fullName;
@@ -451,14 +448,14 @@ let DepositService = class DepositService {
                     addDeposit.status = 'Instant Deposit';
                     addDeposit.depositType = 'Bkash-MoneyAdd';
                     await this.depositRepository.save(addDeposit);
-                    return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+                    return res.redirect(process.env.SUCCESS_CALLBACK);
                 }
                 else {
-                    return res.redirect(`${process.env.BASE_CALLBACKURL}payment/cancel`);
+                    return res.redirect(process.env.FAIELD_CALLBACK);
                 }
             }
             else {
-                return res.redirect(`${process.env.BASE_CALLBACKURL}payment/cancel`);
+                return res.redirect(process.env.FAIELD_CALLBACK);
             }
         }
         catch (e) {

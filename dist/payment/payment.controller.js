@@ -25,7 +25,7 @@ let PaymentController = class PaymentController {
             const { val_id } = req.body;
             const validationResponse = await this.paymentService.validateOrder(val_id, email, amount);
             if (validationResponse?.status === 'VALID') {
-                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+                return res.redirect(process.env.SUCCESS_CALLBACK);
             }
             else {
                 return res.status(400).json({ message: 'Payment validation failed', validationResponse });
@@ -36,15 +36,11 @@ let PaymentController = class PaymentController {
             return res.status(500).json({ message: 'Internal server error', error: error.message });
         }
     }
-    handleFail(res) {
-        res.status(common_1.HttpStatus.BAD_REQUEST).json({
-            message: 'Payment failed.',
-        });
+    async handleFail(res) {
+        return res.redirect(process.env.FAIELD_CALLBACK);
     }
-    handleCancel(res) {
-        res.status(common_1.HttpStatus.BAD_REQUEST).json({
-            message: 'Payment was cancelled.',
-        });
+    async handleCancel(res) {
+        return res.redirect(process.env.FAIELD_CALLBACK);
     }
     async handleIPN(req, res) {
         try {
@@ -108,14 +104,14 @@ __decorate([
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleFail", null);
 __decorate([
     (0, common_1.Get)('/cancel'),
     __param(0, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "handleCancel", null);
 __decorate([
     (0, common_1.Post)('/ipn'),

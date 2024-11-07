@@ -28,7 +28,7 @@ let HomepageService = class HomepageService {
         });
         this.bucket = this.storage.bucket(process.env.GOOGLE_CLOUD_BUCKET_NAME);
     }
-    async uploadBannerAndSlider(files) {
+    async uploadBannerAndSlider(files, data) {
         let bannerData = null;
         const sliderImages = [];
         const homePage = await this.homePageRepository.findOne({
@@ -58,7 +58,7 @@ let HomepageService = class HomepageService {
                 sliderImages.push(sliderImageData);
             }
         }
-        else {
+        else if (homePage.sliderImage) {
             sliderImages.push(...homePage.sliderImage);
         }
         if (!bannerData) {
@@ -69,6 +69,8 @@ let HomepageService = class HomepageService {
         }
         homePage.banner = bannerData;
         homePage.sliderImage = sliderImages;
+        homePage.mainTitle = data.maintitle;
+        homePage.subTitle = data.subtitle;
         return this.homePageRepository.save(homePage);
     }
     async uploadFileToGoogleCloud(file) {
@@ -109,7 +111,11 @@ let HomepageService = class HomepageService {
         }
     }
     async getalldata() {
-        return await this.homePageRepository.findOne({ where: { id: 1 } });
+        const homapage = await this.homePageRepository.findOne({ where: { id: 1 } });
+        if (!homapage) {
+            throw new common_1.NotFoundException('HomePage record not found.');
+        }
+        return homapage;
     }
 };
 exports.HomepageService = HomepageService;

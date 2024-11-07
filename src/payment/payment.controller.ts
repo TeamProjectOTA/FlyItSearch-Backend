@@ -33,7 +33,7 @@ export class PaymentController {
       const validationResponse = await this.paymentService.validateOrder(val_id, email, amount);
   
       if (validationResponse?.status === 'VALID') {
-        return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+        return res.redirect(process.env.SUCCESS_CALLBACK);
       } else {
         return res.status(400).json({ message: 'Payment validation failed', validationResponse });
       }
@@ -44,17 +44,14 @@ export class PaymentController {
   }
 
   @Post('/fail')
-  handleFail(@Res() res: Response) {
-    res.status(HttpStatus.BAD_REQUEST).json({
-      message: 'Payment failed.',
-    });
+  async handleFail(@Res() res: Response) {
+    
+   return res.redirect(process.env.FAIELD_CALLBACK)
   }
 
   @Get('/cancel')
-  handleCancel(@Res() res: Response) {
-    res.status(HttpStatus.BAD_REQUEST).json({
-      message: 'Payment was cancelled.',
-    });
+  async handleCancel(@Res() res: Response) {
+    return res.redirect(process.env.FAIELD_CALLBACK)
   }
 
   @Post('/ipn')
@@ -95,11 +92,6 @@ export class PaymentController {
     );
     return result;
   }
-
-  // @Get('suth')
-  // async test() {
-  //   return this.paymentService.surjoAuthentication();
-  // }
 
   @Get('return/:bookingID/:email')
   async paymentReturn(

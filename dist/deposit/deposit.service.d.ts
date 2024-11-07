@@ -39,5 +39,5 @@ export declare class DepositService {
     createPaymentBkash(amount: number, header: any): Promise<{
         bkash: any;
     }>;
-    executePaymentBkash(paymentID: string, status: string, res: any): Promise<any>;
+    executePaymentBkash(paymentID: string, status: string, res: any, offerAmmount: number): Promise<any>;
 }

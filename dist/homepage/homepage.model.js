@@ -9,7 +9,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HomePage = void 0;
+exports.dataDto = exports.HomePage = void 0;
+const swagger_1 = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 let HomePage = class HomePage {
 };
@@ -18,6 +19,14 @@ __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
 ], HomePage.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], HomePage.prototype, "mainTitle", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], HomePage.prototype, "subTitle", void 0);
 __decorate([
     (0, typeorm_1.Column)('json', { nullable: true }),
     __metadata("design:type", Object)
@@ -29,4 +38,15 @@ __decorate([
 exports.HomePage = HomePage = __decorate([
     (0, typeorm_1.Entity)()
 ], HomePage);
+class dataDto {
+}
+exports.dataDto = dataDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], dataDto.prototype, "maintitle", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], dataDto.prototype, "subtitle", void 0);
 //# sourceMappingURL=homepage.model.js.map

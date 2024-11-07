@@ -4,8 +4,8 @@ export declare class PaymentController {
     private readonly paymentService;
     constructor(paymentService: PaymentService);
     handleSuccess(email: string, amount: number, req: Request, res: Response): Promise<void | Response<any, Record<string, any>>>;
-    handleFail(res: Response): void;
-    handleCancel(res: Response): void;
+    handleFail(res: Response): Promise<void>;
+    handleCancel(res: Response): Promise<void>;
     handleIPN(req: Request, res: Response): Promise<void>;
     handlePaymentCallback(bookingId: string, email: string, paymentID: string, status: string, signature: string, res: Response): Promise<any>;
     paymentReturn(bookingID: string, email: string, order_id: string, res: Response): Promise<{

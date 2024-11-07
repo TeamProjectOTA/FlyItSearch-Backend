@@ -1,4 +1,4 @@
-import { HomePage } from './homepage.model';
+import { dataDto, HomePage } from './homepage.model';
 import { Repository } from 'typeorm';
 export declare class HomepageService {
     private readonly homePageRepository;
@@ -8,7 +8,7 @@ export declare class HomepageService {
     uploadBannerAndSlider(files: {
         banner?: Express.Multer.File[];
         slider?: Express.Multer.File[];
-    }): Promise<HomePage>;
+    }, data: dataDto): Promise<HomePage>;
     uploadFileToGoogleCloud(file: Express.Multer.File): Promise<{
         imageUrl: string;
         size: string;

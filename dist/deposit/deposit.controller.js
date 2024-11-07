@@ -78,8 +78,8 @@ let DepositController = class DepositController {
     async bkash(header, depositDto) {
         return await this.depositService.createPaymentBkash(depositDto.amount, header);
     }
-    async handlePaymentCallback(paymentID, status, res) {
-        const result = await this.depositService.executePaymentBkash(paymentID, status, res);
+    async handlePaymentCallback(paymentID, status, amount, res) {
+        const result = await this.depositService.executePaymentBkash(paymentID, status, res, amount);
         return result;
     }
 };
@@ -199,12 +199,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "bkash", null);
 __decorate([
-    (0, common_1.Get)('bkash/callback/'),
+    (0, common_1.Get)('bkash/callback/:amount'),
     __param(0, (0, common_1.Query)('paymentID')),
     __param(1, (0, common_1.Query)('status')),
-    __param(2, (0, common_1.Res)()),
+    __param(2, (0, common_1.Param)('amount')),
+    __param(3, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String, Number, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "handlePaymentCallback", null);
 exports.DepositController = DepositController = __decorate([
