@@ -72,8 +72,8 @@ let PaymentController = class PaymentController {
             data: paymentData,
         };
     }
-    async createPayment(amount, header, bookingId) {
-        return this.paymentService.createPaymentBkash(amount, bookingId, header);
+    async createPayment(amount, header, bookingId, netAmount) {
+        return this.paymentService.createPaymentBkash(amount, bookingId, header, netAmount);
     }
     async queryPayment(paymentId) {
         return this.paymentService.queryPayment(paymentId);
@@ -149,8 +149,9 @@ __decorate([
     __param(0, (0, common_1.Param)('amount')),
     __param(1, (0, common_1.Headers)()),
     __param(2, (0, common_1.Param)('bookingId')),
+    __param(3, (0, common_1.Param)('netAmount')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object, String]),
+    __metadata("design:paramtypes", [Number, Object, String, String]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "createPayment", null);
 __decorate([

@@ -113,9 +113,6 @@ let AuthService = class AuthService {
         const payload = { sub: user.email, sub2: user.passengerId };
         const expiresInSeconds = this.time;
         const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
-        const dhakaOffset = 6 * 60 * 60 * 1000;
-        const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
-        const dhakaTimeFormatted = dhakaTime.toISOString();
         const token = await this.jwtservice.signAsync(payload);
         const userData = {
             name: user.fullName,
@@ -126,7 +123,7 @@ let AuthService = class AuthService {
             access_token: token,
             message: 'Log In Successful',
             userData,
-            expireIn: dhakaTimeFormatted,
+            expireIn: expirationDate,
         };
     }
     async verifyUserToken(header) {

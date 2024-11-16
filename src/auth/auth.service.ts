@@ -26,6 +26,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtservice: JwtService,
   ) {
+    //86400
     this.time = 86400;
   }
 
@@ -137,9 +138,6 @@ export class AuthService {
     const expiresInSeconds = this.time; // Adjust expiration as needed
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
 
-    const dhakaOffset = 6 * 60 * 60 * 1000;
-    const dhakaTime = new Date(expirationDate.getTime() + dhakaOffset);
-    const dhakaTimeFormatted = dhakaTime.toISOString();
 
     const token = await this.jwtservice.signAsync(payload);
 
@@ -153,7 +151,7 @@ export class AuthService {
       access_token: token,
       message: 'Log In Successful',
       userData,
-      expireIn: dhakaTimeFormatted,
+      expireIn: expirationDate,
     };
   }
 

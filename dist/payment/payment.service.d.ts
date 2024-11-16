@@ -28,8 +28,8 @@ export declare class PaymentService {
         paymentGatwayCharge: number;
         total_amount: number;
     }>;
-    createPaymentBkash(amount: number, bookingId: string, header: any): Promise<any>;
-    executePaymentBkash(paymentID: string, status: string, bookingId: string, res: any, email: string): Promise<any>;
+    createPaymentBkash(amount: number, bookingId: string, header: any, netAmount: string): Promise<any>;
+    executePaymentBkash(paymentID: string, status: string, bookingId: string, res: any, offerAmount: string): Promise<any>;
     queryPayment(paymentId: string): Promise<any>;
     searchTransaction(transactionId: string): Promise<any>;
     refundTransaction(paymentId: string, amount: number, trxID: string): Promise<any>;

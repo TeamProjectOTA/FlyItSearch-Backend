@@ -12,7 +12,7 @@ export declare class PaymentController {
         message: string;
         data: any;
     }>;
-    createPayment(amount: number, header: Headers, bookingId: string): Promise<any>;
+    createPayment(amount: number, header: Headers, bookingId: string, netAmount: string): Promise<any>;
     queryPayment(paymentId: string): Promise<any>;
     searchTransaction(transactionId: string): Promise<any>;
     refundTransaction(paymentId: string, trxID: string, amount: number): Promise<any>;

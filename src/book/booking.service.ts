@@ -140,14 +140,6 @@ export class BookingService {
       .orderBy('bookingSave.id', 'DESC')
       .getOne();
 
-    //const personIds = user.bookingSave.flatMap(booking => booking.personId);
-
-    // Fetch VisaPassport entries based on personIds
-    // const visaPassports = await this.visaPassportRepository
-    //   .createQueryBuilder('visaPassport')
-    //   .where('visaPassport.personId IN (:...personIds)', { personIds })
-    //   .getMany();
-
     if (!user) {
       throw new NotFoundException(`No ${bookingStatus} Available for the user`);
     }
@@ -156,6 +148,8 @@ export class BookingService {
       saveBookings: user.bookingSave,
     };
   }
+
+  
 
   async getToken(): Promise<string> {
     try {

@@ -119,8 +119,9 @@ export class PaymentController {
     @Param('amount') amount: number,
     @Headers() header: Headers,
     @Param('bookingId') bookingId: string,
+    @Param('netAmount') netAmount:string
   ) {
-    return this.paymentService.createPaymentBkash(amount, bookingId, header);
+    return this.paymentService.createPaymentBkash(amount, bookingId, header,netAmount);
   }
   @Post('query/:paymentId')
   async queryPayment(@Param('paymentId') paymentId: string) {

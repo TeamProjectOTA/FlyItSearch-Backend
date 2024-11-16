@@ -74,7 +74,6 @@ export class HomepageService {
       throw new BadRequestException('A maximum of 5 slider images are allowed.');
     }
 
-    // Update home page fields
     homePage.banner = bannerData;
     homePage.sliderImage = sliderImages;
     homePage.mainTitle = data.maintitle;

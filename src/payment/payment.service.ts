@@ -251,18 +251,18 @@ export class PaymentService {
   async bkashInit(SearchResponse: any, header: any) {
     const booking = SearchResponse[0];
     const airTicketPrice = booking?.NetFare;
-    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125); // !Important some check the validation before adding the ammont.1.25% charge added in sslcomerz
+    const paymentGatwayCharge = Math.ceil(airTicketPrice * 0.0125); // !Important some check the validation before adding the ammont.1.25% charge added in Bkash
     const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
     const bookingId = booking?.BookingId;
     return {
-      url: await this.createPaymentBkash(total_amount, bookingId, header),
+      url: await this.createPaymentBkash(total_amount, bookingId, header,String(airTicketPrice)),
       airTicketPrice: airTicketPrice,
       paymentGatwayCharge: paymentGatwayCharge,
       total_amount: total_amount,
     };
   }
 
-  async createPaymentBkash(amount: number, bookingId: string, header: any) {
+  async createPaymentBkash(amount: number, bookingId: string, header: any,netAmount:string) {
     const email = await this.authService.decodeToken(header);
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
@@ -275,7 +275,7 @@ export class PaymentService {
         const tran_id = `SSM${timestamp}${randomNumber}`;
         const paymentDetails = {
           amount: amount || 10,
-          callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${email}`,
+          callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${netAmount}`,
           orderID: tran_id || 'Order_101',
           reference: `${email}`,
         };
@@ -295,7 +295,7 @@ export class PaymentService {
     status: string,
     bookingId: string,
     res: any,
-    email: string,
+    offerAmount: string,
   ) {
     try {
       if (status === 'success') {
@@ -307,6 +307,7 @@ export class PaymentService {
           const tranDate = result.paymentExecuteTime
             .split(' GMT')[0]
             .replace('T', ' ');
+          const email = result.payerReference;
           const user = await this.userRepository.findOne({
             where: { email: email },
           });
@@ -335,14 +336,12 @@ export class PaymentService {
               throw new Error('Invalid amount value');
             }
     
-            const airTicketPrice = amount;
-            const paymentGatewayCharge = airTicketPrice * 0.0125;
-            const storeAmount = Math.ceil(airTicketPrice - paymentGatewayCharge);
+           
           let addTransection: Transection = new Transection();
           addTransection.tranId = result.merchantInvoiceNumber;
           addTransection.tranDate = tranDate;
           addTransection.paidAmount = amount;
-          addTransection.offerAmmount = storeAmount;
+          addTransection.offerAmmount = Number(offerAmount);
           addTransection.bankTranId = result?.trxID;
           addTransection.paymentId=result?.paymentID
           addTransection.riskTitle = 'Safe';

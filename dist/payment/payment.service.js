@@ -210,13 +210,13 @@ let PaymentService = class PaymentService {
         const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
         const bookingId = booking?.BookingId;
         return {
-            url: await this.createPaymentBkash(total_amount, bookingId, header),
+            url: await this.createPaymentBkash(total_amount, bookingId, header, String(airTicketPrice)),
             airTicketPrice: airTicketPrice,
             paymentGatwayCharge: paymentGatwayCharge,
             total_amount: total_amount,
         };
     }
-    async createPaymentBkash(amount, bookingId, header) {
+    async createPaymentBkash(amount, bookingId, header, netAmount) {
         const email = await this.authService.decodeToken(header);
         const bookingSave = await this.bookingSaveRepository.findOne({
             where: { bookingId: bookingId },
@@ -228,7 +228,7 @@ let PaymentService = class PaymentService {
                 const tran_id = `SSM${timestamp}${randomNumber}`;
                 const paymentDetails = {
                     amount: amount || 10,
-                    callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${email}`,
+                    callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${netAmount}`,
                     orderID: tran_id || 'Order_101',
                     reference: `${email}`,
                 };
@@ -243,7 +243,7 @@ let PaymentService = class PaymentService {
             return `The booking with ${bookingId} id was already ${bookingSave.bookingStatus}`;
         }
     }
-    async executePaymentBkash(paymentID, status, bookingId, res, email) {
+    async executePaymentBkash(paymentID, status, bookingId, res, offerAmount) {
         try {
             if (status === 'success') {
                 const result = await (0, bkash_payment_1.executePayment)(this.bkashConfig, paymentID);
@@ -252,6 +252,7 @@ let PaymentService = class PaymentService {
                     const tranDate = result.paymentExecuteTime
                         .split(' GMT')[0]
                         .replace('T', ' ');
+                    const email = result.payerReference;
                     const user = await this.userRepository.findOne({
                         where: { email: email },
                     });
@@ -273,14 +274,11 @@ let PaymentService = class PaymentService {
                     if (isNaN(amount)) {
                         throw new Error('Invalid amount value');
                     }
-                    const airTicketPrice = amount;
-                    const paymentGatewayCharge = airTicketPrice * 0.0125;
-                    const storeAmount = Math.ceil(airTicketPrice - paymentGatewayCharge);
                     let addTransection = new transection_model_1.Transection();
                     addTransection.tranId = result.merchantInvoiceNumber;
                     addTransection.tranDate = tranDate;
                     addTransection.paidAmount = amount;
-                    addTransection.offerAmmount = storeAmount;
+                    addTransection.offerAmmount = Number(offerAmount);
                     addTransection.bankTranId = result?.trxID;
                     addTransection.paymentId = result?.paymentID;
                     addTransection.riskTitle = 'Safe';
