@@ -704,7 +704,8 @@ export class FlyHubUtil {
 
 
           const timestamp=new Date(currentTimestamp)
-          const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+          const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString()
+          .replace('Z', '');
           TimeLimit = `${lastTicketDate}`; // changes done
           
 

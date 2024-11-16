@@ -539,7 +539,8 @@ let FlyHubUtil = class FlyHubUtil {
                     const Refundable = Result?.IsRefundable;
                     let TimeLimit = null;
                     const timestamp = new Date(currentTimestamp);
-                    const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+                    const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString()
+                        .replace('Z', '');
                     TimeLimit = `${lastTicketDate}`;
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
                         const PaxType = allPassenger?.PaxType;
