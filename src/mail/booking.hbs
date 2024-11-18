@@ -112,7 +112,6 @@
     <div class="email-container">
         <div class="email-header">
             <p>Your Booking is {{BookingStatus}}.</p>
-            <p>You’re Booking Number: {{BookingId}}</p>
             <p>Thank you for booking with FlyitSearch.</p>
         </div>
         <div class="email-body">
@@ -122,16 +121,16 @@
                 {{#each Segments}}
                 <div class="flight-details">
                     <div>
-                        <p><strong>{{DepFrom}} {{formatTime DepTime}}</strong></p>
+                        <p><strong>{{DepLocation}}</strong> {{DepFrom}}</p>
+                        <p> {{formatTime DepTime}}</p>
                         <p>{{formatDate DepTime}}</p>
                     </div>
                     <div>
                         <img src="https://www.iconsdb.com/icons/preview/orange/airplane-takeoff-xxl.png"
                             alt="Plane Icon" style="width:20px;">
-                        <p class="flight-duration">{{formatDuration Duration}}</p>
                     </div>
                     <div>
-                        <p><strong>{{ArrTo}} {{formatTime ArrTime}}</strong></p>
+                        <p><strong>{{ArrTo}} {{ArrAirPort}} {{formatTime ArrTime}}</strong></p>
                         <p>{{formatDate ArrTime}}</p>
                     </div>
                 </div>
@@ -147,7 +146,6 @@
                 {{#each PassengerList}}
                 <p><strong>{{Title}} {{FirstName}} {{LastName}}:</strong> {{PaxType}}</p>
                 {{/each}}
-                <p><strong>Total Fare:</strong> BDT-{{NetFare}}</p>
                 <p><strong>Booking ID:</strong> {{BookingId}}</p>
             </div>
             <div class="button-container">

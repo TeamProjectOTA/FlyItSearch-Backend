@@ -11,10 +11,12 @@ import {
   Query,
   NotFoundException,
   Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response, Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 
 @ApiTags('SSLCOMMERZ')
 @Controller('payment')
@@ -123,23 +125,26 @@ export class PaymentController {
   ) {
     return this.paymentService.createPaymentBkash(amount, bookingId, header,netAmount);
   }
-  @Post('query/:paymentId')
-  async queryPayment(@Param('paymentId') paymentId: string) {
-    return this.paymentService.queryPayment(paymentId);
-  }
-
+  // @Post('query/:paymentId')
+  // async queryPayment(@Param('paymentId') paymentId: string) {
+  //   return this.paymentService.queryPayment(paymentId);
+  // }
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
   @Post('search/:transactionId')
   async searchTransaction(@Param('transactionId') transactionId: string) {
     return this.paymentService.searchTransaction(transactionId);
   }
-
-  @Post('refund/:paymentId/:amount/:trxID')
+  @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
+  @Post('refund/:paymentId/:amount/:trxID/:email')
   async refundTransaction(
     @Param('paymentId') paymentId: string,
     @Param('trxID') trxID: string,
     @Param('amount') amount: number,
+    @Param('email') email:string
   ) {
-    return this.paymentService.refundTransaction(paymentId, amount,trxID);
+    return this.paymentService.refundTransaction(paymentId, amount,trxID,email);
   }
  @Get('auth/surjo')
  async surjotest(){

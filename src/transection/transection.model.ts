@@ -43,6 +43,8 @@ export class Transection {
   paymentType: string;
   @Column({nullable:true})
   paymentId:string
+  @Column({nullable:true})
+  refundAmount:number
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
 }

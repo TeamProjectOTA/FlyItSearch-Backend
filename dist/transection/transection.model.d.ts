@@ -19,6 +19,7 @@ export declare class Transection {
     walletBalance: number;
     paymentType: string;
     paymentId: string;
+    refundAmount: number;
     user: User;
 }
 export declare class CreateTransectionDto {

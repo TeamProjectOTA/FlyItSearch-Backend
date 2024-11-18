@@ -375,9 +375,10 @@ let DepositService = class DepositService {
         const airTicketPrice = amount;
         const paymentGatewayCharge = airTicketPrice * 0.0125;
         const storeAmount = airTicketPrice + paymentGatewayCharge;
+        const roundedAmount = storeAmount.toFixed(2);
         try {
             const paymentDetails = {
-                amount: storeAmount || 10,
+                amount: roundedAmount || 10,
                 callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/${amount}`,
                 orderID: tran_id || 'Order_101',
                 reference: `${email}`,
@@ -451,7 +452,7 @@ let DepositService = class DepositService {
                     return res.redirect(process.env.SUCCESS_CALLBACK);
                 }
                 else {
-                    return res.redirect(process.env.FAIELD_CALLBACK);
+                    return res.redirect(process.env.FAILED_BKASH_CALLBACK);
                 }
             }
             else {

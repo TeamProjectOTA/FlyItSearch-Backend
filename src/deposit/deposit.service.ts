@@ -430,7 +430,23 @@ export class DepositService {
       return 'Payment Verification Failed';
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   async createPaymentBkash(amount: number, header: any) {
+    
+    
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `FSD${timestamp}${randomNumber}`;
@@ -438,16 +454,17 @@ export class DepositService {
     const airTicketPrice = amount;
     const paymentGatewayCharge = airTicketPrice * 0.0125;
     const storeAmount = airTicketPrice + paymentGatewayCharge;
+    const roundedAmount = storeAmount.toFixed(2)
     try {
       const paymentDetails = {
-        amount: storeAmount || 10,
+        amount: roundedAmount || 10,
         callbackURL: `${process.env.BASE_CALLBACKURL}deposit/bkash/callback/${amount}`,
         orderID: tran_id || 'Order_101',
         reference: `${email}`,
       };
-
       const result = await createPayment(this.bkashConfig, paymentDetails);
-      return { bkash: result.bkashURL };
+      
+      return {bkash:result.bkashURL};
   
     } catch (e) {
       console.log(e);
@@ -531,9 +548,10 @@ export class DepositService {
           return res.redirect(process.env.SUCCESS_CALLBACK);
         } else {
       
-          return res.redirect(process.env.FAIELD_CALLBACK);
+          return res.redirect(process.env.FAILED_BKASH_CALLBACK);
         }
       } else {
+     
         return res.redirect(process.env.FAIELD_CALLBACK);
       }
     } catch (e) {

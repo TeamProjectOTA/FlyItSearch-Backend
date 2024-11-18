@@ -16,6 +16,7 @@ exports.PaymentController = void 0;
 const common_1 = require("@nestjs/common");
 const payment_service_1 = require("./payment.service");
 const swagger_1 = require("@nestjs/swagger");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let PaymentController = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
@@ -75,14 +76,11 @@ let PaymentController = class PaymentController {
     async createPayment(amount, header, bookingId, netAmount) {
         return this.paymentService.createPaymentBkash(amount, bookingId, header, netAmount);
     }
-    async queryPayment(paymentId) {
-        return this.paymentService.queryPayment(paymentId);
-    }
     async searchTransaction(transactionId) {
         return this.paymentService.searchTransaction(transactionId);
     }
-    async refundTransaction(paymentId, trxID, amount) {
-        return this.paymentService.refundTransaction(paymentId, amount, trxID);
+    async refundTransaction(paymentId, trxID, amount, email) {
+        return this.paymentService.refundTransaction(paymentId, amount, trxID, email);
     }
     async surjotest() {
         return this.paymentService.surjoAuthentication();
@@ -155,13 +153,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "createPayment", null);
 __decorate([
-    (0, common_1.Post)('query/:paymentId'),
-    __param(0, (0, common_1.Param)('paymentId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], PaymentController.prototype, "queryPayment", null);
-__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Post)('search/:transactionId'),
     __param(0, (0, common_1.Param)('transactionId')),
     __metadata("design:type", Function),
@@ -169,12 +162,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "searchTransaction", null);
 __decorate([
-    (0, common_1.Post)('refund/:paymentId/:amount/:trxID'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Post)('refund/:paymentId/:amount/:trxID/:email'),
     __param(0, (0, common_1.Param)('paymentId')),
     __param(1, (0, common_1.Param)('trxID')),
     __param(2, (0, common_1.Param)('amount')),
+    __param(3, (0, common_1.Param)('email')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Number]),
+    __metadata("design:paramtypes", [String, String, Number, String]),
     __metadata("design:returntype", Promise)
 ], PaymentController.prototype, "refundTransaction", null);
 __decorate([

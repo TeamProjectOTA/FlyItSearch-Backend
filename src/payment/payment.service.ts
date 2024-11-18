@@ -273,6 +273,7 @@ export class PaymentService {
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `SSM${timestamp}${randomNumber}`;
+        
         const paymentDetails = {
           amount: amount || 10,
           callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${netAmount}`,
@@ -360,8 +361,9 @@ export class PaymentService {
           await this.transectionRepository.save(addTransection);
           return res.redirect(process.env.SUCCESS_CALLBACK);
         }
-        return res.redirect(process.env.FAIELD_CALLBACK);
+        return res.redirect(process.env.FAILED_BKASH_CALLBACK);
       } else {
+        
         return res.redirect(process.env.FAIELD_CALLBACK);
       }
     } catch (e) {
@@ -370,19 +372,19 @@ export class PaymentService {
     }
   }
   
-  async queryPayment(paymentId: string): Promise<any> {
-    try {
-      if (!paymentId) {
-        throw new Error("Payment ID is required for querying payment.");
-      }
-      const queryResponse = await queryPayment( this.bkashConfig,paymentId);
+  // async queryPayment(paymentId: string): Promise<any> {
+  //   try {
+  //     if (!paymentId) {
+  //       throw new Error("Payment ID is required for querying payment.");
+  //     }
+  //     const queryResponse = await queryPayment( this.bkashConfig,paymentId);
   
-      return queryResponse;
-    } catch (error) {
-      console.error(`Error querying payment: ${error.message}`);
-      throw new Error(`Error querying payment: ${error.message}`);
-    }
-  }
+  //     return queryResponse;
+  //   } catch (error) {
+  //     console.error(`Error querying payment: ${error.message}`);
+  //     throw new Error(`Error querying payment: ${error.message}`);
+  //   }
+  // }
   
   async searchTransaction(transactionId: string): Promise<any> {
     try {
@@ -393,29 +395,66 @@ export class PaymentService {
     }
   }
   
-  async refundTransaction(paymentId: string, amount: number, trxID: string): Promise<any> {
-    try { 
+  async refundTransaction(paymentId: string, amount: number, trxID: string, email: string): Promise<any> {
+    try {
       const refundDetails = {
         paymentID: paymentId,
         trxID: trxID,
         amount: amount,
-      }
+      };
       const refundResponse = await refundTransaction(this.bkashConfig, refundDetails);
+      if (refundResponse.statusMessage === 'Successful' && refundResponse.transactionStatus === 'Completed') {
+        const trx_id = refundResponse.originalTrxID;
+        const transaction = await this.transectionRepository.findOne({
+          where: { bankTranId: trx_id },
+        });
+        if (!transaction) {
+          throw new Error(`Transaction with ID ${trx_id} not found.`);
+        }
+        const user = await this.userRepository.findOne({
+          where: { email },
+          relations: ['wallet'],
+        });
+      
+  
+        if (!user || !user.wallet) {
+          throw new Error(`User or Wallet not found for email: ${email}`);
+        }
+  
+     
+        if (transaction.status === 'Deposited') {
+          transaction.status = 'Refunded';
+          transaction.refundAmount=amount
+          user.wallet.ammount = Number(user.wallet.ammount) - Number(amount);
+           await this.walletRepository.save(user.wallet);
+          transaction.walletBalance = user.wallet.ammount
+        } else {
+          transaction.status = 'Refunded';
+          transaction.refundAmount=amount
+        }
+      await this.transectionRepository.save(transaction);
+ 
+      }
+  
       return refundResponse;
     } catch (error) {
-      // Log the error details for debugging
       console.error("Error details:", {
         message: error.message,
-        response: error.response ? {
-          status: error.response.status,
-          data: error.response.data,
-        } : null,
+        response: error.response
+          ? {
+              status: error.response.status,
+              data: error.response.data,
+            }
+          : null,
       });
-      
-      // Throw a new error with a more descriptive message
-      throw new Error(`Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`);
+      throw new Error(
+        `Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`
+      );
     }
   }
+  
+  
+  
 
 
 

@@ -30,9 +30,8 @@ export declare class PaymentService {
     }>;
     createPaymentBkash(amount: number, bookingId: string, header: any, netAmount: string): Promise<any>;
     executePaymentBkash(paymentID: string, status: string, bookingId: string, res: any, offerAmount: string): Promise<any>;
-    queryPayment(paymentId: string): Promise<any>;
     searchTransaction(transactionId: string): Promise<any>;
-    refundTransaction(paymentId: string, amount: number, trxID: string): Promise<any>;
+    refundTransaction(paymentId: string, amount: number, trxID: string, email: string): Promise<any>;
     formdata(SearchResponse?: any, header?: any): Promise<{
         url: any;
         airTicketPrice: any;

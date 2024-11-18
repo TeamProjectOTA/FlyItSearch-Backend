@@ -297,7 +297,7 @@ let PaymentService = class PaymentService {
                     await this.transectionRepository.save(addTransection);
                     return res.redirect(process.env.SUCCESS_CALLBACK);
                 }
-                return res.redirect(process.env.FAIELD_CALLBACK);
+                return res.redirect(process.env.FAILED_BKASH_CALLBACK);
             }
             else {
                 return res.redirect(process.env.FAIELD_CALLBACK);
@@ -306,19 +306,6 @@ let PaymentService = class PaymentService {
         catch (e) {
             console.error('Error executing payment:', e);
             throw new Error('Payment execution failed');
-        }
-    }
-    async queryPayment(paymentId) {
-        try {
-            if (!paymentId) {
-                throw new Error("Payment ID is required for querying payment.");
-            }
-            const queryResponse = await (0, bkash_payment_1.queryPayment)(this.bkashConfig, paymentId);
-            return queryResponse;
-        }
-        catch (error) {
-            console.error(`Error querying payment: ${error.message}`);
-            throw new Error(`Error querying payment: ${error.message}`);
         }
     }
     async searchTransaction(transactionId) {
@@ -330,7 +317,7 @@ let PaymentService = class PaymentService {
             throw new Error(`Error searching transaction: ${error.message}`);
         }
     }
-    async refundTransaction(paymentId, amount, trxID) {
+    async refundTransaction(paymentId, amount, trxID, email) {
         try {
             const refundDetails = {
                 paymentID: paymentId,
@@ -338,15 +325,45 @@ let PaymentService = class PaymentService {
                 amount: amount,
             };
             const refundResponse = await (0, bkash_payment_1.refundTransaction)(this.bkashConfig, refundDetails);
+            if (refundResponse.statusMessage === 'Successful' && refundResponse.transactionStatus === 'Completed') {
+                const trx_id = refundResponse.originalTrxID;
+                const transaction = await this.transectionRepository.findOne({
+                    where: { bankTranId: trx_id },
+                });
+                if (!transaction) {
+                    throw new Error(`Transaction with ID ${trx_id} not found.`);
+                }
+                const user = await this.userRepository.findOne({
+                    where: { email },
+                    relations: ['wallet'],
+                });
+                if (!user || !user.wallet) {
+                    throw new Error(`User or Wallet not found for email: ${email}`);
+                }
+                if (transaction.status === 'Deposited') {
+                    transaction.status = 'Refunded';
+                    transaction.refundAmount = amount;
+                    user.wallet.ammount = Number(user.wallet.ammount) - Number(amount);
+                    await this.walletRepository.save(user.wallet);
+                    transaction.walletBalance = user.wallet.ammount;
+                }
+                else {
+                    transaction.status = 'Refunded';
+                    transaction.refundAmount = amount;
+                }
+                await this.transectionRepository.save(transaction);
+            }
             return refundResponse;
         }
         catch (error) {
             console.error("Error details:", {
                 message: error.message,
-                response: error.response ? {
-                    status: error.response.status,
-                    data: error.response.data,
-                } : null,
+                response: error.response
+                    ? {
+                        status: error.response.status,
+                        data: error.response.data,
+                    }
+                    : null,
             });
             throw new Error(`Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`);
         }

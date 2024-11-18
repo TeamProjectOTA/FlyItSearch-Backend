@@ -94,6 +94,10 @@ __decorate([
     __metadata("design:type", String)
 ], Transection.prototype, "paymentId", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], Transection.prototype, "refundAmount", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => user_entity_1.User, (user) => user.transection, { onDelete: 'CASCADE' }),
     __metadata("design:type", user_entity_1.User)
 ], Transection.prototype, "user", void 0);
