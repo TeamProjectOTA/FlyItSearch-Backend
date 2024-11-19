@@ -254,7 +254,7 @@ export class FlyHubUtil {
               ArrivalGate: segment?.Destination?.Airport?.Terminal || 'TBA',
               HiddenStops: [],
               SegmentCode: {
-                bookingCode: bookingClass,
+                bookingCode: segment?.Airline?.BookingClass,
                 cabinCode: cabinClass,
                 seatsAvailable: seatsAvailable,
               },
@@ -516,7 +516,7 @@ export class FlyHubUtil {
               HiddenStops: [],
               TotalMilesFlown: 0,
               SegmentCode: {
-                bookingCode: bookingClass,
+                bookingCode: segment?.Airline?.AirlineCode,
                 cabinCode: cabinClass,
                 seatsAvailable: seatsAvailable,
               },
