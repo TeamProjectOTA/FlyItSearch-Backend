@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   NotFoundException,
+  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -48,6 +49,7 @@ export class AuthController {
     user.emailVerified = true;
     user.verificationToken = null;
     await this.userRepository.update(user.id, user);
+    await this.authservice.emailVerified(user.email)
 
     return { message: 'Email verified successfully' };
   }
@@ -57,9 +59,9 @@ export class AuthController {
     return await this.authservice.sendPasswordResetEmail(email);
   }
 
-  @Post('reset-password')
+  @Post('reset-password/:token')
   async resetPassword(
-    @Body('token') token: string,
+    @Param('token') token: string,
     @Body('newPassword') newPassword: string,
   ): Promise<any> {
     return await this.authservice.resetPassword(token, newPassword);

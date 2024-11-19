@@ -13,9 +13,8 @@ async function bootstrap() {
     app.enableCors();
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Flight')
-        .setDescription('Flight api description')
-        .setVersion('2.0')
-        .addTag('flight')
+        .setVersion('1.0')
+        .addTag('Visa')
         .addSecurityRequirements('token')
         .addBearerAuth({
         type: 'http',

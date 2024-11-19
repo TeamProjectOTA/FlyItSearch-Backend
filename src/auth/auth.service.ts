@@ -213,7 +213,7 @@ export class AuthService {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT, 10),
-      secure: false, // true for 465, false for other ports
+      secure: false, 
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
@@ -224,8 +224,38 @@ export class AuthService {
       from: process.env.EMAIL_CC,
       to: email,
       subject: 'Email Verification',
-      html: `<h1>Your varification code :<strong> ${token}</strong></h1>`,
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto;">
+          <div style="padding: 20px; position: relative;">
+            <div style="color: #13406b; margin-bottom: 20px;">
+            <h3>Flyit-Search</h3>
+            <h4>Email Verification</h4>
+            </div>
+            <p style="font-size: 16px;">Dear Traveler,</p>
+            <p style="font-size: 16px;">Your One Time Password (OTP) for email verification is:</p>
+            <div style="text-align: center; background-color: #f9f9f9; padding: 10px; border-radius: 4px;">
+              <p style="font-size: 28px; font-weight: bold; color: #13406b; margin: 10px 0;">${token}</p>
+            </div>
+            <p style="font-size: 16px;">This OTP is valid for the next <strong>299 seconds</strong>. Please verify your email by submitting this OTP code.</p>
+            <p style="font-size: 16px;">If you face any issues during verification, please contact our 24-hour Call Center:</p>
+            <div style="display: flex; align-items: center; margin-top: 20px;">
+              <a href="tel:+8801736987906" style="text-decoration: none;">
+                <img src="https://storage.googleapis.com/flyit-search-test-bucket/WebsiteImage/phone_icon-removebg-preview%20(1).png" 
+                     alt="Call Icon" style="width: 150px; height: 49px;">
+              </a>
+            </div>
+          </div>
+          <div style="padding: 10px; text-align: center; font-size: 12px; color: #ff0505;">
+            <p style="margin: 0;"><strong>*Please do not share your OTP with anyone. If this email was not intended for you, please ignore it.</strong></p>
+          </div>
+        </div>
+      `
     };
+    
+    
+    
+    
+    
 
     try {
       await transporter.sendMail(mailOptions);
@@ -275,7 +305,7 @@ export class AuthService {
 
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = new Date(Date.now() + 1800000); // 1 hour expiry
+    user.resetPasswordExpires = new Date(Date.now() + 180000);//3min
 
     await this.userRepository.save(user);
 
@@ -287,7 +317,7 @@ export class AuthService {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT, 10),
-      secure: false, // true for 465, false for other ports
+      secure: false, 
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
@@ -297,7 +327,7 @@ export class AuthService {
     const mailOptions = {
       from: process.env.EMAIL_CC,
       to: email,
-      subject: 'Password Verification',
+      subject: 'Password Reset',
       text: `Your varification code : ${token}`,
     };
 
@@ -373,5 +403,35 @@ export class AuthService {
       existingUser = await this.userRepository.save(newUser);
     }
     return await this.signInUserForGoogle(existingUser);
+  }
+  async emailVerified(email: string): Promise<void> {
+    const transporter = nodemailer.createTransport({
+      host: process.env.EMAIL_HOST,
+      port: parseInt(process.env.EMAIL_PORT, 10),
+      secure: false, 
+      auth: {
+        user: process.env.EMAIL_USERNAME,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_CC,
+      to: email,
+      subject: 'Email Verified',
+      html: `<h1>Email Verification Completed</h1>`
+    };
+    
+    
+    
+    
+    
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      throw new Error('Failed to send verification email.');
+    }
   }
 }

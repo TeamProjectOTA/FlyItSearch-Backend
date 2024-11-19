@@ -23,4 +23,5 @@ export declare class AuthService {
     sendResetPasswordEmail(email: string, token: string): Promise<void>;
     signInUserForGoogle(user: User): Promise<any>;
     validateUser(user: any): Promise<any>;
+    emailVerified(email: string): Promise<void>;
 }

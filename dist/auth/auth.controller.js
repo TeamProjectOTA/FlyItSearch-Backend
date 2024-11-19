@@ -39,6 +39,7 @@ let AuthController = class AuthController {
         user.emailVerified = true;
         user.verificationToken = null;
         await this.userRepository.update(user.id, user);
+        await this.authservice.emailVerified(user.email);
         return { message: 'Email verified successfully' };
     }
     async forgotPassword(email) {
@@ -80,8 +81,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "forgotPassword", null);
 __decorate([
-    (0, common_1.Post)('reset-password'),
-    __param(0, (0, common_1.Body)('token')),
+    (0, common_1.Post)('reset-password/:token'),
+    __param(0, (0, common_1.Param)('token')),
     __param(1, (0, common_1.Body)('newPassword')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String]),
