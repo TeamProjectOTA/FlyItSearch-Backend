@@ -2,23 +2,21 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BookingID, BookingSave, CreateSaveBookingDto } from './booking.model';
+import {  BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+
 import { BookingIdSave } from 'src/flight/flight.model';
-import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
+
 
 @Injectable()
 export class BookingService {
-  private readonly username: string = process.env.FLYHUB_UserName;
-  private readonly apiKey: string = process.env.FLYHUB_ApiKey;
-  private readonly apiUrl: string = process.env.FLyHub_Url;
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -26,7 +24,7 @@ export class BookingService {
     @InjectRepository(BookingSave)
     private readonly bookingSaveRepository: Repository<BookingSave>,
     @InjectRepository(BookingIdSave)
-    private readonly bookingIdSave:Repository<BookingIdSave>,
+    private readonly bookingIdSave: Repository<BookingIdSave>,
   ) {}
 
   async saveBooking(
@@ -102,34 +100,6 @@ export class BookingService {
       throw new UnauthorizedException();
     }
     const email = await this.authservice.decodeToken(header);
-    const userUpdate = await this.userRepository.findOne({
-      where: { email: email },
-      relations: ['bookingSave'],
-    });
-    if (!userUpdate) {
-      throw new NotFoundException('User not found');
-    }
-    const nowdate = new Date(Date.now());
-    const dhakaOffset = 6 * 60 * 60 * 1000;
-    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
-    for (const booking of userUpdate.bookingSave) {
-      const timeLeft = new Date(booking.expireDate);
-      if (
-        dhakaTime.getTime() >= timeLeft.getTime() &&
-        booking.bookingStatus === 'Booked'
-      ) {
-        const userBooking = await this.bookingSaveRepository.findOne({
-          where: { bookingId: booking.bookingId },
-        });
-        const cancelData= await this.aircancel(booking.bookingId)
-        if(cancelData?.BookingStatus){
-        userBooking.bookingStatus = cancelData?.BookingStatus;}
-        else{
-          userBooking.bookingStatus='Cancelled'
-        }
-        await this.bookingSaveRepository.save(userBooking);
-      }
-    }
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.bookingSave', 'bookingSave')
@@ -147,67 +117,5 @@ export class BookingService {
     return {
       saveBookings: user.bookingSave,
     };
-  }
-
-  
-
-  async getToken(): Promise<string> {
-    try {
-      const config: AxiosRequestConfig = {
-        method: 'post',
-        url: `${this.apiUrl}/Authenticate`,
-        data: {
-          username: this.username,
-          apiKey: this.apiKey,
-        },
-      };
-
-      const response: AxiosResponse<any> = await axios.request(config);
-
-      const token: string = response?.data?.TokenId;
-      if (!token) {
-        throw new HttpException(
-          'Token not found in response',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-      // console.log(token);
-      return token;
-    } catch (error) {
-      console.error(
-        'Error fetching token:',
-        error.response?.data || error.message,
-      );
-      throw new HttpException(
-        'Failed to authenticate',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-    
-  }
-   async aircancel(BookingID:string): Promise<any> {
-    const bookingId = await this.bookingIdSave.findOne({
-      where: { flyitSearchId: BookingID},
-    });
-    const flyhubId = bookingId.flyhubId;
-    const token = await this.getToken();
-    const ticketCancel = {
-      method: 'post',
-      maxBodyLength: Infinity,
-      url: `${this.apiUrl}/AirCancel`,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      data: { BookingID: flyhubId },
-    };
-    try {
-      const response = await axios.request(ticketCancel);
-
-      return response
-      //return response.data
-    } catch (error) {
-      throw error?.response?.data;
-    }
   }
 }

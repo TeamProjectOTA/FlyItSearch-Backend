@@ -74,7 +74,7 @@ export class TransectionService {
     add.currierName = transectiondto.currierName;
     add.validationDate = dhakaTimeFormatted;
     add.tranDate = dhakaTimeFormatted;
-    add.paidAmount = transectiondto.paidAmount
+    add.paidAmount = transectiondto.paidAmount;
     add.offerAmmount = transectiondto.offerAmmount;
     add.riskTitle = 'Safe';
     add.cardType = 'Deducted from Deposit';

@@ -13,9 +13,9 @@ export class Transection {
   tranDate: string;
   @Column({ nullable: true })
   bookingId: string;
-  @Column({ nullable: true,type: 'double' })
+  @Column({ nullable: true, type: 'double' })
   paidAmount: number;
-  @Column({ nullable: true,type: 'double'})
+  @Column({ nullable: true, type: 'double' })
   offerAmmount: number;
   @Column({ nullable: true })
   bankTranId: string;
@@ -41,10 +41,10 @@ export class Transection {
   walletBalance: number;
   @Column()
   paymentType: string;
-  @Column({nullable:true})
-  paymentId:string
-  @Column({nullable:true})
-  refundAmount:number
+  @Column({ nullable: true })
+  paymentId: string;
+  @Column({ nullable: true })
+  refundAmount: number;
   @ManyToOne(() => User, (user) => user.transection, { onDelete: 'CASCADE' })
   user: User;
 }

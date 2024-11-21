@@ -7,6 +7,6 @@ import { AuthModule } from 'src/auth/auth.module';
 @Module({
   imports: [AuthModule],
   controllers: [GoogleOuthController],
-  providers: [GoogleStrategy, GoogleOuthService,],
+  providers: [GoogleStrategy, GoogleOuthService],
 })
 export class GoogleOuthModule {}

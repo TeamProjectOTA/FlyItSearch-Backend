@@ -20,6 +20,8 @@ export declare class User {
     emailVerified: boolean;
     resetPasswordToken: string;
     resetPasswordExpires: Date;
+    resetAttemptCount: number;
+    resetAttemptTimestamp: Date;
     status: string;
     googleId: string;
     profilePicture: ProfilePicture;

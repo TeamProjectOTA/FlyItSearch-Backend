@@ -34,6 +34,8 @@ const travel_buddy_module_1 = require("./travel-buddy/travel-buddy.module");
 const transection_module_1 = require("./transection/transection.module");
 const admin_dashboard_module_1 = require("./admin-dashboard/admin-dashboard.module");
 const bank_add_module_1 = require("./bank-add/bank-add.module");
+const schedule_1 = require("@nestjs/schedule");
+const shedule_module_1 = require("./shedule/shedule.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -66,6 +68,7 @@ exports.AppModule = AppModule = __decorate([
                 logging: false,
                 timezone: 'Z',
             }),
+            schedule_1.ScheduleModule.forRoot(),
             admin_module_1.AdminModule,
             user_module_1.UserModule,
             auth_module_1.AuthModule,
@@ -87,6 +90,7 @@ exports.AppModule = AppModule = __decorate([
             transection_module_1.TransectionModule,
             admin_dashboard_module_1.AdminDashboardModule,
             bank_add_module_1.BankAddModule,
+            shedule_module_1.SheduleModule,
         ],
         providers: [
             {

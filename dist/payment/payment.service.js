@@ -325,7 +325,8 @@ let PaymentService = class PaymentService {
                 amount: amount,
             };
             const refundResponse = await (0, bkash_payment_1.refundTransaction)(this.bkashConfig, refundDetails);
-            if (refundResponse.statusMessage === 'Successful' && refundResponse.transactionStatus === 'Completed') {
+            if (refundResponse.statusMessage === 'Successful' &&
+                refundResponse.transactionStatus === 'Completed') {
                 const trx_id = refundResponse.originalTrxID;
                 const transaction = await this.transectionRepository.findOne({
                     where: { bankTranId: trx_id },
@@ -356,7 +357,7 @@ let PaymentService = class PaymentService {
             return refundResponse;
         }
         catch (error) {
-            console.error("Error details:", {
+            console.error('Error details:', {
                 message: error.message,
                 response: error.response
                     ? {

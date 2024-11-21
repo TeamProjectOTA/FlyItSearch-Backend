@@ -29,12 +29,16 @@ let PaymentController = class PaymentController {
                 return res.redirect(process.env.SUCCESS_CALLBACK);
             }
             else {
-                return res.status(400).json({ message: 'Payment validation failed', validationResponse });
+                return res
+                    .status(400)
+                    .json({ message: 'Payment validation failed', validationResponse });
             }
         }
         catch (error) {
             console.error('Error during payment validation:', error);
-            return res.status(500).json({ message: 'Internal server error', error: error.message });
+            return res
+                .status(500)
+                .json({ message: 'Internal server error', error: error.message });
         }
     }
     async handleFail(res) {

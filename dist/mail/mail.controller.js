@@ -23,9 +23,6 @@ let MailController = class MailController {
     async sendMail(mailData) {
         return this.mailerService.sendMail(mailData);
     }
-    async test(data) {
-        return this.mailerService.mailDataConvert(data);
-    }
 };
 exports.MailController = MailController;
 __decorate([
@@ -35,13 +32,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MailController.prototype, "sendMail", null);
-__decorate([
-    (0, common_1.Post)('test'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], MailController.prototype, "test", null);
 exports.MailController = MailController = __decorate([
     (0, swagger_1.ApiTags)('Mail'),
     (0, common_1.Controller)('mail'),

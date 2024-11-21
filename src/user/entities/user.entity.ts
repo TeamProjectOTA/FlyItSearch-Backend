@@ -45,6 +45,10 @@ export class User {
   resetPasswordToken: string;
   @Column({ type: 'timestamp', nullable: true })
   resetPasswordExpires: Date;
+  @Column({ type: 'int', default: 0 })
+  resetAttemptCount: number; // Tracks reset attempts in the current hour
+  @Column({ type: 'timestamp', nullable: true })
+  resetAttemptTimestamp: Date; // Tracks the timestamp of the first reset attempt in the current hour
   @Column()
   status: string;
   @Column({ nullable: true })

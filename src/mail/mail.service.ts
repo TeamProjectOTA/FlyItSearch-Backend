@@ -11,16 +11,15 @@ export class MailService {
 
   constructor(private readonly authService: AuthService) {
     this.transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT, 10),
+      host: `${process.env.EMAIL_HOST}`,
+      port: 465,
       secure: false,
       auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: `${process.env.EMAIL_USERNAME}`,
+        pass: `${process.env.EMAIL_PASSWORD}`,
       },
     });
 
-    // Register Handlebars helpers
     handlebars.registerHelper('formatTime', function (datetime) {
       return new Date(datetime).toLocaleTimeString([], {
         hour: '2-digit',
@@ -54,8 +53,9 @@ export class MailService {
     return compiledTemplate(data);
   }
 
-  async sendMail(data: any) {
-    const flightUrl = 'http://localhost:8080/booking/flh/airRetrive'; // dynamically generated URL
+  async sendMail(data: any, header?: any) {
+    //email
+    const name = this.authService.decodeToken(header);
     const bodyData = {
       BookingID: data.BookingId,
     };
@@ -71,25 +71,20 @@ export class MailService {
       NetFare: data.NetFare,
       AllLegsInfo: data.AllLegsInfo,
       PassengerList: data.PassengerList,
-      flightUrl: flightUrl,
       bodyData: bodyData,
     });
     const email = data?.PassengerList[0]?.Email;
     const mailOptions = {
-      from: process.env.EMAIL_CC,
+      from: process.env.EMAIL_USERNAME,
       to: email,
       subject: `Flight ${data.BookingStatus} confirmation`,
       html,
     };
-
     try {
       const info = await this.transporter.sendMail(mailOptions);
       return { message: 'The email was delivered', info };
     } catch (error) {
       throw error;
     }
-  }
-  async mailDataConvert(data: any) {
-    return await this.sendMail(data[0]);
   }
 }

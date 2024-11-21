@@ -111,7 +111,9 @@ let HomepageService = class HomepageService {
         }
     }
     async getalldata() {
-        const homapage = await this.homePageRepository.findOne({ where: { id: 1 } });
+        const homapage = await this.homePageRepository.findOne({
+            where: { id: 1 },
+        });
         if (!homapage) {
             throw new common_1.NotFoundException('HomePage record not found.');
         }

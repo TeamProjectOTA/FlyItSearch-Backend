@@ -60,12 +60,16 @@ let DepositController = class DepositController {
                 return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
             }
             else {
-                return res.status(400).json({ message: 'Payment validation failed', validationResponse });
+                return res
+                    .status(400)
+                    .json({ message: 'Payment validation failed', validationResponse });
             }
         }
         catch (error) {
             console.error('Error during payment validation:', error);
-            return res.status(500).json({ message: 'Internal server error', error: error.message });
+            return res
+                .status(500)
+                .json({ message: 'Internal server error', error: error.message });
         }
     }
     async surjoPay(header, depositDto) {

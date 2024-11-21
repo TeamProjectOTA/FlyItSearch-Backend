@@ -83,7 +83,10 @@ export class FlyHubService {
     try {
       const response = await axios.request(shoppingrequest);
 
-      return await this.flyHubUtil.restBFMParser(response.data, reqBody.JourneyType);
+      return await this.flyHubUtil.restBFMParser(
+        response.data,
+        reqBody.JourneyType,
+      );
       // return response.data
     } catch (error) {
       console.error(error);
@@ -149,7 +152,7 @@ export class FlyHubService {
 
     try {
       const response = await axios.request(ticketRetrive);
-       //return response.data
+      //return response.data
       return this.flyHubUtil.airRetriveDataTransformer(
         response?.data,
         BookingID.BookingID,
@@ -272,19 +275,19 @@ export class FlyHubService {
         throw new ForbiddenException(
           'Sorry, you cannot book this ticket. Contact our help line for more updates',
         );
-      }else{
-      const response1 = await axios.request(PreBookticket);
-      const response = await axios.request(Bookticket);
+      } else {
+        const response1 = await axios.request(PreBookticket);
+        const response = await axios.request(Bookticket);
 
-      return await this.flyHubUtil.bookingDataTransformerFlyhb(
-        response.data,
-        header,
-        currentTimestamp,
-        personIds,
-      );
+        return await this.flyHubUtil.bookingDataTransformerFlyhb(
+          response.data,
+          header,
+          currentTimestamp,
+          personIds,
+        );
       }
     } catch (error) {
-      throw error
+      throw error;
     }
   }
 
@@ -329,8 +332,6 @@ export class FlyHubService {
     }
   }
 
-  
-
   async convertToFlyAirSearchDto(
     flightSearchModel: FlightSearchModel,
     userIp: string,
@@ -352,8 +353,8 @@ export class FlyHubService {
       JourneyType: journeyType,
       Segments: segments,
     });
- //console.log(flyAirSearchDto)
- // return flyAirSearchDto
+    //console.log(flyAirSearchDto)
+    // return flyAirSearchDto
     try {
       return await this.searchFlights(flyAirSearchDto);
     } catch (error) {
@@ -376,10 +377,6 @@ export class FlyHubService {
     }
     return '3';
   }
-
-
-
-
 
   // async makeTicket(BookingID: BookingID){
   //   const findBooking = await this.bookingSaveRepository.findOne({
@@ -404,7 +401,7 @@ export class FlyHubService {
   //       'Content-Type': 'application/json',
   //       Authorization: `Bearer ${token}`,
   //     },
-  //     data: { 
+  //     data: {
   //       BookingID: flyhubId,
   //       IsAcceptedPriceChangeandIssueTicket:true
   //      },

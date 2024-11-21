@@ -32,7 +32,8 @@ export class HomepageService {
     },
     data: dataDto,
   ) {
-    let bannerData: { imageUrl: string; size: string; type: string } | null = null;
+    let bannerData: { imageUrl: string; size: string; type: string } | null =
+      null;
     const sliderImages = [];
 
     const homePage = await this.homePageRepository.findOne({
@@ -51,7 +52,6 @@ export class HomepageService {
       bannerData = homePage.banner;
     }
 
-    
     if (files.slider && files.slider.length > 0) {
       if (homePage.sliderImage && homePage.sliderImage.length > 0) {
         for (const sliderImage of homePage.sliderImage) {
@@ -66,12 +66,13 @@ export class HomepageService {
       sliderImages.push(...homePage.sliderImage);
     }
 
-  
     if (!bannerData) {
       throw new BadRequestException('Banner image is required.');
     }
     if (sliderImages.length > 5) {
-      throw new BadRequestException('A maximum of 5 slider images are allowed.');
+      throw new BadRequestException(
+        'A maximum of 5 slider images are allowed.',
+      );
     }
 
     homePage.banner = bannerData;
@@ -81,7 +82,6 @@ export class HomepageService {
 
     return this.homePageRepository.save(homePage);
   }
-
 
   async uploadFileToGoogleCloud(
     file: Express.Multer.File,
@@ -132,11 +132,12 @@ export class HomepageService {
     }
   }
   async getalldata() {
-    const homapage= await this.homePageRepository.findOne({ where: { id: 1 } });
+    const homapage = await this.homePageRepository.findOne({
+      where: { id: 1 },
+    });
     if (!homapage) {
       throw new NotFoundException('HomePage record not found.');
     }
-    return homapage
-   
+    return homapage;
   }
 }

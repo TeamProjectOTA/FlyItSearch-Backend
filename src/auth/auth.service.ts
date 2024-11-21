@@ -134,10 +134,9 @@ export class AuthService {
       );
     }
 
-    const payload = { sub: user.email, sub2: user.passengerId };
+    const payload = { sub: user.email, sub2: user.fullName };
     const expiresInSeconds = this.time; // Adjust expiration as needed
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
-
 
     const token = await this.jwtservice.signAsync(payload);
 
@@ -211,17 +210,17 @@ export class AuthService {
   }
   async sendVerificationEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT, 10),
-      secure: false, 
+      host: `${process.env.EMAIL_HOST}`,
+      port: 465,
+      secure: true,
       auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: `${process.env.EMAIL_USERNAME}`,
+        pass: `${process.env.EMAIL_PASSWORD}`,
       },
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_CC,
+      from: process.env.EMAIL_OTP,
       to: email,
       subject: 'Email Verification',
       html: `
@@ -249,13 +248,8 @@ export class AuthService {
             <p style="margin: 0;"><strong>*Please do not share your OTP with anyone. If this email was not intended for you, please ignore it.</strong></p>
           </div>
         </div>
-      `
+      `,
     };
-    
-    
-    
-    
-    
 
     try {
       await transporter.sendMail(mailOptions);
@@ -269,25 +263,33 @@ export class AuthService {
   }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<any> {
+    const currentTime = new Date();
+
     const user = await this.userRepository.findOne({
       where: {
         resetPasswordToken: resetToken,
-        resetPasswordExpires: MoreThan(new Date()),
+        resetPasswordExpires: MoreThan(currentTime),
       },
     });
 
     if (!user) {
-      throw new BadRequestException('Invalid or expired reset token');
+      throw new BadRequestException('Invalid or expired reset token.');
     }
-
+    if (!newPassword || newPassword.length < 6) {
+      throw new BadRequestException(
+        'Password must be at least 6 characters long.',
+      );
+    }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
     user.password = hashedPassword;
     user.resetPasswordToken = null;
     user.resetPasswordExpires = null;
 
     await this.userRepository.save(user);
     return {
-      message: `Thank you ${user.fullName}.Your password has been reseted`,
+      message: `Thank you ${user.fullName}. Your password has been successfully reset.`,
+      statusCode: 200,
     };
   }
 
@@ -302,22 +304,45 @@ export class AuthService {
         'There is no User Associated with this email',
       );
     }
+    const currentTime = new Date();
+    const oneHourAgo = new Date(currentTime.getTime() - 3600000);
 
+    if (
+      user.resetAttemptTimestamp &&
+      user.resetAttemptTimestamp > oneHourAgo &&
+      user.resetAttemptCount >= 3
+    ) {
+      throw new BadRequestException({
+        message:
+          'You have exceeded the maximum number of reset attempts in the past hour. Please try again later.',
+        statusCode: 429,
+        error: 'Too Many Reset Attempts',
+      });
+    }
+
+    if (
+      !user.resetAttemptTimestamp ||
+      user.resetAttemptTimestamp <= oneHourAgo
+    ) {
+      user.resetAttemptTimestamp = currentTime;
+      user.resetAttemptCount = 0;
+    }
+    user.resetAttemptCount += 1;
     const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
     user.resetPasswordToken = resetToken;
-    user.resetPasswordExpires = new Date(Date.now() + 180000);//3min
+    user.resetPasswordExpires = new Date(currentTime.getTime() + 3600000);
 
     await this.userRepository.save(user);
 
     await this.sendResetPasswordEmail(user.email, resetToken);
-    return { message: `Your password reset code has been sent to ${email}` };
+    return { message: `Your password reset link has been sent to ${email}` };
   }
 
   async sendResetPasswordEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT, 10),
-      secure: false, 
+      secure: true,
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
@@ -325,10 +350,48 @@ export class AuthService {
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_CC,
+      from: process.env.EMAIL_OTP,
       to: email,
       subject: 'Password Reset',
-      text: `Your varification code : ${token}`,
+      html: `
+        <div style="
+          font-family: Arial, sans-serif;
+          max-width: 600px;
+          margin: 0 auto;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 20px;
+          background-color: #f9f9f9;
+          color: #333;
+          line-height: 1.6;
+        ">
+          <h2 style="
+            color: #13406b; 
+            text-align: center; 
+            margin-bottom: 20px;
+          ">Password Reset Request</h2>
+          <p style="margin:  0 0 10px; font-size: 13px">Hi,</p>
+          <div style="margin: 0 0 20px; font-size: 13px">
+            We received a request to reset your password. Please click the button below to reset your password.If you didn’t request this, you can safely ignore this email.</div>
+          <div style="text-align: center; margin: 10px 0;">
+            <a href="http://192.168.10.30:3000/resetpassword?token=${token}" style="
+              display: inline-block;
+              padding: 9px 17px;
+              font-size: 15px;
+              font-weight: bold;
+              color: #fff;
+              background-color: #13406b;
+              text-decoration: none;
+              border-radius: 6px;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            ">
+              Reset Password
+            </a>
+          </div>
+          <p style="margin: 50px 0 0 0; font-size:14px">Best regards,</p>
+          <p style="margin: 0;font-size:14px; color: #13406b;"><strong>FlyitSearch Team</strong></p>
+        </div>
+      `,
     };
 
     try {
@@ -347,7 +410,7 @@ export class AuthService {
     }
 
     const payload = { sub: user.email, sub2: user.passengerId };
-    const expiresInSeconds = this.time; 
+    const expiresInSeconds = this.time;
     const expirationDate = new Date(Date.now() + expiresInSeconds * 1000);
 
     const dhakaOffset = 6 * 60 * 60 * 1000;
@@ -406,26 +469,21 @@ export class AuthService {
   }
   async emailVerified(email: string): Promise<void> {
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT, 10),
-      secure: false, 
+      host: `${process.env.EMAIL_HOST}`,
+      port: 465,
+      secure: true,
       auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: `${process.env.EMAIL_USERNAME}`,
+        pass: `${process.env.EMAIL_PASSWORD}`,
       },
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_CC,
+      from: process.env.EMAIL_OTP,
       to: email,
       subject: 'Email Verified',
-      html: `<h1>Email Verification Completed</h1>`
+      html: `<h1>Email Verification Completed</h1>`,
     };
-    
-    
-    
-    
-    
 
     try {
       await transporter.sendMail(mailOptions);

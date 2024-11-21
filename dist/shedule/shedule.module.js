@@ -6,20 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GoogleOuthModule = void 0;
+exports.SheduleModule = void 0;
 const common_1 = require("@nestjs/common");
-const google_outh_controller_1 = require("./google-outh.controller");
-const extands_stragey_1 = require("./extands.stragey");
-const google_outh_service_1 = require("./google-outh.service");
-const auth_module_1 = require("../auth/auth.module");
-let GoogleOuthModule = class GoogleOuthModule {
+const shedule_1 = require("./shedule");
+const typeorm_1 = require("@nestjs/typeorm");
+const booking_model_1 = require("../book/booking.model");
+const flight_model_1 = require("../flight/flight.model");
+let SheduleModule = class SheduleModule {
 };
-exports.GoogleOuthModule = GoogleOuthModule;
-exports.GoogleOuthModule = GoogleOuthModule = __decorate([
+exports.SheduleModule = SheduleModule;
+exports.SheduleModule = SheduleModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule],
-        controllers: [google_outh_controller_1.GoogleOuthController],
-        providers: [extands_stragey_1.GoogleStrategy, google_outh_service_1.GoogleOuthService],
+        imports: [typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, flight_model_1.BookingIdSave])],
+        providers: [shedule_1.Shedule],
     })
-], GoogleOuthModule);
-//# sourceMappingURL=google-outh.module.js.map
+], SheduleModule);
+//# sourceMappingURL=shedule.module.js.map

@@ -36,12 +36,12 @@ export class HomepageController {
       banner?: Express.Multer.File[];
       slider?: Express.Multer.File[];
     },
-    @Body() data:dataDto
+    @Body() data: dataDto,
   ) {
-    return this.homePageService.uploadBannerAndSlider(files,data);
+    return this.homePageService.uploadBannerAndSlider(files, data);
   }
   @ApiBearerAuth('access_token')
- // @UseGuards(AdmintokenGuard)
+  // @UseGuards(AdmintokenGuard)
   @Get('data')
   async data() {
     return this.homePageService.getalldata();

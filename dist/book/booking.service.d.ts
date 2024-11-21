@@ -8,14 +8,9 @@ export declare class BookingService {
     private readonly authservice;
     private readonly bookingSaveRepository;
     private readonly bookingIdSave;
-    private readonly username;
-    private readonly apiKey;
-    private readonly apiUrl;
     constructor(userRepository: Repository<User>, authservice: AuthService, bookingSaveRepository: Repository<BookingSave>, bookingIdSave: Repository<BookingIdSave>);
     saveBooking(createSaveBookingDto: CreateSaveBookingDto, header: any): Promise<any>;
     cancelDataSave(fsid: string, status: string, header: any): Promise<any>;
     findAllBooking(bookingStatus?: string): Promise<BookingSave[]>;
     findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
-    getToken(): Promise<string>;
-    aircancel(BookingID: string): Promise<any>;
 }

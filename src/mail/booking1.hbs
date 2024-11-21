@@ -1,0 +1,44 @@
+<html>
+    <body>
+        Your Booking is Confirmed
+        Finish Payment to Secure Your Ticket
+Thank you for booking with Flyit Search! We're excited to assist you with your travel plans.
+To secure your booking and receive your ticket, please complete the payment within the next 20 minutes. Flight fares are subject to change, so we recommend prompt payment to lock in your current rate.
+Once your payment is successful, your ticket will be issued and sent directly to your email.
+         {{#each AllLegsInfo}}
+         {{#each Segments}}
+
+
+
+
+            <img 
+            src="https://tbbd-flight.s3.ap-southeast-1.amazonaws.com/airlines-logo/{{OperatingCarrier}}.png" 
+            alt="Airline Logo" 
+            style="height: 20px; margin-right: 8px;" 
+        />
+        {{MarketingCarrierName}}
+        {{MarketingCarrier}}-{{MarketingFlightNumber}}
+        <div> Depart
+            {{DepFrom}}
+            {{DepAirPort}}
+            {{DepTime}}
+        </div>
+        <div>Arrival
+            {{ArrTo}}
+            {{ArrAirPort}}
+            {{ArrTime}}
+        </div>
+        
+             {{/each}}
+            {{/each}}
+           <div class="traveler-info">
+                {{#each PassengerList}}
+                <p><strong>{{Title}} {{FirstName}} {{LastName}}</strong> {{PaxType}}</p>
+                {{/each}}
+                <p><strong>Booking ID:</strong> {{BookingId}}</p>
+                Please note that this is a provisional flight booking and is not a confirmed ticket or final confirmation of your travel plans. This booking may be subject to cancellation at any time.
+Thank you,
+Team Flyit Search
+            </div>
+    </body>
+</html>

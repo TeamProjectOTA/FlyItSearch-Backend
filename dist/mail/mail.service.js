@@ -20,12 +20,12 @@ let MailService = class MailService {
     constructor(authService) {
         this.authService = authService;
         this.transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: parseInt(process.env.EMAIL_PORT, 10),
+            host: `${process.env.EMAIL_HOST}`,
+            port: 465,
             secure: false,
             auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD,
+                user: `${process.env.EMAIL_USERNAME}`,
+                pass: `${process.env.EMAIL_PASSWORD}`,
             },
         });
         handlebars.registerHelper('formatTime', function (datetime) {
@@ -49,8 +49,8 @@ let MailService = class MailService {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(data);
     }
-    async sendMail(data) {
-        const flightUrl = 'http://localhost:8080/booking/flh/airRetrive';
+    async sendMail(data, header) {
+        const name = this.authService.decodeToken(header);
         const bodyData = {
             BookingID: data.BookingId,
         };
@@ -65,12 +65,11 @@ let MailService = class MailService {
             NetFare: data.NetFare,
             AllLegsInfo: data.AllLegsInfo,
             PassengerList: data.PassengerList,
-            flightUrl: flightUrl,
             bodyData: bodyData,
         });
         const email = data?.PassengerList[0]?.Email;
         const mailOptions = {
-            from: process.env.EMAIL_CC,
+            from: process.env.EMAIL_USERNAME,
             to: email,
             subject: `Flight ${data.BookingStatus} confirmation`,
             html,
@@ -82,9 +81,6 @@ let MailService = class MailService {
         catch (error) {
             throw error;
         }
-    }
-    async mailDataConvert(data) {
-        return await this.sendMail(data[0]);
     }
 };
 exports.MailService = MailService;

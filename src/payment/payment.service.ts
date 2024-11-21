@@ -53,7 +53,7 @@ export class PaymentService {
       app_key: process.env.BKASH_APP_KEY,
       app_secret: process.env.BKASH_APP_SECRET,
     };
-   
+
     this.surjoBaseUrl = process.env.SURJO_API_Url;
     this.surjoUserName = process.env.SURJO_API_USRNAME;
     this.surjoPassword = process.env.SURJO_API_PASSWORD;
@@ -243,11 +243,6 @@ export class PaymentService {
     }
   }
 
-
-
-
-
-
   async bkashInit(SearchResponse: any, header: any) {
     const booking = SearchResponse[0];
     const airTicketPrice = booking?.NetFare;
@@ -255,14 +250,24 @@ export class PaymentService {
     const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
     const bookingId = booking?.BookingId;
     return {
-      url: await this.createPaymentBkash(total_amount, bookingId, header,String(airTicketPrice)),
+      url: await this.createPaymentBkash(
+        total_amount,
+        bookingId,
+        header,
+        String(airTicketPrice),
+      ),
       airTicketPrice: airTicketPrice,
       paymentGatwayCharge: paymentGatwayCharge,
       total_amount: total_amount,
     };
   }
 
-  async createPaymentBkash(amount: number, bookingId: string, header: any,netAmount:string) {
+  async createPaymentBkash(
+    amount: number,
+    bookingId: string,
+    header: any,
+    netAmount: string,
+  ) {
     const email = await this.authService.decodeToken(header);
     const bookingSave = await this.bookingSaveRepository.findOne({
       where: { bookingId: bookingId },
@@ -273,7 +278,7 @@ export class PaymentService {
         const timestamp = Date.now();
         const randomNumber = Math.floor(Math.random() * 1000);
         const tran_id = `SSM${timestamp}${randomNumber}`;
-        
+
         const paymentDetails = {
           amount: amount || 10,
           callbackURL: `${process.env.BASE_CALLBACKURL}payment/callback/${bookingId}/${netAmount}`,
@@ -331,20 +336,19 @@ export class PaymentService {
           const arrto =
             bookingSave?.laginfo[(bookingSave?.laginfo).length - 1]?.ArrTo;
 
-            const amount = parseFloat(result.amount);
-         
-            if (isNaN(amount)) {
-              throw new Error('Invalid amount value');
-            }
-    
-           
+          const amount = parseFloat(result.amount);
+
+          if (isNaN(amount)) {
+            throw new Error('Invalid amount value');
+          }
+
           let addTransection: Transection = new Transection();
           addTransection.tranId = result.merchantInvoiceNumber;
           addTransection.tranDate = tranDate;
           addTransection.paidAmount = amount;
           addTransection.offerAmmount = Number(offerAmount);
           addTransection.bankTranId = result?.trxID;
-          addTransection.paymentId=result?.paymentID
+          addTransection.paymentId = result?.paymentID;
           addTransection.riskTitle = 'Safe';
           addTransection.cardType = 'Bkash';
           addTransection.cardIssuer = 'Bkash';
@@ -363,7 +367,6 @@ export class PaymentService {
         }
         return res.redirect(process.env.FAILED_BKASH_CALLBACK);
       } else {
-        
         return res.redirect(process.env.FAIELD_CALLBACK);
       }
     } catch (e) {
@@ -371,39 +374,53 @@ export class PaymentService {
       throw new Error('Payment execution failed');
     }
   }
-  
+
   // async queryPayment(paymentId: string): Promise<any> {
   //   try {
   //     if (!paymentId) {
   //       throw new Error("Payment ID is required for querying payment.");
   //     }
   //     const queryResponse = await queryPayment( this.bkashConfig,paymentId);
-  
+
   //     return queryResponse;
   //   } catch (error) {
   //     console.error(`Error querying payment: ${error.message}`);
   //     throw new Error(`Error querying payment: ${error.message}`);
   //   }
   // }
-  
+
   async searchTransaction(transactionId: string): Promise<any> {
     try {
-      const searchResponse = await searchTransaction(this.bkashConfig,transactionId);
+      const searchResponse = await searchTransaction(
+        this.bkashConfig,
+        transactionId,
+      );
       return searchResponse;
     } catch (error) {
       throw new Error(`Error searching transaction: ${error.message}`);
     }
   }
-  
-  async refundTransaction(paymentId: string, amount: number, trxID: string, email: string): Promise<any> {
+
+  async refundTransaction(
+    paymentId: string,
+    amount: number,
+    trxID: string,
+    email: string,
+  ): Promise<any> {
     try {
       const refundDetails = {
         paymentID: paymentId,
         trxID: trxID,
         amount: amount,
       };
-      const refundResponse = await refundTransaction(this.bkashConfig, refundDetails);
-      if (refundResponse.statusMessage === 'Successful' && refundResponse.transactionStatus === 'Completed') {
+      const refundResponse = await refundTransaction(
+        this.bkashConfig,
+        refundDetails,
+      );
+      if (
+        refundResponse.statusMessage === 'Successful' &&
+        refundResponse.transactionStatus === 'Completed'
+      ) {
         const trx_id = refundResponse.originalTrxID;
         const transaction = await this.transectionRepository.findOne({
           where: { bankTranId: trx_id },
@@ -415,30 +432,27 @@ export class PaymentService {
           where: { email },
           relations: ['wallet'],
         });
-      
-  
+
         if (!user || !user.wallet) {
           throw new Error(`User or Wallet not found for email: ${email}`);
         }
-  
-     
+
         if (transaction.status === 'Deposited') {
           transaction.status = 'Refunded';
-          transaction.refundAmount=amount
+          transaction.refundAmount = amount;
           user.wallet.ammount = Number(user.wallet.ammount) - Number(amount);
-           await this.walletRepository.save(user.wallet);
-          transaction.walletBalance = user.wallet.ammount
+          await this.walletRepository.save(user.wallet);
+          transaction.walletBalance = user.wallet.ammount;
         } else {
           transaction.status = 'Refunded';
-          transaction.refundAmount=amount
+          transaction.refundAmount = amount;
         }
-      await this.transectionRepository.save(transaction);
- 
+        await this.transectionRepository.save(transaction);
       }
-  
+
       return refundResponse;
     } catch (error) {
-      console.error("Error details:", {
+      console.error('Error details:', {
         message: error.message,
         response: error.response
           ? {
@@ -448,22 +462,10 @@ export class PaymentService {
           : null,
       });
       throw new Error(
-        `Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`
+        `Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`,
       );
     }
   }
-  
-  
-  
-
-
-
-
-
-
-
-
-
 
   //surjo
   async formdata(SearchResponse?: any, header?: any) {
@@ -540,7 +542,7 @@ export class PaymentService {
             prefix: this.surjoPrefix,
             store_id: store_id,
             token: token,
-            return_url: `${process.env.BASE_CALLBACKURL}payment/return/${bookingID}/${email}`, 
+            return_url: `${process.env.BASE_CALLBACKURL}payment/return/${bookingID}/${email}`,
             cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
             order_id: tran_id,
             client_ip: '192.67.5',
@@ -570,7 +572,7 @@ export class PaymentService {
     sp_order_id: string,
     bookingID: string,
     email: string,
-    res:any
+    res: any,
   ) {
     const tokenDetails = await this.surjoAuthentication();
     const { token, token_type } = tokenDetails;

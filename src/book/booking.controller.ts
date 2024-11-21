@@ -37,7 +37,7 @@ export class BookingController {
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
-   
+
     const { Passengers } = data;
     const personIds: { index: number; visa?: string; passport?: string }[] = [];
     Passengers.forEach((passenger, index) => {
@@ -58,7 +58,7 @@ export class BookingController {
       delete passenger.visa;
       delete passenger.passport;
     });
-   
+
     return await this.flyHubService.airbook(
       data,
       header,
@@ -109,8 +109,6 @@ export class BookingController {
     return this.bookingService.findUserWithBookings(header, bookingStatus);
   }
 
-
-  
   // @Post('flh/makeTicket')
   // @UseGuards(AdmintokenGuard)
   // async ticletMake(@Body() bookingIdDto: BookingID) {

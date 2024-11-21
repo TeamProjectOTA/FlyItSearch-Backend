@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleOuthService } from './google-outh.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,7 +23,6 @@ export class GoogleOuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {
     console.log('User from Google:', req.user);
-    
   }
 
   @Get('google/redirect')
@@ -23,13 +30,15 @@ export class GoogleOuthController {
   async googleAuthRedirect(@Req() req, @Res() res: Response) {
     const user = req.user;
     return res.status(200).json({
-     user,
+      user,
     });
   }
 
-@Post('fireabaseGoogle')
-  async validateUser(@Body() user: { email: string; fullName: string; googleId: string }) {
-      const validatedUser = await this.authService.validateUser(user);
-      return validatedUser
-    }
+  @Post('fireabaseGoogle')
+  async validateUser(
+    @Body() user: { email: string; fullName: string; googleId: string },
+  ) {
+    const validatedUser = await this.authService.validateUser(user);
+    return validatedUser;
+  }
 }

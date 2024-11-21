@@ -11,8 +11,4 @@ export class MailController {
   async sendMail(@Body() mailData: any) {
     return this.mailerService.sendMail(mailData);
   }
-  @Post('test')
-  async test(@Body() data: any) {
-    return this.mailerService.mailDataConvert(data);
-  }
 }

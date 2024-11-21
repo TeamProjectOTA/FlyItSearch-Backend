@@ -196,36 +196,16 @@ export class FlyHubUtil {
 
             const firstSegment = segmentsList[0];
             const lastSegment = segmentsList[segmentsList.length - 1];
-
-            //trying to calculate the transittime
-            let arivalTime = new Date(
-              firstSegment.Destination.ArrTime,
-            ).getTime();
-            let deptureTime = new Date(lastSegment.Origin.DepTime).getTime();
-            const totalduration = deptureTime - arivalTime;
-            let totalDurationInMinutes = Math.floor(
-              totalduration / (1000 * 60),
-            );
-            if (totalDurationInMinutes < 0) {
-              totalDurationInMinutes = 0; // or handle it differently as per your logic
-            }
-
             const legInfo = {
               DepDate: firstSegment?.Origin?.DepTime,
               DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
               ArrTo: lastSegment.Destination?.Airport?.AirportCode,
-
-              //trying to calculate the transittime
-              test: totalDurationInMinutes,
 
               Duration: segmentsList?.reduce(
                 (acc, segment) => acc + parseInt(segment?.JourneyDuration),
                 0,
               ),
             };
-
-            const bookingClass = firstSegment?.Airline?.BookingClass;
-            const cabinClass = firstSegment?.Airline?.CabinClass;
             const seatsAvailable = Result?.Availabilty;
 
             const segments = segmentsList?.map((segment) => ({
@@ -255,7 +235,7 @@ export class FlyHubUtil {
               HiddenStops: [],
               SegmentCode: {
                 bookingCode: segment?.Airline?.BookingClass,
-                cabinCode: cabinClass,
+                cabinCode: segment?.Airline?.CabinClass,
                 seatsAvailable: seatsAvailable,
               },
             }));
@@ -309,7 +289,7 @@ export class FlyHubUtil {
       }
     }
 
-    return  FlightItenary;
+    return FlightItenary;
   }
   async airRetriveDataTransformer(
     SearchResponse: any,
@@ -399,15 +379,18 @@ export class FlyHubUtil {
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
           let TimeLimit: string = null;
-          if(bookingStatus=='IssueInProcess'){
+          if (bookingStatus == 'IssueInProcess') {
             if (Result?.LastTicketDate) {
               const lastTicketDate: string = Result?.LastTicketDate;
               TimeLimit = `${lastTicketDate}`;
             }
-          }else{
-          const timestamp=new Date(bookingDate)
-          const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
-          TimeLimit = `${lastTicketDate}`;}
+          } else {
+            const timestamp = new Date(bookingDate);
+            const lastTicketDate: any = new Date(
+              timestamp.getTime() + 20 * 60 * 1000,
+            ).toISOString();
+            TimeLimit = `${lastTicketDate}`;
+          }
 
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
             const PaxType = allPassenger?.PaxType;
@@ -485,8 +468,6 @@ export class FlyHubUtil {
               ),
             };
 
-            const bookingClass = firstSegment?.Airline?.BookingClass;
-            const cabinClass = firstSegment?.Airline?.CabinClass;
             const seatsAvailable = Result?.Availabilty;
 
             const segments = segmentsList?.map((segment) => ({
@@ -516,8 +497,8 @@ export class FlyHubUtil {
               HiddenStops: [],
               TotalMilesFlown: 0,
               SegmentCode: {
-                bookingCode: segment?.Airline?.AirlineCode,
-                cabinCode: cabinClass,
+                bookingCode: segment?.Airline?.BookingClass,
+                cabinCode: segment?.Airline?.CabinClass,
                 seatsAvailable: seatsAvailable,
               },
             }));
@@ -546,7 +527,8 @@ export class FlyHubUtil {
           } else {
             BookingStatus = SearchResponse?.BookingStatus;
           }
-          const passportRequired = !!SearchResponse?.Passengers[0]?.PassportNumber;
+          const passportRequired =
+            !!SearchResponse?.Passengers[0]?.PassportNumber;
           FlightItenary.push({
             System: 'FLYHUB',
             ResultId: Result.ResultID,
@@ -564,7 +546,7 @@ export class FlyHubUtil {
             BaseFare: equivalentAmount,
             Taxes: Taxes,
             SerViceFee: extraService + servicefee || 0,
-            NetFare: Math.ceil(TotalFare), //change this before deploy
+            NetFare: Math.ceil(TotalFare),
             GrossFare: NetFare,
             PartialOption: partialoption,
             PartialFare: Math.ceil(PartialAmount),
@@ -584,7 +566,7 @@ export class FlyHubUtil {
     const sslpaymentLink = await this.paymentService
       .dataModification(FlightItenary, header)
       .catch(() => null);
-   //const surjopay = await this.paymentService.formdata(FlightItenary, header);
+    //const surjopay = await this.paymentService.formdata(FlightItenary, header);
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     const price = FlightItenary?.[0]?.NetFare || 0;
@@ -700,15 +682,14 @@ export class FlyHubUtil {
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
           let TimeLimit: string = null;
-          
 
-
-          const timestamp=new Date(currentTimestamp)
-          const lastTicketDate: any = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString()
-          .replace('Z', '');
+          const timestamp = new Date(currentTimestamp);
+          const lastTicketDate: any = new Date(
+            timestamp.getTime() + 20 * 60 * 1000,
+          )
+            .toISOString()
+            .replace('Z', '');
           TimeLimit = `${lastTicketDate}`; // changes done
-          
-
 
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
             const PaxType = allPassenger?.PaxType;
@@ -786,8 +767,6 @@ export class FlyHubUtil {
               ),
             };
 
-            const bookingClass = firstSegment?.Airline?.BookingClass;
-            const cabinClass = firstSegment?.Airline?.CabinClass;
             const seatsAvailable = Result?.Availabilty;
 
             const segments = segmentsList?.map((segment) => ({
@@ -817,8 +796,8 @@ export class FlyHubUtil {
               HiddenStops: [],
               TotalMilesFlown: 0,
               SegmentCode: {
-                bookingCode: bookingClass,
-                cabinCode: cabinClass,
+                bookingCode: segment?.Airline?.BookingClass,
+                cabinCode: segment?.Airline?.CabinClass,
                 seatsAvailable: seatsAvailable,
               },
             }));
@@ -883,40 +862,39 @@ export class FlyHubUtil {
         }
       }
     }
-    await this.saveBookingData(FlightItenary,header,personIds)
+    await this.saveBookingData(FlightItenary, header, personIds);
     const sslpaymentLink = await this.paymentService
-    .dataModification(FlightItenary, header)
-    .catch(() => null);
- //const surjopay = await this.paymentService.formdata(FlightItenary, header);
-  const bkash = await this.paymentService.bkashInit(FlightItenary, header);
+      .dataModification(FlightItenary, header)
+      .catch(() => null);
+    //const surjopay = await this.paymentService.formdata(FlightItenary, header);
+    const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
-  const price = FlightItenary?.[0]?.NetFare || 0;
+    const price = FlightItenary?.[0]?.NetFare || 0;
 
-  const email = await this.authService.decodeToken(header).catch(() => 'NA');
+    const email = await this.authService.decodeToken(header).catch(() => 'NA');
 
-  let wallet = await this.walletRepository
-    .createQueryBuilder('wallet')
-    .innerJoinAndSelect('wallet.user', 'user')
-    .where('user.email = :email', { email })
-    .getOne()
-    .catch(() => null);
+    let wallet = await this.walletRepository
+      .createQueryBuilder('wallet')
+      .innerJoinAndSelect('wallet.user', 'user')
+      .where('user.email = :email', { email })
+      .getOne()
+      .catch(() => null);
 
-  const walletAmmount = wallet?.ammount || 0;
+    const walletAmmount = wallet?.ammount || 0;
 
-  let priceAfterPayment: number = walletAmmount - price;
+    let priceAfterPayment: number = walletAmmount - price;
 
-  if (priceAfterPayment < 0) {
-    priceAfterPayment = 0;
+    if (priceAfterPayment < 0) {
+      priceAfterPayment = 0;
+    }
+    return {
+      bookingData: FlightItenary,
+      sslpaymentLink: sslpaymentLink,
+      //surjopay: surjopay,
+      bkash: bkash,
+      walletPayment: { walletAmmount, price, priceAfterPayment },
+    };
   }
-  return {
-    bookingData: FlightItenary,
-    sslpaymentLink: sslpaymentLink,
-    //surjopay: surjopay,
-    bkash: bkash,
-    walletPayment: { walletAmmount, price, priceAfterPayment },
-  };
-}
-  
 
   async saveBookingData(
     SearchResponse: any,
@@ -963,7 +941,7 @@ export class FlyHubUtil {
         netAmmount: booking?.NetFare,
         TripType: tripType,
         personId: personIds,
-        bookingData:SearchResponse,
+        bookingData: SearchResponse,
         laginfo: booking?.AllLegsInfo.map((leg: any) => ({
           DepDate: leg?.DepDate,
           DepFrom: leg?.DepFrom,
@@ -1323,7 +1301,7 @@ export class FlyHubUtil {
           const PartialAmount: number = NetFare * 0.3;
           const Refundable: boolean = Result?.IsRefundable;
           let TimeLimit: string = null;
-         
+
           if (Result?.LastTicketDate) {
             const lastTicketDate: string = Result?.LastTicketDate;
             TimeLimit = `${lastTicketDate}`;
@@ -1404,9 +1382,6 @@ export class FlyHubUtil {
                 0,
               ),
             };
-
-            const bookingClass = firstSegment?.Airline?.BookingClass;
-            const cabinClass = firstSegment?.Airline?.CabinClass;
             const seatsAvailable = Result?.Availabilty;
 
             const segments = segmentsList?.map((segment) => ({
@@ -1436,8 +1411,8 @@ export class FlyHubUtil {
               HiddenStops: [],
               TotalMilesFlown: 0,
               SegmentCode: {
-                bookingCode: bookingClass,
-                cabinCode: cabinClass,
+                bookingCode: segment?.Airline?.BookingClass,
+                cabinCode: segment?.Airline?.CabinClass,
                 seatsAvailable: seatsAvailable,
               },
             }));

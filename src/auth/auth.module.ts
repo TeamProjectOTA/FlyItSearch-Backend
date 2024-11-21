@@ -15,7 +15,7 @@ import { IpAddress } from 'src/ip/ip.model';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '86400s' },//changed hare for expired time changed
+      signOptions: { expiresIn: '86400s' }, //changed hare for expired time changed
     }),
   ],
   providers: [AuthService, UserService],

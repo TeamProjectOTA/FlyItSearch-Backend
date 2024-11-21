@@ -9,7 +9,7 @@ export class Authdto {
   password: string;
 }
 export class Userauthdto {
-  @ApiProperty({default:'hasibul.dev506@gmail.com'})
+  @ApiProperty({ default: 'hasibul.dev506@gmail.com' })
   @IsEmail()
   email: string;
   @ApiProperty()

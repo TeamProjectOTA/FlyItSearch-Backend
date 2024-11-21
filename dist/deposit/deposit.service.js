@@ -422,7 +422,8 @@ let DepositService = class DepositService {
                     addTransaction.cardIssuerCountry = 'BD';
                     addTransaction.validationDate = tranDate;
                     addTransaction.status = 'Deposited';
-                    addTransaction.walletBalance = user.wallet.ammount + Number(offerAmmount);
+                    addTransaction.walletBalance =
+                        user.wallet.ammount + Number(offerAmmount);
                     addTransaction.paymentType = 'Instant Payment';
                     addTransaction.requestType = 'Instant Money added';
                     addTransaction.user = user;

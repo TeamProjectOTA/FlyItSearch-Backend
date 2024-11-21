@@ -147,7 +147,7 @@ export class UserService {
       passport: updateUser.passport,
       passportexp: updateUser.passportexp,
     };
-    return userResponse
+    return userResponse;
   }
 
   async allUser(header: any): Promise<User[]> {
@@ -305,7 +305,6 @@ export class UserService {
       relations: ['user', 'user.wallet'],
       order: { id: 'DESC' },
     });
-    
   }
 
   async updateUserActivation(email: string, action: string) {

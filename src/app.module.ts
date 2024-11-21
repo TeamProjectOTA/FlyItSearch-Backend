@@ -25,6 +25,8 @@ import { TravelBuddyModule } from './travel-buddy/travel-buddy.module';
 import { TransectionModule } from './transection/transection.module';
 import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { BankAddModule } from './bank-add/bank-add.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SheduleModule } from './shedule/shedule.module';
 require('dotenv').config();
 
 @Module({
@@ -55,13 +57,12 @@ require('dotenv').config();
       password: process.env.FLYIT_DB_PASSWORD,
       database: process.env.FLYIT_DB_NAME,
       autoLoadEntities: true,
-      synchronize:false,
+      synchronize: false,
       connectTimeout: 60000,
       logging: false,
       timezone: 'Z',
-
     }),
-
+    ScheduleModule.forRoot(),
     AdminModule,
     UserModule,
     AuthModule,
@@ -83,6 +84,7 @@ require('dotenv').config();
     TransectionModule,
     AdminDashboardModule,
     BankAddModule,
+    SheduleModule,
   ],
 
   providers: [

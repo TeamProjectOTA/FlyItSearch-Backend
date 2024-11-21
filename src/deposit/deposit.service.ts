@@ -431,22 +431,7 @@ export class DepositService {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   async createPaymentBkash(amount: number, header: any) {
-    
-    
     const timestamp = Date.now();
     const randomNumber = Math.floor(Math.random() * 1000);
     const tran_id = `FSD${timestamp}${randomNumber}`;
@@ -454,7 +439,7 @@ export class DepositService {
     const airTicketPrice = amount;
     const paymentGatewayCharge = airTicketPrice * 0.0125;
     const storeAmount = airTicketPrice + paymentGatewayCharge;
-    const roundedAmount = storeAmount.toFixed(2)
+    const roundedAmount = storeAmount.toFixed(2);
     try {
       const paymentDetails = {
         amount: roundedAmount || 10,
@@ -463,9 +448,8 @@ export class DepositService {
         reference: `${email}`,
       };
       const result = await createPayment(this.bkashConfig, paymentDetails);
-      
-      return {bkash:result.bkashURL};
-  
+
+      return { bkash: result.bkashURL };
     } catch (e) {
       console.log(e);
     }
@@ -474,34 +458,33 @@ export class DepositService {
     paymentID: string,
     status: string,
     res: any,
-    offerAmmount:number
+    offerAmmount: number,
   ) {
     try {
       if (status === 'success') {
         const response: any = await executePayment(this.bkashConfig, paymentID);
-  
+
         if (
           response?.transactionStatus === 'Completed' &&
           response?.statusMessage === 'Successful'
         ) {
           const email = response.payerReference;
-  
+
           const user = await this.userRepository.findOne({
             where: { email: email },
             relations: ['wallet'],
           });
-  
+
           if (!user || !user.wallet) {
             throw new Error('User or wallet not found');
           }
-  
+
           const tranDate = response?.paymentExecuteTime
             .split(' GMT')[0]
             .replace('T', ' ');
-          
-         
+
           const amount = response.amount;
-  
+
           let addTransaction: Transection = new Transection();
           addTransaction.tranId = response.merchantInvoiceNumber;
           addTransaction.tranDate = tranDate;
@@ -516,12 +499,13 @@ export class DepositService {
           addTransaction.cardIssuerCountry = 'BD';
           addTransaction.validationDate = tranDate;
           addTransaction.status = 'Deposited';
-          addTransaction.walletBalance = user.wallet.ammount + Number(offerAmmount);
+          addTransaction.walletBalance =
+            user.wallet.ammount + Number(offerAmmount);
           addTransaction.paymentType = 'Instant Payment';
           addTransaction.requestType = 'Instant Money added';
           addTransaction.user = user;
-           user.wallet.ammount =user.wallet.ammount+Number(offerAmmount);
-           await this.walletRepository.save(user.wallet);
+          user.wallet.ammount = user.wallet.ammount + Number(offerAmmount);
+          await this.walletRepository.save(user.wallet);
           await this.transectionRepository.save(addTransaction);
           let addDeposit: Deposit = new Deposit();
           addDeposit.user = user;
@@ -529,7 +513,7 @@ export class DepositService {
           addDeposit.depositId = response?.merchantInvoiceNumber;
           addDeposit.depositedFrom = response?.payerAccount;
           addDeposit.senderName = user.fullName;
-  
+
           const tranDateObject = new Date(tranDate);
           addDeposit.createdAt = tranDateObject
             .toISOString()
@@ -543,15 +527,13 @@ export class DepositService {
             .slice(0, 19);
           addDeposit.status = 'Instant Deposit';
           addDeposit.depositType = 'Bkash-MoneyAdd';
-  
+
           await this.depositRepository.save(addDeposit);
           return res.redirect(process.env.SUCCESS_CALLBACK);
         } else {
-      
           return res.redirect(process.env.FAILED_BKASH_CALLBACK);
         }
       } else {
-     
         return res.redirect(process.env.FAIELD_CALLBACK);
       }
     } catch (e) {

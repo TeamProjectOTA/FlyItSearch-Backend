@@ -13,7 +13,7 @@ import { BookingIdSave } from 'src/flight/flight.model';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, BookingSave,BookingIdSave]),
+    TypeOrmModule.forFeature([Admin, User, BookingSave, BookingIdSave]),
     UserModule,
     AuthModule,
     FlightModule,

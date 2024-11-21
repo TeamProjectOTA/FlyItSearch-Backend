@@ -235,8 +235,8 @@ export class AdminService {
     add.currierName = booking.Curriername;
     add.validationDate = dhakaTimeFormatted;
     add.tranDate = dhakaTimeFormatted;
-    add.paidAmount =Number( booking.netAmmount);
-    add.offerAmmount =Number( booking.netAmmount);
+    add.paidAmount = Number(booking.netAmmount);
+    add.offerAmmount = Number(booking.netAmmount);
     add.riskTitle = 'Safe';
     add.cardType = 'Adjusted Money Added';
     add.status = 'Adjusted';

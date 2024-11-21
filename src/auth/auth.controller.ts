@@ -49,7 +49,7 @@ export class AuthController {
     user.emailVerified = true;
     user.verificationToken = null;
     await this.userRepository.update(user.id, user);
-    await this.authservice.emailVerified(user.email)
+    await this.authservice.emailVerified(user.email);
 
     return { message: 'Email verified successfully' };
   }
