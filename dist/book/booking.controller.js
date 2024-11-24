@@ -58,11 +58,14 @@ let BookingController = class BookingController {
     async airRetriveAdmin(bookingIdDto) {
         return await this.flyHubService.airRetriveAdmin(bookingIdDto);
     }
-    async findAll(bookingStatus) {
-        return await this.bookingService.findAllBooking(bookingStatus);
+    async findAll(bookingStatus, page, limit) {
+        return await this.bookingService.findAllBooking(bookingStatus, page, limit);
     }
     async findUserWithBookings(header, bookingStatus) {
         return this.bookingService.findUserWithBookings(header, bookingStatus);
+    }
+    async ticletMake(bookingIdDto) {
+        return await this.flyHubService.makeTicket(bookingIdDto);
     }
 };
 exports.BookingController = BookingController;
@@ -106,12 +109,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetriveAdmin", null);
 __decorate([
-    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
     (0, common_1.Get)('admin/allBooking/:bookingStatus'),
     __param(0, (0, common_1.Param)('bookingStatus')),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Number, Number]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "findAll", null);
 __decorate([
@@ -124,6 +130,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "findUserWithBookings", null);
+__decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.Post)('flh/makeTicket'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [booking_model_1.BookingID]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "ticletMake", null);
 exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('booking'),

@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Post,
+  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -12,6 +13,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HomepageService } from './homepage.service';
 import {
   FileFieldsInterceptor,
+  FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -21,29 +23,25 @@ import { dataDto } from './homepage.model';
 @Controller('homepage')
 export class HomepageController {
   constructor(private readonly homePageService: HomepageService) {}
-  @ApiBearerAuth('access_token')
-  //@UseGuards(AdmintokenGuard)
-  @Post('upload')
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'banner', maxCount: 1 },
-      { name: 'slider', maxCount: 5 },
-    ]),
-  )
-  async uploadBannerAndSlider(
-    @UploadedFiles()
-    files: {
-      banner?: Express.Multer.File[];
-      slider?: Express.Multer.File[];
-    },
-    @Body() data: dataDto,
-  ) {
-    return this.homePageService.uploadBannerAndSlider(files, data);
-  }
-  @ApiBearerAuth('access_token')
-  // @UseGuards(AdmintokenGuard)
-  @Get('data')
-  async data() {
-    return this.homePageService.getalldata();
+  @UseGuards(AdmintokenGuard)
+  @Post('/uploadDocuments')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const maxSize = 5 * 1024 * 1024;
+    if (!allowedTypes.includes(file.mimetype)) {
+      throw new BadRequestException(
+        'Invalid file type. Only JPEG and PNG are allowed.',
+      );
+    }
+    if (file.size > maxSize) {
+      throw new BadRequestException(
+        'File size exceeds the maximum limit of 5MB.',
+      );
+    }
+    return this.homePageService.uploadImage(file);
   }
 }

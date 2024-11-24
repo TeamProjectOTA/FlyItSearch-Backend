@@ -14,7 +14,7 @@ async function bootstrap() {
     const config = new swagger_1.DocumentBuilder()
         .setTitle('Flight')
         .setVersion('1.0')
-        .addTag('Visa')
+        .addTag('Flight-API')
         .addSecurityRequirements('token')
         .addBearerAuth({
         type: 'http',

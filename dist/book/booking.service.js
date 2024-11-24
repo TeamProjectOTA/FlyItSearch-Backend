@@ -69,20 +69,28 @@ let BookingService = class BookingService {
         saveBooking.actionAt = dhakaTimeFormatted;
         return await this.bookingSaveRepository.save(saveBooking);
     }
-    async findAllBooking(bookingStatus) {
-        if (bookingStatus !== 'all') {
-            return await this.bookingSaveRepository.find({
+    async findAllBooking(bookingStatus, page = 1, limit = 10) {
+        const skip = (page - 1) * limit;
+        const [data, total] = bookingStatus && bookingStatus !== 'all'
+            ? await this.bookingSaveRepository.findAndCount({
                 where: { bookingStatus: bookingStatus },
                 relations: ['user'],
                 order: { bookingDate: 'DESC' },
-            });
-        }
-        else {
-            return await this.bookingSaveRepository.find({
+                take: limit,
+                skip: skip,
+            })
+            : await this.bookingSaveRepository.findAndCount({
                 relations: ['user'],
                 order: { bookingDate: 'DESC' },
+                take: limit,
+                skip: skip,
             });
-        }
+        return {
+            data,
+            total,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+        };
     }
     async findUserWithBookings(header, bookingStatus) {
         const verifyUser = await this.authservice.verifyUserToken(header);

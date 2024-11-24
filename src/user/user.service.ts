@@ -150,20 +150,37 @@ export class UserService {
     return userResponse;
   }
 
-  async allUser(header: any): Promise<User[]> {
+  async allUser(header: any, page: number = 1, limit: number = 10): Promise<any> { // Pagination Complete
     const verifyAdmin = await this.authservice.verifyAdminToken(header);
     if (!verifyAdmin) {
       throw new UnauthorizedException();
     }
-    return await this.userRepository.find();
+    const pageNumber = Math.max(1, page);
+    const limitNumber = Math.max(1, limit);
+    const offset = (pageNumber - 1) * limitNumber;
+    const [users, total] = await this.userRepository.findAndCount({
+      skip: offset,
+      take: limitNumber,
+      order: { id: 'DESC' }, 
+    });
+    return {
+      data: users,
+      total, 
+      page: pageNumber, 
+      limit: limitNumber, 
+      totalPages: Math.ceil(total / limitNumber), 
+    };
   }
+  
 
-  async findUserWithBookings(header: any, bookingStatus: string): Promise<any> {
+  async findUserWithBookings(header: any, bookingStatus: string,page: number = 1, limit: number = 10): Promise<any> { //Pagination Complete
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
-
+    const pageNumber = Math.max(1, page);
+    const limitNumber = Math.max(1, limit);
+    const offset = (pageNumber - 1) * limitNumber;
     const email = await this.authservice.decodeToken(header);
     const userUpdate = await this.userRepository.findOne({
       where: { email: email },
@@ -173,21 +190,6 @@ export class UserService {
     if (!userUpdate) {
       throw new NotFoundException('User not found');
     }
-
-    const nowdate = new Date(Date.now());
-    const dhakaOffset = 6 * 60 * 60 * 1000; // Offset for Dhaka time
-    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
-
-    // for (const booking of userUpdate.bookingSave) {
-    //     const timeLeft = new Date(booking.expireDate);
-    //     if (dhakaTime.getTime() >= timeLeft.getTime() && booking.bookingStatus !== 'Cancelled') {
-    //         booking.bookingStatus = 'Cancelled';
-
-    //         await this.userRepository.save(booking);
-    //         console.log(`Booking ID ${booking.id} updated to Cancelled`);
-    //     }
-    // }
-
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.bookingSave', 'bookingSave')
@@ -195,42 +197,76 @@ export class UserService {
       .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
         bookingStatus,
       })
+      .skip(offset) 
+      .take(limitNumber) 
       .orderBy('bookingSave.id', 'DESC')
       .getOne();
+
+
+      const total = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.bookingSave', 'bookingSave')
+      .where('user.email = :email', { email })
+      .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
+        bookingStatus,
+      })
+      .skip(offset) 
+      .take(limitNumber) 
+      .orderBy('bookingSave.id', 'DESC')
+      .getCount();
 
     if (!user) {
       throw new NotFoundException(`No ${bookingStatus} Available for the user`);
     }
-
     return {
       saveBookings: user.bookingSave,
+      total, 
+      page: pageNumber, 
+      limit: limitNumber, 
+      totalPages: Math.ceil(total / limitNumber), 
     };
   }
 
-  async findAllUserWithBookings(): Promise<any> {
-    const users = await this.userRepository.find({
+  async findAllUserWithBookings(page: number, limit: number): Promise<any> { //Pagination Complete
+
+    const offset = (page - 1) * limit;
+  
+   
+    const [users, total] = await this.userRepository.findAndCount({
       relations: ['bookingSave', 'wallet'],
       order: {
         passengerId: 'DESC',
       },
+      take: limit, 
+      skip: offset, 
     });
+  
+   
     const usersWithIpData = await Promise.all(
       users.map(async (user) => {
         const emaildata = user.email;
         const ip = await this.ipAddressRepository.findOne({
           where: { email: emaildata },
         });
-        const searchCount = 50 - ip?.points || 0;
-
+        const searchCount = 50 - (ip?.points || 0);
+  
         return {
           ...user,
           searchCount,
         };
       }),
     );
-
-    return usersWithIpData;
+  
+  
+    return {
+      data: usersWithIpData,
+      total, 
+      page:Number(page),  
+      limit:Number(limit), 
+      totalPages: Math.ceil(total / limit), 
+    };
   }
+  
 
   async findOneUser(header: any): Promise<any> {
     const email = await this.authservice.decodeToken(header);
@@ -268,44 +304,97 @@ export class UserService {
     };
   }
 
-  async findUserTravelBuddy(header: any): Promise<any> {
+  async findUserTravelBuddy(
+    header: any,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<any> {
+    
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
+    const pageNumber = Math.max(1, page);
+    const limitNumber = Math.max(1, limit);
+    const offset = (pageNumber - 1) * limitNumber;
     const email = await this.authservice.decodeToken(header);
-
-    const user = await this.userRepository
+    const [travelBuddies, total] = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.travelBuddy', 'travelBuddy')
       .where('user.email = :email', { email })
-      .orderBy('travelBuddy.id', 'DESC')
-      .getOne();
-
-    if (!user || user.travelBuddy.length === 0) {
+      .orderBy('travelBuddy.id', 'DESC') 
+      .skip(offset) 
+      .take(limitNumber) 
+      .getManyAndCount(); 
+    if (!travelBuddies || travelBuddies.length === 0) {
       throw new NotFoundException(`No Travel Buddies available for the user`);
     }
     return {
-      travelBuddies: user.travelBuddy,
+      travelBuddies,
+      total, 
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber), 
     };
   }
+  
 
-  async findUserTransection(header: any) {
+  async findUserTransection(header: any, page: number = 1, limit: number = 10) {
     const email = await this.authservice.decodeToken(header);
+    const pageNumber = Math.max(1, page);
+    const limitNumber = Math.max(1, limit);
+    const offset = (pageNumber - 1) * limitNumber;
     const user = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.transection', 'transection')
       .where('user.email = :email', { email })
       .orderBy('transection.id', 'DESC')
+      .skip(offset) 
+      .take(limitNumber) 
       .getOne();
-    return { transection: user.transection };
+    if (!user || !user.transection) {
+      return {
+        transection: [],
+        total: 0,
+        page: pageNumber,
+        limit: limitNumber,
+        totalPages: 0,
+      };
+    }
+    const total = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.transection', 'transection')
+      .where('user.email = :email', { email })
+      .getCount();
+  
+    return {
+      transection: user.transection,
+      total, 
+      page: pageNumber, 
+      limit: limitNumber, 
+      totalPages: Math.ceil(total / limitNumber), 
+    };
   }
-  async allTransection() {
-    return await this.transectionRepository.find({
-      relations: ['user', 'user.wallet'],
-      order: { id: 'DESC' },
+  
+  async allTransection(page: number = 1, limit: number = 10) {
+    const pageNumber = Math.max(1, page);
+    const limitNumber = Math.max(1, limit);
+    const offset = (pageNumber - 1) * limitNumber;
+    const [transection, total] = await this.transectionRepository.findAndCount({
+      relations: ['user', 'user.wallet'], 
+      order: { id: 'DESC' }, 
+      skip: offset, 
+      take: limitNumber, 
     });
+    return {
+      transection, 
+      total, 
+      page: pageNumber, 
+      limit: limitNumber, 
+      totalPages: Math.ceil(total / limitNumber), 
+    };
   }
+  
 
   async updateUserActivation(email: string, action: string) {
     let user = await this.userRepository.findOne({ where: { email: email } });

@@ -42,7 +42,7 @@ let PaymentController = class PaymentController {
         }
     }
     async handleFail(res) {
-        return res.redirect(process.env.FAIELD_CALLBACK);
+        return res.redirect(process.env.FAILED_BKASH_CALLBACK);
     }
     async handleCancel(res) {
         return res.redirect(process.env.FAIELD_CALLBACK);

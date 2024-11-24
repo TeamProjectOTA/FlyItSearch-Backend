@@ -55,7 +55,7 @@ export class PaymentController {
 
   @Post('/fail')
   async handleFail(@Res() res: Response) {
-    return res.redirect(process.env.FAIELD_CALLBACK);
+    return res.redirect(process.env.FAILED_BKASH_CALLBACK);
   }
 
   @Get('/cancel')
@@ -136,10 +136,6 @@ export class PaymentController {
       netAmount,
     );
   }
-  // @Post('query/:paymentId')
-  // async queryPayment(@Param('paymentId') paymentId: string) {
-  //   return this.paymentService.queryPayment(paymentId);
-  // }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Post('search/:transactionId')

@@ -6,17 +6,13 @@ import {
   Patch,
   Param,
   Headers,
-  UseInterceptors,
-  UploadedFile,
-  BadRequestException,
-  UsePipes,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
@@ -37,23 +33,43 @@ export class UserController {
 
   @ApiBearerAuth('access_token')
   @Get('/admin/allUser')
-  findAllUser(@Headers() header: Headers) {
-    return this.userService.allUser(header); // find all not working have to fix it .Problem found on (5-5-2024).solved on the same day
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  findAllUser(@Headers() header: Headers,
+  @Query('page') page: string, 
+  @Query('limit') limit: string, 
+) {
+  const pageNumber = parseInt(page) || 1; 
+  const limitNumber = parseInt(limit) || 10;
+    return this.userService.allUser(header,pageNumber,limitNumber);
   }
+
+
   @ApiBearerAuth('access_token')
   @Get('/bookings/:bookingStatus')
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   async findUserWithBookings(
     @Headers() header: Headers,
     @Param('bookingStatus') bookingStatus: string,
+    @Query('page') page: string, 
+    @Query('limit') limit: string, 
   ): Promise<Partial<User>> {
-    return this.userService.findUserWithBookings(header, bookingStatus);
+    const pageNumber = parseInt(page) || 1; 
+    const limitNumber = parseInt(limit) || 10;
+    return this.userService.findUserWithBookings(header, bookingStatus,pageNumber,limitNumber);
   }
 
+  @Get('allUserBookings')
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
-  @Get('admin/allUserBookings')
-  async findAllUserWithBookings(): Promise<any> {
-    return this.userService.findAllUserWithBookings();
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  async findAllUserWithBookings(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+  ): Promise<any> {
+    return this.userService.findAllUserWithBookings(page, limit);
   }
 
   @ApiBearerAuth('access_token')
@@ -65,23 +81,41 @@ export class UserController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('/findAllTravelBuddy')
-  async getUserTravelBuddies(@Headers() header: Headers) {
-    const travelBuddies = await this.userService.findUserTravelBuddy(header);
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  async getUserTravelBuddies(@Headers() header: Headers, 
+  @Query('page') page: string, 
+    @Query('limit') limit: string, ) {
+      const pageNumber = parseInt(page) || 1; 
+      const limitNumber = parseInt(limit) || 10;
+    const travelBuddies = await this.userService.findUserTravelBuddy(header,pageNumber,limitNumber);
     return travelBuddies;
   }
 
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Get('/oneUserAllTransection')
-  async findOneUserTransection(@Headers() header: Headers) {
-    return await this.userService.findUserTransection(header);
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
+  async findOneUserTransection(@Headers() header: Headers,
+  @Query('page') page: string, 
+  @Query('limit') limit: string, ) {
+    const pageNumber = parseInt(page) || 1; 
+    const limitNumber = parseInt(limit) || 10;
+    return await this.userService.findUserTransection(header,pageNumber,limitNumber);
   }
 
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @Get('admin/ledgerReport')
-  async findAllUserTransection() {
-    return await this.userService.allTransection();
+  async findAllUserTransection(
+  @Query('page') page: string, 
+  @Query('limit') limit: string,) {
+    const pageNumber = parseInt(page) || 1; 
+    const limitNumber = parseInt(limit) || 10;
+    return await this.userService.allTransection(pageNumber,limitNumber);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)

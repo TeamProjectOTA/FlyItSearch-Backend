@@ -17,14 +17,24 @@ export declare class UserController {
         passport: string;
         passportexp: string;
     }>;
-    findAllUser(header: Headers): Promise<User[]>;
-    findUserWithBookings(header: Headers, bookingStatus: string): Promise<Partial<User>>;
-    findAllUserWithBookings(): Promise<any>;
+    findAllUser(header: Headers, page: string, limit: string): Promise<any>;
+    findUserWithBookings(header: Headers, bookingStatus: string, page: string, limit: string): Promise<Partial<User>>;
+    findAllUserWithBookings(page?: number, limit?: number): Promise<any>;
     findOneUser(header: Headers): Promise<any>;
-    getUserTravelBuddies(header: Headers): Promise<any>;
-    findOneUserTransection(header: Headers): Promise<{
+    getUserTravelBuddies(header: Headers, page: string, limit: string): Promise<any>;
+    findOneUserTransection(header: Headers, page: string, limit: string): Promise<{
         transection: import("../transection/transection.model").Transection[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
     }>;
-    findAllUserTransection(): Promise<import("../transection/transection.model").Transection[]>;
+    findAllUserTransection(page: string, limit: string): Promise<{
+        transection: import("../transection/transection.model").Transection[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     updateUserActivation(email: string, action: string): Promise<User>;
 }

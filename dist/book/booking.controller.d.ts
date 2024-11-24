@@ -10,6 +10,12 @@ export declare class BookingController {
     aircanel(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetrive(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetriveAdmin(bookingIdDto: BookingID): Promise<any>;
-    findAll(bookingStatus?: string): Promise<import("./booking.model").BookingSave[]>;
+    findAll(bookingStatus?: string, page?: number, limit?: number): Promise<{
+        data: import("./booking.model").BookingSave[];
+        total: number;
+        currentPage: number;
+        totalPages: number;
+    }>;
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<any>;
+    ticletMake(bookingIdDto: BookingID): Promise<any>;
 }

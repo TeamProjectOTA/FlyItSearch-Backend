@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var Shedule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Shedule = void 0;
 const common_1 = require("@nestjs/common");
@@ -20,13 +21,14 @@ const axios_1 = require("axios");
 const booking_model_1 = require("../book/booking.model");
 const flight_model_1 = require("../flight/flight.model");
 const typeorm_2 = require("typeorm");
-let Shedule = class Shedule {
+let Shedule = Shedule_1 = class Shedule {
     constructor(bookingRepository, bookingIdRepository) {
         this.bookingRepository = bookingRepository;
         this.bookingIdRepository = bookingIdRepository;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
+        this.logger = new common_1.Logger(Shedule_1.name);
     }
     async scheduling() {
         const bookingSave = await this.bookingRepository.find();
@@ -50,6 +52,7 @@ let Shedule = class Shedule {
                 await this.bookingRepository.save(userBooking);
             }
         }
+        this.logger.log('Running the scheduling function every 5 minutes');
     }
     async getToken() {
         try {
@@ -105,7 +108,7 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], Shedule.prototype, "scheduling", null);
-exports.Shedule = Shedule = __decorate([
+exports.Shedule = Shedule = Shedule_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __param(1, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),

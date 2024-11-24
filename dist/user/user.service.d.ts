@@ -23,14 +23,24 @@ export declare class UserService {
         passport: string;
         passportexp: string;
     }>;
-    allUser(header: any): Promise<User[]>;
-    findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
-    findAllUserWithBookings(): Promise<any>;
+    allUser(header: any, page?: number, limit?: number): Promise<any>;
+    findUserWithBookings(header: any, bookingStatus: string, page?: number, limit?: number): Promise<any>;
+    findAllUserWithBookings(page: number, limit: number): Promise<any>;
     findOneUser(header: any): Promise<any>;
-    findUserTravelBuddy(header: any): Promise<any>;
-    findUserTransection(header: any): Promise<{
+    findUserTravelBuddy(header: any, page?: number, limit?: number): Promise<any>;
+    findUserTransection(header: any, page?: number, limit?: number): Promise<{
         transection: Transection[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
     }>;
-    allTransection(): Promise<Transection[]>;
+    allTransection(page?: number, limit?: number): Promise<{
+        transection: Transection[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     updateUserActivation(email: string, action: string): Promise<User>;
 }

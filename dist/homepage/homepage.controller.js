@@ -17,39 +17,36 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const homepage_service_1 = require("./homepage.service");
 const platform_express_1 = require("@nestjs/platform-express");
-const homepage_model_1 = require("./homepage.model");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let HomepageController = class HomepageController {
     constructor(homePageService) {
         this.homePageService = homePageService;
     }
-    async uploadBannerAndSlider(files, data) {
-        return this.homePageService.uploadBannerAndSlider(files, data);
-    }
-    async data() {
-        return this.homePageService.getalldata();
+    async uploadImage(file) {
+        if (!file) {
+            throw new common_1.BadRequestException('File is required');
+        }
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        const maxSize = 5 * 1024 * 1024;
+        if (!allowedTypes.includes(file.mimetype)) {
+            throw new common_1.BadRequestException('Invalid file type. Only JPEG and PNG are allowed.');
+        }
+        if (file.size > maxSize) {
+            throw new common_1.BadRequestException('File size exceeds the maximum limit of 5MB.');
+        }
+        return this.homePageService.uploadImage(file);
     }
 };
 exports.HomepageController = HomepageController;
 __decorate([
-    (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileFieldsInterceptor)([
-        { name: 'banner', maxCount: 1 },
-        { name: 'slider', maxCount: 5 },
-    ])),
-    __param(0, (0, common_1.UploadedFiles)()),
-    __param(1, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, common_1.Post)('/uploadDocuments'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, homepage_model_1.dataDto]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], HomepageController.prototype, "uploadBannerAndSlider", null);
-__decorate([
-    (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Get)('data'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], HomepageController.prototype, "data", null);
+], HomepageController.prototype, "uploadImage", null);
 exports.HomepageController = HomepageController = __decorate([
     (0, swagger_1.ApiTags)('Homepage-Api'),
     (0, common_1.Controller)('homepage'),

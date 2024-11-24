@@ -22,4 +22,5 @@ export declare class FlyHubService {
     airRetriveAdmin(BookingID: BookingID): Promise<any>;
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, userIp: string): Promise<any>;
     private determineJourneyType;
+    makeTicket(BookingID: BookingID): Promise<any>;
 }

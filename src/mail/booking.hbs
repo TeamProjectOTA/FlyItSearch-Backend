@@ -23,15 +23,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header img {
-            max-width: 160px;
-        }
-
         .main-title {
             font-size: 24px;
             font-weight: bold;
@@ -81,7 +72,8 @@
             display: flex;
             justify-content: center;
             margin-top: 20px;
-            gap: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .contact-button {
@@ -133,6 +125,7 @@
 
         .flight-details {
             display: flex;
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             padding: 10px 0;
@@ -148,7 +141,6 @@
         }
 
         .flight-info {
-            text-align: left;
             flex: 1;
             margin-left: 15px;
         }
@@ -175,6 +167,41 @@
             margin-top: 20px;
             font-size: 14px;
             color: #333;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .contact-button {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+            }
+
+            .flight-details {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .flight-info {
+                margin-left: 0;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -211,49 +238,22 @@
             <div class="info-grid">
                 <div class="info-item">
                     <strong>Booking ID</strong>
-                    {{BookingId}}
+                    FIS7520037928887
                 </div>
-                {{#each PassengerList}}
-                
                 <div class="info-item">
                     <strong>Traveler's Name</strong>
-                    {{Title}} {{FirstName}} {{LastName}}  
+                    MR HASIBUL ISLAM
                 </div>
-                
                 <div class="info-item">
                     <strong>Type</strong>
-                    {{PaxType}}
+                    Adult
                 </div>
-                 {{/each}}
             </div>
         </div>
 
         <div class="booking-summary">
             <h2>Booking Summary</h2>
-                  {{#each AllLegsInfo}}
-         {{#each Segments}}
-            <div class="flight-details">
-          
-
-                <div class="airline-logo">
-                    <img src="https://tbbd-flight.s3.ap-southeast-1.amazonaws.com/airlines-logo/{{OperatingCarrier}}.png"  alt="Emirates Logo">
-                </div>
-                
-                {{MarketingCarrierName}}
-        {{MarketingCarrier}}-{{MarketingFlightNumber}}
-                <div class="flight-info">
-                    <p><strong>Depart:</strong> {{DepFrom}} - {{DepAirPort}}
-                   </p>
-                   <p>{{DepTime}}</p>
-                </div>
-                <div class="flight-info">
-                    <p><strong>Arrival:</strong> {{ArrTo}} - {{ArrAirPort}}</p>
-                    <p> {{ArrTime}}</p>
-                </div>
-         
-            </div>
-               {{/each}}
-            {{/each}}
+            <!-- Flight details go here -->
         </div>
 
         <p class="note">

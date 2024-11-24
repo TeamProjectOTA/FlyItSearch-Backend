@@ -80,20 +80,36 @@ export class BookingService {
     return await this.bookingSaveRepository.save(saveBooking);
   }
 
-  async findAllBooking(bookingStatus?: string) {
-    if (bookingStatus !== 'all') {
-      return await this.bookingSaveRepository.find({
-        where: { bookingStatus: bookingStatus },
-        relations: ['user'],
-        order: { bookingDate: 'DESC' },
-      });
-    } else {
-      return await this.bookingSaveRepository.find({
-        relations: ['user'],
-        order: { bookingDate: 'DESC' },
-      });
-    }
+  async findAllBooking(
+    bookingStatus?: string,
+    page: number = 1,
+    limit: number = 10
+  ) {
+    const skip = (page - 1) * limit;
+  
+    const [data, total] = bookingStatus && bookingStatus !== 'all'
+      ? await this.bookingSaveRepository.findAndCount({
+          where: { bookingStatus: bookingStatus },
+          relations: ['user'],
+          order: { bookingDate: 'DESC' },
+          take: limit,
+          skip: skip,
+        })
+      : await this.bookingSaveRepository.findAndCount({
+          relations: ['user'],
+          order: { bookingDate: 'DESC' },
+          take: limit,
+          skip: skip,
+        });
+  
+    return {
+      data,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+    };
   }
+  
   async findUserWithBookings(header: any, bookingStatus: string): Promise<any> {
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {

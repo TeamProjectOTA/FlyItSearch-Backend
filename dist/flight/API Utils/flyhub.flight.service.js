@@ -103,6 +103,10 @@ let FlyHubService = class FlyHubService {
             where: { bookingId: BookingID.BookingID },
             relations: ['user'],
         });
+        if (findBooking.bookingData[0].GDSPNR) {
+            return { bookingData: findBooking.bookingData };
+        }
+        console.log(findBooking.bookingData[0].GDSPNR);
         const bookingId = await this.bookingIdSave.findOne({
             where: { flyitSearchId: BookingID.BookingID },
         });
@@ -305,6 +309,43 @@ let FlyHubService = class FlyHubService {
             return '3';
         }
         return '3';
+    }
+    async makeTicket(BookingID) {
+        const findBooking = await this.bookingSaveRepository.findOne({
+            where: { bookingId: BookingID.BookingID },
+            relations: ['user'],
+        });
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID.BookingID },
+        });
+        if (!bookingId) {
+            throw new common_1.NotFoundException(`No Booking Found with ${BookingID.BookingID}`);
+        }
+        const flyhubId = bookingId.flyhubId;
+        const token = await this.getToken();
+        const makeTicket = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/AirTicketing`,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            data: {
+                BookingID: flyhubId,
+                IsAcceptedPriceChangeandIssueTicket: true
+            },
+        };
+        try {
+            const response = await axios_1.default.request(makeTicket);
+            if (response.data.Results !== null) {
+                return this.flyHubUtil.airRetriveDataTransformerAdmin(response?.data, BookingID.BookingID, findBooking.bookingStatus, findBooking.TripType, findBooking.bookingDate);
+            }
+            return response.data;
+        }
+        catch (error) {
+            throw error?.response?.data;
+        }
     }
 };
 exports.FlyHubService = FlyHubService;

@@ -14,7 +14,7 @@ import {
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingID, CreateSaveBookingDto, data } from './booking.model';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
@@ -92,11 +92,14 @@ export class BookingController {
   async airRetriveAdmin(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetriveAdmin(bookingIdDto);
   }
-  @UseGuards(AdmintokenGuard)
+ // @UseGuards(AdmintokenGuard)
   @ApiBearerAuth('access_token')
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' })
   @Get('admin/allBooking/:bookingStatus')
-  async findAll(@Param('bookingStatus') bookingStatus?: string) {
-    return await this.bookingService.findAllBooking(bookingStatus);
+  async findAll(@Param('bookingStatus',) bookingStatus?: string,@Query('page') page?: number ,
+  @Query('limit') limit?: number ) {
+    return await this.bookingService.findAllBooking(bookingStatus,page,limit);
   }
 
   @ApiBearerAuth('access_token')
@@ -108,10 +111,10 @@ export class BookingController {
   ): Promise<any> {
     return this.bookingService.findUserWithBookings(header, bookingStatus);
   }
-
-  // @Post('flh/makeTicket')
-  // @UseGuards(AdmintokenGuard)
-  // async ticletMake(@Body() bookingIdDto: BookingID) {
-  //  return await this.flyHubService.makeTicket(bookingIdDto)
-  // }
+  @ApiBearerAuth('access_token')
+  @Post('flh/makeTicket')
+  @UseGuards(AdmintokenGuard)
+  async ticletMake(@Body() bookingIdDto: BookingID) {
+   return await this.flyHubService.makeTicket(bookingIdDto)
+  }
 }

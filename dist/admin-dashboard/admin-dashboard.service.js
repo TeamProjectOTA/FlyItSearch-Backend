@@ -18,39 +18,45 @@ const typeorm_1 = require("@nestjs/typeorm");
 const booking_model_1 = require("../book/booking.model");
 const typeorm_2 = require("typeorm");
 const deposit_model_1 = require("../deposit/deposit.model");
+const admin_dashboard_model_1 = require("./admin-dashboard.model");
 let AdminDashboardService = class AdminDashboardService {
-    constructor(bookingSaveRepository, depositRepository) {
+    constructor(bookingSaveRepository, depositRepository, newTicketRepository) {
         this.bookingSaveRepository = bookingSaveRepository;
         this.depositRepository = depositRepository;
+        this.newTicketRepository = newTicketRepository;
     }
-    async findAll(depositDate) {
-        const datePattern = `${depositDate}%`;
+    async findAll(initialDate, endDate) {
+        const startOfDay = new Date(initialDate).toISOString();
+        const endOfDay = new Date(endDate);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+        const endOfDayISO = endOfDay.toISOString();
         const allDeposit = await this.depositRepository.find({
             where: {
-                createdAt: (0, typeorm_2.Like)(datePattern),
+                createdAt: (0, typeorm_2.Between)(initialDate, endDate),
             },
         });
         const allBookings = await this.bookingSaveRepository.find({
             where: {
-                bookingDate: (0, typeorm_2.Like)(datePattern),
+                bookingDate: (0, typeorm_2.Between)(startOfDay, endOfDayISO),
             },
         });
         const pending = allDeposit.filter((deposit) => deposit.status == 'Pending').length;
-        const depositAmmount = allDeposit.filter((deposit) => deposit.status == 'Approved');
-        const totalAmount = depositAmmount.reduce((sum, deposit) => sum + deposit.ammount, 0);
+        const depositAmount = allDeposit.filter((deposit) => deposit.status == 'Approved');
+        const totalAmount = depositAmount.reduce((sum, deposit) => sum + deposit.ammount, 0);
         const requestTicket = allBookings.filter((booking) => booking.bookingStatus === 'IssueInProcess').length;
         const booked = allBookings.filter((booking) => booking.bookingStatus === 'Booked').length;
         const cancelled = allBookings.filter((booking) => booking.bookingStatus === 'Cancelled').length;
         const ticketed = allBookings.filter((booking) => booking.bookingStatus === 'Ticketed').length;
         const flight = await this.bookingSaveRepository.find();
-        const todayFly = flight.filter((date1) => date1.laginfo[0].DepDate.startsWith(depositDate)).length;
-        let nextDay = new Date(depositDate);
-        nextDay.setDate(nextDay.getDate() + 1);
-        let nextDateString = nextDay.toISOString().split('T')[0];
-        const tomorrowFly = flight.filter((date1) => date1.laginfo[0].DepDate.startsWith(nextDateString)).length;
-        nextDay.setDate(nextDay.getDate() + 1);
-        let nextNextDayString = nextDay.toISOString().split('T')[0];
-        const dayAfterTomorrowFly = flight.filter((date1) => date1.laginfo[0].DepDate.startsWith(nextNextDayString)).length;
+        const todayFly = flight.filter((entry) => entry.laginfo[0].DepDate.startsWith(initialDate)).length;
+        const tomorrowDate = new Date(initialDate);
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+        const tomorrowDateString = tomorrowDate.toISOString().split('T')[0];
+        const tomorrowFly = flight.filter((entry) => entry.laginfo[0].DepDate.startsWith(tomorrowDateString)).length;
+        const dayAfterTomorrowDate = new Date(initialDate);
+        dayAfterTomorrowDate.setDate(dayAfterTomorrowDate.getDate() + 2);
+        const dayAfterTomorrowString = dayAfterTomorrowDate.toISOString().split('T')[0];
+        const dayAfterTomorrowFly = flight.filter((entry) => entry.laginfo[0].DepDate.startsWith(dayAfterTomorrowString)).length;
         return {
             Booking: {
                 IssueInProcess: requestTicket,
@@ -67,13 +73,40 @@ let AdminDashboardService = class AdminDashboardService {
             },
         };
     }
+    async vendorMakeTicket(ticketDataDTO) {
+        const booking = await this.bookingSaveRepository.findOne({ where: { bookingId: ticketDataDTO.bookingId } });
+        if (!booking) {
+            throw new common_1.NotFoundException();
+        }
+        booking.PNR = ticketDataDTO.airlinesPNR;
+        booking.bookingData[0].System = 'FLYHUB';
+        booking.bookingStatus = 'Ticketed';
+        booking.bookingData[0].GDSPNR = booking.bookingData[0].PNR;
+        booking.bookingData[0].PNR = ticketDataDTO.airlinesPNR;
+        const mappedPassengerList = booking.bookingData[0].PassengerList.map((passenger, index) => {
+            return {
+                ...passenger,
+                Ticket: ticketDataDTO.ticketNumber[index]
+                    ? [{ TicketNo: ticketDataDTO.ticketNumber[index].eticket.toString() }]
+                    : [{ TicketNo: null }]
+            };
+        });
+        booking.bookingData[0].PassengerList = mappedPassengerList;
+        console.log(await this.bookingSaveRepository.save(booking));
+        return booking;
+    }
+    async findAllTickets() {
+        return await this.newTicketRepository.find();
+    }
 };
 exports.AdminDashboardService = AdminDashboardService;
 exports.AdminDashboardService = AdminDashboardService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __param(1, (0, typeorm_1.InjectRepository)(deposit_model_1.Deposit)),
+    __param(2, (0, typeorm_1.InjectRepository)(admin_dashboard_model_1.NewTicket)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], AdminDashboardService);
 //# sourceMappingURL=admin-dashboard.service.js.map

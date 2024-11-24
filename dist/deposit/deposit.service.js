@@ -246,7 +246,7 @@ let DepositService = class DepositService {
                 addDeposit.actionAt = moment
                     .utc(response.tran_date)
                     .format('YYYY-MM-DD HH:mm:ss');
-                addDeposit.status = 'Instant Deposit';
+                addDeposit.status = 'Approved';
                 addDeposit.depositType = response?.card_brand;
                 await this.depositRepository.save(addDeposit);
                 return response;
@@ -353,7 +353,7 @@ let DepositService = class DepositService {
                 addDeposit.actionAt = moment
                     .utc(data.date_time)
                     .format('YYYY-MM-DD HH:mm:ss');
-                addDeposit.status = 'Instant Deposit';
+                addDeposit.status = 'Approved';
                 addDeposit.depositType = 'MOBILEBANKING';
                 await this.depositRepository.save(addDeposit);
                 return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
@@ -447,7 +447,7 @@ let DepositService = class DepositService {
                         .split('T')
                         .join(' ')
                         .slice(0, 19);
-                    addDeposit.status = 'Instant Deposit';
+                    addDeposit.status = 'Approved';
                     addDeposit.depositType = 'Bkash-MoneyAdd';
                     await this.depositRepository.save(addDeposit);
                     return res.redirect(process.env.SUCCESS_CALLBACK);

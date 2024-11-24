@@ -1,8 +1,9 @@
 import { AdminDashboardService } from './admin-dashboard.service';
+import { NewTicket, vendorTicket } from './admin-dashboard.model';
 export declare class AdminDashboardController {
     private readonly adminDashboardService;
     constructor(adminDashboardService: AdminDashboardService);
-    findAllDeposit(date: string): Promise<{
+    findAllDeposit(startDate: string, endDate: string): Promise<{
         Booking: {
             IssueInProcess: number;
             Booked: number;
@@ -17,4 +18,6 @@ export declare class AdminDashboardController {
             TotalDeposit: number;
         };
     }>;
+    createTicket(ticketDataDTO: vendorTicket): Promise<import("../book/booking.model").BookingSave>;
+    getAllTickets(): Promise<NewTicket[]>;
 }

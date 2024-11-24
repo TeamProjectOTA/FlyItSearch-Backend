@@ -1,11 +1,13 @@
 import { BookingSave } from 'src/book/booking.model';
 import { Repository } from 'typeorm';
 import { Deposit } from 'src/deposit/deposit.model';
+import { NewTicket, vendorTicket } from './admin-dashboard.model';
 export declare class AdminDashboardService {
     private readonly bookingSaveRepository;
     private readonly depositRepository;
-    constructor(bookingSaveRepository: Repository<BookingSave>, depositRepository: Repository<Deposit>);
-    findAll(depositDate: string): Promise<{
+    private readonly newTicketRepository;
+    constructor(bookingSaveRepository: Repository<BookingSave>, depositRepository: Repository<Deposit>, newTicketRepository: Repository<NewTicket>);
+    findAll(initialDate: string, endDate: string): Promise<{
         Booking: {
             IssueInProcess: number;
             Booked: number;
@@ -20,4 +22,6 @@ export declare class AdminDashboardService {
             TotalDeposit: number;
         };
     }>;
+    vendorMakeTicket(ticketDataDTO: vendorTicket): Promise<BookingSave>;
+    findAllTickets(): Promise<NewTicket[]>;
 }

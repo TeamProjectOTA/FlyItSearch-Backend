@@ -49,8 +49,7 @@ let MailService = class MailService {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(data);
     }
-    async sendMail(data, header) {
-        const name = this.authService.decodeToken(header);
+    async sendMail(data) {
         const bodyData = {
             BookingID: data.BookingId,
         };

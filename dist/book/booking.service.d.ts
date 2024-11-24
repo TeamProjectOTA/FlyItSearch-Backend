@@ -11,6 +11,11 @@ export declare class BookingService {
     constructor(userRepository: Repository<User>, authservice: AuthService, bookingSaveRepository: Repository<BookingSave>, bookingIdSave: Repository<BookingIdSave>);
     saveBooking(createSaveBookingDto: CreateSaveBookingDto, header: any): Promise<any>;
     cancelDataSave(fsid: string, status: string, header: any): Promise<any>;
-    findAllBooking(bookingStatus?: string): Promise<BookingSave[]>;
+    findAllBooking(bookingStatus?: string, page?: number, limit?: number): Promise<{
+        data: BookingSave[];
+        total: number;
+        currentPage: number;
+        totalPages: number;
+    }>;
     findUserWithBookings(header: any, bookingStatus: string): Promise<any>;
 }

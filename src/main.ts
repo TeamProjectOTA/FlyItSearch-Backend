@@ -28,7 +28,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Flight')
     .setVersion('1.0')
-    .addTag('Visa')
+    .addTag('Flight-API')
     .addSecurityRequirements('token')
     .addBearerAuth(
       {

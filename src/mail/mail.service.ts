@@ -53,9 +53,9 @@ export class MailService {
     return compiledTemplate(data);
   }
 
-  async sendMail(data: any, header?: any) {
+  async sendMail(data: any, ) {
     //email
-    const name = this.authService.decodeToken(header);
+    //const name = this.authService.decodeToken(header);
     const bodyData = {
       BookingID: data.BookingId,
     };

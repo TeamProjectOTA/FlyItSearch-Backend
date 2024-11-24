@@ -30,27 +30,37 @@ let UserController = class UserController {
     update(header, updateUserDto) {
         return this.userService.update(header, updateUserDto);
     }
-    findAllUser(header) {
-        return this.userService.allUser(header);
+    findAllUser(header, page, limit) {
+        const pageNumber = parseInt(page) || 1;
+        const limitNumber = parseInt(limit) || 10;
+        return this.userService.allUser(header, pageNumber, limitNumber);
     }
-    async findUserWithBookings(header, bookingStatus) {
-        return this.userService.findUserWithBookings(header, bookingStatus);
+    async findUserWithBookings(header, bookingStatus, page, limit) {
+        const pageNumber = parseInt(page) || 1;
+        const limitNumber = parseInt(limit) || 10;
+        return this.userService.findUserWithBookings(header, bookingStatus, pageNumber, limitNumber);
     }
-    async findAllUserWithBookings() {
-        return this.userService.findAllUserWithBookings();
+    async findAllUserWithBookings(page = 1, limit = 10) {
+        return this.userService.findAllUserWithBookings(page, limit);
     }
     async findOneUser(header) {
         return this.userService.findOneUser(header);
     }
-    async getUserTravelBuddies(header) {
-        const travelBuddies = await this.userService.findUserTravelBuddy(header);
+    async getUserTravelBuddies(header, page, limit) {
+        const pageNumber = parseInt(page) || 1;
+        const limitNumber = parseInt(limit) || 10;
+        const travelBuddies = await this.userService.findUserTravelBuddy(header, pageNumber, limitNumber);
         return travelBuddies;
     }
-    async findOneUserTransection(header) {
-        return await this.userService.findUserTransection(header);
+    async findOneUserTransection(header, page, limit) {
+        const pageNumber = parseInt(page) || 1;
+        const limitNumber = parseInt(limit) || 10;
+        return await this.userService.findUserTransection(header, pageNumber, limitNumber);
     }
-    async findAllUserTransection() {
-        return await this.userService.allTransection();
+    async findAllUserTransection(page, limit) {
+        const pageNumber = parseInt(page) || 1;
+        const limitNumber = parseInt(limit) || 10;
+        return await this.userService.allTransection(pageNumber, limitNumber);
     }
     async updateUserActivation(email, action) {
         return await this.userService.updateUserActivation(email, action);
@@ -76,26 +86,38 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)('/admin/allUser'),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),
     __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], UserController.prototype, "findAllUser", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.Get)('/bookings/:bookingStatus'),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Param)('bookingStatus')),
+    __param(2, (0, common_1.Query)('page')),
+    __param(3, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findUserWithBookings", null);
 __decorate([
+    (0, common_1.Get)('allUserBookings'),
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
-    (0, common_1.Get)('admin/allUserBookings'),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Number, Number]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAllUserWithBookings", null);
 __decorate([
@@ -111,26 +133,38 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Get)('/findAllTravelBuddy'),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),
     __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "getUserTravelBuddies", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Get)('/oneUserAllTransection'),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),
     __param(0, (0, common_1.Headers)()),
+    __param(1, (0, common_1.Query)('page')),
+    __param(2, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findOneUserTransection", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
+    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),
     (0, common_1.Get)('admin/ledgerReport'),
+    __param(0, (0, common_1.Query)('page')),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "findAllUserTransection", null);
 __decorate([

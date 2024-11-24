@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable,} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger,} from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -11,6 +11,7 @@ export class Shedule {
   private readonly username: string = process.env.FLYHUB_UserName;
   private readonly apiKey: string = process.env.FLYHUB_ApiKey;
   private readonly apiUrl: string = process.env.FLyHub_Url;
+  private readonly logger = new Logger(Shedule.name);
   constructor(
     @InjectRepository(BookingSave)
     private readonly bookingRepository: Repository<BookingSave>,
@@ -45,6 +46,7 @@ export class Shedule {
        
       }
     }
+    this.logger.log('Running the scheduling function every 5 minutes');
    
   }  
   async getToken(): Promise<string> {
