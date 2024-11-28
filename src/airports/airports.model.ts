@@ -72,3 +72,36 @@ export class AirportsModelUpdate {
   @ApiProperty()
   longitude: number;
 }
+
+@Entity('airports')
+export class Airport {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  code: string | null;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  name: string | null;
+
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  cityCode: string | null;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  cityName: string | null;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  countryName: string | null;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  countryCode: string | null;
+}
+
+export class CreateAirportDto {
+  code: string | null;
+  name: string | null
+  cityCode: string | null;
+  cityName: string | null;
+  countryName: string | null;
+  countryCode: string | null;
+}

@@ -283,7 +283,7 @@ let AuthService = class AuthService {
     async sendResetPasswordEmail(email, token) {
         const transporter = nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
-            port: parseInt(process.env.EMAIL_PORT, 10),
+            port: 465,
             secure: true,
             auth: {
                 user: process.env.EMAIL_USERNAME,

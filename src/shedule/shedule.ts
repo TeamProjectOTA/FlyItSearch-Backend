@@ -1,8 +1,8 @@
-import { HttpException, HttpStatus, Injectable, Logger,} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import {  BookingSave } from 'src/book/booking.model';
+import { BookingSave } from 'src/book/booking.model';
 import { BookingIdSave } from 'src/flight/flight.model';
 import { Repository } from 'typeorm';
 
@@ -22,7 +22,7 @@ export class Shedule {
   @Cron('*/5 * * * *') //  */5: Every 5 minutes*: Every hour*: Every day of the month*: Every month *: Every day of the week
   async scheduling() {
     const bookingSave = await this.bookingRepository.find();
-   
+
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000;
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
@@ -36,19 +36,17 @@ export class Shedule {
           where: { bookingId: booking.bookingId },
         });
         const cancelData = await this.aircancel(booking.bookingId);
-        
+
         if (cancelData?.BookingStatus) {
           userBooking.bookingStatus = cancelData?.BookingStatus;
         } else {
           userBooking.bookingStatus = 'Cancelled';
         }
         await this.bookingRepository.save(userBooking);
-       
       }
     }
     this.logger.log('Running the scheduling function every 5 minutes');
-   
-  }  
+  }
   async getToken(): Promise<string> {
     try {
       const config: AxiosRequestConfig = {

@@ -109,9 +109,20 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetriveAdmin", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' }),
-    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' }),
+    (0, swagger_1.ApiQuery)({
+        name: 'page',
+        required: false,
+        type: Number,
+        description: 'Page number (default: 1)',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'limit',
+        required: false,
+        type: Number,
+        description: 'Items per page (default: 10)',
+    }),
     (0, common_1.Get)('admin/allBooking/:bookingStatus'),
     __param(0, (0, common_1.Param)('bookingStatus')),
     __param(1, (0, common_1.Query)('page')),

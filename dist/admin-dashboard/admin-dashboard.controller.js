@@ -36,8 +36,20 @@ exports.AdminDashboardController = AdminDashboardController;
 __decorate([
     (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Get)('allStateOfRange'),
-    (0, swagger_1.ApiQuery)({ name: 'startDate', type: 'string', required: true, example: '2024-01-01', description: 'The start date in YYYY-MM-DD format' }),
-    (0, swagger_1.ApiQuery)({ name: 'endDate', type: 'string', required: true, example: '2024-01-31', description: 'The end date in YYYY-MM-DD format' }),
+    (0, swagger_1.ApiQuery)({
+        name: 'startDate',
+        type: 'string',
+        required: true,
+        example: '2024-01-01',
+        description: 'The start date in YYYY-MM-DD format',
+    }),
+    (0, swagger_1.ApiQuery)({
+        name: 'endDate',
+        type: 'string',
+        required: true,
+        example: '2024-01-31',
+        description: 'The end date in YYYY-MM-DD format',
+    }),
     __param(0, (0, common_1.Query)('startDate')),
     __param(1, (0, common_1.Query)('endDate')),
     __metadata("design:type", Function),

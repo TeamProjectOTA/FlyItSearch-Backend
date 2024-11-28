@@ -92,14 +92,27 @@ export class BookingController {
   async airRetriveAdmin(@Body() bookingIdDto: BookingID): Promise<any> {
     return await this.flyHubService.airRetriveAdmin(bookingIdDto);
   }
- // @UseGuards(AdmintokenGuard)
+  @UseGuards(AdmintokenGuard)
   @ApiBearerAuth('access_token')
-  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
-  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    type: Number,
+    description: 'Page number (default: 1)',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    type: Number,
+    description: 'Items per page (default: 10)',
+  })
   @Get('admin/allBooking/:bookingStatus')
-  async findAll(@Param('bookingStatus',) bookingStatus?: string,@Query('page') page?: number ,
-  @Query('limit') limit?: number ) {
-    return await this.bookingService.findAllBooking(bookingStatus,page,limit);
+  async findAll(
+    @Param('bookingStatus') bookingStatus?: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+  ) {
+    return await this.bookingService.findAllBooking(bookingStatus, page, limit);
   }
 
   @ApiBearerAuth('access_token')
@@ -115,6 +128,6 @@ export class BookingController {
   @Post('flh/makeTicket')
   @UseGuards(AdmintokenGuard)
   async ticletMake(@Body() bookingIdDto: BookingID) {
-   return await this.flyHubService.makeTicket(bookingIdDto)
+    return await this.flyHubService.makeTicket(bookingIdDto);
   }
 }

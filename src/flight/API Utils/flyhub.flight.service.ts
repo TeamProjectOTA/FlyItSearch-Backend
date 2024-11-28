@@ -128,10 +128,9 @@ export class FlyHubService {
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
     });
-     if(findBooking.bookingData[0].GDSPNR){
-      return {bookingData:findBooking.bookingData}
-     }
-    console.log(findBooking.bookingData[0].GDSPNR)
+    if (findBooking.bookingData[0].GDSPNR) {
+      return { bookingData: findBooking.bookingData };
+    }
     const bookingId = await this.bookingIdSave.findOne({
       where: { flyitSearchId: BookingID.BookingID },
     });
@@ -155,7 +154,6 @@ export class FlyHubService {
     };
 
     try {
-
       const response = await axios.request(ticketRetrive);
       //return response.data
       return this.flyHubUtil.airRetriveDataTransformer(
@@ -304,6 +302,10 @@ export class FlyHubService {
     const bookingId = await this.bookingIdSave.findOne({
       where: { flyitSearchId: BookingID.BookingID },
     });
+    if (findBooking.bookingData[0].GDSPNR) {
+      return findBooking.bookingData;
+    }
+
     if (!bookingId) {
       throw new NotFoundException(
         `No Booking Found with ${BookingID.BookingID}`,
@@ -383,7 +385,7 @@ export class FlyHubService {
     return '3';
   }
 
-  async makeTicket(BookingID: BookingID){
+  async makeTicket(BookingID: BookingID) {
     const findBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
@@ -408,21 +410,21 @@ export class FlyHubService {
       },
       data: {
         BookingID: flyhubId,
-        IsAcceptedPriceChangeandIssueTicket:true
-       },
+        IsAcceptedPriceChangeandIssueTicket: true,
+      },
     };
     try {
       const response = await axios.request(makeTicket);
-      if(response.data.Results!==null){
-      return this.flyHubUtil.airRetriveDataTransformerAdmin(
-        response?.data,
-        BookingID.BookingID,
-        findBooking.bookingStatus,
-        findBooking.TripType,
-        findBooking.bookingDate,
-      );
-    }
-      return response.data
+      if (response.data.Results !== null) {
+        return this.flyHubUtil.airRetriveDataTransformerAdmin(
+          response?.data,
+          BookingID.BookingID,
+          findBooking.bookingStatus,
+          findBooking.TripType,
+          findBooking.bookingDate,
+        );
+      }
+      return response.data;
     } catch (error) {
       throw error?.response?.data;
     }

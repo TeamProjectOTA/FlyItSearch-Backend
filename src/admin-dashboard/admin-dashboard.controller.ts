@@ -1,9 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminDashboardService } from './admin-dashboard.service';
-import { ApiTags,ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 import { NewTicket, vendorTicket } from './admin-dashboard.model';
-
 
 @ApiTags('Admin-Dashboard')
 @Controller('adminDashboard')
@@ -12,8 +19,20 @@ export class AdminDashboardController {
 
   @UseGuards(AdmintokenGuard)
   @Get('allStateOfRange')
-  @ApiQuery({ name: 'startDate', type: 'string', required: true, example: '2024-01-01', description: 'The start date in YYYY-MM-DD format' })
-  @ApiQuery({ name: 'endDate', type: 'string', required: true, example: '2024-01-31', description: 'The end date in YYYY-MM-DD format' })
+  @ApiQuery({
+    name: 'startDate',
+    type: 'string',
+    required: true,
+    example: '2024-01-01',
+    description: 'The start date in YYYY-MM-DD format',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    type: 'string',
+    required: true,
+    example: '2024-01-31',
+    description: 'The end date in YYYY-MM-DD format',
+  })
   async findAllDeposit(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
@@ -21,14 +40,10 @@ export class AdminDashboardController {
     return await this.adminDashboardService.findAll(startDate, endDate);
   }
 
-
-  @Post('VendorTicket') 
+  @Post('VendorTicket')
   async createTicket(@Body() ticketDataDTO: vendorTicket) {
     return this.adminDashboardService.vendorMakeTicket(ticketDataDTO);
   }
-
-  
-
   @Get()
   async getAllTickets() {
     return await this.adminDashboardService.findAllTickets();

@@ -8,12 +8,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {  BookingSave, CreateSaveBookingDto } from './booking.model';
+import { BookingSave, CreateSaveBookingDto } from './booking.model';
 import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 
 import { BookingIdSave } from 'src/flight/flight.model';
-
 
 @Injectable()
 export class BookingService {
@@ -83,25 +82,26 @@ export class BookingService {
   async findAllBooking(
     bookingStatus?: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ) {
     const skip = (page - 1) * limit;
-  
-    const [data, total] = bookingStatus && bookingStatus !== 'all'
-      ? await this.bookingSaveRepository.findAndCount({
-          where: { bookingStatus: bookingStatus },
-          relations: ['user'],
-          order: { bookingDate: 'DESC' },
-          take: limit,
-          skip: skip,
-        })
-      : await this.bookingSaveRepository.findAndCount({
-          relations: ['user'],
-          order: { bookingDate: 'DESC' },
-          take: limit,
-          skip: skip,
-        });
-  
+
+    const [data, total] =
+      bookingStatus && bookingStatus !== 'all'
+        ? await this.bookingSaveRepository.findAndCount({
+            where: { bookingStatus: bookingStatus },
+            relations: ['user'],
+            order: { bookingDate: 'DESC' },
+            take: limit,
+            skip: skip,
+          })
+        : await this.bookingSaveRepository.findAndCount({
+            relations: ['user'],
+            order: { bookingDate: 'DESC' },
+            take: limit,
+            skip: skip,
+          });
+
     return {
       data,
       total,
@@ -109,7 +109,7 @@ export class BookingService {
       totalPages: Math.ceil(total / limit),
     };
   }
-  
+
   async findUserWithBookings(header: any, bookingStatus: string): Promise<any> {
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {

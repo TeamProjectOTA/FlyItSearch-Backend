@@ -5,11 +5,11 @@ import { IpService } from 'src/ip/ip.service';
 
 const rateLimiterByRole = {
   unregistered: new RateLimiterMemory({
-    points: 10,
+    points: 25,
     duration: 86400,
   }),
   registered: new RateLimiterMemory({
-    points: 50,
+    points: 70,
     duration: 86400,
   }),
   admin: new RateLimiterMemory({

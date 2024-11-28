@@ -20,7 +20,10 @@ let AdminDashboardModule = class AdminDashboardModule {
 exports.AdminDashboardModule = AdminDashboardModule;
 exports.AdminDashboardModule = AdminDashboardModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, deposit_model_1.Deposit, admin_dashboard_model_1.NewTicket]), auth_module_1.AuthModule],
+        imports: [
+            typeorm_1.TypeOrmModule.forFeature([booking_model_1.BookingSave, deposit_model_1.Deposit, admin_dashboard_model_1.NewTicket]),
+            auth_module_1.AuthModule,
+        ],
         controllers: [admin_dashboard_controller_1.AdminDashboardController],
         providers: [admin_dashboard_service_1.AdminDashboardService],
     })

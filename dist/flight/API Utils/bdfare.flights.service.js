@@ -11,12 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BDFareService = void 0;
 const common_1 = require("@nestjs/common");
-const rxjs_1 = require("rxjs");
-const axios_1 = require("@nestjs/axios");
+const axios_1 = require("axios");
 const bdfare_model_1 = require("./Dto/bdfare.model");
+const bdfare_util_1 = require("./bdfare.util");
 let BDFareService = class BDFareService {
-    constructor(httpService) {
-        this.httpService = httpService;
+    constructor(bdfareUtil) {
+        this.bdfareUtil = bdfareUtil;
         this.apiUrl = process.env.BDFareAPI_URL;
         this.apiKey = process.env.BDFareAPI_KEY;
     }
@@ -56,14 +56,9 @@ let BDFareService = class BDFareService {
         const travelPreferences = new bdfare_model_1.TravelPreferencesDto();
         travelPreferences.cabinCode = this.mapCabinClass(flightSearchModel.cabinclass);
         const shoppingCriteria = new bdfare_model_1.ShoppingCriteriaDto();
-        shoppingCriteria.tripType =
-            flightSearchModel.segments.length === 1
-                ? '1'
-                : flightSearchModel.segments.length === 2
-                    ? '2'
-                    : '3';
+        shoppingCriteria.tripType = this.determineJourneyType(flightSearchModel.segments);
         shoppingCriteria.travelPreferences = travelPreferences;
-        shoppingCriteria.returnUPSellInfo = true;
+        shoppingCriteria.returnUPSellInfo = false;
         const requestInner = new bdfare_model_1.RequestInnerDto();
         requestInner.originDest = originDest;
         requestInner.pax = pax;
@@ -75,13 +70,13 @@ let BDFareService = class BDFareService {
     }
     mapCabinClass(cabinClass) {
         switch (cabinClass) {
-            case 'Y':
+            case '1':
                 return 'Economy';
-            case 'W':
+            case '2':
                 return 'PremiumEconomy';
-            case 'C':
+            case '3':
                 return 'Business';
-            case 'F':
+            case '4':
                 return 'First';
             default:
                 return 'Economy';
@@ -89,92 +84,21 @@ let BDFareService = class BDFareService {
     }
     async airShopping(flightSearchModel) {
         const requestDto = this.transformToRequestDto(flightSearchModel);
-        console.log(requestDto);
+        const tripType = requestDto.request.shoppingCriteria.tripType;
         try {
-            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.apiUrl}/AirShopping`, requestDto, {
+            const response = await axios_1.default.post(`${this.apiUrl}/AirShopping`, requestDto, {
                 headers: {
                     'X-API-KEY': this.apiKey,
                 },
-            }));
-            if (!response.data) {
-                return 'Api failed';
+            });
+            if (response.data.response != null) {
+                return await this.bdfareUtil.afterSerarchDataModifierBdFare(response.data.response, tripType);
             }
-            return response.data;
+            return response.data.error;
         }
         catch (error) {
             console.error('Error calling external API', error);
             throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    async airShopping1(flightDto) {
-        let adultCount = flightDto?.adultcount || 1;
-        let childCount = flightDto?.childcount || 0;
-        let infantcount = flightDto?.infantcount || 0;
-        let cabinclass = flightDto.cabinclass;
-        let segments = flightDto.segments;
-        const BDFareRequestPax = [];
-        if (adultCount > 0) {
-            const PaxQuantity = {
-                Code: 'ADT',
-                Quantity: adultCount,
-            };
-            BDFareRequestPax.push(PaxQuantity);
-        }
-        if (childCount > 0) {
-            const PaxQuantity = {
-                Code: 'CNN',
-                Quantity: childCount,
-            };
-            BDFareRequestPax.push(PaxQuantity);
-        }
-        if (infantcount > 0) {
-            const PaxQuantity = {
-                Code: 'INF',
-                Quantity: infantcount,
-            };
-            BDFareRequestPax.push(PaxQuantity);
-        }
-        const IncludeVendorPref = [
-            { Code: 'BG' },
-            { Code: 'EK' },
-            { Code: 'SQ' },
-            { Code: 'BS' },
-            { Code: 'TK' },
-            { Code: 'QR' },
-            { Code: 'GF' },
-            { Code: 'SV' },
-            { Code: 'KU' },
-            { Code: 'CX' },
-            { Code: 'UL' },
-            { Code: 'AI' },
-            { Code: 'TG' },
-            { Code: 'UK' },
-            { Code: 'MH' },
-            { Code: 'WY' },
-            { Code: 'FZ' },
-        ];
-        const SegmentList = [];
-        for (let i = 0; i < segments.length; i++) {
-            const segment = segments[i];
-            const DepFrom = segment.depfrom;
-            const ArrTo = segment.arrto;
-            const DepDate = segment.depdate + 'T00:00:00';
-            const SingleSegment = {
-                RPH: i.toString(),
-                DepartureDateTime: DepDate,
-                OriginLocation: {
-                    LocationCode: DepFrom,
-                },
-                DestinationLocation: {
-                    LocationCode: ArrTo,
-                    LocationType: 'C',
-                    AllAirports: true,
-                },
-                TPA_Extensions: {
-                    IncludeVendorPref: IncludeVendorPref,
-                },
-            };
-            SegmentList.push(SingleSegment);
         }
     }
     async fareRules() { }
@@ -184,24 +108,23 @@ let BDFareService = class BDFareService {
     async flightRetrieve() { }
     async flightBookingChange() { }
     async flightBookingCancel() { }
-    async processApi(bdfaredto) {
-        try {
-            const response = await (0, rxjs_1.firstValueFrom)(this.httpService.post(`${this.apiUrl}/AirShopping`, bdfaredto, {
-                headers: {
-                    'X-API-KEY': this.apiKey,
-                },
-            }));
-            return response.data;
+    determineJourneyType(segments) {
+        if (segments.length === 1) {
+            return '1';
         }
-        catch (error) {
-            console.error('Error calling external API', error);
-            throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        if (segments.length === 2) {
+            if (segments[0].Destination === segments[1].Origin &&
+                segments[0].Origin === segments[1].Destination) {
+                return '2';
+            }
+            return '3';
         }
+        return '3';
     }
 };
 exports.BDFareService = BDFareService;
 exports.BDFareService = BDFareService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [axios_1.HttpService])
+    __metadata("design:paramtypes", [bdfare_util_1.BfFareUtil])
 ], BDFareService);
 //# sourceMappingURL=bdfare.flights.service.js.map

@@ -22,7 +22,7 @@ let MailService = class MailService {
         this.transporter = nodemailer.createTransport({
             host: `${process.env.EMAIL_HOST}`,
             port: 465,
-            secure: false,
+            secure: true,
             auth: {
                 user: `${process.env.EMAIL_USERNAME}`,
                 pass: `${process.env.EMAIL_PASSWORD}`,
@@ -49,7 +49,7 @@ let MailService = class MailService {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(data);
     }
-    async sendMail(data) {
+    async sendMail(data, header) {
         const bodyData = {
             BookingID: data.BookingId,
         };

@@ -32,6 +32,7 @@ const mail_module_1 = require("../mail/mail.module");
 const transection_module_1 = require("../transection/transection.module");
 const transection_model_1 = require("../transection/transection.model");
 const deposit_model_1 = require("../deposit/deposit.model");
+const bdfare_util_1 = require("./API Utils/bdfare.util");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -67,8 +68,9 @@ exports.FlightModule = FlightModule = __decorate([
             flyhub_flight_service_1.FlyHubService,
             test_service_1.Test,
             booking_service_1.BookingService,
+            bdfare_util_1.BfFareUtil,
         ],
-        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil],
+        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, bdfare_util_1.BfFareUtil],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

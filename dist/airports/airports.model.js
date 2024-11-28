@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AirportsModelUpdate = exports.AirportsModel = void 0;
+exports.CreateAirportDto = exports.Airport = exports.AirportsModelUpdate = exports.AirportsModel = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const typeorm_1 = require("typeorm");
 let AirportsModel = class AirportsModel {
@@ -110,4 +110,41 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Number)
 ], AirportsModelUpdate.prototype, "longitude", void 0);
+let Airport = class Airport {
+};
+exports.Airport = Airport;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], Airport.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], Airport.prototype, "code", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 200, nullable: true }),
+    __metadata("design:type", String)
+], Airport.prototype, "name", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    __metadata("design:type", String)
+], Airport.prototype, "cityCode", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 200, nullable: true }),
+    __metadata("design:type", String)
+], Airport.prototype, "cityName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 200, nullable: true }),
+    __metadata("design:type", String)
+], Airport.prototype, "countryName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 200, nullable: true }),
+    __metadata("design:type", String)
+], Airport.prototype, "countryCode", void 0);
+exports.Airport = Airport = __decorate([
+    (0, typeorm_1.Entity)('airports')
+], Airport);
+class CreateAirportDto {
+}
+exports.CreateAirportDto = CreateAirportDto;
 //# sourceMappingURL=airports.model.js.map

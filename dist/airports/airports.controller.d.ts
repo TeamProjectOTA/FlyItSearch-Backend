@@ -9,4 +9,5 @@ export declare class AirportsController {
     findOne(id: string): Promise<AirportsModel>;
     update(id: string, updateAirportDto: AirportsModelUpdate): Promise<import("typeorm").UpdateResult>;
     remove(id: string): Promise<AirportsModel[]>;
+    airport(id: string): Promise<"Not Found" | import("./airports.model").Airport>;
 }

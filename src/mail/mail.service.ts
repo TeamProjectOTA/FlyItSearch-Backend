@@ -13,7 +13,7 @@ export class MailService {
     this.transporter = nodemailer.createTransport({
       host: `${process.env.EMAIL_HOST}`,
       port: 465,
-      secure: false,
+      secure: true,
       auth: {
         user: `${process.env.EMAIL_USERNAME}`,
         pass: `${process.env.EMAIL_PASSWORD}`,
@@ -53,7 +53,7 @@ export class MailService {
     return compiledTemplate(data);
   }
 
-  async sendMail(data: any, ) {
+  async sendMail(data: any, header?: any) {
     //email
     //const name = this.authService.decodeToken(header);
     const bodyData = {

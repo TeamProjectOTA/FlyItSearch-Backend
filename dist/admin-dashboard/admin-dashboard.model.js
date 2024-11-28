@@ -28,9 +28,14 @@ __decorate([
 ], vendorTicket.prototype, "airlinesPNR", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], vendorTicket.prototype, "gdsPNR", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
-], vendorTicket.prototype, "vendorAmount", void 0);
+], vendorTicket.prototype, "inVoiceAmount", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", Number)
@@ -94,6 +99,10 @@ __decorate([
     (0, typeorm_1.Column)('json', { nullable: true }),
     __metadata("design:type", Object)
 ], NewTicket.prototype, "ticket", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'timestamp' }),
+    __metadata("design:type", Date)
+], NewTicket.prototype, "createdAt", void 0);
 exports.NewTicket = NewTicket = __decorate([
     (0, typeorm_1.Entity)()
 ], NewTicket);

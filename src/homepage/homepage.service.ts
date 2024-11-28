@@ -48,5 +48,5 @@ export class HomepageService {
     return { link: link };
   }
 
-  async create(){}
+  async create() {}
 }

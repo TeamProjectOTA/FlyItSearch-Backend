@@ -24,3 +24,20 @@ export declare class AirportsModelUpdate {
     latitude: number;
     longitude: number;
 }
+export declare class Airport {
+    id: number;
+    code: string | null;
+    name: string | null;
+    cityCode: string | null;
+    cityName: string | null;
+    countryName: string | null;
+    countryCode: string | null;
+}
+export declare class CreateAirportDto {
+    code: string | null;
+    name: string | null;
+    cityCode: string | null;
+    cityName: string | null;
+    countryName: string | null;
+    countryCode: string | null;
+}

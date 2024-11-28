@@ -17,7 +17,7 @@ let AirportsModule = class AirportsModule {
 exports.AirportsModule = AirportsModule;
 exports.AirportsModule = AirportsModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([airports_model_1.AirportsModel])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([airports_model_1.AirportsModel, airports_model_1.Airport])],
         controllers: [airports_controller_1.AirportsController],
         providers: [airports_service_1.AirportsService],
         exports: [airports_service_1.AirportsService],

@@ -1,8 +1,9 @@
 import { Repository } from 'typeorm';
-import { AirportsModel, AirportsModelUpdate } from './airports.model';
+import { Airport, AirportsModel, AirportsModelUpdate } from './airports.model';
 export declare class AirportsService {
     private readonly airportsRepository;
-    constructor(airportsRepository: Repository<AirportsModel>);
+    private readonly airportRepository;
+    constructor(airportsRepository: Repository<AirportsModel>, airportRepository: Repository<Airport>);
     create(createAirportDto: AirportsModel): Promise<AirportsModel>;
     findAll(): Promise<AirportsModel[]>;
     findFormateAll(): Promise<AirportsModel[]>;
@@ -12,4 +13,5 @@ export declare class AirportsService {
     getAirportName(code: string): Promise<string>;
     getAirportLocation(code: string): Promise<string>;
     getCountry(code: string): Promise<string>;
+    airportName(code: string): Promise<"Not Found" | Airport>;
 }

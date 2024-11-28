@@ -18,8 +18,9 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const airports_model_1 = require("./airports.model");
 let AirportsService = class AirportsService {
-    constructor(airportsRepository) {
+    constructor(airportsRepository, airportRepository) {
         this.airportsRepository = airportsRepository;
+        this.airportRepository = airportRepository;
     }
     async create(createAirportDto) {
         const airportData = await this.airportsRepository.findOne({
@@ -101,11 +102,22 @@ let AirportsService = class AirportsService {
         }
         return airportsData.country_code;
     }
+    async airportName(code) {
+        const airportsData = await this.airportRepository.findOne({
+            where: { code: code },
+        });
+        if (!airportsData) {
+            return 'Not Found';
+        }
+        return airportsData;
+    }
 };
 exports.AirportsService = AirportsService;
 exports.AirportsService = AirportsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(airports_model_1.AirportsModel)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(airports_model_1.Airport)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], AirportsService);
 //# sourceMappingURL=airports.service.js.map

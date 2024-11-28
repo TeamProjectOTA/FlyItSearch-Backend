@@ -7,13 +7,15 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Repository } from 'typeorm';
-import { AirportsModel, AirportsModelUpdate } from './airports.model';
+import { Airport, AirportsModel, AirportsModelUpdate } from './airports.model';
 
 @Injectable()
 export class AirportsService {
   constructor(
     @InjectRepository(AirportsModel)
     private readonly airportsRepository: Repository<AirportsModel>,
+    @InjectRepository(Airport)
+    private readonly airportRepository:Repository<Airport>
   ) {}
 
   async create(createAirportDto: AirportsModel) {
@@ -113,5 +115,16 @@ export class AirportsService {
       return 'Not Found';
     }
     return airportsData.country_code;
+  }
+
+  async airportName(code:string){
+    const airportsData = await this.airportRepository.findOne({
+      where: { code: code },
+    });
+
+    if (!airportsData) {
+      return 'Not Found';
+    }
+    return airportsData;
   }
 }

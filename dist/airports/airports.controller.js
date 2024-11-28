@@ -39,6 +39,9 @@ let AirportsController = class AirportsController {
     remove(id) {
         return this.airportsService.remove(+id);
     }
+    airport(id) {
+        return this.airportsService.airportName(id);
+    }
 };
 exports.AirportsController = AirportsController;
 __decorate([
@@ -82,6 +85,13 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], AirportsController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)("/airpor/:id"),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], AirportsController.prototype, "airport", null);
 exports.AirportsController = AirportsController = __decorate([
     (0, swagger_1.ApiTags)('Airports Module'),
     (0, common_1.Controller)('admin/airports'),

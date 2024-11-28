@@ -55,7 +55,9 @@ let AdminDashboardService = class AdminDashboardService {
         const tomorrowFly = flight.filter((entry) => entry.laginfo[0].DepDate.startsWith(tomorrowDateString)).length;
         const dayAfterTomorrowDate = new Date(initialDate);
         dayAfterTomorrowDate.setDate(dayAfterTomorrowDate.getDate() + 2);
-        const dayAfterTomorrowString = dayAfterTomorrowDate.toISOString().split('T')[0];
+        const dayAfterTomorrowString = dayAfterTomorrowDate
+            .toISOString()
+            .split('T')[0];
         const dayAfterTomorrowFly = flight.filter((entry) => entry.laginfo[0].DepDate.startsWith(dayAfterTomorrowString)).length;
         return {
             Booking: {
@@ -74,25 +76,47 @@ let AdminDashboardService = class AdminDashboardService {
         };
     }
     async vendorMakeTicket(ticketDataDTO) {
-        const booking = await this.bookingSaveRepository.findOne({ where: { bookingId: ticketDataDTO.bookingId } });
+        const booking = await this.bookingSaveRepository.findOne({
+            where: { bookingId: ticketDataDTO.bookingId },
+        });
         if (!booking) {
             throw new common_1.NotFoundException();
         }
+        let add = new admin_dashboard_model_1.NewTicket();
+        add.bookingId = booking.bookingId;
+        add.airlinesPNR = ticketDataDTO.airlinesPNR;
+        add.vendorName = ticketDataDTO.vendorName;
+        add.segmentCount = ticketDataDTO.segmentCount;
+        add.inVoiceAmount = ticketDataDTO.inVoiceAmount;
+        add.gdsPNR = ticketDataDTO.gdsPNR;
+        add.dealAmount = Number(booking.netAmmount);
+        add.loss_profit = String(Number(booking.netAmmount) - ticketDataDTO.inVoiceAmount);
+        add.ticket = ticketDataDTO.ticketNumber;
+        add.flyHubPNR = booking.bookingData[0].PNR;
         booking.PNR = ticketDataDTO.airlinesPNR;
-        booking.bookingData[0].System = 'FLYHUB';
         booking.bookingStatus = 'Ticketed';
-        booking.bookingData[0].GDSPNR = booking.bookingData[0].PNR;
+        booking.bookingData[0].GDSPNR = ticketDataDTO.airlinesPNR;
         booking.bookingData[0].PNR = ticketDataDTO.airlinesPNR;
+        const passportNumber = booking.bookingData[0].PassengerList[0].PassportNumber;
+        if (passportNumber === '') {
+            booking.bookingData[0].PassportRequired = false;
+        }
+        booking.bookingData[0].PassportRequired = true;
         const mappedPassengerList = booking.bookingData[0].PassengerList.map((passenger, index) => {
             return {
                 ...passenger,
                 Ticket: ticketDataDTO.ticketNumber[index]
-                    ? [{ TicketNo: ticketDataDTO.ticketNumber[index].eticket.toString() }]
-                    : [{ TicketNo: null }]
+                    ? [
+                        {
+                            TicketNo: ticketDataDTO.ticketNumber[index].eticket.toString(),
+                        },
+                    ]
+                    : [{ TicketNo: null }],
             };
         });
         booking.bookingData[0].PassengerList = mappedPassengerList;
-        console.log(await this.bookingSaveRepository.save(booking));
+        await this.newTicketRepository.save(add);
+        await this.bookingSaveRepository.save(booking);
         return booking;
     }
     async findAllTickets() {

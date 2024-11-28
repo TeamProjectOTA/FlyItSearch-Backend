@@ -1,14 +1,17 @@
 export declare class vendorTicket {
     bookingId: string;
     airlinesPNR: string;
-    vendorAmount: number;
+    gdsPNR: string;
+    inVoiceAmount: number;
     profit: number;
     vendorName: string;
     segmentCount: string;
-    ticketNumber: [{
-        index: number;
-        eticket: number;
-    }];
+    ticketNumber: [
+        {
+            index: number;
+            eticket: number;
+        }
+    ];
 }
 export declare class NewTicket {
     id: number;
@@ -22,4 +25,5 @@ export declare class NewTicket {
     dealAmount: number;
     inVoiceAmount: number;
     ticket: any;
+    createdAt: Date;
 }

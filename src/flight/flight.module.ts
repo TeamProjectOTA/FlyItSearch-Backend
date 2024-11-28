@@ -23,6 +23,7 @@ import { MailModule } from 'src/mail/mail.module';
 import { TransectionModule } from 'src/transection/transection.module';
 import { Transection } from 'src/transection/transection.model';
 import { Wallet } from 'src/deposit/deposit.model';
+import { BfFareUtil } from './API Utils/bdfare.util';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -54,8 +55,9 @@ import { Wallet } from 'src/deposit/deposit.model';
     FlyHubService,
     Test,
     BookingService,
+    BfFareUtil,
   ],
 
-  exports: [FlyHubService, FlyHubUtil],
+  exports: [FlyHubService, FlyHubUtil, BfFareUtil],
 })
 export class FlightModule {}

@@ -39,12 +39,12 @@ export class FlightController {
   //   return result;
   // }
 
-  @Post('/bdFare')
-  async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
-    return await this.bdFareService.processApi(bdfaredto);
-  }
+  // @Post('/bdFare')
+  // async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
+  //   return await this.bdFareService.processApi(bdfaredto);
+  // }
 
-  @Post('/bdFareUpdate')
+  @Post('/bdFare')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,
   ): Promise<any> {

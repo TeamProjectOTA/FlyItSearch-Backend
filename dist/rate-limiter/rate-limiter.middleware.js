@@ -15,11 +15,11 @@ const rate_limiter_flexible_1 = require("rate-limiter-flexible");
 const ip_service_1 = require("../ip/ip.service");
 const rateLimiterByRole = {
     unregistered: new rate_limiter_flexible_1.RateLimiterMemory({
-        points: 10,
+        points: 25,
         duration: 86400,
     }),
     registered: new rate_limiter_flexible_1.RateLimiterMemory({
-        points: 50,
+        points: 70,
         duration: 86400,
     }),
     admin: new rate_limiter_flexible_1.RateLimiterMemory({

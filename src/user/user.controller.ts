@@ -35,15 +35,15 @@ export class UserController {
   @Get('/admin/allUser')
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
-  findAllUser(@Headers() header: Headers,
-  @Query('page') page: string, 
-  @Query('limit') limit: string, 
-) {
-  const pageNumber = parseInt(page) || 1; 
-  const limitNumber = parseInt(limit) || 10;
-    return this.userService.allUser(header,pageNumber,limitNumber);
+  findAllUser(
+    @Headers() header: Headers,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    return this.userService.allUser(header, pageNumber, limitNumber);
   }
-
 
   @ApiBearerAuth('access_token')
   @Get('/bookings/:bookingStatus')
@@ -52,12 +52,17 @@ export class UserController {
   async findUserWithBookings(
     @Headers() header: Headers,
     @Param('bookingStatus') bookingStatus: string,
-    @Query('page') page: string, 
-    @Query('limit') limit: string, 
+    @Query('page') page: string,
+    @Query('limit') limit: string,
   ): Promise<Partial<User>> {
-    const pageNumber = parseInt(page) || 1; 
+    const pageNumber = parseInt(page) || 1;
     const limitNumber = parseInt(limit) || 10;
-    return this.userService.findUserWithBookings(header, bookingStatus,pageNumber,limitNumber);
+    return this.userService.findUserWithBookings(
+      header,
+      bookingStatus,
+      pageNumber,
+      limitNumber,
+    );
   }
 
   @Get('allUserBookings')
@@ -83,12 +88,18 @@ export class UserController {
   @Get('/findAllTravelBuddy')
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
-  async getUserTravelBuddies(@Headers() header: Headers, 
-  @Query('page') page: string, 
-    @Query('limit') limit: string, ) {
-      const pageNumber = parseInt(page) || 1; 
-      const limitNumber = parseInt(limit) || 10;
-    const travelBuddies = await this.userService.findUserTravelBuddy(header,pageNumber,limitNumber);
+  async getUserTravelBuddies(
+    @Headers() header: Headers,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    const pageNumber = parseInt(page) || 1;
+    const limitNumber = parseInt(limit) || 10;
+    const travelBuddies = await this.userService.findUserTravelBuddy(
+      header,
+      pageNumber,
+      limitNumber,
+    );
     return travelBuddies;
   }
 
@@ -97,12 +108,18 @@ export class UserController {
   @Get('/oneUserAllTransection')
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
-  async findOneUserTransection(@Headers() header: Headers,
-  @Query('page') page: string, 
-  @Query('limit') limit: string, ) {
-    const pageNumber = parseInt(page) || 1; 
+  async findOneUserTransection(
+    @Headers() header: Headers,
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    const pageNumber = parseInt(page) || 1;
     const limitNumber = parseInt(limit) || 10;
-    return await this.userService.findUserTransection(header,pageNumber,limitNumber);
+    return await this.userService.findUserTransection(
+      header,
+      pageNumber,
+      limitNumber,
+    );
   }
 
   @ApiBearerAuth('access_token')
@@ -111,11 +128,12 @@ export class UserController {
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })
   @Get('admin/ledgerReport')
   async findAllUserTransection(
-  @Query('page') page: string, 
-  @Query('limit') limit: string,) {
-    const pageNumber = parseInt(page) || 1; 
+    @Query('page') page: string,
+    @Query('limit') limit: string,
+  ) {
+    const pageNumber = parseInt(page) || 1;
     const limitNumber = parseInt(limit) || 10;
-    return await this.userService.allTransection(pageNumber,limitNumber);
+    return await this.userService.allTransection(pageNumber, limitNumber);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)

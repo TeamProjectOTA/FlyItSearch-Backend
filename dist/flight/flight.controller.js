@@ -19,7 +19,6 @@ const swagger_1 = require("@nestjs/swagger");
 const fare_rules_flight_dto_1 = require("./dto/fare-rules.flight.dto");
 const sabre_flights_service_1 = require("./API Utils/sabre.flights.service");
 const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
-const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const flyhub_util_1 = require("./API Utils/flyhub.util");
@@ -30,9 +29,6 @@ let FlightController = class FlightController {
         this.bdFareService = bdFareService;
         this.flyHubService = flyHubService;
         this.testservice = testservice;
-    }
-    async getApiResponse(bdfaredto) {
-        return await this.bdFareService.processApi(bdfaredto);
     }
     async searchFlights(flightSearchModel) {
         return this.bdFareService.airShopping(flightSearchModel);
@@ -76,13 +72,6 @@ let FlightController = class FlightController {
 exports.FlightController = FlightController;
 __decorate([
     (0, common_1.Post)('/bdFare'),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [bdfare_model_1.RequestDto]),
-    __metadata("design:returntype", Promise)
-], FlightController.prototype, "getApiResponse", null);
-__decorate([
-    (0, common_1.Post)('/bdFareUpdate'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),

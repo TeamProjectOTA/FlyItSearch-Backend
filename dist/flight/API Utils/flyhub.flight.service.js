@@ -106,7 +106,6 @@ let FlyHubService = class FlyHubService {
         if (findBooking.bookingData[0].GDSPNR) {
             return { bookingData: findBooking.bookingData };
         }
-        console.log(findBooking.bookingData[0].GDSPNR);
         const bookingId = await this.bookingIdSave.findOne({
             where: { flyitSearchId: BookingID.BookingID },
         });
@@ -251,6 +250,9 @@ let FlyHubService = class FlyHubService {
         const bookingId = await this.bookingIdSave.findOne({
             where: { flyitSearchId: BookingID.BookingID },
         });
+        if (findBooking.bookingData[0].GDSPNR) {
+            return findBooking.bookingData;
+        }
         if (!bookingId) {
             throw new common_1.NotFoundException(`No Booking Found with ${BookingID.BookingID}`);
         }
@@ -333,7 +335,7 @@ let FlyHubService = class FlyHubService {
             },
             data: {
                 BookingID: flyhubId,
-                IsAcceptedPriceChangeandIssueTicket: true
+                IsAcceptedPriceChangeandIssueTicket: true,
             },
         };
         try {
