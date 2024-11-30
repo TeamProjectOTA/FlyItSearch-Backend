@@ -120,14 +120,6 @@ let BfFareUtil = class BfFareUtil {
                         continue;
                     const firstSegment = groupSegments[0];
                     const lastSegment = groupSegments[groupSegments.length - 1];
-                    const departureLocations = await Promise.all(groupSegments.map(async (segment) => {
-                        const airportName = await this.airportService.airportName(segment?.departure?.iatA_LocationCode);
-                        return airportName || 'Unknown Airport';
-                    }));
-                    const arivalLocations = await Promise.all(groupSegments.map(async (segment) => {
-                        const airportName = await this.airportService.airportName(segment?.arrival?.iatA_LocationCode);
-                        return airportName || 'Unknown Airport';
-                    }));
                     const legInfo = {
                         DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
                         DepFrom: firstSegment?.departure?.iatA_LocationCode,
@@ -142,12 +134,8 @@ let BfFareUtil = class BfFareUtil {
                             OperatingFlightNumber: segment?.flightNumber,
                             DepFrom: segment?.departure?.iatA_LocationCode,
                             DepTime: segment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
-                            DepAirPort: departureLocations[index].name,
-                            DepLocation: `${departureLocations[index].cityName},${departureLocations[index].countryName}`,
                             ArrTo: segment?.arrival?.iatA_LocationCode,
                             ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace('Z', ''),
-                            ArrAirPort: arivalLocations[index].name,
-                            ArrLocation: `${arivalLocations[index].cityName},${arivalLocations[index].countryName}`,
                             CabinClass: segment?.cabinType,
                             Duration: segment?.duration,
                             AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
@@ -155,7 +143,7 @@ let BfFareUtil = class BfFareUtil {
                             DepartureGate: segment?.departure?.terminalName,
                             ArrivalGate: segment?.arrival?.terminalName,
                             OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
-                            HiddenStops: segment?.technicalStopOver,
+                            HiddenStops: segment?.technicalStopOver || [],
                             SegmentCode: {
                                 bookingCode: segment?.rbd,
                                 cabinCode: segment?.cabinType,
@@ -169,6 +157,7 @@ let BfFareUtil = class BfFareUtil {
                     System: 'BDF',
                     SearchId: SearchResponse.traceId,
                     ResultId: offerID,
+                    PassportMadatory: SearchResponse.passportRequired,
                     FareType: fareType,
                     Refundable: isRefundable,
                     TripType: tripType,
@@ -184,6 +173,7 @@ let BfFareUtil = class BfFareUtil {
                     Currency: currency,
                     SeatsRemaining: seatsRemaining,
                     PriceBreakDown: mergedData,
+                    SSR: SearchResponse.availableSSR,
                     AllLegsInfo: AllLegsInfo,
                 });
             }

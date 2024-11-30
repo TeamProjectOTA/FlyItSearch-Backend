@@ -138,23 +138,23 @@ export class BfFareUtil {
 
           const firstSegment = groupSegments[0];
           const lastSegment = groupSegments[groupSegments.length - 1];
-          const departureLocations = await Promise.all(
-            groupSegments.map(async (segment) => {
-              const airportName = await this.airportService.airportName(
-                segment?.departure?.iatA_LocationCode,
-              );
-              return airportName || 'Unknown Airport'; 
-            }),
-          );
+          // const departureLocations = await Promise.all(
+          //   groupSegments.map(async (segment) => {
+          //     const airportName = await this.airportService.airportName(
+          //       segment?.departure?.iatA_LocationCode,
+          //     );
+          //     return airportName || 'Unknown Airport'; 
+          //   }),
+          // );
 
-          const arivalLocations = await Promise.all(
-            groupSegments.map(async (segment) => {
-              const airportName = await this.airportService.airportName(
-                segment?.arrival?.iatA_LocationCode,
-              );
-              return airportName || 'Unknown Airport'; 
-            }),
-          );
+          // const arivalLocations = await Promise.all(
+          //   groupSegments.map(async (segment) => {
+          //     const airportName = await this.airportService.airportName(
+          //       segment?.arrival?.iatA_LocationCode,
+          //     );
+          //     return airportName || 'Unknown Airport'; 
+          //   }),
+          // ); 
           const legInfo = {
             DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
               'Z',
@@ -181,15 +181,15 @@ export class BfFareUtil {
                 '',
               ),
               
-              DepAirPort:departureLocations[index].name,
-              DepLocation: `${departureLocations[index].cityName},${departureLocations[index].countryName}`,
+              // DepAirPort://departureLocations[index].name,
+              // DepLocation://`${departureLocations[index].cityName},${departureLocations[index].countryName}`,
               ArrTo: segment?.arrival?.iatA_LocationCode,
               ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
                 'Z',
                 '',
               ),
-              ArrAirPort: arivalLocations[index].name,
-              ArrLocation:  `${arivalLocations[index].cityName},${arivalLocations[index].countryName}`,
+              // ArrAirPort: //arivalLocations[index].name,
+              // ArrLocation://`${arivalLocations[index].cityName},${arivalLocations[index].countryName}`,
               CabinClass: segment?.cabinType,
               Duration: segment?.duration,
               AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
@@ -197,7 +197,7 @@ export class BfFareUtil {
               DepartureGate: segment?.departure?.terminalName,
               ArrivalGate: segment?.arrival?.terminalName,
               OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
-              HiddenStops:segment?.technicalStopOver,
+              HiddenStops:segment?.technicalStopOver || [],
               SegmentCode: {
                 bookingCode: segment?.rbd,
                 cabinCode: segment?.cabinType,
@@ -210,8 +210,10 @@ export class BfFareUtil {
 
         FlightItenary.push({
           System: 'BDF',
-          SearchId: SearchResponse.traceId, //traceId
+          SearchId: SearchResponse.traceId,
+           //traceId
           ResultId: offerID, //offerId
+          PassportMadatory:SearchResponse.passportRequired,
           FareType: fareType,
           Refundable: isRefundable,
           TripType: tripType,
@@ -230,12 +232,15 @@ export class BfFareUtil {
           //BaggageDetails: baggageDetails,
           SeatsRemaining: seatsRemaining,
           PriceBreakDown: mergedData,
+          SSR:SearchResponse.availableSSR,
           AllLegsInfo: AllLegsInfo,
         });
       }
     }
+return FlightItenary;
 
-    return FlightItenary;
+
   }
-  
+
+
 }

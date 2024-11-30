@@ -13,5 +13,5 @@ export declare class AirportsService {
     getAirportName(code: string): Promise<string>;
     getAirportLocation(code: string): Promise<string>;
     getCountry(code: string): Promise<string>;
-    airportName(code: string): Promise<"Not Found" | Airport>;
+    airportName(code: string): Promise<string>;
 }

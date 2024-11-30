@@ -30,3 +30,7 @@ export declare class RequestDto {
     pointOfSale: string;
     request: RequestInnerDto;
 }
+export declare class searchResultDtobdf {
+    SearchId: string;
+    ResultId: string[];
+}

@@ -11,10 +11,12 @@ import {
   PaxDto,
   RequestDto,
   RequestInnerDto,
+  searchResultDtobdf,
   ShoppingCriteriaDto,
   TravelPreferencesDto,
 } from './Dto/bdfare.model';
 import { BfFareUtil } from './bdfare.util';
+import { searchResultDto } from './Dto/flyhub.model';
 
 @Injectable()
 export class BDFareService {
@@ -137,107 +139,77 @@ export class BDFareService {
     }
   }
 
-  async fareRules() {}
-  async offerPrice() {}
+  async fareRules(data:searchResultDtobdf) {
+    const transformedData = {
+      traceId: data.SearchId,
+      offerId: data.ResultId[0], // Assuming you only need the first item from ResultId array
+    };
+    try {
+      const response: AxiosResponse = await axios.post(
+        `${this.apiUrl}/FareRules`,
+        transformedData,
+        {
+          headers: {
+            'X-API-KEY': this.apiKey,
+          },
+        },
+      );
+
+      if (response.data.response != null) {
+        return response.data.response
+        // return await this.bdfareUtil.afterSerarchDataModifierBdFare(
+        //   response.data.response,
+          
+        // );
+      }
+
+      return response.data.error;
+    } catch (error) {
+      console.error('Error calling external API', error);
+      throw new HttpException(
+        'Error calling external API',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async offerPrice(data:searchResultDtobdf): Promise<any> {
+    const transformedData = {
+      traceId: data.SearchId,
+      offerId: data.ResultId, 
+    };
+    try {
+      const response: AxiosResponse = await axios.post(
+        `${this.apiUrl}/OfferPrice`,
+        transformedData,
+        {
+          headers: {
+            'X-API-KEY': this.apiKey,
+          },
+        },
+      );
+
+      if (response.data.response != null) {
+        //return response.data.response
+        return await this.bdfareUtil.afterSerarchDataModifierBdFare(
+          response.data.response,
+          
+        );
+      }
+
+      return response.data.error;
+    } catch (error) {
+      console.error('Error calling external API', error);
+      throw new HttpException(
+        'Error calling external API',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
   async miniRule() {}
   async flightBooking() {}
   async flightRetrieve() {}
   async flightBookingChange() {}
   async flightBookingCancel() {}
-  // async processApi(bdfaredto: RequestDto): Promise<any> {
-  //   try {
-  //     const response: AxiosResponse = await firstValueFrom(
-  //       this.httpService.post(`${this.apiUrl}/AirShopping`, bdfaredto, {
-  //         headers: {
-  //           'X-API-KEY': this.apiKey,
-  //         },
-  //       }),
-  //     );
-
-  //     return response.data;
-  //   } catch (error) {
-  //     console.error('Error calling external API', error);
-  //     throw new HttpException(
-  //       'Error calling external API',
-  //       HttpStatus.INTERNAL_SERVER_ERROR,
-  //     );
-  //   }
-  // }
-
-  // async airShopping1(flightDto: FlightSearchModel) {
-  //   let adultCount = flightDto?.adultcount || 1;
-  //   let childCount = flightDto?.childcount || 0;
-  //   let infantcount = flightDto?.infantcount || 0;
-  //   let cabinclass = flightDto.cabinclass;
-  //   let segments = flightDto.segments;
-  //   const BDFareRequestPax = [];
-  //   if (adultCount > 0) {
-  //     const PaxQuantity = {
-  //       Code: 'ADT',
-  //       Quantity: adultCount,
-  //     };
-  //     BDFareRequestPax.push(PaxQuantity);
-  //   }
-  //   if (childCount > 0) {
-  //     const PaxQuantity = {
-  //       Code: 'CNN',
-  //       Quantity: childCount,
-  //     };
-  //     BDFareRequestPax.push(PaxQuantity);
-  //   }
-  //   if (infantcount > 0) {
-  //     const PaxQuantity = {
-  //       Code: 'INF',
-  //       Quantity: infantcount,
-  //     };
-  //     BDFareRequestPax.push(PaxQuantity);
-  //   }
-  //   const IncludeVendorPref: any[] = [
-  //     { Code: 'BG' },
-  //     { Code: 'EK' },
-  //     { Code: 'SQ' },
-  //     { Code: 'BS' },
-  //     { Code: 'TK' },
-  //     { Code: 'QR' },
-  //     { Code: 'GF' },
-  //     { Code: 'SV' },
-  //     { Code: 'KU' },
-  //     { Code: 'CX' },
-  //     { Code: 'UL' },
-  //     { Code: 'AI' },
-  //     { Code: 'TG' },
-  //     { Code: 'UK' },
-  //     { Code: 'MH' },
-  //     { Code: 'WY' },
-  //     { Code: 'FZ' },
-  //   ];
-  //   const SegmentList = [];
-  //   for (let i = 0; i < segments.length; i++) {
-  //     const segment = segments[i];
-  //     const DepFrom = segment.depfrom;
-  //     const ArrTo = segment.arrto;
-  //     const DepDate = segment.depdate + 'T00:00:00';
-
-  //     const SingleSegment = {
-  //       RPH: i.toString(),
-  //       DepartureDateTime: DepDate,
-  //       OriginLocation: {
-  //         LocationCode: DepFrom,
-  //       },
-  //       DestinationLocation: {
-  //         LocationCode: ArrTo,
-  //         LocationType: 'C',
-  //         AllAirports: true,
-  //       },
-  //       TPA_Extensions: {
-  //         IncludeVendorPref: IncludeVendorPref,
-  //       },
-  //     };
-
-  //     SegmentList.push(SingleSegment);
-  //   }
-  // }
-
   private determineJourneyType(segments: any[]): string {
     if (segments.length === 1) {
       return '1';
@@ -253,4 +225,5 @@ export class BDFareService {
     }
     return '3';
   }
+
 }

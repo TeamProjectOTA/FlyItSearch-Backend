@@ -58,3 +58,10 @@ export class RequestDto {
   @ApiProperty({ type: RequestInnerDto })
   request: RequestInnerDto;
 }
+
+export class searchResultDtobdf{
+  @ApiProperty()
+  SearchId:string
+  @ApiProperty()
+  ResultId:string[];
+}

@@ -101,8 +101,48 @@ let BDFareService = class BDFareService {
             throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async fareRules() { }
-    async offerPrice() { }
+    async fareRules(data) {
+        const transformedData = {
+            traceId: data.SearchId,
+            offerId: data.ResultId[0],
+        };
+        try {
+            const response = await axios_1.default.post(`${this.apiUrl}/FareRules`, transformedData, {
+                headers: {
+                    'X-API-KEY': this.apiKey,
+                },
+            });
+            if (response.data.response != null) {
+                return response.data.response;
+            }
+            return response.data.error;
+        }
+        catch (error) {
+            console.error('Error calling external API', error);
+            throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async offerPrice(data) {
+        const transformedData = {
+            traceId: data.SearchId,
+            offerId: data.ResultId,
+        };
+        try {
+            const response = await axios_1.default.post(`${this.apiUrl}/OfferPrice`, transformedData, {
+                headers: {
+                    'X-API-KEY': this.apiKey,
+                },
+            });
+            if (response.data.response != null) {
+                return await this.bdfareUtil.afterSerarchDataModifierBdFare(response.data.response);
+            }
+            return response.data.error;
+        }
+        catch (error) {
+            console.error('Error calling external API', error);
+            throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     async miniRule() { }
     async flightBooking() { }
     async flightRetrieve() { }

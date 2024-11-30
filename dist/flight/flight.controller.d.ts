@@ -3,6 +3,7 @@ import { Request } from 'express';
 import { FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
+import { searchResultDtobdf } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 import { FlyHubUtil } from './API Utils/flyhub.util';
@@ -13,6 +14,8 @@ export declare class FlightController {
     private readonly testservice;
     constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: FlyHubUtil);
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
+    BfFareRules(data: searchResultDtobdf): Promise<any>;
+    BdfarePriceCheck(data: searchResultDtobdf): Promise<any>;
     search(flightdto: FlightSearchModel): Promise<any>;
     getpnr(pnr: string): Promise<any>;
     airvoid(pnr: string): Promise<any>;

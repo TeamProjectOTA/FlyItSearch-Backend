@@ -125,6 +125,6 @@ export class AirportsService {
     if (!airportsData) {
       return 'Not Found';
     }
-    return airportsData;
+    return airportsData.name;
   }
 }

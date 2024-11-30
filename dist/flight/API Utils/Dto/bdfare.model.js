@@ -9,7 +9,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RequestDto = exports.RequestInnerDto = exports.ShoppingCriteriaDto = exports.TravelPreferencesDto = exports.PaxDto = exports.OriginDestDto = exports.DestArrivalRequestDto = exports.OriginDepRequestDto = void 0;
+exports.searchResultDtobdf = exports.RequestDto = exports.RequestInnerDto = exports.ShoppingCriteriaDto = exports.TravelPreferencesDto = exports.PaxDto = exports.OriginDestDto = exports.DestArrivalRequestDto = exports.OriginDepRequestDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 class OriginDepRequestDto {
 }
@@ -99,4 +99,15 @@ __decorate([
     (0, swagger_1.ApiProperty)({ type: RequestInnerDto }),
     __metadata("design:type", RequestInnerDto)
 ], RequestDto.prototype, "request", void 0);
+class searchResultDtobdf {
+}
+exports.searchResultDtobdf = searchResultDtobdf;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], searchResultDtobdf.prototype, "SearchId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", Array)
+], searchResultDtobdf.prototype, "ResultId", void 0);
 //# sourceMappingURL=bdfare.model.js.map
