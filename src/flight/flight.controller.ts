@@ -17,11 +17,12 @@ import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto, searchResultDtobdf } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
-import { Test } from './API Utils/test.service';
+
 
 import { FlyHubUtil } from './API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
+import { BfFareUtil } from './API Utils/bdfare.util';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -30,7 +31,7 @@ export class FlightController {
     private readonly sabreService: SabreService,
     private readonly bdFareService: BDFareService,
     private readonly flyHubService: FlyHubService,
-    private readonly testservice: FlyHubUtil,
+    private readonly testservice: BfFareUtil,
   ) {}
 
   // @Post('/flyhub')
@@ -64,7 +65,11 @@ async BdfarePriceCheck(  @Body()data:searchResultDtobdf,
 ): Promise<any>{
   return this.bdFareService.offerPrice(data)
 }
-
+ @Post('/bdFareMiniRule')
+ async BdfareMiniRules( @Body()data:searchResultDtobdf,
+): Promise<any>{
+  return this.bdFareService.miniRule(data)
+}
 
   @Post('/sabre')
   search(@Body() flightdto: FlightSearchModel) {
@@ -136,4 +141,8 @@ async BdfarePriceCheck(  @Body()data:searchResultDtobdf,
   //     fisId
   //   );
   // }
+  @Post('/test')
+  async apiCheck(@Body() data:any){
+    return await this.testservice.bookingDataTransformer(data)
+  }
 }

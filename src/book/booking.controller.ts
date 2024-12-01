@@ -20,6 +20,7 @@ import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { BDFareService } from 'src/flight/API Utils/bdfare.flights.service';
 
 @ApiTags('Booking-Details')
 @Controller('booking')
@@ -27,6 +28,7 @@ export class BookingController {
   constructor(
     private readonly bookingService: BookingService,
     private readonly flyHubService: FlyHubService,
+    private readonly bdfareService:BDFareService,
   ) {}
 
   @ApiBearerAuth('access_token')
@@ -86,6 +88,12 @@ export class BookingController {
     return await this.flyHubService.airRetrive(bookingIdDto, header);
   }
 
+
+  @Post('bdfare/airRetrive')
+  async airRetriveBDF(@Body() bookingIdDto: BookingID): Promise<any>{
+    return this.bdfareService.flightRetrieve(bookingIdDto)
+
+  }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
   @Post('admin/flh/airRetrive')

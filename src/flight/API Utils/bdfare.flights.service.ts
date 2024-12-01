@@ -16,7 +16,7 @@ import {
   TravelPreferencesDto,
 } from './Dto/bdfare.model';
 import { BfFareUtil } from './bdfare.util';
-import { searchResultDto } from './Dto/flyhub.model';
+import { BookingID, BookingSave } from 'src/book/booking.model';
 
 @Injectable()
 export class BDFareService {
@@ -110,7 +110,7 @@ export class BDFareService {
     const requestDto = this.transformToRequestDto(flightSearchModel);
     const tripType = requestDto.request.shoppingCriteria.tripType;
 
-    try {
+  
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/AirShopping`,
         requestDto,
@@ -121,24 +121,15 @@ export class BDFareService {
         },
       );
 
-      if (response.data.response != null) {
-        //return response.data.response
+      if(response.data.response!=null){
+        //return response.data 
         return await this.bdfareUtil.afterSerarchDataModifierBdFare(
           response.data.response,
           tripType,
         );
       }
-
-      return response.data.error;
-    } catch (error) {
-      console.error('Error calling external API', error);
-      throw new HttpException(
-        'Error calling external API',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
-
+      return [] 
+  }  
   async fareRules(data:searchResultDtobdf) {
     const transformedData = {
       traceId: data.SearchId,
@@ -155,15 +146,12 @@ export class BDFareService {
         },
       );
 
-      if (response.data.response != null) {
+     
         return response.data.response
-        // return await this.bdfareUtil.afterSerarchDataModifierBdFare(
-        //   response.data.response,
-          
-        // );
-      }
+        
+    
 
-      return response.data.error;
+      
     } catch (error) {
       console.error('Error calling external API', error);
       throw new HttpException(
@@ -187,16 +175,14 @@ export class BDFareService {
           },
         },
       );
-
-      if (response.data.response != null) {
+      //console.log(response)
         //return response.data.response
         return await this.bdfareUtil.afterSerarchDataModifierBdFare(
           response.data.response,
-          
         );
-      }
+      
 
-      return response.data.error;
+      
     } catch (error) {
       console.error('Error calling external API', error);
       throw new HttpException(
@@ -205,11 +191,61 @@ export class BDFareService {
       );
     }
   }
-  async miniRule() {}
+  async miniRule(data:searchResultDtobdf): Promise<any> {
+    const transformedData = {
+      traceId: data.SearchId,
+      offerId: data.ResultId[0], 
+    }; 
+    try {
+      const response: AxiosResponse = await axios.post(
+        `${this.apiUrl}/MiniRule`,
+        transformedData,
+        {
+          headers: {
+            'X-API-KEY': this.apiKey,
+          },
+        },
+      );
+        return response.data.response      
+    } catch (error) {
+      console.error('Error calling external API', error);
+      throw new HttpException(
+        'Error calling external API',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }}
+
+  
   async flightBooking() {}
-  async flightRetrieve() {}
+
+
+
+  async flightRetrieve(BookingID: BookingID): Promise<any>  {
+    const orderReference={orderReference:BookingID.BookingID}
+    try{
+      const response: AxiosResponse = await axios.post(
+        `${this.apiUrl}/OrderRetrieve`,
+        orderReference,
+        {
+          headers: {
+            'X-API-KEY': this.apiKey,
+            'Content-Type': 'application/json', 
+          },
+        },
+      );
+        return response.data 
+    }catch(error){
+      if (axios.isAxiosError(error)) {
+     return(error.response?.data || error.message);}
+    }     
+  }
+
+
+
   async flightBookingChange() {}
   async flightBookingCancel() {}
+
+
   private determineJourneyType(segments: any[]): string {
     if (segments.length === 1) {
       return '1';
