@@ -6,16 +6,17 @@ import { BDFareService } from './API Utils/bdfare.flights.service';
 import { searchResultDtobdf } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
-import { FlyHubUtil } from './API Utils/flyhub.util';
+import { BfFareUtil } from './API Utils/bdfare.util';
 export declare class FlightController {
     private readonly sabreService;
     private readonly bdFareService;
     private readonly flyHubService;
     private readonly testservice;
-    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: FlyHubUtil);
+    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: BfFareUtil);
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
     BfFareRules(data: searchResultDtobdf): Promise<any>;
     BdfarePriceCheck(data: searchResultDtobdf): Promise<any>;
+    BdfareMiniRules(data: searchResultDtobdf): Promise<any>;
     search(flightdto: FlightSearchModel): Promise<any>;
     getpnr(pnr: string): Promise<any>;
     airvoid(pnr: string): Promise<any>;
@@ -26,4 +27,5 @@ export declare class FlightController {
     airPrice(data: searchResultDto): Promise<any[]>;
     miniRules(data: searchResultDto): Promise<any>;
     airRules(data: searchResultDto): Promise<any>;
+    apiCheck(data: any): Promise<any[]>;
 }

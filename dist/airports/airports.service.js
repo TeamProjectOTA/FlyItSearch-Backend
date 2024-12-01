@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const airports_model_1 = require("./airports.model");
+const airportData_1 = require("./data/airportData");
 let AirportsService = class AirportsService {
     constructor(airportsRepository, airportRepository) {
         this.airportsRepository = airportsRepository;
@@ -103,13 +104,13 @@ let AirportsService = class AirportsService {
         return airportsData.country_code;
     }
     async airportName(code) {
-        const airportsData = await this.airportRepository.findOne({
-            where: { code: code },
-        });
-        if (!airportsData) {
-            return 'Not Found';
+        const foundItem = airportData_1.airportsData.find(item => item.code === code);
+        if (foundItem) {
+            return foundItem;
         }
-        return airportsData.name;
+        else {
+            return { code: '', name: '', location };
+        }
     }
 };
 exports.AirportsService = AirportsService;

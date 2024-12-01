@@ -21,10 +21,12 @@ const flyhub_flight_service_1 = require("../flight/API Utils/flyhub.flight.servi
 const flyhub_model_1 = require("../flight/API Utils/Dto/flyhub.model");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
+const bdfare_flights_service_1 = require("../flight/API Utils/bdfare.flights.service");
 let BookingController = class BookingController {
-    constructor(bookingService, flyHubService) {
+    constructor(bookingService, flyHubService, bdfareService) {
         this.bookingService = bookingService;
         this.flyHubService = flyHubService;
+        this.bdfareService = bdfareService;
     }
     async airbook(data, header) {
         const nowdate = new Date(Date.now());
@@ -54,6 +56,9 @@ let BookingController = class BookingController {
     }
     async airRetrive(bookingIdDto, header) {
         return await this.flyHubService.airRetrive(bookingIdDto, header);
+    }
+    async airRetriveBDF(bookingIdDto) {
+        return this.bdfareService.flightRetrieve(bookingIdDto);
     }
     async airRetriveAdmin(bookingIdDto) {
         return await this.flyHubService.airRetriveAdmin(bookingIdDto);
@@ -99,6 +104,13 @@ __decorate([
     __metadata("design:paramtypes", [booking_model_1.BookingID, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetrive", null);
+__decorate([
+    (0, common_1.Post)('bdfare/airRetrive'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [booking_model_1.BookingID]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "airRetriveBDF", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
@@ -154,6 +166,7 @@ exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('booking'),
     __metadata("design:paramtypes", [booking_service_1.BookingService,
-        flyhub_flight_service_1.FlyHubService])
+        flyhub_flight_service_1.FlyHubService,
+        bdfare_flights_service_1.BDFareService])
 ], BookingController);
 //# sourceMappingURL=booking.controller.js.map

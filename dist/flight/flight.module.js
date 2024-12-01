@@ -70,7 +70,7 @@ exports.FlightModule = FlightModule = __decorate([
             booking_service_1.BookingService,
             bdfare_util_1.BfFareUtil,
         ],
-        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, bdfare_util_1.BfFareUtil],
+        exports: [flyhub_flight_service_1.FlyHubService, flyhub_util_1.FlyHubUtil, bdfare_util_1.BfFareUtil, bdfare_flights_service_1.BDFareService],
     })
 ], FlightModule);
 //# sourceMappingURL=flight.module.js.map

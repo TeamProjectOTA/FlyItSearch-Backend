@@ -22,8 +22,8 @@ const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
 const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
-const flyhub_util_1 = require("./API Utils/flyhub.util");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
+const bdfare_util_1 = require("./API Utils/bdfare.util");
 let FlightController = class FlightController {
     constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
@@ -39,6 +39,9 @@ let FlightController = class FlightController {
     }
     async BdfarePriceCheck(data) {
         return this.bdFareService.offerPrice(data);
+    }
+    async BdfareMiniRules(data) {
+        return this.bdFareService.miniRule(data);
     }
     search(flightdto) {
         const sabre = this.sabreService.shoppingBranded(flightdto);
@@ -75,6 +78,9 @@ let FlightController = class FlightController {
     async airRules(data) {
         return await this.flyHubService.airRules(data);
     }
+    async apiCheck(data) {
+        return await this.testservice.bookingDataTransformer(data);
+    }
 };
 exports.FlightController = FlightController;
 __decorate([
@@ -98,6 +104,13 @@ __decorate([
     __metadata("design:paramtypes", [bdfare_model_1.searchResultDtobdf]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "BdfarePriceCheck", null);
+__decorate([
+    (0, common_1.Post)('/bdFareMiniRule'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [bdfare_model_1.searchResultDtobdf]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "BdfareMiniRules", null);
 __decorate([
     (0, common_1.Post)('/sabre'),
     __param(0, (0, common_1.Body)()),
@@ -172,12 +185,19 @@ __decorate([
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airRules", null);
+__decorate([
+    (0, common_1.Post)('/test'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], FlightController.prototype, "apiCheck", null);
 exports.FlightController = FlightController = __decorate([
     (0, swagger_1.ApiTags)('Flight-filters'),
     (0, common_1.Controller)('flights'),
     __metadata("design:paramtypes", [sabre_flights_service_1.SabreService,
         bdfare_flights_service_1.BDFareService,
         flyhub_flight_service_1.FlyHubService,
-        flyhub_util_1.FlyHubUtil])
+        bdfare_util_1.BfFareUtil])
 ], FlightController);
 //# sourceMappingURL=flight.controller.js.map
