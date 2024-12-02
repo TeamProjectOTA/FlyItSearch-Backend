@@ -45,7 +45,7 @@ export class Shedule {
         await this.bookingRepository.save(userBooking);
       }
     }
-    this.logger.log('Running the scheduling function every 5 minutes');
+   
   }
   async getToken(): Promise<string> {
     try {

@@ -28,13 +28,7 @@ export declare class UserService {
     findAllUserWithBookings(page: number, limit: number): Promise<any>;
     findOneUser(header: any): Promise<any>;
     findUserTravelBuddy(header: any, page?: number, limit?: number): Promise<any>;
-    findUserTransection(header: any, page?: number, limit?: number): Promise<{
-        transection: Transection[];
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
-    }>;
+    findUserTransactions(header: any, page?: number, limit?: number): Promise<any>;
     allTransection(page?: number, limit?: number): Promise<{
         transection: Transection[];
         total: number;

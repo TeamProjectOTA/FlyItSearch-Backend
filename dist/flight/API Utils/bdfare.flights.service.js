@@ -159,7 +159,7 @@ let BDFareService = class BDFareService {
                     'Content-Type': 'application/json',
                 },
             });
-            return response.data;
+            return await this.bdfareUtil.airRetrive(response.data.response);
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {

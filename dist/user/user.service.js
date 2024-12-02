@@ -286,35 +286,43 @@ let UserService = class UserService {
             totalPages: Math.ceil(total / limitNumber),
         };
     }
-    async findUserTransection(header, page = 1, limit = 10) {
+    async findUserTransactions(header, page = 1, limit = 10) {
         const email = await this.authservice.decodeToken(header);
         const pageNumber = Math.max(1, page);
         const limitNumber = Math.max(1, limit);
         const offset = (pageNumber - 1) * limitNumber;
-        const user = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.transection', 'transection')
+        const [transactions, total] = await this.transectionRepository
+            .createQueryBuilder('transection')
+            .innerJoin('transection.user', 'user')
             .where('user.email = :email', { email })
             .orderBy('transection.id', 'DESC')
             .skip(offset)
             .take(limitNumber)
-            .getOne();
-        if (!user || !user.transection) {
-            return {
-                transection: [],
-                total: 0,
-                page: pageNumber,
-                limit: limitNumber,
-                totalPages: 0,
-            };
-        }
-        const total = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoin('user.transection', 'transection')
-            .where('user.email = :email', { email })
-            .getCount();
+            .select([
+            'transection.id',
+            'transection.tranId',
+            'transection.tranDate',
+            'transection.bookingId',
+            'transection.paidAmount',
+            'transection.offerAmmount',
+            'transection.bankTranId',
+            'transection.riskTitle',
+            'transection.cardType',
+            'transection.cardIssuer',
+            'transection.cardBrand',
+            'transection.cardIssuerCountry',
+            'transection.validationDate',
+            'transection.status',
+            'transection.currierName',
+            'transection.requestType',
+            'transection.walletBalance',
+            'transection.paymentType',
+            'transection.paymentId',
+            'transection.refundAmount',
+        ])
+            .getManyAndCount();
         return {
-            transection: user.transection,
+            transactions,
             total,
             page: pageNumber,
             limit: limitNumber,

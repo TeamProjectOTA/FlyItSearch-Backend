@@ -343,42 +343,57 @@ export class UserService {
     };
   }
 
-  async findUserTransection(header: any, page: number = 1, limit: number = 10) {
+  async findUserTransactions(
+    header: any,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<any> {
     const email = await this.authservice.decodeToken(header);
     const pageNumber = Math.max(1, page);
     const limitNumber = Math.max(1, limit);
     const offset = (pageNumber - 1) * limitNumber;
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.transection', 'transection')
+    const [transactions, total] = await this.transectionRepository
+      .createQueryBuilder('transection')
+      .innerJoin('transection.user', 'user') 
       .where('user.email = :email', { email })
-      .orderBy('transection.id', 'DESC')
-      .skip(offset)
-      .take(limitNumber)
-      .getOne();
-    if (!user || !user.transection) {
-      return {
-        transection: [],
-        total: 0,
-        page: pageNumber,
-        limit: limitNumber,
-        totalPages: 0,
-      };
-    }
-    const total = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoin('user.transection', 'transection')
-      .where('user.email = :email', { email })
-      .getCount();
-
+      .orderBy('transection.id', 'DESC') 
+      .skip(offset) 
+      .take(limitNumber) 
+      .select([
+        'transection.id',
+        'transection.tranId',
+        'transection.tranDate',
+        'transection.bookingId',
+        'transection.paidAmount',
+        'transection.offerAmmount',
+        'transection.bankTranId',
+        'transection.riskTitle',
+        'transection.cardType',
+        'transection.cardIssuer',
+        'transection.cardBrand',
+        'transection.cardIssuerCountry',
+        'transection.validationDate',
+        'transection.status',
+        'transection.currierName',
+        'transection.requestType',
+        'transection.walletBalance',
+        'transection.paymentType',
+        'transection.paymentId',
+        'transection.refundAmount',
+      ])
+      .getManyAndCount();
+  
     return {
-      transection: user.transection,
-      total,
+      transactions, 
+      total, 
       page: pageNumber,
       limit: limitNumber,
       totalPages: Math.ceil(total / limitNumber),
     };
   }
+  
+  
+  
 
   async allTransection(page: number = 1, limit: number = 10) {
     const pageNumber = Math.max(1, page);

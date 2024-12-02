@@ -55,7 +55,7 @@ let UserController = class UserController {
     async findOneUserTransection(header, page, limit) {
         const pageNumber = parseInt(page) || 1;
         const limitNumber = parseInt(limit) || 10;
-        return await this.userService.findUserTransection(header, pageNumber, limitNumber);
+        return await this.userService.findUserTransactions(header, pageNumber, limitNumber);
     }
     async findAllUserTransection(page, limit) {
         const pageNumber = parseInt(page) || 1;

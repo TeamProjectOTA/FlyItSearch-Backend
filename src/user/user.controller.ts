@@ -115,7 +115,7 @@ export class UserController {
   ) {
     const pageNumber = parseInt(page) || 1;
     const limitNumber = parseInt(limit) || 10;
-    return await this.userService.findUserTransection(
+    return await this.userService.findUserTransactions(
       header,
       pageNumber,
       limitNumber,

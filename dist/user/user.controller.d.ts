@@ -22,13 +22,7 @@ export declare class UserController {
     findAllUserWithBookings(page?: number, limit?: number): Promise<any>;
     findOneUser(header: Headers): Promise<any>;
     getUserTravelBuddies(header: Headers, page: string, limit: string): Promise<any>;
-    findOneUserTransection(header: Headers, page: string, limit: string): Promise<{
-        transection: import("../transection/transection.model").Transection[];
-        total: number;
-        page: number;
-        limit: number;
-        totalPages: number;
-    }>;
+    findOneUserTransection(header: Headers, page: string, limit: string): Promise<any>;
     findAllUserTransection(page: string, limit: string): Promise<{
         transection: import("../transection/transection.model").Transection[];
         total: number;

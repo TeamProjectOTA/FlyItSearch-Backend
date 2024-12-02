@@ -5,4 +5,5 @@ export declare class BfFareUtil {
     afterSerarchDataModifierBdFare(SearchResponse: any, journeyType?: string): Promise<any[]>;
     priceCheckWithAlldata(SearchResponse: any, journeyType?: string): Promise<any[]>;
     bookingDataTransformer(SearchResponse: any, journeyType?: string): Promise<any[]>;
+    airRetrive(SearchResponse: any, journeyType?: string): Promise<any>;
 }

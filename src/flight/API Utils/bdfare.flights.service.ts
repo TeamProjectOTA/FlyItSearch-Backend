@@ -110,7 +110,7 @@ export class BDFareService {
     const requestDto = this.transformToRequestDto(flightSearchModel);
     const tripType = requestDto.request.shoppingCriteria.tripType;
 
-  
+  //return requestDto
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/AirShopping`,
         requestDto,
@@ -214,11 +214,8 @@ export class BDFareService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }}
-
   
   async flightBooking() {}
-
-
 
   async flightRetrieve(BookingID: BookingID): Promise<any>  {
     const orderReference={orderReference:BookingID.BookingID}
@@ -233,14 +230,13 @@ export class BDFareService {
           },
         },
       );
-        return response.data 
+      //return response.data.response
+         return await this.bdfareUtil.airRetrive(response.data.response)
     }catch(error){
       if (axios.isAxiosError(error)) {
      return(error.response?.data || error.message);}
     }     
   }
-
-
 
   async flightBookingChange() {}
   async flightBookingCancel() {}
