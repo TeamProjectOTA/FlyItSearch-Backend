@@ -16,7 +16,6 @@ import * as bcrypt from 'bcryptjs';
 import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
-import { BookingSave } from 'src/book/booking.model';
 
 @Injectable()
 export class UserService {
@@ -392,9 +391,6 @@ export class UserService {
     };
   }
   
-  
-  
-
   async allTransection(page: number = 1, limit: number = 10) {
     const pageNumber = Math.max(1, page);
     const limitNumber = Math.max(1, limit);

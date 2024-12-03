@@ -14,9 +14,11 @@ const common_1 = require("@nestjs/common");
 const axios_1 = require("axios");
 const bdfare_model_1 = require("./Dto/bdfare.model");
 const bdfare_util_1 = require("./bdfare.util");
+const mail_service_1 = require("../../mail/mail.service");
 let BDFareService = class BDFareService {
-    constructor(bdfareUtil) {
+    constructor(bdfareUtil, mailService) {
         this.bdfareUtil = bdfareUtil;
+        this.mailService = mailService;
         this.apiUrl = process.env.BDFareAPI_URL;
         this.apiKey = process.env.BDFareAPI_KEY;
     }
@@ -167,8 +169,29 @@ let BDFareService = class BDFareService {
             }
         }
     }
+    async flightBookingCancel(BookingID) {
+        const orderReference = { orderReference: BookingID.BookingID };
+        try {
+            const response = await axios_1.default.post(`${this.apiUrl}/OrderCancel`, orderReference, {
+                headers: {
+                    'X-API-KEY': this.apiKey,
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.data.response.orderStatus == 'Cancelled') {
+                const airRetrive = await this.flightRetrieve(BookingID);
+                const status = response.data.response.orderStatus;
+                const bookingId = response.data.response.orderReference;
+                const email = airRetrive[0]?.PassengerList[0]?.Email;
+                await this.mailService.cancelMail(bookingId, status, email);
+                return airRetrive;
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
     async flightBookingChange() { }
-    async flightBookingCancel() { }
     determineJourneyType(segments) {
         if (segments.length === 1) {
             return '1';
@@ -186,6 +209,6 @@ let BDFareService = class BDFareService {
 exports.BDFareService = BDFareService;
 exports.BDFareService = BDFareService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [bdfare_util_1.BfFareUtil])
+    __metadata("design:paramtypes", [bdfare_util_1.BfFareUtil, mail_service_1.MailService])
 ], BDFareService);
 //# sourceMappingURL=bdfare.flights.service.js.map

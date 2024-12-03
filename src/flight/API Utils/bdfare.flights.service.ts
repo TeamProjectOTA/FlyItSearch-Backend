@@ -17,13 +17,14 @@ import {
 } from './Dto/bdfare.model';
 import { BfFareUtil } from './bdfare.util';
 import { BookingID, BookingSave } from 'src/book/booking.model';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class BDFareService {
   private readonly apiUrl: string = process.env.BDFareAPI_URL;
   private readonly apiKey: string = process.env.BDFareAPI_KEY;
 
-  constructor(private readonly bdfareUtil: BfFareUtil) {}
+  constructor(private readonly bdfareUtil: BfFareUtil,private readonly mailService:MailService) {}
 
   private transformToRequestDto(
     flightSearchModel: FlightSearchModel,
@@ -238,8 +239,36 @@ export class BDFareService {
     }     
   }
 
+  async flightBookingCancel(BookingID: BookingID):Promise<any> {
+    const orderReference={orderReference:BookingID.BookingID}
+    try{
+      const response: AxiosResponse = await axios.post(
+        `${this.apiUrl}/OrderCancel`,
+        orderReference,
+        {
+          headers: {
+            'X-API-KEY': this.apiKey,
+            'Content-Type': 'application/json', 
+          },
+        },
+        
+      );
+      if(response.data.response.orderStatus=='Cancelled'){
+        const airRetrive=await this.flightRetrieve(BookingID)
+        const status=response.data.response.orderStatus
+        const bookingId=response.data.response.orderReference
+        const email=airRetrive[0]?.PassengerList[0]?.Email
+        //console.log(status,bookingId,email)
+        await this.mailService.cancelMail(bookingId,status,email)
+        return airRetrive
+      }
+    }
+      catch(error){
+        console.log(error)
+      }
+
+  }
   async flightBookingChange() {}
-  async flightBookingCancel() {}
 
 
   private determineJourneyType(segments: any[]): string {

@@ -11,6 +11,7 @@ export declare class BookingController {
     airbook(data: FlbFlightSearchDto, header: Headers): Promise<any>;
     aircanel(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetrive(bookingIdDto: BookingID, header: Headers): Promise<any>;
+    bdfCancel(bookingIdDto: BookingID): Promise<any>;
     airRetriveBDF(bookingIdDto: BookingID): Promise<any>;
     airRetriveAdmin(bookingIdDto: BookingID): Promise<any>;
     findAll(bookingStatus?: string, page?: number, limit?: number): Promise<{

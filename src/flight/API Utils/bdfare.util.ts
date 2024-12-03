@@ -909,12 +909,41 @@ return FlightItenary;
           };
           AllLegsInfo.push(legInfo);
         }
-
+       // console.log(SearchResponse.contactDetail.emailAddress)
+        const passengerList=
+         SearchResponse.paxList.map((pax, index) => ({
+              Title: pax.individual.title.toUpperCase(),
+              FirstName: pax.individual.givenName,
+              LastName: pax.individual.surname,
+              PaxType: pax.ptc,
+              DateOfBirth: pax.individual.birthdate,
+              Gender: pax.individual.gender,
+              PassportNumber: pax.individual.identityDoc.identityDocID || "",
+              PassportExpiryDate: pax.individual.identityDoc.expiryDate || null,
+              PassportNationality: pax.individual.identityDoc.issuingCountryCode || "",
+              Address1: "",
+              Address2: "",
+              CountryCode: "BD",
+              Nationality: pax.individual.nationality,
+              ContactNumber: SearchResponse.contactDetail.phoneNumber,
+              Email: SearchResponse.contactDetail.emailAddress,
+              FFAirline: null,
+              FFNumber: "",
+              Ticket: pax.ticketDocument?.ticketDocNbr 
+              ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }] 
+              : null,
+          }));
+          let status:string
+      if(SearchResponse.orderStatus=='OnHold'){
+        status='Booked'
+      }else{
+        status=SearchResponse.orderStatus
+      }
         FlightItenary.push({
           System: 'BDF',
           SearchId: SearchResponse.traceId,//traceId
           BookingId:bookingId,
-          BookingStatus:SearchResponse.orderStatus,
+          BookingStatus:status,
           PassportMadatory:SearchResponse.passportRequired,
           FareType: fareType,
           Refundable: isRefundable,
@@ -936,6 +965,7 @@ return FlightItenary;
           RePriceStatus:SearchResponse?.offerChangeInfo?.typeOfChange,
           SSR:SearchResponse.availableSSR,
           AllLegsInfo: AllLegsInfo,
+          PassengerList:passengerList
         });
       
       return FlightItenary;

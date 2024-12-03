@@ -6,4 +6,8 @@ export declare class MailController {
         message: string;
         info: any;
     }>;
+    sendCancellationEmail(bookingId: string, status: string, email: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
 }

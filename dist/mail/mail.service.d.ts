@@ -8,4 +8,5 @@ export declare class MailService {
         message: string;
         info: any;
     }>;
+    cancelMail(bookingId: string, status: string, email: string): Promise<void>;
 }

@@ -52,13 +52,16 @@ let BookingController = class BookingController {
         return await this.flyHubService.airbook(data, header, dhakaTimeFormatted, personIds);
     }
     async aircanel(bookingIdDto, header) {
-        return this.flyHubService.aircancel(bookingIdDto, header);
+        return await this.flyHubService.aircancel(bookingIdDto, header);
     }
     async airRetrive(bookingIdDto, header) {
         return await this.flyHubService.airRetrive(bookingIdDto, header);
     }
+    async bdfCancel(bookingIdDto) {
+        return await this.bdfareService.flightBookingCancel(bookingIdDto);
+    }
     async airRetriveBDF(bookingIdDto) {
-        return this.bdfareService.flightRetrieve(bookingIdDto);
+        return await this.bdfareService.flightRetrieve(bookingIdDto);
     }
     async airRetriveAdmin(bookingIdDto) {
         return await this.flyHubService.airRetriveAdmin(bookingIdDto);
@@ -104,6 +107,13 @@ __decorate([
     __metadata("design:paramtypes", [booking_model_1.BookingID, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetrive", null);
+__decorate([
+    (0, common_1.Post)('bdfare/cancelBooking'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [booking_model_1.BookingID]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "bdfCancel", null);
 __decorate([
     (0, common_1.Post)('bdfare/airRetrive'),
     __param(0, (0, common_1.Body)()),

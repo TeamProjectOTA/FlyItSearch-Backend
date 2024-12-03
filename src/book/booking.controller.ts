@@ -75,7 +75,7 @@ export class BookingController {
     @Body() bookingIdDto: BookingID,
     @Headers() header: Headers,
   ): Promise<any> {
-    return this.flyHubService.aircancel(bookingIdDto, header);
+    return await this.flyHubService.aircancel(bookingIdDto, header);
   }
 
   @ApiBearerAuth('access_token')
@@ -87,11 +87,14 @@ export class BookingController {
   ): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto, header);
   }
-
+@Post('bdfare/cancelBooking')
+async bdfCancel(@Body() bookingIdDto: BookingID){
+  return await this.bdfareService.flightBookingCancel(bookingIdDto)
+}
 
   @Post('bdfare/airRetrive')
   async airRetriveBDF(@Body() bookingIdDto: BookingID): Promise<any>{
-    return this.bdfareService.flightRetrieve(bookingIdDto)
+    return await this.bdfareService.flightRetrieve(bookingIdDto)
 
   }
   @ApiBearerAuth('access_token')

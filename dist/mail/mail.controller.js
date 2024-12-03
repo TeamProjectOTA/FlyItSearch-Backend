@@ -23,6 +23,13 @@ let MailController = class MailController {
     async sendMail(mailData) {
         return this.mailerService.sendMail(mailData);
     }
+    async sendCancellationEmail(bookingId, status, email) {
+        await this.mailerService.cancelMail(bookingId, status, email);
+        return {
+            success: true,
+            message: `Cancellation email sent successfully to ${email}.`,
+        };
+    }
 };
 exports.MailController = MailController;
 __decorate([
@@ -32,6 +39,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], MailController.prototype, "sendMail", null);
+__decorate([
+    (0, common_1.Get)('cancel'),
+    __param(0, (0, common_1.Query)('bookingId')),
+    __param(1, (0, common_1.Query)('status')),
+    __param(2, (0, common_1.Query)('email')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, String]),
+    __metadata("design:returntype", Promise)
+], MailController.prototype, "sendCancellationEmail", null);
 exports.MailController = MailController = __decorate([
     (0, swagger_1.ApiTags)('Mail'),
     (0, common_1.Controller)('mail'),
