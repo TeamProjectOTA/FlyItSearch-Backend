@@ -17,13 +17,11 @@ export class MailController {
     @Query('bookingId') bookingId: string,
     @Query('status') status: string,
     @Query('email') email: string,
-  ) 
-  {
-      await this.mailerService.cancelMail(bookingId, status, email);
-      return {
-        success: true,
-        message: `Cancellation email sent successfully to ${email}.`,
-      };
-    
+  ) {
+    await this.mailerService.cancelMail(bookingId, status, email);
+    return {
+      success: true,
+      message: `Cancellation email sent successfully to ${email}.`,
+    };
   }
 }

@@ -13,7 +13,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
-import { BookingID, CreateSaveBookingDto, data } from './booking.model';
+import { BookingID, CreateSaveBookingDto } from './booking.model';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
@@ -28,7 +28,7 @@ export class BookingController {
   constructor(
     private readonly bookingService: BookingService,
     private readonly flyHubService: FlyHubService,
-    private readonly bdfareService:BDFareService,
+    private readonly bdfareService: BDFareService,
   ) {}
 
   @ApiBearerAuth('access_token')
@@ -87,15 +87,14 @@ export class BookingController {
   ): Promise<any> {
     return await this.flyHubService.airRetrive(bookingIdDto, header);
   }
-@Post('bdfare/cancelBooking')
-async bdfCancel(@Body() bookingIdDto: BookingID){
-  return await this.bdfareService.flightBookingCancel(bookingIdDto)
-}
+  @Post('bdfare/cancelBooking')
+  async bdfCancel(@Body() bookingIdDto: BookingID) {
+    return await this.bdfareService.flightBookingCancel(bookingIdDto);
+  }
 
   @Post('bdfare/airRetrive')
-  async airRetriveBDF(@Body() bookingIdDto: BookingID): Promise<any>{
-    return await this.bdfareService.flightRetrieve(bookingIdDto)
-
+  async airRetriveBDF(@Body() bookingIdDto: BookingID): Promise<any> {
+    return await this.bdfareService.flightRetrieve(bookingIdDto);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)

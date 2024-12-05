@@ -45,7 +45,6 @@ export class Shedule {
         await this.bookingRepository.save(userBooking);
       }
     }
-   
   }
   async getToken(): Promise<string> {
     try {

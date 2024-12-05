@@ -99,7 +99,7 @@ export class Airport {
 
 export class CreateAirportDto {
   code: string | null;
-  name: string | null
+  name: string | null;
   cityCode: string | null;
   cityName: string | null;
   countryName: string | null;

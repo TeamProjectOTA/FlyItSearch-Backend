@@ -345,7 +345,7 @@ export class UserService {
   async findUserTransactions(
     header: any,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<any> {
     const email = await this.authservice.decodeToken(header);
     const pageNumber = Math.max(1, page);
@@ -353,11 +353,11 @@ export class UserService {
     const offset = (pageNumber - 1) * limitNumber;
     const [transactions, total] = await this.transectionRepository
       .createQueryBuilder('transection')
-      .innerJoin('transection.user', 'user') 
+      .innerJoin('transection.user', 'user')
       .where('user.email = :email', { email })
-      .orderBy('transection.id', 'DESC') 
-      .skip(offset) 
-      .take(limitNumber) 
+      .orderBy('transection.id', 'DESC')
+      .skip(offset)
+      .take(limitNumber)
       .select([
         'transection.id',
         'transection.tranId',
@@ -381,16 +381,16 @@ export class UserService {
         'transection.refundAmount',
       ])
       .getManyAndCount();
-  
+
     return {
-      transactions, 
-      total, 
+      transactions,
+      total,
       page: pageNumber,
       limit: limitNumber,
       totalPages: Math.ceil(total / limitNumber),
     };
   }
-  
+
   async allTransection(page: number = 1, limit: number = 10) {
     const pageNumber = Math.max(1, page);
     const limitNumber = Math.max(1, limit);

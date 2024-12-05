@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -114,6 +115,98 @@ export class BookingID {
   @IsString()
   BookingID: string;
 }
-export class data {
-  data: any;
+
+export class PassengerDto {
+  @ApiProperty()
+  @IsString()
+  Title: string;
+
+  @ApiProperty()
+  @IsString()
+  FirstName: string;
+
+  @ApiProperty()
+  @IsString()
+  LastName: string;
+
+  @ApiProperty()
+  @IsString()
+  PaxType: string;
+  @ApiProperty()
+  @IsString()
+  DateOfBirth: string;
+  @ApiProperty()
+  @IsString()
+  Gender: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  PassportNumber?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  PassportExpiryDate?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  PassportNationality?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  passport?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  visa?: string;
+  @ApiProperty()
+  @IsString()
+  CountryCode: string;
+  @ApiProperty()
+  @IsString()
+  Nationality: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  FFAirline?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  FFNumber?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  SSRType?: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  SSRRemarks?: string;
+  @ApiProperty()
+  @IsString()
+  ContactNumber: string;
+  @ApiProperty()
+  @IsString()
+  Email: string;
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  Address1?: string;
+  @ApiProperty()
+  @IsBoolean()
+  IsLeadPassenger: boolean;
+}
+
+export class  BookingDataDto {
+  @ApiProperty()
+  @IsString()
+  SearchId: string;
+  @ApiProperty()
+  @IsArray()
+  @IsString({ each: true })
+  ResultId: string[];
+
+  @IsArray()
+  @ApiProperty({ type: [PassengerDto] })
+  @ValidateNested({ each: true })
+  @Type(() => PassengerDto)
+  Passengers: PassengerDto[];
 }

@@ -704,17 +704,17 @@ let BfFareUtil = class BfFareUtil {
                 PaxType: pax.ptc,
                 DateOfBirth: pax.individual.birthdate,
                 Gender: pax.individual.gender,
-                PassportNumber: pax.individual.identityDoc.identityDocID || "",
+                PassportNumber: pax.individual.identityDoc.identityDocID || '',
                 PassportExpiryDate: pax.individual.identityDoc.expiryDate || null,
-                PassportNationality: pax.individual.identityDoc.issuingCountryCode || "",
-                Address1: "",
-                Address2: "",
-                CountryCode: "BD",
+                PassportNationality: pax.individual.identityDoc.issuingCountryCode || '',
+                Address1: '',
+                Address2: '',
+                CountryCode: 'BD',
                 Nationality: pax.individual.nationality,
-                ContactNumber: SearchResponse.contactDetail.phoneNumber,
+                ContactNumber: '+' + SearchResponse.contactDetail.phoneNumber.replace('-', ''),
                 Email: SearchResponse.contactDetail.emailAddress,
                 FFAirline: null,
-                FFNumber: "",
+                FFNumber: '',
                 Ticket: pax.ticketDocument?.ticketDocNbr
                     ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }]
                     : null,
@@ -752,7 +752,7 @@ let BfFareUtil = class BfFareUtil {
                 RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
                 SSR: SearchResponse.availableSSR,
                 AllLegsInfo: AllLegsInfo,
-                PassengerList: passengerList
+                PassengerList: passengerList,
             });
             return FlightItenary;
         }

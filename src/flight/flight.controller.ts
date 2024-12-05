@@ -18,11 +18,11 @@ import { RequestDto, searchResultDtobdf } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
 
-
 import { FlyHubUtil } from './API Utils/flyhub.util';
 import { AuthService } from 'src/auth/auth.service';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { BfFareUtil } from './API Utils/bdfare.util';
+import { BookingDataDto } from 'src/book/booking.model';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -52,24 +52,19 @@ export class FlightController {
     return this.bdFareService.airShopping(flightSearchModel);
   }
 
+  @Post('/bdFare/fareRules')
+  async BfFareRules(@Body() data: searchResultDtobdf): Promise<any> {
+    return this.bdFareService.fareRules(data);
+  }
 
-@Post('/bdFare/fareRules')
-async BfFareRules(
-  @Body()data:searchResultDtobdf,
-): Promise<any>{
-  return this.bdFareService.fareRules(data)
-}
-
-@Post('/bdFare/priceCheck')
-async BdfarePriceCheck(  @Body()data:searchResultDtobdf,
-): Promise<any>{
-  return this.bdFareService.offerPrice(data)
-}
- @Post('/bdFareMiniRule')
- async BdfareMiniRules( @Body()data:searchResultDtobdf,
-): Promise<any>{
-  return this.bdFareService.miniRule(data)
-}
+  @Post('/bdFare/priceCheck')
+  async BdfarePriceCheck(@Body() data: searchResultDtobdf): Promise<any> {
+    return this.bdFareService.offerPrice(data);
+  }
+  @Post('/bdFareMiniRule')
+  async BdfareMiniRules(@Body() data: searchResultDtobdf): Promise<any> {
+    return this.bdFareService.miniRule(data);
+  }
 
   @Post('/sabre')
   search(@Body() flightdto: FlightSearchModel) {
@@ -141,8 +136,8 @@ async BdfarePriceCheck(  @Body()data:searchResultDtobdf,
   //     fisId
   //   );
   // }
-  @Post('/test')
-  async apiCheck(@Body() data:any){
-    return await this.testservice.bookingDataTransformer(data)
-  }
+  // @Post('/test')
+  // async apiCheck(@Body() data: BookingDataDto) {
+  //   return await this.bdFareService.bookingDataModification(data);
+  // }
 }

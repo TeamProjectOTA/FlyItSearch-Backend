@@ -87,7 +87,7 @@ export class MailService {
       throw error;
     }
   }
-  async cancelMail(bookingId: string, status: string, email: string,) {
+  async cancelMail(bookingId: string, status: string, email: string) {
     const transporter = nodemailer.createTransport({
       host: `${process.env.EMAIL_HOST}`,
       port: 465,
@@ -97,7 +97,7 @@ export class MailService {
         pass: `${process.env.EMAIL_PASSWORD}`,
       },
     });
-  
+
     const mailOptions = {
       from: process.env.EMAIL_OTP,
       to: email,
@@ -134,8 +134,7 @@ export class MailService {
         </div>
       `,
     };
-    
-  
+
     try {
       await transporter.sendMail(mailOptions);
     } catch (error) {
@@ -143,6 +142,4 @@ export class MailService {
       throw new Error('Failed to send cancellation email.');
     }
   }
-  
-  
 }

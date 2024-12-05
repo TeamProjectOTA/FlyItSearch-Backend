@@ -37,7 +37,7 @@ class SegmentDto {
 
   @ApiProperty({ default: '2024-07-01' })
   @IsDate()
-  depdate: Date;
+  depdate: any;
 }
 
 export class FlightSearchModel {

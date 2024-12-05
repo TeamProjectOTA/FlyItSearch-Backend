@@ -16,7 +16,7 @@ import {
   TravelPreferencesDto,
 } from './Dto/bdfare.model';
 import { BfFareUtil } from './bdfare.util';
-import { BookingID, BookingSave } from 'src/book/booking.model';
+import { BookingDataDto, BookingID, BookingSave } from 'src/book/booking.model';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
@@ -24,7 +24,10 @@ export class BDFareService {
   private readonly apiUrl: string = process.env.BDFareAPI_URL;
   private readonly apiKey: string = process.env.BDFareAPI_KEY;
 
-  constructor(private readonly bdfareUtil: BfFareUtil,private readonly mailService:MailService) {}
+  constructor(
+    private readonly bdfareUtil: BfFareUtil,
+    private readonly mailService: MailService,
+  ) {}
 
   private transformToRequestDto(
     flightSearchModel: FlightSearchModel,
@@ -32,22 +35,15 @@ export class BDFareService {
     const originDest = flightSearchModel.segments.map((segment) => {
       const originDepRequest = new OriginDepRequestDto();
       originDepRequest.iatA_LocationCode = segment.depfrom;
-      originDepRequest.date = new Date(segment.depdate)
-        .toISOString()
-        .split('T')[0];
-
+      originDepRequest.date = segment.depdate;
       const destArrivalRequest = new DestArrivalRequestDto();
       destArrivalRequest.iatA_LocationCode = segment.arrto;
-
       const originDestDto = new OriginDestDto();
       originDestDto.originDepRequest = originDepRequest;
       originDestDto.destArrivalRequest = destArrivalRequest;
-
       return originDestDto;
     });
-
     const pax: PaxDto[] = [];
-
     for (let i = 0; i < flightSearchModel.adultcount; i++) {
       const paxDto = new PaxDto();
       paxDto.paxID = `PAX${pax.length + 1}`;
@@ -78,17 +74,14 @@ export class BDFareService {
       flightSearchModel.segments,
     );
     shoppingCriteria.travelPreferences = travelPreferences;
-    shoppingCriteria.returnUPSellInfo = false; // Assuming true for simplicity
-
+    shoppingCriteria.returnUPSellInfo = false;
     const requestInner = new RequestInnerDto();
     requestInner.originDest = originDest;
     requestInner.pax = pax;
     requestInner.shoppingCriteria = shoppingCriteria;
-
     const requestDto = new RequestDto();
     requestDto.pointOfSale = 'BD';
     requestDto.request = requestInner;
-
     return requestDto;
   }
 
@@ -111,27 +104,27 @@ export class BDFareService {
     const requestDto = this.transformToRequestDto(flightSearchModel);
     const tripType = requestDto.request.shoppingCriteria.tripType;
 
-  //return requestDto
-      const response: AxiosResponse = await axios.post(
-        `${this.apiUrl}/AirShopping`,
-        requestDto,
-        {
-          headers: {
-            'X-API-KEY': this.apiKey,
-          },
+    //return requestDto
+    const response: AxiosResponse = await axios.post(
+      `${this.apiUrl}/AirShopping`,
+      requestDto,
+      {
+        headers: {
+          'X-API-KEY': this.apiKey,
         },
-      );
+      },
+    );
 
-      if(response.data.response!=null){
-        //return response.data 
-        return await this.bdfareUtil.afterSerarchDataModifierBdFare(
-          response.data.response,
-          tripType,
-        );
-      }
-      return [] 
-  }  
-  async fareRules(data:searchResultDtobdf) {
+    if (response.data.response != null) {
+      //return response.data
+      return await this.bdfareUtil.afterSerarchDataModifierBdFare(
+        response.data.response,
+        tripType,
+      );
+    }
+    return [];
+  }
+  async fareRules(data: searchResultDtobdf) {
     const transformedData = {
       traceId: data.SearchId,
       offerId: data.ResultId[0], // Assuming you only need the first item from ResultId array
@@ -147,12 +140,7 @@ export class BDFareService {
         },
       );
 
-     
-        return response.data.response
-        
-    
-
-      
+      return response.data.response;
     } catch (error) {
       console.error('Error calling external API', error);
       throw new HttpException(
@@ -161,10 +149,10 @@ export class BDFareService {
       );
     }
   }
-  async offerPrice(data:searchResultDtobdf): Promise<any> {
+  async offerPrice(data: searchResultDtobdf): Promise<any> {
     const transformedData = {
       traceId: data.SearchId,
-      offerId: data.ResultId, 
+      offerId: data.ResultId,
     };
     try {
       const response: AxiosResponse = await axios.post(
@@ -177,13 +165,10 @@ export class BDFareService {
         },
       );
       //console.log(response)
-        //return response.data.response
-        return await this.bdfareUtil.afterSerarchDataModifierBdFare(
-          response.data.response,
-        );
-      
-
-      
+      //return response.data.response
+      return await this.bdfareUtil.afterSerarchDataModifierBdFare(
+        response.data.response,
+      );
     } catch (error) {
       console.error('Error calling external API', error);
       throw new HttpException(
@@ -192,11 +177,11 @@ export class BDFareService {
       );
     }
   }
-  async miniRule(data:searchResultDtobdf): Promise<any> {
+  async miniRule(data: searchResultDtobdf): Promise<any> {
     const transformedData = {
       traceId: data.SearchId,
-      offerId: data.ResultId[0], 
-    }; 
+      offerId: data.ResultId[0],
+    };
     try {
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/MiniRule`,
@@ -207,69 +192,122 @@ export class BDFareService {
           },
         },
       );
-        return response.data.response      
+      return response.data.response;
     } catch (error) {
       console.error('Error calling external API', error);
       throw new HttpException(
         'Error calling external API',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-    }}
-  
+    }
+  }
+
   async flightBooking() {}
 
-  async flightRetrieve(BookingID: BookingID): Promise<any>  {
-    const orderReference={orderReference:BookingID.BookingID}
-    try{
+  async flightRetrieve(BookingID: BookingID): Promise<any> {
+    const orderReference = { orderReference: BookingID.BookingID };
+    try {
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/OrderRetrieve`,
         orderReference,
         {
           headers: {
             'X-API-KEY': this.apiKey,
-            'Content-Type': 'application/json', 
+            'Content-Type': 'application/json',
           },
         },
       );
       //return response.data.response
-         return await this.bdfareUtil.airRetrive(response.data.response)
-    }catch(error){
+      return await this.bdfareUtil.airRetrive(response.data.response);
+    } catch (error) {
       if (axios.isAxiosError(error)) {
-     return(error.response?.data || error.message);}
-    }     
+        return error.response?.data || error.message;
+      }
+    }
   }
 
-  async flightBookingCancel(BookingID: BookingID):Promise<any> {
-    const orderReference={orderReference:BookingID.BookingID}
-    try{
+  async flightBookingCancel(BookingID: BookingID): Promise<any> {
+    const orderReference = { orderReference: BookingID.BookingID };
+    try {
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/OrderCancel`,
         orderReference,
         {
           headers: {
             'X-API-KEY': this.apiKey,
-            'Content-Type': 'application/json', 
+            'Content-Type': 'application/json',
           },
         },
-        
       );
-      if(response.data.response.orderStatus=='Cancelled'){
-        const airRetrive=await this.flightRetrieve(BookingID)
-        const status=response.data.response.orderStatus
-        const bookingId=response.data.response.orderReference
-        const email=airRetrive[0]?.PassengerList[0]?.Email
+      if (response.data.response.orderStatus == 'Cancelled') {
+        const airRetrive = await this.flightRetrieve(BookingID);
+        const status = response.data.response.orderStatus;
+        const bookingId = response.data.response.orderReference;
+        const email = airRetrive[0]?.PassengerList[0]?.Email;
         //console.log(status,bookingId,email)
-        await this.mailService.cancelMail(bookingId,status,email)
-        return airRetrive
+        await this.mailService.cancelMail(bookingId, status, email);
+        return airRetrive;
       }
+    } catch (error) {
+      console.log(error);
     }
-      catch(error){
-        console.log(error)
-      }
-
   }
   async flightBookingChange() {}
 
+  private bookingDataModification(data: BookingDataDto) {
+    const { Passengers } = data;
+    const dataModified = {
+      traceId: data.SearchId,
+      offerId: [data.ResultId[0]],
+      request: {
+        contactInfo: {
+          phone: {
+            phoneNumber: Passengers[0]?.ContactNumber.slice(3), 
+            countryDialingCode: Passengers[0]?.ContactNumber.slice(0, 3), 
+          },
+          emailAddress: Passengers[0]?.Email,
+        },
+        paxList: Passengers.map((passenger) => ({
+          ptc: passenger?.PaxType,
+          individual: {
+            givenName: passenger?.FirstName,
+            surname: passenger?.LastName,
+            gender: passenger?.Gender,
+            birthdate: passenger?.DateOfBirth,
+            nationality: passenger?.PassportNationality,
+            identityDoc: {
+              identityDocType: 'Passport',
+              identityDocID: passenger?.PassportNumber,
+              expiryDate: passenger?.PassportExpiryDate,
+            },
+            ...(passenger.PaxType === 'Infant' && {
+              associatePax: {
+                givenName:
+                  Passengers.find((p) => p.IsLeadPassenger)?.FirstName || '',
+                surname:
+                  Passengers.find((p) => p.IsLeadPassenger)?.LastName || '',
+              },
+            }),
+          },
+          sellSSR:
+            passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
+              ? [
+                  {
+                    ssrRemark: passenger?.SSRRemarks,
+                    ssrCode: passenger?.SSRType,
+                    loyaltyProgramAccount: {
+                      airlineDesigCode: passenger?.FFAirline,
+                      accountNumber: passenger?.FFNumber,
+                    },
+                  },
+                ]
+              : [],
+        })),
+      },
+    };
+
+    return dataModified;
+  }
 
   private determineJourneyType(segments: any[]): string {
     if (segments.length === 1) {
@@ -286,5 +324,4 @@ export class BDFareService {
     }
     return '3';
   }
-
 }

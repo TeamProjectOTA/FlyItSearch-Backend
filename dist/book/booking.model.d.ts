@@ -49,7 +49,32 @@ export declare class CreateSaveBookingDto {
 export declare class BookingID {
     BookingID: string;
 }
-export declare class data {
-    data: any;
+export declare class PassengerDto {
+    Title: string;
+    FirstName: string;
+    LastName: string;
+    PaxType: string;
+    DateOfBirth: string;
+    Gender: string;
+    PassportNumber?: string;
+    PassportExpiryDate?: string;
+    PassportNationality?: string;
+    passport?: string;
+    visa?: string;
+    CountryCode: string;
+    Nationality: string;
+    FFAirline?: string;
+    FFNumber?: string;
+    SSRType?: string;
+    SSRRemarks?: string;
+    ContactNumber: string;
+    Email: string;
+    Address1?: string;
+    IsLeadPassenger: boolean;
+}
+export declare class BookingDataDto {
+    SearchId: string;
+    ResultId: string[];
+    Passengers: PassengerDto[];
 }
 export {};

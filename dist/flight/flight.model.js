@@ -37,7 +37,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiProperty)({ default: '2024-07-01' }),
     (0, class_validator_1.IsDate)(),
-    __metadata("design:type", Date)
+    __metadata("design:type", Object)
 ], SegmentDto.prototype, "depdate", void 0);
 class FlightSearchModel {
 }

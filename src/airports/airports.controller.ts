@@ -48,7 +48,7 @@ export class AirportsController {
   remove(@Param('id') id: string) {
     return this.airportsService.remove(+id);
   }
-  @Get("/airpor/:id")
+  @Get('/airpor/:id')
   airport(@Param('id') id: string) {
     return this.airportsService.airportName(id);
   }

@@ -26,9 +26,7 @@ let BDFareService = class BDFareService {
         const originDest = flightSearchModel.segments.map((segment) => {
             const originDepRequest = new bdfare_model_1.OriginDepRequestDto();
             originDepRequest.iatA_LocationCode = segment.depfrom;
-            originDepRequest.date = new Date(segment.depdate)
-                .toISOString()
-                .split('T')[0];
+            originDepRequest.date = segment.depdate;
             const destArrivalRequest = new bdfare_model_1.DestArrivalRequestDto();
             destArrivalRequest.iatA_LocationCode = segment.arrto;
             const originDestDto = new bdfare_model_1.OriginDestDto();
@@ -165,7 +163,7 @@ let BDFareService = class BDFareService {
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {
-                return (error.response?.data || error.message);
+                return error.response?.data || error.message;
             }
         }
     }
@@ -192,6 +190,56 @@ let BDFareService = class BDFareService {
         }
     }
     async flightBookingChange() { }
+    bookingDataModification(data) {
+        const { Passengers } = data;
+        const dataModified = {
+            traceId: data.SearchId,
+            offerId: [data.ResultId[0]],
+            request: {
+                contactInfo: {
+                    phone: {
+                        phoneNumber: Passengers[0]?.ContactNumber.slice(3),
+                        countryDialingCode: Passengers[0]?.ContactNumber.slice(0, 3),
+                    },
+                    emailAddress: Passengers[0]?.Email,
+                },
+                paxList: Passengers.map((passenger) => ({
+                    ptc: passenger?.PaxType,
+                    individual: {
+                        givenName: passenger?.FirstName,
+                        surname: passenger?.LastName,
+                        gender: passenger?.Gender,
+                        birthdate: passenger?.DateOfBirth,
+                        nationality: passenger?.PassportNationality,
+                        identityDoc: {
+                            identityDocType: 'Passport',
+                            identityDocID: passenger?.PassportNumber,
+                            expiryDate: passenger?.PassportExpiryDate,
+                        },
+                        ...(passenger.PaxType === 'Infant' && {
+                            associatePax: {
+                                givenName: Passengers.find((p) => p.IsLeadPassenger)?.FirstName || '',
+                                surname: Passengers.find((p) => p.IsLeadPassenger)?.LastName || '',
+                            },
+                        }),
+                    },
+                    sellSSR: passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
+                        ? [
+                            {
+                                ssrRemark: passenger?.SSRRemarks,
+                                ssrCode: passenger?.SSRType,
+                                loyaltyProgramAccount: {
+                                    airlineDesigCode: passenger?.FFAirline,
+                                    accountNumber: passenger?.FFNumber,
+                                },
+                            },
+                        ]
+                        : [],
+                })),
+            },
+        };
+        return dataModified;
+    }
     determineJourneyType(segments) {
         if (segments.length === 1) {
             return '1';
@@ -209,6 +257,7 @@ let BDFareService = class BDFareService {
 exports.BDFareService = BDFareService;
 exports.BDFareService = BDFareService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [bdfare_util_1.BfFareUtil, mail_service_1.MailService])
+    __metadata("design:paramtypes", [bdfare_util_1.BfFareUtil,
+        mail_service_1.MailService])
 ], BDFareService);
 //# sourceMappingURL=bdfare.flights.service.js.map

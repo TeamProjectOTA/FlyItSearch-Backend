@@ -19,5 +19,6 @@ export declare class BDFareService {
     flightRetrieve(BookingID: BookingID): Promise<any>;
     flightBookingCancel(BookingID: BookingID): Promise<any>;
     flightBookingChange(): Promise<void>;
+    private bookingDataModification;
     private determineJourneyType;
 }

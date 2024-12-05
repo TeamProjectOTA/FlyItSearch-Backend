@@ -16,7 +16,7 @@ export class AirportsService {
     @InjectRepository(AirportsModel)
     private readonly airportsRepository: Repository<AirportsModel>,
     @InjectRepository(Airport)
-    private readonly airportRepository:Repository<Airport>
+    private readonly airportRepository: Repository<Airport>,
   ) {}
 
   async create(createAirportDto: AirportsModel) {
@@ -119,11 +119,11 @@ export class AirportsService {
   }
 
   async airportName(code: string) {
-    const foundItem = airportsData.find(item => item.code === code);
+    const foundItem = airportsData.find((item) => item.code === code);
     if (foundItem) {
       return foundItem;
     } else {
-      return {code: '', name : '', location};
+      return { code: '', name: '', location };
     }
-}
+  }
 }

@@ -58,6 +58,6 @@ import { BfFareUtil } from './API Utils/bdfare.util';
     BfFareUtil,
   ],
 
-  exports: [FlyHubService, FlyHubUtil, BfFareUtil,BDFareService],
+  exports: [FlyHubService, FlyHubUtil, BfFareUtil, BDFareService],
 })
 export class FlightModule {}

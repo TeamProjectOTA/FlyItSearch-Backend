@@ -7,7 +7,7 @@ export declare enum JourneyType {
 declare class SegmentDto {
     depfrom: string;
     arrto: string;
-    depdate: Date;
+    depdate: any;
 }
 export declare class FlightSearchModel {
     adultcount: number;

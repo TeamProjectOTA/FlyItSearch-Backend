@@ -6,7 +6,7 @@ import { Airport, AirportsModel } from './airports.model';
 import { AirlinesService } from 'src/airlines/airlines.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AirportsModel,Airport])],
+  imports: [TypeOrmModule.forFeature([AirportsModel, Airport])],
   controllers: [AirportsController],
   providers: [AirportsService],
   exports: [AirportsService],

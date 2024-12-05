@@ -104,7 +104,7 @@ let AirportsService = class AirportsService {
         return airportsData.country_code;
     }
     async airportName(code) {
-        const foundItem = airportData_1.airportsData.find(item => item.code === code);
+        const foundItem = airportData_1.airportsData.find((item) => item.code === code);
         if (foundItem) {
             return foundItem;
         }

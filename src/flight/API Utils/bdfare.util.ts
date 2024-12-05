@@ -3,14 +3,14 @@ import { AirportsService } from 'src/airports/airports.service';
 
 @Injectable()
 export class BfFareUtil {
-  constructor(private readonly airportService:AirportsService){}
+  constructor(private readonly airportService: AirportsService) {}
   async afterSerarchDataModifierBdFare(
     SearchResponse: any,
     journeyType?: string,
   ): Promise<any[]> {
     const FlightItenary = [];
     const { offersGroup } = SearchResponse;
-    if (offersGroup!=null) {
+    if (offersGroup != null) {
       for (const offerData of offersGroup) {
         const offer = offerData?.offer;
         const offerID = [];
@@ -21,7 +21,7 @@ export class BfFareUtil {
         } else {
           offerID.push(offer.offerId);
         }
-       
+
         const validatingCarrier = offer?.validatingCarrier || 'N/A';
         const fareType = offer?.fareType || 'Regular';
         const IsBookable = offer?.fareType === 'OnHold';
@@ -33,7 +33,8 @@ export class BfFareUtil {
         const currency = offer?.price?.totalPayable?.curreny || 'BDT';
         const baggageAllowances = offer?.baggageAllowanceList || [];
         const seatsRemaining = offer?.seatsRemaining || 'N/A';
-        const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName
+        const carrierName =
+          offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
         const netFare = offer?.price?.gross?.total || 0;
         let tripType = 'Unknown';
         if (journeyType === '1') {
@@ -142,7 +143,7 @@ export class BfFareUtil {
               const airportName = await this.airportService.airportName(
                 segment?.departure?.iatA_LocationCode,
               );
-              return airportName || 'Unknown Airport'; 
+              return airportName || 'Unknown Airport';
             }),
           );
 
@@ -151,9 +152,9 @@ export class BfFareUtil {
               const airportName = await this.airportService.airportName(
                 segment?.arrival?.iatA_LocationCode,
               );
-              return airportName || 'Unknown Airport'; 
+              return airportName || 'Unknown Airport';
             }),
-          ); 
+          );
           const legInfo = {
             DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
               'Z',
@@ -165,13 +166,12 @@ export class BfFareUtil {
               (acc, segment) => acc + parseInt(segment?.duration || '0', 10),
               0,
             ),
-            Segments: groupSegments.map((segment,index) => (
-              
-              {
+            Segments: groupSegments.map((segment, index) => ({
               MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
               MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
-              MarketingFlightNumber:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
-              OperatingCarrierName:segment?.operatingCarrierInfo?.carrierName,
+              MarketingFlightNumber:
+                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              OperatingCarrierName: segment?.operatingCarrierInfo?.carrierName,
               OperatingCarrier: segment?.operatingCarrierInfo?.carrierDesigCode,
               OperatingFlightNumber: segment?.flightNumber,
               DepFrom: segment?.departure?.iatA_LocationCode,
@@ -179,24 +179,26 @@ export class BfFareUtil {
                 'Z',
                 '',
               ),
-              
-               DepAirPort:departureLocations[index].name,
-               DepLocation:`${departureLocations[index].location}`,
+
+              DepAirPort: departureLocations[index].name,
+              DepLocation: `${departureLocations[index].location}`,
               ArrTo: segment?.arrival?.iatA_LocationCode,
               ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
                 'Z',
                 '',
               ),
-               ArrAirPort: arivalLocations[index].name,
-              ArrLocation:`${arivalLocations[index].location}`,
+              ArrAirPort: arivalLocations[index].name,
+              ArrLocation: `${arivalLocations[index].location}`,
               CabinClass: segment?.cabinType,
               Duration: segment?.duration,
-              AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
-              AircraftType:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              AircraftTypeNameIatA:
+                segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
+              AircraftType:
+                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
               DepartureGate: segment?.departure?.terminalName,
               ArrivalGate: segment?.arrival?.terminalName,
               OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
-              HiddenStops:segment?.technicalStopOver || [],
+              HiddenStops: segment?.technicalStopOver || [],
               SegmentCode: {
                 bookingCode: segment?.rbd,
                 cabinCode: segment?.cabinType,
@@ -209,9 +211,9 @@ export class BfFareUtil {
 
         FlightItenary.push({
           System: 'BDF',
-          SearchId: SearchResponse.traceId,//traceId
+          SearchId: SearchResponse.traceId, //traceId
           ResultId: offerID, //offerId
-          PassportMadatory:SearchResponse.passportRequired,
+          PassportMadatory: SearchResponse.passportRequired,
           FareType: fareType,
           Refundable: isRefundable,
           TripType: tripType,
@@ -227,17 +229,15 @@ export class BfFareUtil {
           Currency: currency,
           SeatsRemaining: seatsRemaining,
           PriceBreakDown: mergedData,
-          RePriceStatus:SearchResponse?.offerChangeInfo?.typeOfChange,
-          SSR:SearchResponse.availableSSR,
+          RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
+          SSR: SearchResponse.availableSSR,
           AllLegsInfo: AllLegsInfo,
         });
       }
       return FlightItenary;
-    }else{
-
-   return []
+    } else {
+      return [];
     }
-
   }
 
   async priceCheckWithAlldata(
@@ -258,7 +258,7 @@ export class BfFareUtil {
         } else {
           offerID.push(offer.offerId);
         }
-       
+
         const validatingCarrier = offer?.validatingCarrier || 'N/A';
         const fareType = offer?.fareType || 'Regular';
         const IsBookable = offer?.fareType === 'OnHold';
@@ -270,7 +270,8 @@ export class BfFareUtil {
         const currency = offer?.price?.totalPayable?.curreny || 'BDT';
         const baggageAllowances = offer?.baggageAllowanceList || [];
         const seatsRemaining = offer?.seatsRemaining || 'N/A';
-        const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName
+        const carrierName =
+          offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
         const netFare = offer?.price?.gross?.total || 0;
         let tripType = 'Unknown';
         if (journeyType === '1') {
@@ -379,7 +380,7 @@ export class BfFareUtil {
               const airportName = await this.airportService.airportName(
                 segment?.departure?.iatA_LocationCode,
               );
-              return airportName || 'Unknown Airport'; 
+              return airportName || 'Unknown Airport';
             }),
           );
 
@@ -388,9 +389,9 @@ export class BfFareUtil {
               const airportName = await this.airportService.airportName(
                 segment?.arrival?.iatA_LocationCode,
               );
-              return airportName || 'Unknown Airport'; 
+              return airportName || 'Unknown Airport';
             }),
-          ); 
+          );
           const legInfo = {
             DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
               'Z',
@@ -402,13 +403,12 @@ export class BfFareUtil {
               (acc, segment) => acc + parseInt(segment?.duration || '0', 10),
               0,
             ),
-            Segments: groupSegments.map((segment,index) => (
-              
-              {
+            Segments: groupSegments.map((segment, index) => ({
               MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
               MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
-              MarketingFlightNumber:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
-              OperatingCarrierName:segment?.operatingCarrierInfo?.carrierName,
+              MarketingFlightNumber:
+                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              OperatingCarrierName: segment?.operatingCarrierInfo?.carrierName,
               OperatingCarrier: segment?.operatingCarrierInfo?.carrierDesigCode,
               OperatingFlightNumber: segment?.flightNumber,
               DepFrom: segment?.departure?.iatA_LocationCode,
@@ -416,24 +416,26 @@ export class BfFareUtil {
                 'Z',
                 '',
               ),
-              
-              DepAirPort:departureLocations[index].name,
-              DepLocation:`${departureLocations[index].cityName},${departureLocations[index].countryName}`,
+
+              DepAirPort: departureLocations[index].name,
+              DepLocation: `${departureLocations[index].cityName},${departureLocations[index].countryName}`,
               ArrTo: segment?.arrival?.iatA_LocationCode,
               ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
                 'Z',
                 '',
               ),
               ArrAirPort: arivalLocations[index].name,
-              ArrLocation:`${arivalLocations[index].cityName},${arivalLocations[index].countryName}`,
+              ArrLocation: `${arivalLocations[index].cityName},${arivalLocations[index].countryName}`,
               CabinClass: segment?.cabinType,
               Duration: segment?.duration,
-              AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
-              AircraftType:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              AircraftTypeNameIatA:
+                segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
+              AircraftType:
+                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
               DepartureGate: segment?.departure?.terminalName,
               ArrivalGate: segment?.arrival?.terminalName,
               OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
-              HiddenStops:segment?.technicalStopOver || [],
+              HiddenStops: segment?.technicalStopOver || [],
               SegmentCode: {
                 bookingCode: segment?.rbd,
                 cabinCode: segment?.cabinType,
@@ -447,8 +449,8 @@ export class BfFareUtil {
         FlightItenary.push({
           System: 'BDF',
           SearchId: SearchResponse?.traceId,
-          ResultId: offerID, 
-          PassportMadatory:SearchResponse?.passportRequired,
+          ResultId: offerID,
+          PassportMadatory: SearchResponse?.passportRequired,
           FareType: fareType,
           Refundable: isRefundable,
           TripType: tripType,
@@ -462,27 +464,24 @@ export class BfFareUtil {
           SerViceFee: service,
           NetFare: netFare,
           Currency: currency,
-          RePriceStatus:SearchResponse?.offerChangeInfo?.typeOfChange,
+          RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
           SeatsRemaining: seatsRemaining,
           PriceBreakDown: mergedData,
-          SSR:SearchResponse.availableSSR,
+          SSR: SearchResponse.availableSSR,
           AllLegsInfo: AllLegsInfo,
         });
       }
     }
-return FlightItenary;
-
-
+    return FlightItenary;
   }
 
   async bookingDataTransformer(
     SearchResponse: any,
     journeyType?: string,
   ): Promise<any[]> {
-   
     const FlightItenary = [];
     const { offersGroup } = SearchResponse;
-    if (offersGroup!=null) {
+    if (offersGroup != null) {
       for (const offerData of offersGroup) {
         const offer = offerData?.offer;
         const offerID = [];
@@ -493,7 +492,7 @@ return FlightItenary;
         } else {
           offerID.push(offer.offerId);
         }
-       
+
         const validatingCarrier = offer?.validatingCarrier || 'N/A';
         const fareType = offer?.fareType || 'Regular';
         const IsBookable = offer?.fareType === 'OnHold';
@@ -505,7 +504,8 @@ return FlightItenary;
         const currency = offer?.price?.totalPayable?.curreny || 'BDT';
         const baggageAllowances = offer?.baggageAllowanceList || [];
         const seatsRemaining = offer?.seatsRemaining || 'N/A';
-        const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName
+        const carrierName =
+          offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
         const netFare = offer?.price?.gross?.total || 0;
         let tripType = 'Unknown';
         if (journeyType === '1') {
@@ -614,7 +614,7 @@ return FlightItenary;
               const airportName = await this.airportService.airportName(
                 segment?.departure?.iatA_LocationCode,
               );
-              return airportName || 'Unknown Airport'; 
+              return airportName || 'Unknown Airport';
             }),
           );
 
@@ -623,9 +623,9 @@ return FlightItenary;
               const airportName = await this.airportService.airportName(
                 segment?.arrival?.iatA_LocationCode,
               );
-              return airportName || 'Unknown Airport'; 
+              return airportName || 'Unknown Airport';
             }),
-          ); 
+          );
           const legInfo = {
             DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
               'Z',
@@ -637,13 +637,12 @@ return FlightItenary;
               (acc, segment) => acc + parseInt(segment?.duration || '0', 10),
               0,
             ),
-            Segments: groupSegments.map((segment,index) => (
-              
-              {
+            Segments: groupSegments.map((segment, index) => ({
               MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
               MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
-              MarketingFlightNumber:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
-              OperatingCarrierName:segment?.operatingCarrierInfo?.carrierName,
+              MarketingFlightNumber:
+                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              OperatingCarrierName: segment?.operatingCarrierInfo?.carrierName,
               OperatingCarrier: segment?.operatingCarrierInfo?.carrierDesigCode,
               OperatingFlightNumber: segment?.flightNumber,
               DepFrom: segment?.departure?.iatA_LocationCode,
@@ -651,24 +650,26 @@ return FlightItenary;
                 'Z',
                 '',
               ),
-              
-               DepAirPort:departureLocations[index].name,
-               DepLocation:`${departureLocations[index].location}`,
+
+              DepAirPort: departureLocations[index].name,
+              DepLocation: `${departureLocations[index].location}`,
               ArrTo: segment?.arrival?.iatA_LocationCode,
               ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
                 'Z',
                 '',
               ),
-               ArrAirPort: arivalLocations[index].name,
-              ArrLocation:`${arivalLocations[index].location}`,
+              ArrAirPort: arivalLocations[index].name,
+              ArrLocation: `${arivalLocations[index].location}`,
               CabinClass: segment?.cabinType,
               Duration: segment?.duration,
-              AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
-              AircraftType:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              AircraftTypeNameIatA:
+                segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
+              AircraftType:
+                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
               DepartureGate: segment?.departure?.terminalName,
               ArrivalGate: segment?.arrival?.terminalName,
               OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
-              HiddenStops:segment?.technicalStopOver || [],
+              HiddenStops: segment?.technicalStopOver || [],
               SegmentCode: {
                 bookingCode: segment?.rbd,
                 cabinCode: segment?.cabinType,
@@ -681,9 +682,9 @@ return FlightItenary;
 
         FlightItenary.push({
           System: 'BDF',
-          SearchId: SearchResponse.traceId,//traceId
+          SearchId: SearchResponse.traceId, //traceId
           ResultId: offerID, //offerId
-          PassportMadatory:SearchResponse.passportRequired,
+          PassportMadatory: SearchResponse.passportRequired,
           FareType: fareType,
           Refundable: isRefundable,
           TripType: tripType,
@@ -699,279 +700,274 @@ return FlightItenary;
           Currency: currency,
           SeatsRemaining: seatsRemaining,
           PriceBreakDown: mergedData,
-          RePriceStatus:SearchResponse?.offerChangeInfo?.typeOfChange,
-          SSR:SearchResponse.availableSSR,
+          RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
+          SSR: SearchResponse.availableSSR,
           AllLegsInfo: AllLegsInfo,
-          
         });
       }
       return FlightItenary;
-    }else{
-
-   return []
+    } else {
+      return [];
     }
-
   }
 
-  async airRetrive( SearchResponse: any,
-    journeyType?: string,
-  ): Promise<any> {
+  async airRetrive(SearchResponse: any, journeyType?: string): Promise<any> {
     const FlightItenary = [];
     const { orderItem } = SearchResponse;
     //return SearchResponse
-      for (const offerData of orderItem) {
-        const bookingId=SearchResponse.orderReference
-        const TimeLimit=SearchResponse.paymentTimeLimit
-        const offer = offerData;
-        const validatingCarrier = offer?.validatingCarrier || 'N/A';
-        const fareType = offer?.fareType || 'Regular';
-        const IsBookable = offer?.fareType === 'OnHold';
-        const instantPayment = offer?.fareType !== 'OnHold';
-        const isRefundable = offer?.refundable || false;
-        const paxSegments = offer?.paxSegmentList || [];
-        const fareDetails = offer?.fareDetailList || [];
-        const  totalFare = offer?.price?.totalPayable?.total || 0;
-        const currency = offer?.price?.totalPayable?.curreny || 'BDT';
-        const baggageAllowances = offer?.baggageAllowanceList || [];
-        const seatsRemaining = offer?.seatsRemaining || 'N/A';
-        const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName
-        const netFare = offer?.price?.gross?.total || 0;
-        const pnr= offer?.paxSegmentList[0]?.paxSegment?.airlinePNR
-     
-        let tripType = 'Unknown';
-        if (journeyType === '1') {
-          tripType = 'Oneway';
-        } else if (journeyType === '2') {
-          tripType = 'Return';
-        } else if (journeyType === '3') {
-          tripType = 'Multicity';
-        }
+    for (const offerData of orderItem) {
+      const bookingId = SearchResponse.orderReference;
+      const TimeLimit = SearchResponse.paymentTimeLimit;
+      const offer = offerData;
+      const validatingCarrier = offer?.validatingCarrier || 'N/A';
+      const fareType = offer?.fareType || 'Regular';
+      const IsBookable = offer?.fareType === 'OnHold';
+      const instantPayment = offer?.fareType !== 'OnHold';
+      const isRefundable = offer?.refundable || false;
+      const paxSegments = offer?.paxSegmentList || [];
+      const fareDetails = offer?.fareDetailList || [];
+      const totalFare = offer?.price?.totalPayable?.total || 0;
+      const currency = offer?.price?.totalPayable?.curreny || 'BDT';
+      const baggageAllowances = offer?.baggageAllowanceList || [];
+      const seatsRemaining = offer?.seatsRemaining || 'N/A';
+      const carrierName =
+        offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
+      const netFare = offer?.price?.gross?.total || 0;
+      const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
 
-        const totalBaseFare = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.baseFare,
-          0,
-        );
-        const tax = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.tax,
-          0,
-        );
-        const vat = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.vat,
-          0,
-        );
-        const others = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.otherFee,
-          0,
-        );
-        const service = vat + others;
-        const PriceBreakDown = fareDetails.map((fareDetailData) => {
-          const fareDetail = fareDetailData.fareDetail;
-          return {
-            PaxType: fareDetail?.paxType || 'Unknown',
-            BaseFare: fareDetail?.baseFare || 0,
-            Taxes: fareDetail?.tax || 0,
-            OtherCharges: fareDetail?.otherFee || 0,
-            Discount: fareDetail?.discount || 0,
-            ServiceFee: fareDetail?.vat || 0,
-            TotalFare: fareDetail?.subTotal || 0,
-            PaxCount: fareDetail?.paxCount || 1,
-          };
-        });
+      let tripType = 'Unknown';
+      if (journeyType === '1') {
+        tripType = 'Oneway';
+      } else if (journeyType === '2') {
+        tripType = 'Return';
+      } else if (journeyType === '3') {
+        tripType = 'Multicity';
+      }
 
-        const groupedSegments = paxSegments.reduce((acc, segmentData) => {
-          const segment = segmentData.paxSegment;
-          (acc[segment?.segmentGroup] = acc[segment?.segmentGroup] || []).push(
-            segment,
+      const totalBaseFare = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.baseFare,
+        0,
+      );
+      const tax = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.tax,
+        0,
+      );
+      const vat = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.vat,
+        0,
+      );
+      const others = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.otherFee,
+        0,
+      );
+      const service = vat + others;
+      const PriceBreakDown = fareDetails.map((fareDetailData) => {
+        const fareDetail = fareDetailData.fareDetail;
+        return {
+          PaxType: fareDetail?.paxType || 'Unknown',
+          BaseFare: fareDetail?.baseFare || 0,
+          Taxes: fareDetail?.tax || 0,
+          OtherCharges: fareDetail?.otherFee || 0,
+          Discount: fareDetail?.discount || 0,
+          ServiceFee: fareDetail?.vat || 0,
+          TotalFare: fareDetail?.subTotal || 0,
+          PaxCount: fareDetail?.paxCount || 1,
+        };
+      });
+
+      const groupedSegments = paxSegments.reduce((acc, segmentData) => {
+        const segment = segmentData.paxSegment;
+        (acc[segment?.segmentGroup] = acc[segment?.segmentGroup] || []).push(
+          segment,
+        );
+        return acc;
+      }, {});
+
+      const baggageDetails = baggageAllowances.map((baggageAllowanceData) => {
+        const allowance = baggageAllowanceData.baggageAllowance;
+        return {
+          Checkin: allowance?.checkIn,
+          Cabin: allowance?.cabin,
+        };
+      });
+
+      const mergedData = PriceBreakDown.map((pax) => {
+        const bags = baggageDetails.flatMap((detail) => {
+          const checkinBag = detail.Checkin.find(
+            (bag) => bag.paxType === pax.PaxType,
           );
-          return acc;
-        }, {});
-
-        const baggageDetails = baggageAllowances.map((baggageAllowanceData) => {
-          const allowance = baggageAllowanceData.baggageAllowance;
-          return {
-            Checkin: allowance?.checkIn,
-            Cabin: allowance?.cabin,
-          };
-        });
-
-        const mergedData = PriceBreakDown.map((pax) => {
-          const bags = baggageDetails.flatMap((detail) => {
-            const checkinBag = detail.Checkin.find(
-              (bag) => bag.paxType === pax.PaxType,
-            );
-            const cabinBag = detail.Cabin.find(
-              (bag) => bag.paxType === pax.PaxType,
-            );
-            return checkinBag && cabinBag
-              ? [
-                  {
-                    Allowance: checkinBag.allowance,
-                    AllowanceCabin: cabinBag.allowance,
-                  },
-                ]
-              : [];
-          });
-
-          const farecomponent = paxSegments.flatMap((segment) => {
-            const origin = segment.paxSegment.departure.iatA_LocationCode;
-            const destination = segment.paxSegment.arrival.iatA_LocationCode;
-            const depdate =
-              segment.paxSegment.departure.aircraftScheduledDateTime;
-            const carrier =
-              segment.paxSegment.marketingCarrierInfo.carrierDesigCode;
-            const rbd = segment.paxSegment.rbd;
-            return [
-              {
-                Origin: origin,
-                Destination: destination,
-                DepDate: depdate.replace('Z', ''),
-                RBD: rbd,
-                Carrier: carrier,
-              },
-            ];
-          });
-          return { ...pax, Bag: bags, FareComponent: farecomponent };
-        });
-
-        const AllLegsInfo = [];
-        for (const key in groupedSegments) {
-          const groupSegments = groupedSegments[key];
-          if (!groupSegments) continue;
-
-          const firstSegment = groupSegments[0];
-          const lastSegment = groupSegments[groupSegments.length - 1];
-          const departureLocations = await Promise.all(
-            groupSegments.map(async (segment) => {
-              const airportName = await this.airportService.airportName(
-                segment?.departure?.iatA_LocationCode,
-              );
-              return airportName || 'Unknown Airport'; 
-            }),
+          const cabinBag = detail.Cabin.find(
+            (bag) => bag.paxType === pax.PaxType,
           );
+          return checkinBag && cabinBag
+            ? [
+                {
+                  Allowance: checkinBag.allowance,
+                  AllowanceCabin: cabinBag.allowance,
+                },
+              ]
+            : [];
+        });
 
-          const arivalLocations = await Promise.all(
-            groupSegments.map(async (segment) => {
-              const airportName = await this.airportService.airportName(
-                segment?.arrival?.iatA_LocationCode,
-              );
-              return airportName || 'Unknown Airport'; 
-            }),
-          ); 
-          const legInfo = {
-            DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
+        const farecomponent = paxSegments.flatMap((segment) => {
+          const origin = segment.paxSegment.departure.iatA_LocationCode;
+          const destination = segment.paxSegment.arrival.iatA_LocationCode;
+          const depdate =
+            segment.paxSegment.departure.aircraftScheduledDateTime;
+          const carrier =
+            segment.paxSegment.marketingCarrierInfo.carrierDesigCode;
+          const rbd = segment.paxSegment.rbd;
+          return [
+            {
+              Origin: origin,
+              Destination: destination,
+              DepDate: depdate.replace('Z', ''),
+              RBD: rbd,
+              Carrier: carrier,
+            },
+          ];
+        });
+        return { ...pax, Bag: bags, FareComponent: farecomponent };
+      });
+
+      const AllLegsInfo = [];
+      for (const key in groupedSegments) {
+        const groupSegments = groupedSegments[key];
+        if (!groupSegments) continue;
+
+        const firstSegment = groupSegments[0];
+        const lastSegment = groupSegments[groupSegments.length - 1];
+        const departureLocations = await Promise.all(
+          groupSegments.map(async (segment) => {
+            const airportName = await this.airportService.airportName(
+              segment?.departure?.iatA_LocationCode,
+            );
+            return airportName || 'Unknown Airport';
+          }),
+        );
+
+        const arivalLocations = await Promise.all(
+          groupSegments.map(async (segment) => {
+            const airportName = await this.airportService.airportName(
+              segment?.arrival?.iatA_LocationCode,
+            );
+            return airportName || 'Unknown Airport';
+          }),
+        );
+        const legInfo = {
+          DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
+            'Z',
+            '',
+          ),
+          DepFrom: firstSegment?.departure?.iatA_LocationCode,
+          ArrTo: lastSegment?.arrival?.iatA_LocationCode,
+          Duration: groupSegments.reduce(
+            (acc, segment) => acc + parseInt(segment?.duration || '0', 10),
+            0,
+          ),
+          Segments: groupSegments.map((segment, index) => ({
+            MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
+            MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
+            MarketingFlightNumber:
+              segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+            OperatingCarrierName: segment?.operatingCarrierInfo?.carrierName,
+            OperatingCarrier: segment?.operatingCarrierInfo?.carrierDesigCode,
+            OperatingFlightNumber: segment?.flightNumber,
+            DepFrom: segment?.departure?.iatA_LocationCode,
+            DepTime: segment?.departure?.aircraftScheduledDateTime.replace(
               'Z',
               '',
             ),
-            DepFrom: firstSegment?.departure?.iatA_LocationCode,
-            ArrTo: lastSegment?.arrival?.iatA_LocationCode,
-            Duration: groupSegments.reduce(
-              (acc, segment) => acc + parseInt(segment?.duration || '0', 10),
-              0,
+
+            DepAirPort: departureLocations[index].name,
+            DepLocation: `${departureLocations[index].location}`,
+            ArrTo: segment?.arrival?.iatA_LocationCode,
+            ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
+              'Z',
+              '',
             ),
-            Segments: groupSegments.map((segment,index) => (
-              
-              {
-              MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
-              MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
-              MarketingFlightNumber:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
-              OperatingCarrierName:segment?.operatingCarrierInfo?.carrierName,
-              OperatingCarrier: segment?.operatingCarrierInfo?.carrierDesigCode,
-              OperatingFlightNumber: segment?.flightNumber,
-              DepFrom: segment?.departure?.iatA_LocationCode,
-              DepTime: segment?.departure?.aircraftScheduledDateTime.replace(
-                'Z',
-                '',
-              ),
-              
-               DepAirPort:departureLocations[index].name,
-               DepLocation:`${departureLocations[index].location}`,
-              ArrTo: segment?.arrival?.iatA_LocationCode,
-              ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
-                'Z',
-                '',
-              ),
-               ArrAirPort: arivalLocations[index].name,
-              ArrLocation:`${arivalLocations[index].location}`,
-              CabinClass: segment?.cabinType,
-              Duration: segment?.duration,
-              AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
-              AircraftType:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
-              DepartureGate: segment?.departure?.terminalName,
-              ArrivalGate: segment?.arrival?.terminalName,
-              OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
-              HiddenStops:segment?.technicalStopOver || [],
-              SegmentCode: {
-                bookingCode: segment?.rbd,
-                cabinCode: segment?.cabinType,
-                seatsAvailable: offer.seatsRemaining,
-              },
-            })),
-          };
-          AllLegsInfo.push(legInfo);
-        }
-       // console.log(SearchResponse.contactDetail.emailAddress)
-        const passengerList=
-         SearchResponse.paxList.map((pax, index) => ({
-              Title: pax.individual.title.toUpperCase(),
-              FirstName: pax.individual.givenName,
-              LastName: pax.individual.surname,
-              PaxType: pax.ptc,
-              DateOfBirth: pax.individual.birthdate,
-              Gender: pax.individual.gender,
-              PassportNumber: pax.individual.identityDoc.identityDocID || "",
-              PassportExpiryDate: pax.individual.identityDoc.expiryDate || null,
-              PassportNationality: pax.individual.identityDoc.issuingCountryCode || "",
-              Address1: "",
-              Address2: "",
-              CountryCode: "BD",
-              Nationality: pax.individual.nationality,
-              ContactNumber: SearchResponse.contactDetail.phoneNumber,
-              Email: SearchResponse.contactDetail.emailAddress,
-              FFAirline: null,
-              FFNumber: "",
-              Ticket: pax.ticketDocument?.ticketDocNbr 
-              ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }] 
-              : null,
-          }));
-          let status:string
-      if(SearchResponse.orderStatus=='OnHold'){
-        status='Booked'
-      }else{
-        status=SearchResponse.orderStatus
+            ArrAirPort: arivalLocations[index].name,
+            ArrLocation: `${arivalLocations[index].location}`,
+            CabinClass: segment?.cabinType,
+            Duration: segment?.duration,
+            AircraftTypeNameIatA:
+              segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
+            AircraftType:
+              segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+            DepartureGate: segment?.departure?.terminalName,
+            ArrivalGate: segment?.arrival?.terminalName,
+            OperatedBy: segment?.operatingCarrierInfo?.carrierDesigCode,
+            HiddenStops: segment?.technicalStopOver || [],
+            SegmentCode: {
+              bookingCode: segment?.rbd,
+              cabinCode: segment?.cabinType,
+              seatsAvailable: offer.seatsRemaining,
+            },
+          })),
+        };
+        AllLegsInfo.push(legInfo);
       }
-        FlightItenary.push({
-          System: 'BDF',
-          SearchId: SearchResponse.traceId,//traceId
-          BookingId:bookingId,
-          BookingStatus:status,
-          PassportMadatory:SearchResponse.passportRequired,
-          FareType: fareType,
-          Refundable: isRefundable,
-          TripType: tripType,
-          InstantPayment: instantPayment,
-          GrossFare: totalFare,
-          TimeLimit: TimeLimit,
-          PNR: pnr,
-          IsBookable: IsBookable,
-          Carrier: validatingCarrier,
-          CarrierName: carrierName,
-          BaseFare: totalBaseFare,
-          Taxes: tax,
-          SerViceFee: service,
-          NetFare: netFare,
-          Currency: currency,
-          SeatsRemaining: seatsRemaining,
-          PriceBreakDown: mergedData,
-          RePriceStatus:SearchResponse?.offerChangeInfo?.typeOfChange,
-          SSR:SearchResponse.availableSSR,
-          AllLegsInfo: AllLegsInfo,
-          PassengerList:passengerList
-        });
-      
+      // console.log(SearchResponse.contactDetail.emailAddress)
+      const passengerList = SearchResponse.paxList.map((pax, index) => ({
+        Title: pax.individual.title.toUpperCase(),
+        FirstName: pax.individual.givenName,
+        LastName: pax.individual.surname,
+        PaxType: pax.ptc,
+        DateOfBirth: pax.individual.birthdate,
+        Gender: pax.individual.gender,
+        PassportNumber: pax.individual.identityDoc.identityDocID || '',
+        PassportExpiryDate: pax.individual.identityDoc.expiryDate || null,
+        PassportNationality:
+          pax.individual.identityDoc.issuingCountryCode || '',
+        Address1: '',
+        Address2: '',
+        CountryCode: 'BD',
+        Nationality: pax.individual.nationality,
+        ContactNumber:
+          '+' + SearchResponse.contactDetail.phoneNumber.replace('-', ''),
+        Email: SearchResponse.contactDetail.emailAddress,
+        FFAirline: null,
+        FFNumber: '',
+        Ticket: pax.ticketDocument?.ticketDocNbr
+          ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }]
+          : null,
+      }));
+      let status: string;
+      if (SearchResponse.orderStatus == 'OnHold') {
+        status = 'Booked';
+      } else {
+        status = SearchResponse.orderStatus;
+      }
+      FlightItenary.push({
+        System: 'BDF',
+        SearchId: SearchResponse.traceId, //traceId
+        BookingId: bookingId,
+        BookingStatus: status,
+        PassportMadatory: SearchResponse.passportRequired,
+        FareType: fareType,
+        Refundable: isRefundable,
+        TripType: tripType,
+        InstantPayment: instantPayment,
+        GrossFare: totalFare,
+        TimeLimit: TimeLimit,
+        PNR: pnr,
+        IsBookable: IsBookable,
+        Carrier: validatingCarrier,
+        CarrierName: carrierName,
+        BaseFare: totalBaseFare,
+        Taxes: tax,
+        SerViceFee: service,
+        NetFare: netFare,
+        Currency: currency,
+        SeatsRemaining: seatsRemaining,
+        PriceBreakDown: mergedData,
+        RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
+        SSR: SearchResponse.availableSSR,
+        AllLegsInfo: AllLegsInfo,
+        PassengerList: passengerList,
+      });
+
       return FlightItenary;
     }
-
-   
   }
-
 }
