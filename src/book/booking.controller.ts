@@ -140,6 +140,8 @@ export class BookingController {
   async ticketMake(@Body() bookingIdDto: BookingID) {
     return await this.flyHubService.makeTicket(bookingIdDto);
   }
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
   @Post('api2/booking')
   async bdfareBook(@Body() bookingdto:BookingDataDto,@Headers() header: Headers){
     const nowdate = new Date(Date.now());

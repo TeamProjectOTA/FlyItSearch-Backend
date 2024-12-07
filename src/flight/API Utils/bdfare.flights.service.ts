@@ -1,9 +1,9 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 
 import axios, { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { FlightSearchModel } from '../flight.model';
+import { BookingIdSave, FlightSearchModel } from '../flight.model';
 import {
   DestArrivalRequestDto,
   OriginDepRequestDto,
@@ -18,6 +18,8 @@ import {
 import { BfFareUtil } from './bdfare.util';
 import { BookingDataDto, BookingID, BookingSave } from 'src/book/booking.model';
 import { MailService } from 'src/mail/mail.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class BDFareService {
@@ -25,6 +27,10 @@ export class BDFareService {
   private readonly apiKey: string = process.env.BDFareAPI_KEY;
 
   constructor(
+    @InjectRepository(BookingIdSave)
+    private readonly bookingIdSave: Repository<BookingIdSave>,
+    @InjectRepository(BookingSave)
+    private readonly bookingSaveRepository: Repository<BookingSave>,
     private readonly bdfareUtil: BfFareUtil,
     private readonly mailService: MailService,
   ) {}
@@ -234,7 +240,17 @@ export class BDFareService {
   }
 
   async flightRetrieve(BookingID: BookingID): Promise<any> {
-    const orderReference = { orderReference: BookingID.BookingID };
+    const findBooking = await this.bookingSaveRepository.findOne({
+      where: { bookingId: BookingID.BookingID },
+      relations: ['user'],
+    });
+    const bookingId = await this.bookingIdSave.findOne({
+      where: { flyitSearchId: BookingID.BookingID },
+    });
+    if(!bookingId){
+      throw new NotFoundException("No booking found on this id")
+    }
+    const orderReference = { orderReference: bookingId.flyhubId };
     try {
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/OrderRetrieve`,
@@ -247,7 +263,13 @@ export class BDFareService {
         },
       );
       //return response.data.response
-      return await this.bdfareUtil.airRetrive(response.data.response);
+      return await this.bdfareUtil.airRetrive(
+        response.data.response,
+        BookingID.BookingID,
+        findBooking.bookingStatus,
+        findBooking.TripType,
+        findBooking.bookingDate,
+        );
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return error.response?.data || error.message;
@@ -256,7 +278,14 @@ export class BDFareService {
   }
 
   async flightBookingCancel(BookingID: BookingID): Promise<any> {
-    const orderReference = { orderReference: BookingID.BookingID };
+
+    const bookingId = await this.bookingIdSave.findOne({
+      where: { flyitSearchId: BookingID.BookingID },
+    });
+    if(!bookingId){
+      throw new NotFoundException("No booking found on this id")
+    }
+    const orderReference = { orderReference: bookingId.flyhubId };
     try {
       const response: AxiosResponse = await axios.post(
         `${this.apiUrl}/OrderCancel`,
@@ -268,7 +297,15 @@ export class BDFareService {
           },
         },
       );
+
+      
       if (response.data.response.orderStatus == 'Cancelled') {
+        const findBooking = await this.bookingSaveRepository.findOne({
+          where: { bookingId: BookingID.BookingID },
+          relations: ['user'],
+        });
+        findBooking.bookingStatus=response.data.response.orderStatus
+        await this.bookingSaveRepository.save(findBooking)
         const airRetrive = await this.flightRetrieve(BookingID);
         const status = response.data.response.orderStatus;
         const bookingId = response.data.response.orderReference;

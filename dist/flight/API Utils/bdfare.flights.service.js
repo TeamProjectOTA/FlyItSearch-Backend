@@ -8,15 +8,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BDFareService = void 0;
 const common_1 = require("@nestjs/common");
 const axios_1 = require("axios");
+const flight_model_1 = require("../flight.model");
 const bdfare_model_1 = require("./Dto/bdfare.model");
 const bdfare_util_1 = require("./bdfare.util");
+const booking_model_1 = require("../../book/booking.model");
 const mail_service_1 = require("../../mail/mail.service");
+const typeorm_1 = require("@nestjs/typeorm");
+const typeorm_2 = require("typeorm");
 let BDFareService = class BDFareService {
-    constructor(bdfareUtil, mailService) {
+    constructor(bookingIdSave, bookingSaveRepository, bdfareUtil, mailService) {
+        this.bookingIdSave = bookingIdSave;
+        this.bookingSaveRepository = bookingSaveRepository;
         this.bdfareUtil = bdfareUtil;
         this.mailService = mailService;
         this.apiUrl = process.env.BDFareAPI_URL;
@@ -176,7 +185,17 @@ let BDFareService = class BDFareService {
         return await this.bdfareUtil.bookingDataTransformer(response1.data.response, header, currentTimestamp, personIds);
     }
     async flightRetrieve(BookingID) {
-        const orderReference = { orderReference: BookingID.BookingID };
+        const findBooking = await this.bookingSaveRepository.findOne({
+            where: { bookingId: BookingID.BookingID },
+            relations: ['user'],
+        });
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID.BookingID },
+        });
+        if (!bookingId) {
+            throw new common_1.NotFoundException("No booking found on this id");
+        }
+        const orderReference = { orderReference: bookingId.flyhubId };
         try {
             const response = await axios_1.default.post(`${this.apiUrl}/OrderRetrieve`, orderReference, {
                 headers: {
@@ -184,7 +203,7 @@ let BDFareService = class BDFareService {
                     'Content-Type': 'application/json',
                 },
             });
-            return await this.bdfareUtil.airRetrive(response.data.response);
+            return await this.bdfareUtil.airRetrive(response.data.response, BookingID.BookingID, findBooking.bookingStatus, findBooking.TripType, findBooking.bookingDate);
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {
@@ -193,7 +212,13 @@ let BDFareService = class BDFareService {
         }
     }
     async flightBookingCancel(BookingID) {
-        const orderReference = { orderReference: BookingID.BookingID };
+        const bookingId = await this.bookingIdSave.findOne({
+            where: { flyitSearchId: BookingID.BookingID },
+        });
+        if (!bookingId) {
+            throw new common_1.NotFoundException("No booking found on this id");
+        }
+        const orderReference = { orderReference: bookingId.flyhubId };
         try {
             const response = await axios_1.default.post(`${this.apiUrl}/OrderCancel`, orderReference, {
                 headers: {
@@ -202,6 +227,12 @@ let BDFareService = class BDFareService {
                 },
             });
             if (response.data.response.orderStatus == 'Cancelled') {
+                const findBooking = await this.bookingSaveRepository.findOne({
+                    where: { bookingId: BookingID.BookingID },
+                    relations: ['user'],
+                });
+                findBooking.bookingStatus = response.data.response.orderStatus;
+                await this.bookingSaveRepository.save(findBooking);
                 const airRetrive = await this.flightRetrieve(BookingID);
                 const status = response.data.response.orderStatus;
                 const bookingId = response.data.response.orderReference;
@@ -282,7 +313,11 @@ let BDFareService = class BDFareService {
 exports.BDFareService = BDFareService;
 exports.BDFareService = BDFareService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [bdfare_util_1.BfFareUtil,
+    __param(0, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(1, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        bdfare_util_1.BfFareUtil,
         mail_service_1.MailService])
 ], BDFareService);
 //# sourceMappingURL=bdfare.flights.service.js.map

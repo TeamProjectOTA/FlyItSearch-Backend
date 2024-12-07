@@ -1,14 +1,17 @@
-import { FlightSearchModel } from '../flight.model';
+import { BookingIdSave, FlightSearchModel } from '../flight.model';
 import { searchResultDtobdf } from './Dto/bdfare.model';
 import { BfFareUtil } from './bdfare.util';
-import { BookingDataDto, BookingID } from 'src/book/booking.model';
+import { BookingDataDto, BookingID, BookingSave } from 'src/book/booking.model';
 import { MailService } from 'src/mail/mail.service';
+import { Repository } from 'typeorm';
 export declare class BDFareService {
+    private readonly bookingIdSave;
+    private readonly bookingSaveRepository;
     private readonly bdfareUtil;
     private readonly mailService;
     private readonly apiUrl;
     private readonly apiKey;
-    constructor(bdfareUtil: BfFareUtil, mailService: MailService);
+    constructor(bookingIdSave: Repository<BookingIdSave>, bookingSaveRepository: Repository<BookingSave>, bdfareUtil: BfFareUtil, mailService: MailService);
     private transformToRequestDto;
     private mapCabinClass;
     airShopping(flightSearchModel: FlightSearchModel): Promise<any>;

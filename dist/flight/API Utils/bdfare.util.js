@@ -19,9 +19,11 @@ const airports_service_1 = require("../../airports/airports.service");
 const flight_model_1 = require("../flight.model");
 const typeorm_2 = require("typeorm");
 const booking_model_1 = require("../../book/booking.model");
+const booking_service_1 = require("../../book/booking.service");
 let BfFareUtil = class BfFareUtil {
-    constructor(airportService, bookingIdSave, bookingSave) {
+    constructor(airportService, BookService, bookingIdSave, bookingSave) {
         this.airportService = airportService;
+        this.BookService = BookService;
         this.bookingIdSave = bookingIdSave;
         this.bookingSave = bookingSave;
     }
@@ -382,11 +384,10 @@ let BfFareUtil = class BfFareUtil {
         }
         return FlightItenary;
     }
-    async airRetrive(SearchResponse, journeyType) {
+    async airRetrive(SearchResponse, fisId, bookingStatus, tripType, bookingDate, header) {
         const FlightItenary = [];
         const { orderItem } = SearchResponse;
         for (const offerData of orderItem) {
-            const bookingId = SearchResponse.orderReference;
             const TimeLimit = SearchResponse.paymentTimeLimit;
             const offer = offerData;
             const validatingCarrier = offer?.validatingCarrier || 'N/A';
@@ -403,16 +404,6 @@ let BfFareUtil = class BfFareUtil {
             const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
             const netFare = offer?.price?.gross?.total || 0;
             const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
-            let tripType = 'Unknown';
-            if (journeyType === '1') {
-                tripType = 'Oneway';
-            }
-            else if (journeyType === '2') {
-                tripType = 'Return';
-            }
-            else if (journeyType === '3') {
-                tripType = 'Multicity';
-            }
             const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
             const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
             const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat, 0);
@@ -548,18 +539,12 @@ let BfFareUtil = class BfFareUtil {
                     ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }]
                     : null,
             }));
-            let status;
-            if (SearchResponse.orderStatus == 'OnHold') {
-                status = 'Booked';
-            }
-            else {
-                status = SearchResponse.orderStatus;
-            }
             FlightItenary.push({
                 System: 'API2',
                 SearchId: SearchResponse.traceId,
-                BookingId: bookingId,
-                BookingStatus: status,
+                BookingId: fisId,
+                BookingDate: bookingDate,
+                BookingStatus: bookingStatus,
                 PassportMadatory: SearchResponse.passportRequired,
                 FareType: fareType,
                 Refundable: isRefundable,
@@ -784,16 +769,69 @@ let BfFareUtil = class BfFareUtil {
                 AllLegsInfo: AllLegsInfo,
                 PassengerList: passengerList,
             });
+            await this.saveBookingData(FlightItenary, header, personIds);
             return FlightItenary;
+        }
+    }
+    async saveBookingData(SearchResponse, header, personIds) {
+        const booking = SearchResponse[0];
+        if (booking) {
+            const flightNumber = booking.AllLegsInfo[0].Segments[0].MarketingFlightNumber;
+            let tripType;
+            if (booking.AllLegsInfo.length === 1) {
+                tripType = 'OneWay';
+            }
+            else if (booking.AllLegsInfo.length === 2) {
+                if (booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
+                    booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo) {
+                    tripType = 'Return';
+                }
+                else {
+                    tripType = 'Multicity';
+                }
+            }
+            else {
+                tripType = 'Multicity';
+            }
+            const paxCount = booking.PriceBreakDown.reduce((sum, breakdown) => sum + breakdown.PaxCount, 0);
+            const convertedData = {
+                system: booking?.System,
+                bookingId: booking?.BookingId,
+                paxCount: paxCount,
+                Curriername: booking?.CarrierName,
+                CurrierCode: booking?.Carrier,
+                flightNumber: flightNumber,
+                isRefundable: booking?.Refundable,
+                bookingDate: booking?.BookingDate,
+                expireDate: booking?.TimeLimit,
+                bookingStatus: booking?.BookingStatus,
+                PNR: booking?.PNR,
+                grossAmmount: booking?.GrossFare,
+                netAmmount: booking?.NetFare,
+                TripType: tripType,
+                personId: personIds,
+                bookingData: SearchResponse,
+                laginfo: booking?.AllLegsInfo.map((leg) => ({
+                    DepDate: leg?.DepDate,
+                    DepFrom: leg?.DepFrom,
+                    ArrTo: leg?.ArrTo,
+                })),
+            };
+            const save = await this.BookService.saveBooking(convertedData, header);
+            return save;
+        }
+        else {
+            return 'Booking data is unvalid';
         }
     }
 };
 exports.BfFareUtil = BfFareUtil;
 exports.BfFareUtil = BfFareUtil = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
-    __param(2, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(2, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __metadata("design:paramtypes", [airports_service_1.AirportsService,
+        booking_service_1.BookingService,
         typeorm_2.Repository,
         typeorm_2.Repository])
 ], BfFareUtil);
