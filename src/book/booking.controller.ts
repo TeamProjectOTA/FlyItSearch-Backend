@@ -13,7 +13,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
-import { BookingID, CreateSaveBookingDto } from './booking.model';
+import { BookingDataDto, BookingID, CreateSaveBookingDto } from './booking.model';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
@@ -137,7 +137,38 @@ export class BookingController {
   @ApiBearerAuth('access_token')
   @Post('flh/makeTicket')
   @UseGuards(AdmintokenGuard)
-  async ticletMake(@Body() bookingIdDto: BookingID) {
+  async ticketMake(@Body() bookingIdDto: BookingID) {
     return await this.flyHubService.makeTicket(bookingIdDto);
+  }
+  @Post('api2/booking')
+  async bdfareBook(@Body() bookingdto:BookingDataDto,@Headers() header: Headers){
+    const nowdate = new Date(Date.now());
+    const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
+    const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+    const dhakaTimeFormatted = dhakaTime.toISOString();
+
+    const { Passengers } = bookingdto;
+    const personIds: { index: number; visa?: string; passport?: string }[] = [];
+    Passengers.forEach((passenger, index) => {
+      const personData: { index: number; visa?: string; passport?: string } = {
+        index: index + 1,
+      };
+
+      if (passenger.visa) {
+        personData.visa = passenger.visa;
+      }
+
+      if (passenger.passport) {
+        personData.passport = passenger.passport;
+      }
+
+      personIds.push(personData);
+
+      delete passenger.visa;
+      delete passenger.passport;
+    });
+    return await this.bdfareService.flightBooking(bookingdto,header,
+      dhakaTimeFormatted,
+      personIds,)
   }
 }

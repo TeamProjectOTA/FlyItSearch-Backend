@@ -452,7 +452,7 @@ export class AuthService {
 
       let newUser = new User();
       newUser.passengerId = passengerId;
-      newUser.password = 'Google loge in';
+      newUser.password = 'Google log in';
       newUser.email = email;
       newUser.fullName = fullName.toUpperCase();
       newUser.googleId = googleId;

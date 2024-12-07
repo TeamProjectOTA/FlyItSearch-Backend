@@ -1,5 +1,5 @@
 import { BookingService } from './booking.service';
-import { BookingID } from './booking.model';
+import { BookingDataDto, BookingID } from './booking.model';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { BDFareService } from 'src/flight/API Utils/bdfare.flights.service';
@@ -21,5 +21,6 @@ export declare class BookingController {
         totalPages: number;
     }>;
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<any>;
-    ticletMake(bookingIdDto: BookingID): Promise<any>;
+    ticketMake(bookingIdDto: BookingID): Promise<any>;
+    bdfareBook(bookingdto: BookingDataDto, header: Headers): Promise<any>;
 }

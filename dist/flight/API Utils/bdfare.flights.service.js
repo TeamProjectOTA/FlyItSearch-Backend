@@ -149,7 +149,32 @@ let BDFareService = class BDFareService {
             throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    async flightBooking() { }
+    async flightBooking(bookingdata, header, currentTimestamp, personIds) {
+        const data = this.bookingDataModification(bookingdata);
+        const OrderSellRequest = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/OrderSell`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': this.apiKey,
+            },
+            data: data,
+        };
+        const OrderCreateRequest = {
+            method: 'post',
+            maxBodyLength: Infinity,
+            url: `${this.apiUrl}/OrderCreate`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': this.apiKey,
+            },
+            data: data,
+        };
+        const response = await (0, axios_1.default)(OrderSellRequest);
+        const response1 = await (0, axios_1.default)(OrderCreateRequest);
+        return await this.bdfareUtil.bookingDataTransformer(response1.data.response, header, currentTimestamp, personIds);
+    }
     async flightRetrieve(BookingID) {
         const orderReference = { orderReference: BookingID.BookingID };
         try {

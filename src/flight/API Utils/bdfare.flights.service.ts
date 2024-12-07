@@ -202,7 +202,36 @@ export class BDFareService {
     }
   }
 
-  async flightBooking() {}
+  async flightBooking(bookingdata:BookingDataDto,  header: any,
+    currentTimestamp: any,
+    personIds: any,) {
+    const data= this.bookingDataModification(bookingdata)
+   //return {data,personIds,currentTimestamp}
+    const OrderSellRequest = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url:  `${this.apiUrl}/OrderSell`,
+      headers: {
+        'Content-Type': 'application/json',
+       'X-API-KEY': this.apiKey,
+      },
+      data: data,
+    };
+    const OrderCreateRequest= {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url:  `${this.apiUrl}/OrderCreate`,
+      headers: {
+        'Content-Type': 'application/json',
+       'X-API-KEY': this.apiKey,
+      },
+      data: data,
+    };
+      const response: AxiosResponse = await axios(OrderSellRequest);
+      const response1: AxiosResponse = await axios(OrderCreateRequest);
+   
+    return await this.bdfareUtil.bookingDataTransformer(response1.data.response,header,currentTimestamp,personIds);
+  }
 
   async flightRetrieve(BookingID: BookingID): Promise<any> {
     const orderReference = { orderReference: BookingID.BookingID };
@@ -254,7 +283,7 @@ export class BDFareService {
   }
   async flightBookingChange() {}
 
-  private bookingDataModification(data: BookingDataDto) {
+  private bookingDataModification(data: any) {
     const { Passengers } = data;
     const dataModified = {
       traceId: data.SearchId,

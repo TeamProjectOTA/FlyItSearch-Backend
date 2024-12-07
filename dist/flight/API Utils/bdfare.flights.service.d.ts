@@ -1,7 +1,7 @@
 import { FlightSearchModel } from '../flight.model';
 import { searchResultDtobdf } from './Dto/bdfare.model';
 import { BfFareUtil } from './bdfare.util';
-import { BookingID } from 'src/book/booking.model';
+import { BookingDataDto, BookingID } from 'src/book/booking.model';
 import { MailService } from 'src/mail/mail.service';
 export declare class BDFareService {
     private readonly bdfareUtil;
@@ -15,7 +15,7 @@ export declare class BDFareService {
     fareRules(data: searchResultDtobdf): Promise<any>;
     offerPrice(data: searchResultDtobdf): Promise<any>;
     miniRule(data: searchResultDtobdf): Promise<any>;
-    flightBooking(): Promise<void>;
+    flightBooking(bookingdata: BookingDataDto, header: any, currentTimestamp: any, personIds: any): Promise<any>;
     flightRetrieve(BookingID: BookingID): Promise<any>;
     flightBookingCancel(BookingID: BookingID): Promise<any>;
     flightBookingChange(): Promise<void>;

@@ -72,8 +72,31 @@ let BookingController = class BookingController {
     async findUserWithBookings(header, bookingStatus) {
         return this.bookingService.findUserWithBookings(header, bookingStatus);
     }
-    async ticletMake(bookingIdDto) {
+    async ticketMake(bookingIdDto) {
         return await this.flyHubService.makeTicket(bookingIdDto);
+    }
+    async bdfareBook(bookingdto, header) {
+        const nowdate = new Date(Date.now());
+        const dhakaOffset = 6 * 60 * 60 * 1000;
+        const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
+        const dhakaTimeFormatted = dhakaTime.toISOString();
+        const { Passengers } = bookingdto;
+        const personIds = [];
+        Passengers.forEach((passenger, index) => {
+            const personData = {
+                index: index + 1,
+            };
+            if (passenger.visa) {
+                personData.visa = passenger.visa;
+            }
+            if (passenger.passport) {
+                personData.passport = passenger.passport;
+            }
+            personIds.push(personData);
+            delete passenger.visa;
+            delete passenger.passport;
+        });
+        return await this.bdfareService.flightBooking(bookingdto, header, dhakaTimeFormatted, personIds);
     }
 };
 exports.BookingController = BookingController;
@@ -171,7 +194,15 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [booking_model_1.BookingID]),
     __metadata("design:returntype", Promise)
-], BookingController.prototype, "ticletMake", null);
+], BookingController.prototype, "ticketMake", null);
+__decorate([
+    (0, common_1.Post)('api2/booking'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Headers)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [booking_model_1.BookingDataDto, Object]),
+    __metadata("design:returntype", Promise)
+], BookingController.prototype, "bdfareBook", null);
 exports.BookingController = BookingController = __decorate([
     (0, swagger_1.ApiTags)('Booking-Details'),
     (0, common_1.Controller)('booking'),
