@@ -388,7 +388,18 @@ let BfFareUtil = class BfFareUtil {
         const FlightItenary = [];
         const { orderItem } = SearchResponse;
         for (const offerData of orderItem) {
-            const TimeLimit = SearchResponse.paymentTimeLimit;
+            let TimeLimit = null;
+            if (bookingStatus == 'IssueInProcess') {
+                if (SearchResponse.paymentTimeLimit) {
+                    const lastTicketDate = SearchResponse.paymentTimeLimit;
+                    TimeLimit = `${lastTicketDate}`;
+                }
+            }
+            else {
+                const timestamp = new Date(bookingDate);
+                const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
+                TimeLimit = `${lastTicketDate}`;
+            }
             const offer = offerData;
             const validatingCarrier = offer?.validatingCarrier || 'N/A';
             const fareType = offer?.fareType || 'Regular';
@@ -583,7 +594,11 @@ let BfFareUtil = class BfFareUtil {
             add.flyitSearchId = randomId;
             add.flyhubId = SearchResponse?.orderReference;
             await this.bookingIdSave.save(add);
-            const TimeLimit = SearchResponse.paymentTimeLimit;
+            let TimeLimit = null;
+            const timestamp = new Date(currentTimestamp);
+            const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000)
+                .toISOString();
+            TimeLimit = `${lastTicketDate}`;
             const offer = offerData;
             const validatingCarrier = offer?.validatingCarrier || 'N/A';
             const fareType = offer?.fareType || 'Regular';

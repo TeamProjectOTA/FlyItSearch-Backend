@@ -28,6 +28,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     };
 
     const authenticatedUser = await this.authService.validateUser(user);
-    done(null, authenticatedUser);
+    //this.redirect('https://www.flyitsearch.com/')
+    done(null,authenticatedUser );
   }
 }

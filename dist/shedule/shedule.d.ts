@@ -7,6 +7,12 @@ export declare class Shedule {
     private readonly username;
     private readonly apiKey;
     private readonly apiUrl;
+    private readonly apiUrlbdf;
+    private readonly apiKeybdf;
     private readonly logger;
     constructor(bookingRepository: Repository<BookingSave>, bookingIdRepository: Repository<BookingIdSave>);
+    scheduling(): Promise<void>;
+    getToken(): Promise<string>;
+    aircancel(BookingID: string): Promise<any>;
+    flightBookingCancel(BookingID: string): Promise<any>;
 }

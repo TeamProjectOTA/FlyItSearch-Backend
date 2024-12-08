@@ -213,7 +213,7 @@ let FlyHubUtil = class FlyHubUtil {
                         }
                     }
                     FlightItenary.push({
-                        System: 'FLYHUB',
+                        System: 'API1',
                         ResultId: Result?.ResultID,
                         SearchId: SearchResponse?.SearchId,
                         PassportMadatory: Result?.PassportMadatory,
@@ -421,7 +421,7 @@ let FlyHubUtil = class FlyHubUtil {
                     }
                     const passportRequired = !!SearchResponse?.Passengers[0]?.PassportNumber;
                     FlightItenary.push({
-                        System: 'FLYHUB',
+                        System: 'API1',
                         ResultId: Result.ResultID,
                         BookingId: fisId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
@@ -528,8 +528,7 @@ let FlyHubUtil = class FlyHubUtil {
                     let TimeLimit = null;
                     const timestamp = new Date(currentTimestamp);
                     const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000)
-                        .toISOString()
-                        .replace('Z', '');
+                        .toISOString();
                     TimeLimit = `${lastTicketDate}`;
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
                         const PaxType = allPassenger?.PaxType;
@@ -649,7 +648,7 @@ let FlyHubUtil = class FlyHubUtil {
                     add.flyhubId = SearchResponse?.BookingID;
                     await this.bookingIdSave.save(add);
                     FlightItenary.push({
-                        System: 'FLYHUB',
+                        System: 'API1',
                         ResultId: Result.ResultID,
                         BookingId: randomId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
@@ -921,7 +920,7 @@ let FlyHubUtil = class FlyHubUtil {
                         }
                     }
                     FlightItenary.push({
-                        System: 'FLYHUB',
+                        System: 'API1',
                         ResultId: Result.ResultID,
                         BookingId: fisId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
@@ -1124,7 +1123,7 @@ let FlyHubUtil = class FlyHubUtil {
                     }
                     const passportRequired = !!SearchResponse?.Passengers[0]?.PassportNumber;
                     FlightItenary.push({
-                        System: 'FLYHUB',
+                        System: 'API1',
                         ResultId: Result.ResultID,
                         BookingId: fisId,
                         PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,

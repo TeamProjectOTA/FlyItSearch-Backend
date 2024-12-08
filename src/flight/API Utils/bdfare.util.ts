@@ -489,7 +489,8 @@ export class BfFareUtil {
 
  
 
-  async airRetrive(SearchResponse: any, 
+  async airRetrive(
+    SearchResponse: any, 
     fisId: string,
     bookingStatus?: any,
     tripType?: any,
@@ -499,8 +500,20 @@ export class BfFareUtil {
     const { orderItem } = SearchResponse;
     //return SearchResponse
     for (const offerData of orderItem) {
-      
-      const TimeLimit = SearchResponse.paymentTimeLimit;
+      let TimeLimit: string = null;
+      if (bookingStatus == 'IssueInProcess') {
+        if (SearchResponse.paymentTimeLimit) {
+          const lastTicketDate: string = SearchResponse.paymentTimeLimit;
+          TimeLimit = `${lastTicketDate}`;
+        }
+      } else {
+        const timestamp = new Date(bookingDate);
+        const lastTicketDate: any = new Date(
+          timestamp.getTime() + 20 * 60 * 1000,
+        ).toISOString();
+        TimeLimit = `${lastTicketDate}`;
+      }
+      // const TimeLimit = SearchResponse.paymentTimeLimit;
       const offer = offerData;
       const validatingCarrier = offer?.validatingCarrier || 'N/A';
       const fareType = offer?.fareType || 'Regular';
@@ -742,7 +755,8 @@ export class BfFareUtil {
     }
   }
 
-  async bookingDataTransformer(SearchResponse: any,
+  async bookingDataTransformer(
+    SearchResponse: any,
     header: any,
     currentTimestamp: any,
     personIds: any,): Promise<any> {
@@ -762,8 +776,16 @@ export class BfFareUtil {
     add.flyhubId = SearchResponse?.orderReference;
     await this.bookingIdSave.save(add);
       
-
-      const TimeLimit = SearchResponse.paymentTimeLimit;
+    let TimeLimit: string = null;
+    const timestamp = new Date(currentTimestamp);
+    const lastTicketDate: any = new Date(
+      timestamp.getTime() + 20 * 60 * 1000,
+    )
+      .toISOString()
+    TimeLimit = `${lastTicketDate}`; 
+   
+    
+      // const TimeLimit = SearchResponse.paymentTimeLimit;
       const offer = offerData;
       const validatingCarrier = offer?.validatingCarrier || 'N/A';
       const fareType = offer?.fareType || 'Regular';

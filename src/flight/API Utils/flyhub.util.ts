@@ -260,7 +260,7 @@ export class FlyHubUtil {
           }
 
           FlightItenary.push({
-            System: 'FLYHUB',
+            System: 'API1',
             ResultId: Result?.ResultID,
             SearchId: SearchResponse?.SearchId,
             PassportMadatory: Result?.PassportMadatory,
@@ -530,7 +530,7 @@ export class FlyHubUtil {
           const passportRequired =
             !!SearchResponse?.Passengers[0]?.PassportNumber;
           FlightItenary.push({
-            System: 'FLYHUB',
+            System: 'API1',
             ResultId: Result.ResultID,
             BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
@@ -688,7 +688,6 @@ export class FlyHubUtil {
             timestamp.getTime() + 20 * 60 * 1000,
           )
             .toISOString()
-            .replace('Z', '');
           TimeLimit = `${lastTicketDate}`; // changes done
 
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
@@ -832,7 +831,7 @@ export class FlyHubUtil {
           await this.bookingIdSave.save(add);
 
           FlightItenary.push({
-            System: 'FLYHUB',
+            System: 'API1',
             ResultId: Result.ResultID,
             BookingId: randomId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
@@ -1181,7 +1180,7 @@ export class FlyHubUtil {
           }
 
           FlightItenary.push({
-            System: 'FLYHUB',
+            System: 'API1',
             ResultId: Result.ResultID,
             BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,
@@ -1444,7 +1443,7 @@ export class FlyHubUtil {
           const passportRequired =
             !!SearchResponse?.Passengers[0]?.PassportNumber;
           FlightItenary.push({
-            System: 'FLYHUB',
+            System: 'API1',
             ResultId: Result.ResultID,
             BookingId: fisId,
             PNR: SearchResponse?.Results[0]?.segments[0]?.AirlinePNR,

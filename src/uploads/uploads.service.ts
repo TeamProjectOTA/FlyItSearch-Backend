@@ -64,7 +64,7 @@ export class UploadsService {
 
     const fileExtension = extname(file.originalname);
     const folderName = 'ProfilePicture';
-    const filename = `${folderName}/${user.passengerId}-ProfilePicture${fileExtension}${uuidv4()}`;
+    const filename = `${folderName}/${user.passengerId}-ProfilePicture${uuidv4()}${fileExtension}`;
 
     try {
       const bucketFile = this.storage.bucket(this.bucket).file(filename);
@@ -97,7 +97,8 @@ export class UploadsService {
     const randomNumber = Math.floor(Math.random() * 1000);
     const random = `${timestamp}${randomNumber}`;
     const folderName = 'PassportVisa';
-    const fileName = `${folderName}/${random}-image`;
+    const fileExtension = extname(file.originalname);
+    const fileName = `${folderName}/${random}-image${fileExtension}`;
     const blob = this.storage.bucket(this.bucket).file(fileName);
 
     const blobStream = blob.createWriteStream({

@@ -58,7 +58,7 @@ let UploadsService = class UploadsService {
         }
         const fileExtension = (0, path_1.extname)(file.originalname);
         const folderName = 'ProfilePicture';
-        const filename = `${folderName}/${user.passengerId}-ProfilePicture${fileExtension}${(0, uuid_1.v4)()}`;
+        const filename = `${folderName}/${user.passengerId}-ProfilePicture${(0, uuid_1.v4)()}${fileExtension}`;
         try {
             const bucketFile = this.storage.bucket(this.bucket).file(filename);
             await bucketFile.save(file.buffer, {
@@ -85,7 +85,8 @@ let UploadsService = class UploadsService {
         const randomNumber = Math.floor(Math.random() * 1000);
         const random = `${timestamp}${randomNumber}`;
         const folderName = 'PassportVisa';
-        const fileName = `${folderName}/${random}-image`;
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const fileName = `${folderName}/${random}-image${fileExtension}`;
         const blob = this.storage.bucket(this.bucket).file(fileName);
         const blobStream = blob.createWriteStream({
             metadata: { contentType: file.mimetype },
