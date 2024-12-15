@@ -39,11 +39,12 @@ export class AdminDashboardController {
   ) {
     return await this.adminDashboardService.findAll(startDate, endDate);
   }
-
+@UseGuards(AdmintokenGuard)
   @Post('VendorTicket')
   async createTicket(@Body() ticketDataDTO: vendorTicket) {
     return this.adminDashboardService.vendorMakeTicket(ticketDataDTO);
   }
+  @UseGuards(AdmintokenGuard)
   @Get()
   async getAllTickets() {
     return await this.adminDashboardService.findAllTickets();

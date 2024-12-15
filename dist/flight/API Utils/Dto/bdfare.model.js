@@ -73,6 +73,10 @@ __decorate([
     (0, swagger_1.ApiProperty)({ default: true }),
     __metadata("design:type", Boolean)
 ], ShoppingCriteriaDto.prototype, "returnUPSellInfo", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ default: true }),
+    __metadata("design:type", Boolean)
+], ShoppingCriteriaDto.prototype, "preferCombine", void 0);
 class RequestInnerDto {
 }
 exports.RequestInnerDto = RequestInnerDto;

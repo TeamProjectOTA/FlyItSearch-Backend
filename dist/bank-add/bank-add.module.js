@@ -12,12 +12,13 @@ const bank_add_service_1 = require("./bank-add.service");
 const bank_add_controller_1 = require("./bank-add.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const bank_add_model_1 = require("./bank-add.model");
+const auth_module_1 = require("../auth/auth.module");
 let BankAddModule = class BankAddModule {
 };
 exports.BankAddModule = BankAddModule;
 exports.BankAddModule = BankAddModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([bank_add_model_1.BankAdd])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([bank_add_model_1.BankAdd]), auth_module_1.AuthModule],
         controllers: [bank_add_controller_1.BankAddController],
         providers: [bank_add_service_1.BankAddService],
     })

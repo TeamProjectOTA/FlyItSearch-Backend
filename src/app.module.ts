@@ -106,10 +106,10 @@ export class AppModule {
         { path: 'social-site/google', method: RequestMethod.GET },
         { path: 'social-site/google-redirect', method: RequestMethod.GET },
       )
-      // .forRoutes(
-      //   //{ path: '*', method: RequestMethod.ALL },
-      //   // include all the path that uses this middleware
-      //   { path: '/flights/fhb/airSearch', method: RequestMethod.POST },
-      // );
+      .forRoutes(
+        //{ path: '*', method: RequestMethod.ALL },
+        // include all the path that uses this middleware
+        { path: '/flights/fhb/airSearch', method: RequestMethod.POST },
+      );
   }
 }

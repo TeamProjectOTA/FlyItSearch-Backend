@@ -38,6 +38,9 @@ export class ShoppingCriteriaDto {
   travelPreferences: TravelPreferencesDto;
   @ApiProperty({ default: true })
   returnUPSellInfo: boolean;
+  @ApiProperty({ default: true })
+ preferCombine: boolean;
+
 }
 
 export class RequestInnerDto {

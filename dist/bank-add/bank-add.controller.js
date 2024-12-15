@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const bank_add_service_1 = require("./bank-add.service");
 const bank_add_model_1 = require("./bank-add.model");
 const swagger_1 = require("@nestjs/swagger");
+const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let BankAddController = class BankAddController {
     constructor(bankAddService) {
         this.bankAddService = bankAddService;
@@ -39,6 +40,7 @@ let BankAddController = class BankAddController {
 };
 exports.BankAddController = BankAddController;
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -52,12 +54,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BankAddController.prototype, "getAll", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Get)('admin/allBank'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], BankAddController.prototype, "getAllaccount", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Get)('admin/oneBank/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -65,6 +69,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BankAddController.prototype, "geOne", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Patch)('admin/update/:id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),

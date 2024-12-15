@@ -76,6 +76,7 @@ __decorate([
 ], UserController.prototype, "create", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Patch)('/updateUserProfile'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),
@@ -85,6 +86,7 @@ __decorate([
 ], UserController.prototype, "update", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Get)('/admin/allUser'),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number, example: 1 }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number, example: 10 }),

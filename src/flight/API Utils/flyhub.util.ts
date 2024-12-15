@@ -949,7 +949,7 @@ export class FlyHubUtil {
       };
       const save = await this.BookService.saveBooking(convertedData, header);
 
-      await this.mailService.sendMail(booking);
+      //await this.mailService.sendMail(booking);
 
       return save;
     } else {

@@ -5,12 +5,14 @@ import { Repository } from 'typeorm';
 import { AuthService } from 'src/auth/auth.service';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
+import { BookingSave } from 'src/book/booking.model';
 export declare class UserService {
     private readonly userRepository;
     private readonly transectionRepository;
     private readonly authservice;
     private readonly ipAddressRepository;
-    constructor(userRepository: Repository<User>, transectionRepository: Repository<Transection>, authservice: AuthService, ipAddressRepository: Repository<IpAddress>);
+    private readonly bookingSaveRepository;
+    constructor(userRepository: Repository<User>, transectionRepository: Repository<Transection>, authservice: AuthService, ipAddressRepository: Repository<IpAddress>, bookingSaveRepository: Repository<BookingSave>);
     create(createUserDto: CreateUserDto): Promise<any>;
     update(header: any, updateUserDto: UpdateUserDto): Promise<{
         id: number;

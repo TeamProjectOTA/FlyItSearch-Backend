@@ -57,6 +57,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminDashboardController.prototype, "findAllDeposit", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Post)('VendorTicket'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -64,6 +65,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AdminDashboardController.prototype, "createTicket", null);
 __decorate([
+    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

@@ -12,7 +12,7 @@ import { BookingModule } from 'src/book/booking.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Transection, IpAddress]),
+    TypeOrmModule.forFeature([User, Transection, IpAddress,BookingSave]),
     AuthModule,
     IpModule,
   ],

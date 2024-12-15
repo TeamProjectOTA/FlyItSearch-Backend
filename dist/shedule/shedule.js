@@ -46,7 +46,6 @@ let Shedule = Shedule_1 = class Shedule {
                 });
                 if (userBooking.system == "API1") {
                     const cancelData = await this.aircancel(booking.bookingId);
-                    this.logger.log("API1 hit ");
                     if (cancelData?.BookingStatus) {
                         userBooking.bookingStatus = cancelData?.BookingStatus;
                     }
@@ -56,7 +55,6 @@ let Shedule = Shedule_1 = class Shedule {
                 }
                 else if (userBooking.system == "API2") {
                     const cancelData = await this.flightBookingCancel(booking.bookingId);
-                    this.logger.log("API2 hit " + cancelData.orderStatus);
                     if (cancelData.orderStatus) {
                         userBooking.bookingStatus = cancelData?.orderStatus;
                     }
@@ -67,7 +65,6 @@ let Shedule = Shedule_1 = class Shedule {
                 await this.bookingRepository.save(userBooking);
             }
         }
-        this.logger.log('Hitting the sheduling in every 5min ');
     }
     async getToken() {
         try {

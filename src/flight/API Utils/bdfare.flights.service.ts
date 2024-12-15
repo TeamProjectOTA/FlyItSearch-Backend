@@ -81,6 +81,7 @@ export class BDFareService {
     );
     shoppingCriteria.travelPreferences = travelPreferences;
     shoppingCriteria.returnUPSellInfo = false;
+    shoppingCriteria.preferCombine=true;
     const requestInner = new RequestInnerDto();
     requestInner.originDest = originDest;
     requestInner.pax = pax;
@@ -212,7 +213,7 @@ export class BDFareService {
     currentTimestamp: any,
     personIds: any,) {
     const data= this.bookingDataModification(bookingdata)
-   //return {data,personIds,currentTimestamp}
+   //return data
     const OrderSellRequest = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -322,72 +323,96 @@ export class BDFareService {
 
   private bookingDataModification(data: any) {
     const { Passengers } = data;
+  
+    // Separate adults and infants
+    const adults = Passengers.filter((p) => p.PaxType === 'Adult');
+    const infants = Passengers.filter((p) => p.PaxType === 'Infant');
+  
     const dataModified = {
       traceId: data.SearchId,
       offerId: [data.ResultId[0]],
       request: {
         contactInfo: {
           phone: {
-            phoneNumber: Passengers[0]?.ContactNumber.slice(3), 
-            countryDialingCode: Passengers[0]?.ContactNumber.slice(0, 3), 
+            phoneNumber: Passengers[0]?.ContactNumber.slice(2),
+            countryDialingCode: Passengers[0]?.ContactNumber.slice(0, 2),
           },
           emailAddress: Passengers[0]?.Email,
         },
-        paxList: Passengers.map((passenger) => ({
-          ptc: passenger?.PaxType,
-          individual: {
-            givenName: passenger?.FirstName,
-            surname: passenger?.LastName,
-            gender: passenger?.Gender,
-            birthdate: passenger?.DateOfBirth,
-            nationality: passenger?.PassportNationality,
-            identityDoc: {
-              identityDocType: 'Passport',
-              identityDocID: passenger?.PassportNumber,
-              expiryDate: passenger?.PassportExpiryDate,
-            },
-            ...(passenger.PaxType === 'Infant' && {
-              associatePax: {
-                givenName:
-                  Passengers.find((p) => p.IsLeadPassenger)?.FirstName || '',
-                surname:
-                  Passengers.find((p) => p.IsLeadPassenger)?.LastName || '',
-              },
-            }),
-          },
-          sellSSR:
-            passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
-              ? [
-                  {
-                    ssrRemark: passenger?.SSRRemarks,
-                    ssrCode: passenger?.SSRType,
-                    loyaltyProgramAccount: {
-                      airlineDesigCode: passenger?.FFAirline,
-                      accountNumber: passenger?.FFNumber,
+        paxList: Passengers.map((passenger, index) => {
+          const isInfant = passenger?.PaxType === 'Infant';
+          const associatedAdult =
+            isInfant && adults[index % adults.length]; // Cycle through adults for infants
+  
+          return {
+            ptc: passenger?.PaxType,
+            individual: {
+              givenName: passenger?.FirstName,
+              surname: passenger?.LastName,
+              gender: passenger?.Gender,
+              birthdate: passenger?.DateOfBirth,
+              nationality: passenger?.CountryCode,
+              ...(passenger?.PassportNumber || passenger?.PassportExpiryDate
+                ? {
+                    identityDoc: {
+                      identityDocType: 'Passport',
+                      identityDocID: passenger?.PassportNumber,
+                      expiryDate: passenger?.PassportExpiryDate,
                     },
-                  },
-                ]
-              : [],
-        })),
+                  }
+                : {}),
+              ...(isInfant && associatedAdult && {
+                associatePax: {
+                  givenName: associatedAdult.FirstName,
+                  surname: associatedAdult.LastName,
+                },
+              }),
+            },
+            sellSSR:
+              passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
+                ? [
+                    {
+                      ssrRemark: passenger?.SSRRemarks,
+                      ssrCode: passenger?.SSRType,
+                      loyaltyProgramAccount: {
+                        airlineDesigCode: passenger?.FFAirline,
+                        accountNumber: passenger?.FFNumber,
+                      },
+                    },
+                  ]
+                : [],
+          };
+        }),
       },
     };
-
+  
     return dataModified;
   }
+  
+  
 
   private determineJourneyType(segments: any[]): string {
+    if (!segments || segments.length === 0) {
+      throw new Error("Segments array is empty or undefined.");
+    }
+  
     if (segments.length === 1) {
-      return '1';
+      return '1'; // One-way journey
     }
+  
     if (segments.length === 2) {
+      const [firstSegment, secondSegment] = segments;
+  
       if (
-        segments[0].Destination === segments[1].Origin &&
-        segments[0].Origin === segments[1].Destination
+        firstSegment.arrto === secondSegment.depfrom &&
+        firstSegment.depfrom === secondSegment.arrto
       ) {
-        return '2';
+        return '2'; // Round-trip
       }
-      return '3';
+      return '3'; // Two segments but not a round-trip
     }
-    return '3';
+  
+    return '3'; // Multi-city or complex journey
   }
+  
 }

@@ -68,6 +68,7 @@ let BDFareService = class BDFareService {
         shoppingCriteria.tripType = this.determineJourneyType(flightSearchModel.segments);
         shoppingCriteria.travelPreferences = travelPreferences;
         shoppingCriteria.returnUPSellInfo = false;
+        shoppingCriteria.preferCombine = true;
         const requestInner = new bdfare_model_1.RequestInnerDto();
         requestInner.originDest = originDest;
         requestInner.pax = pax;
@@ -248,61 +249,75 @@ let BDFareService = class BDFareService {
     async flightBookingChange() { }
     bookingDataModification(data) {
         const { Passengers } = data;
+        const adults = Passengers.filter((p) => p.PaxType === 'Adult');
+        const infants = Passengers.filter((p) => p.PaxType === 'Infant');
         const dataModified = {
             traceId: data.SearchId,
             offerId: [data.ResultId[0]],
             request: {
                 contactInfo: {
                     phone: {
-                        phoneNumber: Passengers[0]?.ContactNumber.slice(3),
-                        countryDialingCode: Passengers[0]?.ContactNumber.slice(0, 3),
+                        phoneNumber: Passengers[0]?.ContactNumber.slice(2),
+                        countryDialingCode: Passengers[0]?.ContactNumber.slice(0, 2),
                     },
                     emailAddress: Passengers[0]?.Email,
                 },
-                paxList: Passengers.map((passenger) => ({
-                    ptc: passenger?.PaxType,
-                    individual: {
-                        givenName: passenger?.FirstName,
-                        surname: passenger?.LastName,
-                        gender: passenger?.Gender,
-                        birthdate: passenger?.DateOfBirth,
-                        nationality: passenger?.PassportNationality,
-                        identityDoc: {
-                            identityDocType: 'Passport',
-                            identityDocID: passenger?.PassportNumber,
-                            expiryDate: passenger?.PassportExpiryDate,
-                        },
-                        ...(passenger.PaxType === 'Infant' && {
-                            associatePax: {
-                                givenName: Passengers.find((p) => p.IsLeadPassenger)?.FirstName || '',
-                                surname: Passengers.find((p) => p.IsLeadPassenger)?.LastName || '',
-                            },
-                        }),
-                    },
-                    sellSSR: passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
-                        ? [
-                            {
-                                ssrRemark: passenger?.SSRRemarks,
-                                ssrCode: passenger?.SSRType,
-                                loyaltyProgramAccount: {
-                                    airlineDesigCode: passenger?.FFAirline,
-                                    accountNumber: passenger?.FFNumber,
+                paxList: Passengers.map((passenger, index) => {
+                    const isInfant = passenger?.PaxType === 'Infant';
+                    const associatedAdult = isInfant && adults[index % adults.length];
+                    return {
+                        ptc: passenger?.PaxType,
+                        individual: {
+                            givenName: passenger?.FirstName,
+                            surname: passenger?.LastName,
+                            gender: passenger?.Gender,
+                            birthdate: passenger?.DateOfBirth,
+                            nationality: passenger?.CountryCode,
+                            ...(passenger?.PassportNumber || passenger?.PassportExpiryDate
+                                ? {
+                                    identityDoc: {
+                                        identityDocType: 'Passport',
+                                        identityDocID: passenger?.PassportNumber,
+                                        expiryDate: passenger?.PassportExpiryDate,
+                                    },
+                                }
+                                : {}),
+                            ...(isInfant && associatedAdult && {
+                                associatePax: {
+                                    givenName: associatedAdult.FirstName,
+                                    surname: associatedAdult.LastName,
                                 },
-                            },
-                        ]
-                        : [],
-                })),
+                            }),
+                        },
+                        sellSSR: passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
+                            ? [
+                                {
+                                    ssrRemark: passenger?.SSRRemarks,
+                                    ssrCode: passenger?.SSRType,
+                                    loyaltyProgramAccount: {
+                                        airlineDesigCode: passenger?.FFAirline,
+                                        accountNumber: passenger?.FFNumber,
+                                    },
+                                },
+                            ]
+                            : [],
+                    };
+                }),
             },
         };
         return dataModified;
     }
     determineJourneyType(segments) {
+        if (!segments || segments.length === 0) {
+            throw new Error("Segments array is empty or undefined.");
+        }
         if (segments.length === 1) {
             return '1';
         }
         if (segments.length === 2) {
-            if (segments[0].Destination === segments[1].Origin &&
-                segments[0].Origin === segments[1].Destination) {
+            const [firstSegment, secondSegment] = segments;
+            if (firstSegment.arrto === secondSegment.depfrom &&
+                firstSegment.depfrom === secondSegment.arrto) {
                 return '2';
             }
             return '3';

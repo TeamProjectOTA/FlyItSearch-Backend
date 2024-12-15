@@ -20,6 +20,7 @@ export declare class ShoppingCriteriaDto {
     tripType: string;
     travelPreferences: TravelPreferencesDto;
     returnUPSellInfo: boolean;
+    preferCombine: boolean;
 }
 export declare class RequestInnerDto {
     originDest: OriginDestDto[];

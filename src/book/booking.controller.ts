@@ -19,7 +19,6 @@ import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
-import { FilesInterceptor } from '@nestjs/platform-express';
 import { BDFareService } from 'src/flight/API Utils/bdfare.flights.service';
 
 @ApiTags('Booking-Details')

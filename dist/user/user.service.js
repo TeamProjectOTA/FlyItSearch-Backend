@@ -22,12 +22,14 @@ const bcrypt = require("bcryptjs");
 const deposit_model_1 = require("../deposit/deposit.model");
 const transection_model_1 = require("../transection/transection.model");
 const ip_model_1 = require("../ip/ip.model");
+const booking_model_1 = require("../book/booking.model");
 let UserService = class UserService {
-    constructor(userRepository, transectionRepository, authservice, ipAddressRepository) {
+    constructor(userRepository, transectionRepository, authservice, ipAddressRepository, bookingSaveRepository) {
         this.userRepository = userRepository;
         this.transectionRepository = transectionRepository;
         this.authservice = authservice;
         this.ipAddressRepository = ipAddressRepository;
+        this.bookingSaveRepository = bookingSaveRepository;
     }
     async create(createUserDto) {
         let add = new user_entity_1.User();
@@ -150,48 +152,48 @@ let UserService = class UserService {
         };
     }
     async findUserWithBookings(header, bookingStatus, page = 1, limit = 10) {
+        const pageNumber = Math.max(1, page);
+        const limitNumber = limit > 0 ? limit : 10;
+        const offset = (pageNumber - 1) * limitNumber;
         const verifyUser = await this.authservice.verifyUserToken(header);
         if (!verifyUser) {
             throw new common_1.UnauthorizedException();
         }
-        const pageNumber = Math.max(1, page);
-        const limitNumber = Math.max(1, limit);
-        const offset = (pageNumber - 1) * limitNumber;
         const email = await this.authservice.decodeToken(header);
-        const userUpdate = await this.userRepository.findOne({
-            where: { email: email },
-            relations: ['bookingSave'],
-        });
-        if (!userUpdate) {
-            throw new common_1.NotFoundException('User not found');
-        }
-        const user = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.bookingSave', 'bookingSave')
+        const [bookings, total] = await this.bookingSaveRepository
+            .createQueryBuilder('bookingSave')
+            .innerJoin('bookingSave.user', 'user')
             .where('user.email = :email', { email })
             .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
             bookingStatus,
         })
+            .orderBy('bookingSave.id', 'DESC')
             .skip(offset)
             .take(limitNumber)
-            .orderBy('bookingSave.id', 'DESC')
-            .getOne();
-        const total = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.bookingSave', 'bookingSave')
-            .where('user.email = :email', { email })
-            .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
-            bookingStatus,
-        })
-            .skip(offset)
-            .take(limitNumber)
-            .orderBy('bookingSave.id', 'DESC')
-            .getCount();
-        if (!user) {
-            throw new common_1.NotFoundException(`No ${bookingStatus} Available for the user`);
+            .getManyAndCount();
+        if (!bookings || bookings.length === 0) {
+            throw new common_1.NotFoundException(`No ${bookingStatus} available for the user`);
         }
+        const filteredBookings = bookings.map((booking) => ({
+            id: booking.id,
+            system: booking.system,
+            bookingId: booking.bookingId,
+            paxCount: booking.paxCount,
+            Curriername: booking.Curriername,
+            CurrierCode: booking.CurrierCode,
+            flightNumber: booking.flightNumber,
+            isRefundable: booking.isRefundable,
+            bookingDate: booking.bookingDate,
+            expireDate: booking.expireDate,
+            bookingStatus: booking.bookingStatus,
+            TripType: booking.TripType,
+            grossAmmount: booking.grossAmmount,
+            netAmmount: booking.netAmmount,
+            laginfo: booking.laginfo,
+            personId: booking.personId,
+        }));
         return {
-            saveBookings: user.bookingSave,
+            bookings: filteredBookings,
             total,
             page: pageNumber,
             limit: limitNumber,
@@ -303,21 +305,10 @@ let UserService = class UserService {
             'transection.tranId',
             'transection.tranDate',
             'transection.bookingId',
-            'transection.paidAmount',
             'transection.offerAmmount',
-            'transection.bankTranId',
-            'transection.riskTitle',
-            'transection.cardType',
-            'transection.cardIssuer',
-            'transection.cardBrand',
-            'transection.cardIssuerCountry',
-            'transection.validationDate',
             'transection.status',
-            'transection.currierName',
             'transection.requestType',
-            'transection.walletBalance',
             'transection.paymentType',
-            'transection.paymentId',
             'transection.refundAmount',
         ])
             .getManyAndCount();
@@ -359,9 +350,11 @@ exports.UserService = UserService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __param(1, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
     __param(3, (0, typeorm_1.InjectRepository)(ip_model_1.IpAddress)),
+    __param(4, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         auth_service_1.AuthService,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

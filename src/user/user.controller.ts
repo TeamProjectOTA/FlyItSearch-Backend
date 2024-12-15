@@ -26,12 +26,14 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
   @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
   @Patch('/updateUserProfile')
   update(@Headers() header: Headers, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(header, updateUserDto);
   }
 
   @ApiBearerAuth('access_token')
+  @UseGuards(AdmintokenGuard)
   @Get('/admin/allUser')
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
   @ApiQuery({ name: 'limit', required: false, type: Number, example: 10 })

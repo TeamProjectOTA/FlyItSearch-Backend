@@ -17,8 +17,9 @@ import { IpAddress } from 'src/ip/ip.model';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '86400s' }, //changed hare for expired time changed
     }),
+    
   ],
-  providers: [AuthService, UserService],
+  providers: [AuthService],
   controllers: [AuthController],
   exports: [AuthService],
 })

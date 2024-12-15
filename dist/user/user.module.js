@@ -16,13 +16,14 @@ const auth_module_1 = require("../auth/auth.module");
 const transection_model_1 = require("../transection/transection.model");
 const ip_module_1 = require("../ip/ip.module");
 const ip_model_1 = require("../ip/ip.model");
+const booking_model_1 = require("../book/booking.model");
 let UserModule = class UserModule {
 };
 exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress]),
+            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress, booking_model_1.BookingSave]),
             auth_module_1.AuthModule,
             ip_module_1.IpModule,
         ],

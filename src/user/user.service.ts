@@ -2,6 +2,7 @@ import {
   ConflictException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -16,6 +17,7 @@ import * as bcrypt from 'bcryptjs';
 import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
+import { BookingSave } from 'src/book/booking.model';
 
 @Injectable()
 export class UserService {
@@ -27,6 +29,8 @@ export class UserService {
     private readonly authservice: AuthService,
     @InjectRepository(IpAddress)
     private readonly ipAddressRepository: Repository<IpAddress>,
+    @InjectRepository(BookingSave)
+    private readonly bookingSaveRepository:Repository<BookingSave>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -182,59 +186,67 @@ export class UserService {
     page: number = 1,
     limit: number = 10,
   ): Promise<any> {
-    //Pagination Complete
+    const pageNumber = Math.max(1, page);
+    const limitNumber = limit > 0 ? limit : 10;
+    const offset = (pageNumber - 1) * limitNumber;
+  
+   
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
-    const pageNumber = Math.max(1, page);
-    const limitNumber = Math.max(1, limit);
-    const offset = (pageNumber - 1) * limitNumber;
+  
+    
     const email = await this.authservice.decodeToken(header);
-    const userUpdate = await this.userRepository.findOne({
-      where: { email: email },
-      relations: ['bookingSave'],
-    });
-
-    if (!userUpdate) {
-      throw new NotFoundException('User not found');
-    }
-    const user = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.bookingSave', 'bookingSave')
+  
+    
+    const [bookings, total] = await this.bookingSaveRepository
+      .createQueryBuilder('bookingSave')
+      .innerJoin('bookingSave.user', 'user') 
       .where('user.email = :email', { email })
       .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
         bookingStatus,
       })
+      .orderBy('bookingSave.id', 'DESC')
       .skip(offset)
       .take(limitNumber)
-      .orderBy('bookingSave.id', 'DESC')
-      .getOne();
-
-    const total = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.bookingSave', 'bookingSave')
-      .where('user.email = :email', { email })
-      .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
-        bookingStatus,
-      })
-      .skip(offset)
-      .take(limitNumber)
-      .orderBy('bookingSave.id', 'DESC')
-      .getCount();
-
-    if (!user) {
-      throw new NotFoundException(`No ${bookingStatus} Available for the user`);
+      .getManyAndCount();
+  
+    if (!bookings || bookings.length === 0) {
+      throw new NotFoundException(`No ${bookingStatus} available for the user`);
     }
+  
+    
+    const filteredBookings = bookings.map((booking) => ({
+      id: booking.id,
+      system: booking.system,
+      bookingId: booking.bookingId,
+      paxCount: booking.paxCount,
+      Curriername: booking.Curriername,
+      CurrierCode: booking.CurrierCode,
+      flightNumber: booking.flightNumber,
+      isRefundable: booking.isRefundable,
+      bookingDate: booking.bookingDate,
+      expireDate: booking.expireDate,
+      bookingStatus: booking.bookingStatus,
+      TripType: booking.TripType,
+      grossAmmount: booking.grossAmmount,
+      netAmmount: booking.netAmmount,
+      laginfo: booking.laginfo,
+      personId: booking.personId,
+    }));
+  
+                                                                       
     return {
-      saveBookings: user.bookingSave,
+      bookings: filteredBookings,
       total,
       page: pageNumber,
       limit: limitNumber,
       totalPages: Math.ceil(total / limitNumber),
     };
   }
-
+  
+  
   async findAllUserWithBookings(page: number, limit: number): Promise<any> {
     //Pagination Complete
 
@@ -333,6 +345,7 @@ export class UserService {
     if (!travelBuddies || travelBuddies.length === 0) {
       throw new NotFoundException(`No Travel Buddies available for the user`);
     }
+    //const travelbuddies=travelBuddies.tr
     return {
       travelBuddies,
       total,
@@ -363,21 +376,10 @@ export class UserService {
         'transection.tranId',
         'transection.tranDate',
         'transection.bookingId',
-        'transection.paidAmount',
         'transection.offerAmmount',
-        'transection.bankTranId',
-        'transection.riskTitle',
-        'transection.cardType',
-        'transection.cardIssuer',
-        'transection.cardBrand',
-        'transection.cardIssuerCountry',
-        'transection.validationDate',
         'transection.status',
-        'transection.currierName',
         'transection.requestType',
-        'transection.walletBalance',
         'transection.paymentType',
-        'transection.paymentId',
         'transection.refundAmount',
       ])
       .getManyAndCount();
