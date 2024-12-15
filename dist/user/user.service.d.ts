@@ -6,13 +6,15 @@ import { AuthService } from 'src/auth/auth.service';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
 import { BookingSave } from 'src/book/booking.model';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 export declare class UserService {
     private readonly userRepository;
     private readonly transectionRepository;
     private readonly authservice;
     private readonly ipAddressRepository;
     private readonly bookingSaveRepository;
-    constructor(userRepository: Repository<User>, transectionRepository: Repository<Transection>, authservice: AuthService, ipAddressRepository: Repository<IpAddress>, bookingSaveRepository: Repository<BookingSave>);
+    private readonly travelBuddyRepository;
+    constructor(userRepository: Repository<User>, transectionRepository: Repository<Transection>, authservice: AuthService, ipAddressRepository: Repository<IpAddress>, bookingSaveRepository: Repository<BookingSave>, travelBuddyRepository: Repository<TravelBuddy>);
     create(createUserDto: CreateUserDto): Promise<any>;
     update(header: any, updateUserDto: UpdateUserDto): Promise<{
         id: number;

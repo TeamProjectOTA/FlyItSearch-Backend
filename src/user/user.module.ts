@@ -9,10 +9,11 @@ import { IpModule } from 'src/ip/ip.module';
 import { IpAddress } from 'src/ip/ip.model';
 import { BookingSave } from 'src/book/booking.model';
 import { BookingModule } from 'src/book/booking.module';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Transection, IpAddress,BookingSave]),
+    TypeOrmModule.forFeature([User, Transection, IpAddress,BookingSave,TravelBuddy]),
     AuthModule,
     IpModule,
   ],

@@ -23,13 +23,15 @@ const deposit_model_1 = require("../deposit/deposit.model");
 const transection_model_1 = require("../transection/transection.model");
 const ip_model_1 = require("../ip/ip.model");
 const booking_model_1 = require("../book/booking.model");
+const travel_buddy_model_1 = require("../travel-buddy/travel-buddy.model");
 let UserService = class UserService {
-    constructor(userRepository, transectionRepository, authservice, ipAddressRepository, bookingSaveRepository) {
+    constructor(userRepository, transectionRepository, authservice, ipAddressRepository, bookingSaveRepository, travelBuddyRepository) {
         this.userRepository = userRepository;
         this.transectionRepository = transectionRepository;
         this.authservice = authservice;
         this.ipAddressRepository = ipAddressRepository;
         this.bookingSaveRepository = bookingSaveRepository;
+        this.travelBuddyRepository = travelBuddyRepository;
     }
     async create(createUserDto) {
         let add = new user_entity_1.User();
@@ -269,11 +271,11 @@ let UserService = class UserService {
         const limitNumber = Math.max(1, limit);
         const offset = (pageNumber - 1) * limitNumber;
         const email = await this.authservice.decodeToken(header);
-        const [travelBuddies, total] = await this.userRepository
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.travelBuddy', 'travelBuddy')
+        const [travelBuddies, total] = await this.travelBuddyRepository
+            .createQueryBuilder('travelbuddy')
+            .innerJoin('travelbuddy.user', 'user')
             .where('user.email = :email', { email })
-            .orderBy('travelBuddy.id', 'DESC')
+            .orderBy('travelbuddy.id', 'DESC')
             .skip(offset)
             .take(limitNumber)
             .getManyAndCount();
@@ -351,9 +353,11 @@ exports.UserService = UserService = __decorate([
     __param(1, (0, typeorm_1.InjectRepository)(transection_model_1.Transection)),
     __param(3, (0, typeorm_1.InjectRepository)(ip_model_1.IpAddress)),
     __param(4, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(5, (0, typeorm_1.InjectRepository)(travel_buddy_model_1.TravelBuddy)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
         auth_service_1.AuthService,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         typeorm_2.Repository])
 ], UserService);

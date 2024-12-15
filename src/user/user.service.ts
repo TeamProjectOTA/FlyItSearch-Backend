@@ -18,6 +18,7 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
 import { BookingSave } from 'src/book/booking.model';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 
 @Injectable()
 export class UserService {
@@ -30,7 +31,9 @@ export class UserService {
     @InjectRepository(IpAddress)
     private readonly ipAddressRepository: Repository<IpAddress>,
     @InjectRepository(BookingSave)
-    private readonly bookingSaveRepository:Repository<BookingSave>
+    private readonly bookingSaveRepository:Repository<BookingSave>,
+    @InjectRepository(TravelBuddy)
+    private readonly travelBuddyRepository:Repository<TravelBuddy>
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -334,18 +337,17 @@ export class UserService {
     const limitNumber = Math.max(1, limit);
     const offset = (pageNumber - 1) * limitNumber;
     const email = await this.authservice.decodeToken(header);
-    const [travelBuddies, total] = await this.userRepository
-      .createQueryBuilder('user')
-      .leftJoinAndSelect('user.travelBuddy', 'travelBuddy')
+    const [travelBuddies, total] = await this.travelBuddyRepository
+      .createQueryBuilder('travelbuddy')
+      .innerJoin('travelbuddy.user', 'user') 
       .where('user.email = :email', { email })
-      .orderBy('travelBuddy.id', 'DESC')
+      .orderBy('travelbuddy.id', 'DESC')
       .skip(offset)
       .take(limitNumber)
       .getManyAndCount();
     if (!travelBuddies || travelBuddies.length === 0) {
       throw new NotFoundException(`No Travel Buddies available for the user`);
     }
-    //const travelbuddies=travelBuddies.tr
     return {
       travelBuddies,
       total,
