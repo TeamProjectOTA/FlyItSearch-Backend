@@ -1,25 +1,38 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { User } from 'src/user/entities/user.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 export class TravelBuddyDto {
+  @ApiProperty()
   @IsString()
   title: string;
+  @ApiProperty()
   @IsString()
   firstName: string;
+  @ApiProperty()
   @IsString()
   lastName: string;
-  @IsString()
-  gender: string;
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  nationility: string;
+  paxtype:string
+  @ApiProperty()
+  @IsString()
+  gender: string;
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  nationality: string;
+  @ApiProperty()
   @IsDate()
   @Type(() => Date)
   dob: Date;
+  @ApiProperty()
   @IsString()
   passport: string;
+  @ApiProperty()
   @IsDate()
   @Type(() => Date)
   passportexp: Date;
@@ -38,7 +51,9 @@ export class TravelBuddy {
   @Column()
   gender: string;
   @Column()
-  nationility: string;
+  nationality: string;
+  @Column()
+  paxtype:string;
   @Column()
   dob: Date;
   @Column()

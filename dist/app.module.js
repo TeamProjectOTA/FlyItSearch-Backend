@@ -42,19 +42,19 @@ let AppModule = class AppModule {
         consumer
             .apply(jwt_middleware_1.JwtMiddleware, rate_limiter_middleware_1.RateLimiterMiddleware)
             .exclude({ path: 'auth/sign-in-admin', method: common_1.RequestMethod.POST }, { path: 'auth/sign-in-user', method: common_1.RequestMethod.POST }, { path: 'social-site/google', method: common_1.RequestMethod.GET }, { path: 'social-site/google-redirect', method: common_1.RequestMethod.GET })
-            .forRoutes({ path: '/flights/fhb/airSearch', method: common_1.RequestMethod.POST });
+            .forRoutes({ path: '/flights/bdFare', method: common_1.RequestMethod.POST });
     }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            throttler_1.ThrottlerModule.forRoot([
-                {
-                    ttl: 60,
-                    limit: 15,
-                },
-            ]),
+            throttler_1.ThrottlerModule.forRootAsync({
+                useFactory: () => ([{
+                        ttl: 60,
+                        limit: 5,
+                    }]),
+            }),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
                 host: process.env.FLYIT_URL,

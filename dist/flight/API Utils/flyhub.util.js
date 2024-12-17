@@ -212,32 +212,34 @@ let FlyHubUtil = class FlyHubUtil {
                             AllLegsInfo.push(legInfo);
                         }
                     }
-                    FlightItenary.push({
-                        System: 'API1',
-                        ResultId: Result?.ResultID,
-                        SearchId: SearchResponse?.SearchId,
-                        PassportMadatory: Result?.PassportMadatory,
-                        InstantPayment: Instant_Payment,
-                        IsBookable: IsBookable,
-                        TripType: TripType,
-                        FareType: FareType,
-                        Carrier: ValidatingCarrier,
-                        CarrierName: CarrierName,
-                        Cabinclass: Cabinclass,
-                        BaseFare: Math.ceil(equivalentAmount1),
-                        Taxes: Taxes,
-                        SerViceFee: extraService + servicefee || 0,
-                        NetFare: Math.ceil(TotalFare),
-                        GrossFare: Math.ceil(NetFare),
-                        PartialOption: partialoption,
-                        PartialFare: Math.ceil(PartialAmount),
-                        TimeLimit: TimeLimit,
-                        RePriceStatus: SearchResponse?.RePriceStatus,
-                        Refundable: Refundable,
-                        ExtraService: Result?.ExtraServices || null,
-                        PriceBreakDown: PriceBreakDown,
-                        AllLegsInfo: AllLegsInfo,
-                    });
+                    if (FareType !== "InstantTicketing") {
+                        FlightItenary.push({
+                            System: 'API1',
+                            ResultId: Result?.ResultID,
+                            SearchId: SearchResponse?.SearchId,
+                            PassportMadatory: Result?.PassportMadatory,
+                            InstantPayment: Instant_Payment,
+                            IsBookable: IsBookable,
+                            TripType: TripType,
+                            FareType: FareType,
+                            Carrier: ValidatingCarrier,
+                            CarrierName: CarrierName,
+                            Cabinclass: Cabinclass,
+                            BaseFare: Math.ceil(equivalentAmount1),
+                            Taxes: Taxes,
+                            SerViceFee: extraService + servicefee || 0,
+                            NetFare: Math.ceil(TotalFare),
+                            GrossFare: Math.ceil(NetFare),
+                            PartialOption: partialoption,
+                            PartialFare: Math.ceil(PartialAmount),
+                            TimeLimit: TimeLimit,
+                            RePriceStatus: SearchResponse?.RePriceStatus,
+                            Refundable: Refundable,
+                            ExtraService: Result?.ExtraServices || null,
+                            PriceBreakDown: PriceBreakDown,
+                            AllLegsInfo: AllLegsInfo,
+                        });
+                    }
                 }
             }
         }
@@ -453,28 +455,10 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
-        const sslpaymentLink = await this.paymentService
-            .dataModification(FlightItenary, header)
-            .catch(() => null);
         const bkash = await this.paymentService.bkashInit(FlightItenary, header);
-        const price = FlightItenary?.[0]?.NetFare || 0;
-        const email = await this.authService.decodeToken(header).catch(() => 'NA');
-        let wallet = await this.walletRepository
-            .createQueryBuilder('wallet')
-            .innerJoinAndSelect('wallet.user', 'user')
-            .where('user.email = :email', { email })
-            .getOne()
-            .catch(() => null);
-        const walletAmmount = wallet?.ammount || 0;
-        let priceAfterPayment = walletAmmount - price;
-        if (priceAfterPayment < 0) {
-            priceAfterPayment = 0;
-        }
         return {
             bookingData: FlightItenary,
-            sslpaymentLink: sslpaymentLink,
             bkash: bkash,
-            walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
     async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp, personIds) {
@@ -679,28 +663,10 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         await this.saveBookingData(FlightItenary, header, personIds);
-        const sslpaymentLink = await this.paymentService
-            .dataModification(FlightItenary, header)
-            .catch(() => null);
         const bkash = await this.paymentService.bkashInit(FlightItenary, header);
-        const price = FlightItenary?.[0]?.NetFare || 0;
-        const email = await this.authService.decodeToken(header).catch(() => 'NA');
-        let wallet = await this.walletRepository
-            .createQueryBuilder('wallet')
-            .innerJoinAndSelect('wallet.user', 'user')
-            .where('user.email = :email', { email })
-            .getOne()
-            .catch(() => null);
-        const walletAmmount = wallet?.ammount || 0;
-        let priceAfterPayment = walletAmmount - price;
-        if (priceAfterPayment < 0) {
-            priceAfterPayment = 0;
-        }
         return {
             bookingData: FlightItenary,
-            sslpaymentLink: sslpaymentLink,
             bkash: bkash,
-            walletPayment: { walletAmmount, price, priceAfterPayment },
         };
     }
     async saveBookingData(SearchResponse, header, personIds) {

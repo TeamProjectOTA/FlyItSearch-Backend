@@ -1,8 +1,5 @@
 import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
-
 import axios, { AxiosResponse } from 'axios';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
 import { BookingIdSave, FlightSearchModel } from '../flight.model';
 import {
   DestArrivalRequestDto,
@@ -389,8 +386,6 @@ export class BDFareService {
     return dataModified;
   }
   
-  
-
   private determineJourneyType(segments: any[]): string {
     if (!segments || segments.length === 0) {
       throw new Error("Segments array is empty or undefined.");

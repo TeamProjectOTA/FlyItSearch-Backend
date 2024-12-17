@@ -1,44 +1,193 @@
-<html>
-    <body>
-        Your Booking is Confirmed
-        Finish Payment to Secure Your Ticket
-Thank you for booking with Flyit Search! We're excited to assist you with your travel plans.
-To secure your booking and receive your ticket, please complete the payment within the next 20 minutes. Flight fares are subject to change, so we recommend prompt payment to lock in your current rate.
-Once your payment is successful, your ticket will be issued and sent directly to your email.
-         {{#each AllLegsInfo}}
-         {{#each Segments}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmation</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
 
+        table {
+            border-spacing: 0;
+            border-collapse: collapse;
+            width: 100%;
+        }
 
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
 
+        /* Container */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-            <img 
-            src="https://tbbd-flight.s3.ap-southeast-1.amazonaws.com/airlines-logo/{{OperatingCarrier}}.png" 
-            alt="Airline Logo" 
-            style="height: 20px; margin-right: 8px;" 
-        />
-        {{MarketingCarrierName}}
-        {{MarketingCarrier}}-{{MarketingFlightNumber}}
-        <div> Depart
-            {{DepFrom}}
-            {{DepAirPort}}
-            {{DepTime}}
-        </div>
-        <div>Arrival
-            {{ArrTo}}
-            {{ArrAirPort}}
-            {{ArrTime}}
-        </div>
-        
-             {{/each}}
-            {{/each}}
-           <div class="traveler-info">
-                {{#each PassengerList}}
-                <p><strong>{{Title}} {{FirstName}} {{LastName}}</strong> {{PaxType}}</p>
-                {{/each}}
-                <p><strong>Booking ID:</strong> {{BookingId}}</p>
-                Please note that this is a provisional flight booking and is not a confirmed ticket or final confirmation of your travel plans. This booking may be subject to cancellation at any time.
-Thank you,
-Team Flyit Search
-            </div>
-    </body>
+        .content {
+            padding: 20px 30px;
+        }
+
+        .header, .footer {
+            text-align: center;
+            padding: 20px 30px;
+            background: #2a2a8f;
+            color: #ffffff;
+        }
+
+        .header h1, .footer p {
+            margin: 0;
+        }
+
+        .cta {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta a {
+            background-color: #2a2a8f;
+            color: #ffffff;
+            padding: 12px 25px;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .cta a:hover {
+            background-color: #1f1f6f;
+        }
+
+        .contact-options {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .contact-button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 14px;
+            color: #2a2a8f;
+            text-decoration: none;
+            border: 2px solid #2a2a8f;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        .booking-info {
+            margin: 40px 0;
+        }
+
+        .info-item {
+            padding: 10px;
+            background-color: #f1f3f5;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px;
+            }
+
+            .cta a {
+                width: 100%;
+                padding: 15px 25px;
+            }
+
+            .contact-button {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 15px;
+                margin-bottom: 10px;
+            }
+
+            .info-item {
+                font-size: 14px;
+                padding: 15px;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <tr>
+            <td align="center">
+                <!-- Main Container -->
+                <table class="container">
+                    <!-- Header -->
+                    <tr>
+                        <td class="header">
+                            <h1>Your Booking is Confirmed</h1>
+                            <p>Finish Payment to Secure Your Ticket</p>
+                        </td>
+                    </tr>
+                    <!-- Content -->
+                    <tr>
+                        <td class="content">
+                            <p>Dear <strong style="color: #2a2a8f;">Saleh Ahmed</strong>,</p>
+                            <p>Thank you for booking with Flyit Search! We're excited to assist you with your travel plans.</p>
+                            <p>To secure your booking and receive your ticket, <strong style="color: #2a2a8f;">please complete the payment within the next 20 minutes.</strong> Flight fares are subject to change, so we recommend prompt payment to lock in your current rate.</p>
+                            <p>Once your payment is successful, your ticket will be issued and sent directly to your email.</p>
+                            <p>Safe travels with Flyit Search!</p>
+                        </td>
+                    </tr>
+                    <!-- CTA Button -->
+                    <tr>
+                        <td class="cta">
+                            <a href="#">Confirm Booking</a>
+                        </td>
+                    </tr>
+                    <!-- Contact Options -->
+                    <tr>
+                        <td class="contact-options">
+                            <a href="tel:01736-987906" class="contact-button">Call for Assistance</a>
+                            <a href="#" class="contact-button">Send Message</a>
+                        </td>
+                    </tr>
+                    <!-- Booking Info -->
+                    <tr>
+                        <td class="booking-info">
+                            <h3 style="text-align: center; font-size: 20px; font-weight: bold;">Booking Information:</h3>
+                            <div class="info-item">
+                                <strong>Booking ID</strong><br>
+                                FIS7520037928887
+                            </div>
+                            <div class="info-item">
+                                <strong>Traveler's Name</strong><br>
+                                MR HASIBUL ISLAM
+                            </div>
+                            <div class="info-item">
+                                <strong>Type</strong><br>
+                                Adult
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Footer -->
+                    <tr>
+                        <td class="footer">
+                            <p>Thank you,<br>Team Flyit Search</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
 </html>

@@ -3,8 +3,9 @@ export declare class TravelBuddyDto {
     title: string;
     firstName: string;
     lastName: string;
+    paxtype: string;
     gender: string;
-    nationility: string;
+    nationality: string;
     dob: Date;
     passport: string;
     passportexp: Date;
@@ -15,7 +16,8 @@ export declare class TravelBuddy {
     firstName: string;
     lastName: string;
     gender: string;
-    nationility: string;
+    nationality: string;
+    paxtype: string;
     dob: Date;
     passport: string;
     passportexp: Date;

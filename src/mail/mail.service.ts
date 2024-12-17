@@ -142,4 +142,6 @@ export class MailService {
       throw new Error('Failed to send cancellation email.');
     }
   }
+
+  // async testMail()
 }

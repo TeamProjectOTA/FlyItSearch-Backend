@@ -63,6 +63,7 @@ export class RateLimiterMiddleware implements NestMiddleware {
             email,
           );
         }
+        console.log("apihit")
         await this.ipService.createOrUpdate(
           ip,
           userRole,

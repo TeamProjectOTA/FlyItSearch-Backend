@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { AirportsService } from './airports.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AirportsModel, AirportsModelUpdate } from './airports.model';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @ApiTags('Airports Module')
 @Controller('admin/airports')

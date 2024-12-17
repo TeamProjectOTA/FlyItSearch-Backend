@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule, ThrottlerModuleOptions } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
@@ -31,12 +31,12 @@ require('dotenv').config();
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60,
-        limit: 15,
-      },
-    ]),
+    ThrottlerModule.forRootAsync({
+      useFactory: (): ThrottlerModuleOptions => ([{
+        ttl: 60,  
+        limit: 5,  
+      }]),
+    }),
     // TypeOrmModule.forRoot({
     //   type: 'mysql',
     //   host: 'localhost',
@@ -90,7 +90,7 @@ require('dotenv').config();
   providers: [
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: ThrottlerGuard,  
     },
   ],
   controllers: [],
@@ -109,7 +109,7 @@ export class AppModule {
       .forRoutes(
         //{ path: '*', method: RequestMethod.ALL },
         // include all the path that uses this middleware
-        { path: '/flights/fhb/airSearch', method: RequestMethod.POST },
+        { path: '/flights/bdFare', method: RequestMethod.POST },
       );
   }
 }

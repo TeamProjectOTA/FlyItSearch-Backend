@@ -258,6 +258,7 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
+          if(FareType!=="InstantTicketing"){
 
           FlightItenary.push({
             System: 'API1',
@@ -285,6 +286,7 @@ export class FlyHubUtil {
             PriceBreakDown: PriceBreakDown,
             AllLegsInfo: AllLegsInfo,
           });
+        }
         }
       }
     }
@@ -563,36 +565,36 @@ export class FlyHubUtil {
       }
     }
 
-    const sslpaymentLink = await this.paymentService
-      .dataModification(FlightItenary, header)
-      .catch(() => null);
+    // const sslpaymentLink = await this.paymentService
+    //   .dataModification(FlightItenary, header)
+    //   .catch(() => null);
     //const surjopay = await this.paymentService.formdata(FlightItenary, header);
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
-    const price = FlightItenary?.[0]?.NetFare || 0;
+    // const price = FlightItenary?.[0]?.NetFare || 0;
 
-    const email = await this.authService.decodeToken(header).catch(() => 'NA');
+    // const email = await this.authService.decodeToken(header).catch(() => 'NA');
 
-    let wallet = await this.walletRepository
-      .createQueryBuilder('wallet')
-      .innerJoinAndSelect('wallet.user', 'user')
-      .where('user.email = :email', { email })
-      .getOne()
-      .catch(() => null);
+    // let wallet = await this.walletRepository
+    //   .createQueryBuilder('wallet')
+    //   .innerJoinAndSelect('wallet.user', 'user')
+    //   .where('user.email = :email', { email })
+    //   .getOne()
+    //   .catch(() => null);
 
-    const walletAmmount = wallet?.ammount || 0;
+    // const walletAmmount = wallet?.ammount || 0;
 
-    let priceAfterPayment: number = walletAmmount - price;
+    // let priceAfterPayment: number = walletAmmount - price;
 
-    if (priceAfterPayment < 0) {
-      priceAfterPayment = 0;
-    }
+    // if (priceAfterPayment < 0) {
+    //   priceAfterPayment = 0;
+    // }
     return {
       bookingData: FlightItenary,
-      sslpaymentLink: sslpaymentLink,
+      // sslpaymentLink: sslpaymentLink,
       //surjopay: surjopay,
       bkash: bkash,
-      walletPayment: { walletAmmount, price, priceAfterPayment },
+      // walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
 
@@ -862,36 +864,36 @@ export class FlyHubUtil {
       }
     }
     await this.saveBookingData(FlightItenary, header, personIds);
-    const sslpaymentLink = await this.paymentService
-      .dataModification(FlightItenary, header)
-      .catch(() => null);
+    // const sslpaymentLink = await this.paymentService
+    //   .dataModification(FlightItenary, header)
+    //   .catch(() => null);
     //const surjopay = await this.paymentService.formdata(FlightItenary, header);
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
-    const price = FlightItenary?.[0]?.NetFare || 0;
+    // const price = FlightItenary?.[0]?.NetFare || 0;
 
-    const email = await this.authService.decodeToken(header).catch(() => 'NA');
+    // const email = await this.authService.decodeToken(header).catch(() => 'NA');
 
-    let wallet = await this.walletRepository
-      .createQueryBuilder('wallet')
-      .innerJoinAndSelect('wallet.user', 'user')
-      .where('user.email = :email', { email })
-      .getOne()
-      .catch(() => null);
+    // let wallet = await this.walletRepository
+    //   .createQueryBuilder('wallet')
+    //   .innerJoinAndSelect('wallet.user', 'user')
+    //   .where('user.email = :email', { email })
+    //   .getOne()
+    //   .catch(() => null);
 
-    const walletAmmount = wallet?.ammount || 0;
+    // const walletAmmount = wallet?.ammount || 0;
 
-    let priceAfterPayment: number = walletAmmount - price;
+    // let priceAfterPayment: number = walletAmmount - price;
 
-    if (priceAfterPayment < 0) {
-      priceAfterPayment = 0;
-    }
+    // if (priceAfterPayment < 0) {
+    //   priceAfterPayment = 0;
+    // }
     return {
       bookingData: FlightItenary,
-      sslpaymentLink: sslpaymentLink,
+      //sslpaymentLink: sslpaymentLink,
       //surjopay: surjopay,
       bkash: bkash,
-      walletPayment: { walletAmmount, price, priceAfterPayment },
+      //walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
 

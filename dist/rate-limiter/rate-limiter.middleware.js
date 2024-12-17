@@ -63,6 +63,7 @@ let RateLimiterMiddleware = class RateLimiterMiddleware {
                 else {
                     ipAddress = await this.ipService.create(ip, userRole, rateLimiter.points - 1, currentTime, email);
                 }
+                console.log("apihit");
                 await this.ipService.createOrUpdate(ip, userRole, ipAddress.points, currentTime, email);
             }
             next();
