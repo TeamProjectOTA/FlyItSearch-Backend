@@ -23,6 +23,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { BfFareUtil } from './API Utils/bdfare.util';
 import { BookingDataDto } from 'src/book/booking.model';
+import { WhitelistGuard } from 'src/whitelist/whitelist.guard';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -44,7 +45,7 @@ export class FlightController {
   // async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
   //   return await this.bdFareService.processApi(bdfaredto);
   // }
-
+@UseGuards(WhitelistGuard)
   @Post('/bdFare')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,

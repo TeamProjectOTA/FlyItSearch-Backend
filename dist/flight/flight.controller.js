@@ -24,6 +24,7 @@ const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
 const bdfare_util_1 = require("./API Utils/bdfare.util");
+const whitelist_guard_1 = require("../whitelist/whitelist.guard");
 let FlightController = class FlightController {
     constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
@@ -81,6 +82,7 @@ let FlightController = class FlightController {
 };
 exports.FlightController = FlightController;
 __decorate([
+    (0, common_1.UseGuards)(whitelist_guard_1.WhitelistGuard),
     (0, common_1.Post)('/bdFare'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

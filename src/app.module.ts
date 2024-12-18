@@ -27,6 +27,7 @@ import { AdminDashboardModule } from './admin-dashboard/admin-dashboard.module';
 import { BankAddModule } from './bank-add/bank-add.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SheduleModule } from './shedule/shedule.module';
+import { WhitelistModule } from './whitelist/whitelist.module';
 require('dotenv').config();
 
 @Module({
@@ -85,6 +86,7 @@ require('dotenv').config();
     AdminDashboardModule,
     BankAddModule,
     SheduleModule,
+    WhitelistModule,
   ],
 
   providers: [

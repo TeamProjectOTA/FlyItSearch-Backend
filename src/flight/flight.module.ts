@@ -24,6 +24,7 @@ import { TransectionModule } from 'src/transection/transection.module';
 import { Transection } from 'src/transection/transection.model';
 import { Wallet } from 'src/deposit/deposit.model';
 import { BfFareUtil } from './API Utils/bdfare.util';
+import { BookingModule } from 'src/book/booking.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -43,6 +44,7 @@ import { BfFareUtil } from './API Utils/bdfare.util';
     PaymentModule,
     MailModule,
     TransectionModule,
+    
   ],
   controllers: [FlightController],
   providers: [

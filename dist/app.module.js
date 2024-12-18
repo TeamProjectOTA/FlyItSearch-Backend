@@ -36,6 +36,7 @@ const admin_dashboard_module_1 = require("./admin-dashboard/admin-dashboard.modu
 const bank_add_module_1 = require("./bank-add/bank-add.module");
 const schedule_1 = require("@nestjs/schedule");
 const shedule_module_1 = require("./shedule/shedule.module");
+const whitelist_module_1 = require("./whitelist/whitelist.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -91,6 +92,7 @@ exports.AppModule = AppModule = __decorate([
             admin_dashboard_module_1.AdminDashboardModule,
             bank_add_module_1.BankAddModule,
             shedule_module_1.SheduleModule,
+            whitelist_module_1.WhitelistModule,
         ],
         providers: [
             {
