@@ -1,7 +1,13 @@
 import { Module } from '@nestjs/common';
-import { Whitelist } from './whitelist';
+import { WhitelistService } from './whitelist';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { WhitelistController } from './whitelist.controller';
+import { IPWhitelist } from './whitelist.model';
 
 @Module({
-  providers: [Whitelist]
+  imports:[TypeOrmModule.forFeature([IPWhitelist])],
+  providers: [WhitelistService],
+  exports:[WhitelistService],
+  controllers: [WhitelistController]
 })
 export class WhitelistModule {}

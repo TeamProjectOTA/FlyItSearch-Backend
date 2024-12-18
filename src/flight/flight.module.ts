@@ -25,6 +25,7 @@ import { Transection } from 'src/transection/transection.model';
 import { Wallet } from 'src/deposit/deposit.model';
 import { BfFareUtil } from './API Utils/bdfare.util';
 import { BookingModule } from 'src/book/booking.module';
+import { WhitelistModule } from 'src/whitelist/whitelist.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -44,7 +45,7 @@ import { BookingModule } from 'src/book/booking.module';
     PaymentModule,
     MailModule,
     TransectionModule,
-    
+    WhitelistModule
   ],
   controllers: [FlightController],
   providers: [

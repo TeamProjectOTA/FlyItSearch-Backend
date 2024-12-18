@@ -33,6 +33,7 @@ const transection_module_1 = require("../transection/transection.module");
 const transection_model_1 = require("../transection/transection.model");
 const deposit_model_1 = require("../deposit/deposit.model");
 const bdfare_util_1 = require("./API Utils/bdfare.util");
+const whitelist_module_1 = require("../whitelist/whitelist.module");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -56,6 +57,7 @@ exports.FlightModule = FlightModule = __decorate([
             payment_module_1.PaymentModule,
             mail_module_1.MailModule,
             transection_module_1.TransectionModule,
+            whitelist_module_1.WhitelistModule
         ],
         controllers: [flight_controller_1.FlightController],
         providers: [
