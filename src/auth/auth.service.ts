@@ -340,12 +340,12 @@ export class AuthService {
 
   async sendResetPasswordEmail(email: string, token: string): Promise<void> {
     const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
+      host: `${process.env.EMAIL_HOST}`,
       port: 465,
       secure: true,
       auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD,
+        user: `${process.env.EMAIL_USERNAME}`,
+        pass: `${process.env.EMAIL_PASSWORD}`,
       },
     });
 
@@ -374,7 +374,7 @@ export class AuthService {
           <div style="margin: 0 0 20px; font-size: 13px">
             We received a request to reset your password. Please click the button below to reset your password.If you didn’t request this, you can safely ignore this email.</div>
           <div style="text-align: center; margin: 10px 0;">
-            <a href="http://192.168.10.30:3000/resetpassword?token=${token}" style="
+            <a href="https://www.flyitsearch.com/resetpassword?token=${token}" style="
               display: inline-block;
               padding: 9px 17px;
               font-size: 15px;

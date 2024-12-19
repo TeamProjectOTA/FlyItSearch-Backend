@@ -1,8 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@nestjs/common';
 import { Request } from 'express';
 import { WhitelistService } from './whitelist';
- // Ensure correct path to your service
-
+ 
 @Injectable()
 export class WhitelistGuard implements CanActivate {
   constructor(private readonly whitelistService: WhitelistService) {}
@@ -14,6 +13,7 @@ export class WhitelistGuard implements CanActivate {
    
     if (clientIP.startsWith('::ffff:')) {
       clientIP = clientIP.replace('::ffff:', '');
+      
     }
     if (clientIP.startsWith('::')) {
       clientIP = clientIP.replace('::', '');
