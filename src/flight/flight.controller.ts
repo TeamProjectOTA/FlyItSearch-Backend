@@ -24,6 +24,7 @@ import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { BfFareUtil } from './API Utils/bdfare.util';
 import { BookingDataDto } from 'src/book/booking.model';
 import { WhitelistGuard } from 'src/whitelist/whitelist.guard';
+import { RateLimiterGuard } from 'src/ip/ratelimiterguard';
 
 @ApiTags('Flight-filters')
 @Controller('flights')
@@ -45,7 +46,9 @@ export class FlightController {
   // async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
   //   return await this.bdFareService.processApi(bdfaredto);
   // }
-@UseGuards(WhitelistGuard)
+@ApiBearerAuth('access_token')
+//@UseGuards(WhitelistGuard)
+@UseGuards(RateLimiterGuard)
   @Post('/bdFare')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,
@@ -94,6 +97,7 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
   @ApiBearerAuth('access_token')
+  @UseGuards(RateLimiterGuard)
   @Post('fhb/airSearch/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,

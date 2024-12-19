@@ -8,7 +8,7 @@ import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 export class IpController {
   constructor(private readonly ipService: IpService) {}
 
-  @UseGuards(AdmintokenGuard)
+  //@UseGuards(AdmintokenGuard)
   @Patch('admin/updatelimit/:email/:points')
   async searchCount(
     @Param('email') email: string,

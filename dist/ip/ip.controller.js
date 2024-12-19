@@ -16,7 +16,6 @@ exports.IpController = void 0;
 const common_1 = require("@nestjs/common");
 const ip_service_1 = require("./ip.service");
 const swagger_1 = require("@nestjs/swagger");
-const admin_tokens_guard_1 = require("../auth/admin.tokens.guard");
 let IpController = class IpController {
     constructor(ipService) {
         this.ipService = ipService;
@@ -27,7 +26,6 @@ let IpController = class IpController {
 };
 exports.IpController = IpController;
 __decorate([
-    (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     (0, common_1.Patch)('admin/updatelimit/:email/:points'),
     __param(0, (0, common_1.Param)('email')),
     __param(1, (0, common_1.Param)('points')),

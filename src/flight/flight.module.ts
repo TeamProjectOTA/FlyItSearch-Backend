@@ -26,6 +26,7 @@ import { Wallet } from 'src/deposit/deposit.model';
 import { BfFareUtil } from './API Utils/bdfare.util';
 import { BookingModule } from 'src/book/booking.module';
 import { WhitelistModule } from 'src/whitelist/whitelist.module';
+import { IpModule } from 'src/ip/ip.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -45,7 +46,8 @@ import { WhitelistModule } from 'src/whitelist/whitelist.module';
     PaymentModule,
     MailModule,
     TransectionModule,
-    WhitelistModule
+    WhitelistModule,
+    IpModule
   ],
   controllers: [FlightController],
   providers: [

@@ -52,7 +52,7 @@ export class IpService {
 
   async update(email: string, points: number) {
     const user = await this.ipRepository.findOne({ where: { email: email } });
-    user.points = 50 - points;
+    user.points = Number(points);
     return await this.ipRepository.save(user);
   }
   async findUser(email: string) {

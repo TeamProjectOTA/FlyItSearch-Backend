@@ -10,8 +10,6 @@ import { PaymentModule } from './payment/payment.module';
 import { FlightModule } from './flight/flight.module';
 import { GoogleOuthModule } from './google-outh/google-outh.module';
 import { HomepageModule } from './homepage/homepage.module';
-import { JwtMiddleware } from './rate-limiter/jwt.middleware';
-import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 import { IpModule } from './ip/ip.module';
 import { APP_GUARD } from '@nestjs/core';
 import { TourPackageModule } from './tour-package/tour-package.module';
@@ -32,12 +30,10 @@ require('dotenv').config();
 
 @Module({
   imports: [
-    ThrottlerModule.forRootAsync({
-      useFactory: (): ThrottlerModuleOptions => ([{
-        ttl: 60,  
-        limit: 5,  
-      }]),
-    }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 20,
+    }]),
     // TypeOrmModule.forRoot({
     //   type: 'mysql',
     //   host: 'localhost',
@@ -98,20 +94,5 @@ require('dotenv').config();
   controllers: [],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(JwtMiddleware, RateLimiterMiddleware)
-      //exclude the path that dont use the middle ware
-      .exclude(
-        { path: 'auth/sign-in-admin', method: RequestMethod.POST },
-        { path: 'auth/sign-in-user', method: RequestMethod.POST },
-        { path: 'social-site/google', method: RequestMethod.GET },
-        { path: 'social-site/google-redirect', method: RequestMethod.GET },
-      )
-      .forRoutes(
-        //{ path: '*', method: RequestMethod.ALL },
-        // include all the path that uses this middleware
-        { path: '/flights/bdFare', method: RequestMethod.POST },
-      );
-  }
+  
 }

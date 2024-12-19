@@ -19,8 +19,6 @@ const payment_module_1 = require("./payment/payment.module");
 const flight_module_1 = require("./flight/flight.module");
 const google_outh_module_1 = require("./google-outh/google-outh.module");
 const homepage_module_1 = require("./homepage/homepage.module");
-const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
-const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
 const ip_module_1 = require("./ip/ip.module");
 const core_1 = require("@nestjs/core");
 const tour_package_module_1 = require("./tour-package/tour-package.module");
@@ -39,23 +37,15 @@ const shedule_module_1 = require("./shedule/shedule.module");
 const whitelist_module_1 = require("./whitelist/whitelist.module");
 require('dotenv').config();
 let AppModule = class AppModule {
-    configure(consumer) {
-        consumer
-            .apply(jwt_middleware_1.JwtMiddleware, rate_limiter_middleware_1.RateLimiterMiddleware)
-            .exclude({ path: 'auth/sign-in-admin', method: common_1.RequestMethod.POST }, { path: 'auth/sign-in-user', method: common_1.RequestMethod.POST }, { path: 'social-site/google', method: common_1.RequestMethod.GET }, { path: 'social-site/google-redirect', method: common_1.RequestMethod.GET })
-            .forRoutes({ path: '/flights/bdFare', method: common_1.RequestMethod.POST });
-    }
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            throttler_1.ThrottlerModule.forRootAsync({
-                useFactory: () => ([{
-                        ttl: 60,
-                        limit: 5,
-                    }]),
-            }),
+            throttler_1.ThrottlerModule.forRoot([{
+                    ttl: 60000,
+                    limit: 20,
+                }]),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'mysql',
                 host: process.env.FLYIT_URL,
