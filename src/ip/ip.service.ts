@@ -13,7 +13,10 @@ export class IpService {
   async findOne(ip: string): Promise<IpAddress> {
     return this.ipRepository.findOne({ where: { ip } });
   }
-
+  async findByEmail(email: string) {
+    return this.ipRepository.findOne({ where: { email } });
+  }
+  
   async create(
     ip: string,
     role: string,

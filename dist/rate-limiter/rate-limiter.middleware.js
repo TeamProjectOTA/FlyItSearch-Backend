@@ -11,73 +11,71 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RateLimiterMiddleware = void 0;
 const common_1 = require("@nestjs/common");
-const rate_limiter_flexible_1 = require("rate-limiter-flexible");
 const ip_service_1 = require("../ip/ip.service");
-const rateLimiterByRole = {
-    unregistered: new rate_limiter_flexible_1.RateLimiterMemory({
-        points: 25,
-        duration: 86400,
-    }),
-    registered: new rate_limiter_flexible_1.RateLimiterMemory({
-        points: 70,
-        duration: 86400,
-    }),
-    admin: new rate_limiter_flexible_1.RateLimiterMemory({
-        points: Number.MAX_SAFE_INTEGER,
-        duration: 86400,
-    }),
-    superAdmin: new rate_limiter_flexible_1.RateLimiterMemory({
-        points: Number.MAX_SAFE_INTEGER,
-        duration: 86400,
-    }),
-};
 let RateLimiterMiddleware = class RateLimiterMiddleware {
     constructor(ipService) {
         this.ipService = ipService;
+        this.rateLimits = {
+            unregistered: { points: 25, duration: 86400 * 1000 },
+            registered: { points: 70, duration: 86400 * 1000 },
+            admin: { points: Number.MAX_SAFE_INTEGER, duration: 86400 * 1000 },
+            superAdmin: { points: Number.MAX_SAFE_INTEGER, duration: 86400 * 1000 },
+        };
     }
     async use(req, res, next) {
         const ip = req.ip;
         const userRole = req.user?.role || 'unregistered';
         const email = req.user?.email;
-        const rateLimiter = rateLimiterByRole[userRole] || rateLimiterByRole.unregistered;
+        const { points, duration } = this.rateLimits[userRole];
         try {
-            await rateLimiter.consume(ip);
-            if (userRole !== 'unregistered') {
-                const currentTime = Date.now();
-                const duration = 86400 * 1000;
-                let ipAddress = await this.ipService.findOne(ip);
-                if (ipAddress) {
-                    if (ipAddress.role !== userRole) {
-                        ipAddress.points = rateLimiter.points - 1;
-                        ipAddress.role = userRole;
-                        ipAddress.lastRequestTime = currentTime;
-                    }
-                    else if (ipAddress.lastRequestTime + duration > currentTime) {
-                        ipAddress.points = Math.max(ipAddress.points - 1, 0);
+            let ipAddress;
+            if (email) {
+                ipAddress = await this.ipService.findByEmail(email);
+            }
+            if (!ipAddress) {
+                ipAddress = await this.ipService.findOne(ip);
+            }
+            const currentTime = Date.now();
+            if (ipAddress) {
+                if (ipAddress.role !== userRole) {
+                    ipAddress.points = points - 1;
+                    ipAddress.role = userRole;
+                    ipAddress.lastRequestTime = currentTime;
+                }
+                else if (ipAddress.lastRequestTime + duration > currentTime) {
+                    if (ipAddress.points > 0) {
+                        ipAddress.points -= 1;
                     }
                     else {
-                        ipAddress.points = rateLimiter.points - 1;
-                        ipAddress.lastRequestTime = currentTime;
+                        throw new Error('Rate limit exceeded');
                     }
                 }
                 else {
-                    ipAddress = await this.ipService.create(ip, userRole, rateLimiter.points - 1, currentTime, email);
+                    ipAddress.points = points - 1;
+                    ipAddress.lastRequestTime = currentTime;
                 }
-                console.log("apihit");
-                await this.ipService.createOrUpdate(ip, userRole, ipAddress.points, currentTime, email);
             }
+            else {
+                ipAddress = await this.ipService.create(ip, userRole, points - 1, currentTime, email);
+            }
+            await this.ipService.createOrUpdate(ipAddress.ip, userRole, ipAddress.points, currentTime, email);
             next();
         }
-        catch {
-            if (userRole == 'registered') {
+        catch (error) {
+            if (userRole === 'registered') {
                 res.status(common_1.HttpStatus.TOO_MANY_REQUESTS).json({
-                    message: 'Your Search limit is exited for today. Contect with help-line ',
+                    message: 'Your search limit has been exceeded for today. Please contact the help desk.',
                 });
             }
-            else if (userRole == 'unregistered') {
-                res
-                    .status(common_1.HttpStatus.TOO_MANY_REQUESTS)
-                    .json({ message: 'Sign up to get more search ' });
+            else if (userRole === 'unregistered') {
+                res.status(common_1.HttpStatus.TOO_MANY_REQUESTS).json({
+                    message: 'Sign up to get more searches.',
+                });
+            }
+            else {
+                res.status(common_1.HttpStatus.TOO_MANY_REQUESTS).json({
+                    message: 'Rate limit exceeded. Please try again later.',
+                });
             }
         }
     }

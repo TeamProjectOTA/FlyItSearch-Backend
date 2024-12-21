@@ -26,6 +26,8 @@ import { BankAddModule } from './bank-add/bank-add.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SheduleModule } from './shedule/shedule.module';
 import { WhitelistModule } from './whitelist/whitelist.module';
+import { JwtMiddleware } from './rate-limiter/jwt.middleware';
+import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 require('dotenv').config();
 
 @Module({
@@ -94,5 +96,21 @@ require('dotenv').config();
   controllers: [],
 })
 export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(JwtMiddleware, RateLimiterMiddleware)
+      //exclude the path that dont use the middle ware
+      .exclude(
+        { path: 'auth/sign-in-admin', method: RequestMethod.POST },
+        { path: 'auth/sign-in-user', method: RequestMethod.POST },
+        { path: 'social-site/google', method: RequestMethod.GET },
+        { path: 'social-site/google-redirect', method: RequestMethod.GET },
+      )
+      .forRoutes(
+        //{ path: '*', method: RequestMethod.ALL },
+        // include all the path that uses this middleware
+        { path: '/flights/fhb/airSearch', method: RequestMethod.POST },
+      );
+  }
   
 }

@@ -17,12 +17,21 @@ export class RateLimiterGuard implements CanActivate {
   constructor(
     private readonly ipService: IpService,
     private readonly jwtService: JwtService,
-    private readonly authService: AuthService,  
+    private readonly authService: AuthService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const ip = request.ip;
+    const xForwardedFor = request.headers['x-forwarded-for'];
+    //console.log(request)
+    let ip: string;
+    if (typeof xForwardedFor === 'string') {
+      ip = xForwardedFor.split(',')[0]; 
+    } else if (Array.isArray(xForwardedFor)) {
+      ip = xForwardedFor[0]; 
+    } else {
+      ip = request.socket.remoteAddress || ''; 
+    }
     let userRole = 'unregistered';
     let email: string | null = null;
 
@@ -59,7 +68,7 @@ export class RateLimiterGuard implements CanActivate {
       }
     }
 
-  
+   
     const rateLimits = {
       unregistered: { points: 15, duration: 86400 },
       registered: { points: 60, duration: 86400 },
@@ -102,6 +111,8 @@ export class RateLimiterGuard implements CanActivate {
           email,
         );
       }
+
+      // Update or create the IP record in the database
       await this.ipService.createOrUpdate(
         ip,
         userRole,
@@ -110,7 +121,7 @@ export class RateLimiterGuard implements CanActivate {
         email,
       );
 
-      return true; 
+      return true; // Allow the request
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.TOO_MANY_REQUESTS);
     }

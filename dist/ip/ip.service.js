@@ -24,6 +24,9 @@ let IpService = class IpService {
     async findOne(ip) {
         return this.ipRepository.findOne({ where: { ip } });
     }
+    async findByEmail(email) {
+        return this.ipRepository.findOne({ where: { email } });
+    }
     async create(ip, role, points, lastRequestTime, email) {
         const ipAddress = this.ipRepository.create({
             ip,

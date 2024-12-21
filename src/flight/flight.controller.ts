@@ -48,7 +48,7 @@ export class FlightController {
   // }
 @ApiBearerAuth('access_token')
 //@UseGuards(WhitelistGuard)
-@UseGuards(RateLimiterGuard)
+//@UseGuards(RateLimiterGuard)
   @Post('/bdFare')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,
@@ -97,7 +97,7 @@ export class FlightController {
     return this.sabreService.airretrieve(pnr);
   }
   @ApiBearerAuth('access_token')
-  @UseGuards(RateLimiterGuard)
+  //@UseGuards(RateLimiterGuard)
   @Post('fhb/airSearch/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,

@@ -23,7 +23,17 @@ let RateLimiterGuard = class RateLimiterGuard {
     }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        const ip = request.ip;
+        const xForwardedFor = request.headers['x-forwarded-for'];
+        let ip;
+        if (typeof xForwardedFor === 'string') {
+            ip = xForwardedFor.split(',')[0];
+        }
+        else if (Array.isArray(xForwardedFor)) {
+            ip = xForwardedFor[0];
+        }
+        else {
+            ip = request.socket.remoteAddress || '';
+        }
         let userRole = 'unregistered';
         let email = null;
         const authHeader = request.headers['authorization'];
