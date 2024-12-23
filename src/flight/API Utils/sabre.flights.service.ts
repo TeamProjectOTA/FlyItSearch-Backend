@@ -34,13 +34,13 @@ export class SabreService {
     const client_secret = base64.encode(process.env.SABRE_PASSWORD);
     const token = base64.encode(`${client_id}:${client_secret}`);
     const data = 'grant_type=client_credentials';
-
+console.log()
     const headers = {
       Authorization: `Basic ${token}`,
       Accept: '/',
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-    console.log(client_id_raw, process.env.SABRE_AUTH_ENDPOINT, client_secret); //remove
+    //console.log(client_id_raw, process.env.SABRE_AUTH_ENDPOINT, client_secret); //remove
     try {
       const response = await axios.post(process.env.SABRE_AUTH_ENDPOINT, data, {
         headers,
@@ -398,7 +398,7 @@ export class SabreService {
       },
       data: payload_data,
     };
-
+    //return payload_data
     try {
       const response = await axios.request(shoppingrequest);
       return response.data;

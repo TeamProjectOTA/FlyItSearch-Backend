@@ -28,12 +28,12 @@ let SabreService = class SabreService {
         const client_secret = base64.encode(process.env.SABRE_PASSWORD);
         const token = base64.encode(`${client_id}:${client_secret}`);
         const data = 'grant_type=client_credentials';
+        console.log();
         const headers = {
             Authorization: `Basic ${token}`,
             Accept: '/',
             'Content-Type': 'application/x-www-form-urlencoded',
         };
-        console.log(client_id_raw, process.env.SABRE_AUTH_ENDPOINT, client_secret);
         try {
             const response = await axios_1.default.post(process.env.SABRE_AUTH_ENDPOINT, data, {
                 headers,
