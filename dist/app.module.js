@@ -37,6 +37,7 @@ const shedule_module_1 = require("./shedule/shedule.module");
 const whitelist_module_1 = require("./whitelist/whitelist.module");
 const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
+const hotel_module_1 = require("./hotel/hotel.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -91,6 +92,7 @@ exports.AppModule = AppModule = __decorate([
             bank_add_module_1.BankAddModule,
             shedule_module_1.SheduleModule,
             whitelist_module_1.WhitelistModule,
+            hotel_module_1.HotelModule,
         ],
         providers: [
             {

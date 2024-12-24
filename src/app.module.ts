@@ -28,6 +28,7 @@ import { SheduleModule } from './shedule/shedule.module';
 import { WhitelistModule } from './whitelist/whitelist.module';
 import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
+import { HotelModule } from './hotel/hotel.module';
 require('dotenv').config();
 
 @Module({
@@ -85,6 +86,7 @@ require('dotenv').config();
     BankAddModule,
     SheduleModule,
     WhitelistModule,
+    HotelModule,
   ],
 
   providers: [
