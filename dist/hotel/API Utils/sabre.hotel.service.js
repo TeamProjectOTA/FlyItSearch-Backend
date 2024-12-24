@@ -5,12 +5,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SabreHotel = void 0;
 const common_1 = require("@nestjs/common");
 const axios_1 = require("axios");
 const base64 = require("base-64");
+const sabre_hotel_util_1 = require("./sabre.hotel.util");
 let SabreHotel = class SabreHotel {
+    constructor(sabreHotelUtils) {
+        this.sabreHotelUtils = sabreHotelUtils;
+    }
     async restToken() {
         const client_id_raw = `V1:${process.env.SABRE_ID}:${process.env.SABRE_PCC}:AA`;
         const client_id = base64.encode(client_id_raw);
@@ -48,8 +55,8 @@ let SabreHotel = class SabreHotel {
         };
         try {
             const response = await axios_1.default.request(shoppingrequest);
-            const result = response?.data;
-            return result;
+            const result = response?.data?.GetHotelAvailRS?.HotelAvailInfos;
+            return await this.sabreHotelUtils.dataTransformer(result);
         }
         catch (err) {
             console.log(err);
@@ -58,6 +65,7 @@ let SabreHotel = class SabreHotel {
 };
 exports.SabreHotel = SabreHotel;
 exports.SabreHotel = SabreHotel = __decorate([
-    (0, common_1.Injectable)()
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [sabre_hotel_util_1.SabreHotelUtils])
 ], SabreHotel);
 //# sourceMappingURL=sabre.hotel.service.js.map

@@ -11,13 +11,14 @@ const common_1 = require("@nestjs/common");
 const hotel_service_1 = require("./hotel.service");
 const hotel_controller_1 = require("./hotel.controller");
 const sabre_hotel_service_1 = require("./API Utils/sabre.hotel.service");
+const sabre_hotel_util_1 = require("./API Utils/sabre.hotel.util");
 let HotelModule = class HotelModule {
 };
 exports.HotelModule = HotelModule;
 exports.HotelModule = HotelModule = __decorate([
     (0, common_1.Module)({
         controllers: [hotel_controller_1.HotelController],
-        providers: [hotel_service_1.HotelService, sabre_hotel_service_1.SabreHotel],
+        providers: [hotel_service_1.HotelService, sabre_hotel_service_1.SabreHotel, sabre_hotel_util_1.SabreHotelUtils],
     })
 ], HotelModule);
 //# sourceMappingURL=hotel.module.js.map
