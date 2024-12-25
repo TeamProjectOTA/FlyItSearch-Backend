@@ -8,7 +8,6 @@ import { MailModule } from './mail/mail.module';
 import { AgentsModule } from './agents/agents.module';
 import { PaymentModule } from './payment/payment.module';
 import { FlightModule } from './flight/flight.module';
-import { GoogleOuthModule } from './google-outh/google-outh.module';
 import { HomepageModule } from './homepage/homepage.module';
 import { IpModule } from './ip/ip.module';
 import { APP_GUARD } from '@nestjs/core';
@@ -70,7 +69,6 @@ require('dotenv').config();
     AgentsModule,
     PaymentModule,
     FlightModule,
-    GoogleOuthModule,
     BookingModule,
     HomepageModule,
     IpModule,

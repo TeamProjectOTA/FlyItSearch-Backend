@@ -22,11 +22,14 @@ const typeorm_2 = require("typeorm");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const deposit_model_1 = require("../deposit/deposit.model");
+const axios_1 = require("axios");
+const uploads_model_1 = require("../uploads/uploads.model");
 let AuthService = class AuthService {
-    constructor(adminRepository, userRepository, jwtservice) {
+    constructor(adminRepository, userRepository, jwtservice, profilePictureRepository) {
         this.adminRepository = adminRepository;
         this.userRepository = userRepository;
         this.jwtservice = jwtservice;
+        this.profilePictureRepository = profilePictureRepository;
         this.time = 86400;
     }
     async signInAdmin(email, pass) {
@@ -366,7 +369,7 @@ let AuthService = class AuthService {
         };
     }
     async validateUser(user) {
-        const { email, fullName, googleId } = user;
+        const { email, fullName, googleId, picture } = user;
         let existingUser = await this.userRepository.findOne({ where: { email } });
         if (!existingUser) {
             const passenger = await this.userRepository.find({
@@ -395,6 +398,12 @@ let AuthService = class AuthService {
             newWallet.ammount = 0;
             newUser.wallet = newWallet;
             existingUser = await this.userRepository.save(newUser);
+            const profilePicture = new uploads_model_1.ProfilePicture();
+            profilePicture.user = existingUser;
+            profilePicture.filename = 'fromGoogle';
+            profilePicture.link = picture;
+            profilePicture.size = 55;
+            await this.profilePictureRepository.save(profilePicture);
         }
         return await this.signInUserForGoogle(existingUser);
     }
@@ -422,14 +431,33 @@ let AuthService = class AuthService {
             throw new Error('Failed to send verification email.');
         }
     }
+    async verifyGoogleToken(token) {
+        try {
+            const googleResponse = await axios_1.default.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`);
+            const user = {
+                email: googleResponse.data.email,
+                fullName: googleResponse.data.name,
+                googleId: googleResponse.data.sub,
+                picture: googleResponse.data.picture
+            };
+            const jwtToken = await this.validateUser(user);
+            return jwtToken;
+        }
+        catch (error) {
+            console.error('Error verifying Google token:', error);
+            throw new common_1.HttpException('Authentication failed', common_1.HttpStatus.UNAUTHORIZED);
+        }
+    }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(admin_entity_1.Admin)),
     __param(1, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(3, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        jwt_1.JwtService])
+        jwt_1.JwtService,
+        typeorm_2.Repository])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

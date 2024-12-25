@@ -9,9 +9,10 @@ import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { Transection } from 'src/transection/transection.model';
 import { IpAddress } from 'src/ip/ip.model';
+import { ProfilePicture } from 'src/uploads/uploads.model';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, Transection, IpAddress]),
+    TypeOrmModule.forFeature([Admin, User, Transection, IpAddress,ProfilePicture]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

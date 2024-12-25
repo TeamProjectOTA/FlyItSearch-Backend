@@ -13,4 +13,5 @@ export declare class AuthController {
     }>;
     forgotPassword(email: string): Promise<any>;
     resetPassword(token: string, newPassword: string): Promise<any>;
+    authenticateWithGoogle(token: string): Promise<any>;
 }

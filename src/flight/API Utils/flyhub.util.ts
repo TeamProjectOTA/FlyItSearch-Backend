@@ -604,6 +604,8 @@ export class FlyHubUtil {
     currentTimestamp: any,
     personIds: any,
   ): Promise<any> {
+
+    
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {

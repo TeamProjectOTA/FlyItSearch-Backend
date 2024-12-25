@@ -2,13 +2,14 @@ import { JwtService } from '@nestjs/jwt';
 import { Admin } from 'src/admin/entities/admin.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Repository } from 'typeorm';
+import { ProfilePicture } from 'src/uploads/uploads.model';
 export declare class AuthService {
     private readonly adminRepository;
     private readonly userRepository;
     private readonly jwtservice;
-    authservice: any;
+    private readonly profilePictureRepository;
     private readonly time;
-    constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService);
+    constructor(adminRepository: Repository<Admin>, userRepository: Repository<User>, jwtservice: JwtService, profilePictureRepository: Repository<ProfilePicture>);
     signInAdmin(email: string, pass: string): Promise<any>;
     verifyAdminToken(header: any): Promise<Admin>;
     signInUser(email: string, pass?: string, isGoogleAuth?: boolean): Promise<any>;
@@ -24,4 +25,5 @@ export declare class AuthService {
     signInUserForGoogle(user: User): Promise<any>;
     validateUser(user: any): Promise<any>;
     emailVerified(email: string): Promise<void>;
+    verifyGoogleToken(token: string): Promise<any>;
 }

@@ -48,6 +48,15 @@ let AuthController = class AuthController {
     async resetPassword(token, newPassword) {
         return await this.authservice.resetPassword(token, newPassword);
     }
+    async authenticateWithGoogle(token) {
+        try {
+            const user = await this.authservice.verifyGoogleToken(token);
+            return user;
+        }
+        catch (error) {
+            throw new common_1.HttpException(error.message, common_1.HttpStatus.UNAUTHORIZED);
+        }
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -88,6 +97,13 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "resetPassword", null);
+__decorate([
+    (0, common_1.Get)('google/:token'),
+    __param(0, (0, common_1.Param)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "authenticateWithGoogle", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('auth'),
     (0, common_1.Controller)('auth'),

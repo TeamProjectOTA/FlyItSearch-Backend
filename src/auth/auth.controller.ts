@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpException,
   HttpStatus,
   NotFoundException,
   Param,
@@ -65,5 +66,16 @@ export class AuthController {
     @Body('newPassword') newPassword: string,
   ): Promise<any> {
     return await this.authservice.resetPassword(token, newPassword);
+  }
+
+  @Get('google/:token')
+  async authenticateWithGoogle(@Param('token') token: string) {
+    try {
+      const user = await this.authservice.verifyGoogleToken(token);
+      return user
+      
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+    }
   }
 }

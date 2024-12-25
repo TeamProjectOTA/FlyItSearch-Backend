@@ -17,7 +17,6 @@ const mail_module_1 = require("./mail/mail.module");
 const agents_module_1 = require("./agents/agents.module");
 const payment_module_1 = require("./payment/payment.module");
 const flight_module_1 = require("./flight/flight.module");
-const google_outh_module_1 = require("./google-outh/google-outh.module");
 const homepage_module_1 = require("./homepage/homepage.module");
 const ip_module_1 = require("./ip/ip.module");
 const core_1 = require("@nestjs/core");
@@ -76,7 +75,6 @@ exports.AppModule = AppModule = __decorate([
             agents_module_1.AgentsModule,
             payment_module_1.PaymentModule,
             flight_module_1.FlightModule,
-            google_outh_module_1.GoogleOuthModule,
             booking_module_1.BookingModule,
             homepage_module_1.HomepageModule,
             ip_module_1.IpModule,

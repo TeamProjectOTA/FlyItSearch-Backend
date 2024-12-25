@@ -17,13 +17,14 @@ const jwt_constaints_1 = require("./jwt.constaints");
 const user_entity_1 = require("../user/entities/user.entity");
 const transection_model_1 = require("../transection/transection.model");
 const ip_model_1 = require("../ip/ip.model");
+const uploads_model_1 = require("../uploads/uploads.model");
 let AuthModule = class AuthModule {
 };
 exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress]),
+            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress, uploads_model_1.ProfilePicture]),
             jwt_1.JwtModule.register({
                 global: true,
                 secret: jwt_constaints_1.jwtConstants.secret,

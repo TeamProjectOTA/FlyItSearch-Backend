@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
@@ -14,17 +16,23 @@ import { MoreThan, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as nodemailer from 'nodemailer';
 import { Wallet } from 'src/deposit/deposit.model';
+import { OAuth2Client } from 'google-auth-library';
+import axios from 'axios';
+import { ProfilePicture } from 'src/uploads/uploads.model';
 
 @Injectable()
 export class AuthService {
-  authservice: any;
+  //private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   private readonly time: number;
+  
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtservice: JwtService,
+    @InjectRepository(ProfilePicture)
+    private readonly profilePictureRepository:Repository<ProfilePicture>
   ) {
     //86400
     this.time = 86400;
@@ -433,7 +441,7 @@ export class AuthService {
   }
 
   async validateUser(user: any): Promise<any> {
-    const { email, fullName, googleId } = user;
+    const { email, fullName, googleId,picture } = user;
     let existingUser = await this.userRepository.findOne({ where: { email } });
 
     if (!existingUser) {
@@ -462,8 +470,15 @@ export class AuthService {
       const newWallet = new Wallet();
       newWallet.ammount = 0;
       newUser.wallet = newWallet;
-
       existingUser = await this.userRepository.save(newUser);
+      const profilePicture = new ProfilePicture();
+      profilePicture.user = existingUser; 
+      profilePicture.filename = 'fromGoogle'; 
+      profilePicture.link = picture; 
+      profilePicture.size = 55; 
+      
+      await this.profilePictureRepository.save(profilePicture);
+
     }
     return await this.signInUserForGoogle(existingUser);
   }
@@ -490,6 +505,43 @@ export class AuthService {
     } catch (error) {
       console.error('Error sending verification email:', error);
       throw new Error('Failed to send verification email.');
+    }
+  }
+  async verifyGoogleToken(token: string) {
+    try {
+      const googleResponse = await axios.get(
+        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`
+      ); 
+      
+      const user = {
+        email: googleResponse.data.email,
+        fullName: googleResponse.data.name,
+        googleId: googleResponse.data.sub,
+        picture:googleResponse.data.picture
+      };
+     
+      // const idToken = googleResponse.data.id_token; 
+      
+      // if (idToken) {
+      //   const ticket = await this.googleClient.verifyIdToken({
+      //     idToken,
+      //     audience: process.env.GOOGLE_CLIENT_ID,
+      //   });
+
+      //   const payload = ticket.getPayload();
+      //   if (!payload || payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+      //     throw new HttpException('Invalid token audience', HttpStatus.UNAUTHORIZED);
+      //   }
+      // } else {
+      //   console.warn('ID token not provided. Skipping client ID validation.');
+      // }
+
+      
+      const jwtToken = await this.validateUser(user);
+      return jwtToken;
+    } catch (error) {
+      console.error('Error verifying Google token:', error);
+      throw new HttpException('Authentication failed', HttpStatus.UNAUTHORIZED);
     }
   }
 }

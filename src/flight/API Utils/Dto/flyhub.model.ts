@@ -47,20 +47,26 @@ export class MealDto {
 
 export class PassengerDto {
   @ApiProperty()
+  @IsNotEmpty()
   @IsString()
   Title: string;
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   FirstName: string;
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   LastName: string;
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   PaxType: string;
+  @IsNotEmpty()
   @ApiProperty()
   DateOfBirth: Date;
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   Gender: string;
   @IsString()
@@ -78,9 +84,11 @@ export class PassengerDto {
   Address2?: string;
   @IsString()
   @ApiProperty()
+  @IsNotEmpty()
   CountryCode: string;
   @IsString()
   @ApiProperty()
+  @IsNotEmpty()
   Nationality: string;
   @IsString()
   @ApiProperty()
