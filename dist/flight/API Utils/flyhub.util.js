@@ -678,8 +678,7 @@ let FlyHubUtil = class FlyHubUtil {
                 tripType = 'OneWay';
             }
             else if (booking.AllLegsInfo.length === 2) {
-                if (booking.AllLegsInfo[0].ArrTo === booking.AllLegsInfo[1].DepFrom &&
-                    booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo) {
+                if (booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo) {
                     tripType = 'Return';
                 }
                 else {

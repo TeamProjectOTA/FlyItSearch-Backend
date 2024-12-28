@@ -21,6 +21,7 @@ import { BookingID, BookingSave } from 'src/book/booking.model';
 import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 import { AuthService } from 'src/auth/auth.service';
 import { User } from 'src/user/entities/user.entity';
+import { ApiBody } from '@nestjs/swagger';
 
 @Injectable()
 export class FlyHubService {
@@ -242,6 +243,8 @@ export class FlyHubService {
     }
   }
 
+
+  @ApiBody({type:FlbFlightSearchDto})
   async airbook(
     data: FlbFlightSearchDto,
     header: any,

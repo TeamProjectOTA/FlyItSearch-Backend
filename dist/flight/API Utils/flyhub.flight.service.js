@@ -25,6 +25,7 @@ const booking_model_1 = require("../../book/booking.model");
 const travel_buddy_model_1 = require("../../travel-buddy/travel-buddy.model");
 const auth_service_1 = require("../../auth/auth.service");
 const user_entity_1 = require("../../user/entities/user.entity");
+const swagger_1 = require("@nestjs/swagger");
 let FlyHubService = class FlyHubService {
     constructor(flyHubUtil, bookingIdSave, bookingSaveRepository, travelBuddyRepository, userReposiotory, authService) {
         this.flyHubUtil = flyHubUtil;
@@ -387,6 +388,12 @@ let FlyHubService = class FlyHubService {
     }
 };
 exports.FlyHubService = FlyHubService;
+__decorate([
+    (0, swagger_1.ApiBody)({ type: flyhub_model_1.FlbFlightSearchDto }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, Object, Object, Object]),
+    __metadata("design:returntype", Promise)
+], FlyHubService.prototype, "airbook", null);
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),

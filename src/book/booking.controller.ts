@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingDataDto, BookingID } from './booking.model';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FlyHubService } from 'src/flight/API Utils/flyhub.flight.service';
 import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
@@ -28,8 +28,10 @@ export class BookingController {
   ) {}
 
   @ApiBearerAuth('access_token')
+ 
   @UseGuards(UserTokenGuard)
   @Post('flh/airBook/')
+  @ApiBody({type:FlbFlightSearchDto})
   async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers) {
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6

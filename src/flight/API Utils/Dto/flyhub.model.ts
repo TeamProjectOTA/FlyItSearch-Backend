@@ -38,10 +38,12 @@ export class searchResultDto {
   ResultId: string;
 }
 export class BaggageDto {
+  @ApiProperty()
   BaggageID: string;
 }
 
 export class MealDto {
+  @ApiProperty()
   MealID: string;
 }
 
@@ -70,11 +72,11 @@ export class PassengerDto {
   @ApiProperty()
   Gender: string;
   @IsString()
-  @ApiProperty()
+  @ApiProperty({ required: false })
   PassportNumber?: string;
-  @ApiProperty()
+  @ApiProperty({ required: false })
   PassportExpiryDate?: Date;
-  @ApiProperty()
+  @ApiProperty({ required: false })
   PassportNationality?: string;
   @ApiProperty()
   @IsString()
@@ -99,15 +101,17 @@ export class PassengerDto {
   @IsBoolean()
   @ApiProperty()
   IsLeadPassenger: boolean;
-  @ApiProperty()
+  @ApiProperty({ required: false })
   FFAirline?: string;
-  @ApiProperty()
+  @ApiProperty({ required: false })
   FFNumber?: string;
-  @ApiProperty()
+  @ApiProperty({ type: BaggageDto,required: false  })
   Baggage?: BaggageDto[];
-  @ApiProperty()
+  @ApiProperty({ type:MealDto,required: false ,})
   Meal?: MealDto[];
+  @ApiProperty({ required: false ,description: 'Visa information (optional)' })
   visa?: string;
+  @ApiProperty({ required: false })
   passport?: string;
 }
 
@@ -116,7 +120,7 @@ export class FlbFlightSearchDto {
   SearchID: string;
   @ApiProperty()
   ResultID: string;
-  @ApiProperty()
+  @ApiProperty({type:PassengerDto})
   Passengers: PassengerDto[];
   @ApiProperty()
   PromotionCode?: string;

@@ -22,8 +22,8 @@ const bdfare_flights_service_1 = require("./API Utils/bdfare.flights.service");
 const bdfare_model_1 = require("./API Utils/Dto/bdfare.model");
 const flyhub_model_1 = require("./API Utils/Dto/flyhub.model");
 const flyhub_flight_service_1 = require("./API Utils/flyhub.flight.service");
+const flyhub_util_1 = require("./API Utils/flyhub.util");
 const user_tokens_guard_1 = require("../auth/user-tokens.guard");
-const bdfare_util_1 = require("./API Utils/bdfare.util");
 let FlightController = class FlightController {
     constructor(sabreService, bdFareService, flyHubService, testservice) {
         this.sabreService = sabreService;
@@ -189,6 +189,6 @@ exports.FlightController = FlightController = __decorate([
     __metadata("design:paramtypes", [sabre_flights_service_1.SabreService,
         bdfare_flights_service_1.BDFareService,
         flyhub_flight_service_1.FlyHubService,
-        bdfare_util_1.BfFareUtil])
+        flyhub_util_1.FlyHubUtil])
 ], FlightController);
 //# sourceMappingURL=flight.controller.js.map

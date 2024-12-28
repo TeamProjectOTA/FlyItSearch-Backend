@@ -32,3 +32,8 @@ export class FareRulesDto {
   @IsNotEmpty()
   FareBasisCode: string;
 }
+
+export class dataAny{
+  
+ 
+}

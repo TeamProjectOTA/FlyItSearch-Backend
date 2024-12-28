@@ -11,7 +11,7 @@ import {
 import { Flight, FlightSearchModel } from './flight.model';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { FareRulesDto } from './dto/fare-rules.flight.dto';
+import { dataAny, FareRulesDto } from './dto/fare-rules.flight.dto';
 import { SabreService } from './API Utils/sabre.flights.service';
 import { BDFareService } from './API Utils/bdfare.flights.service';
 import { RequestDto, searchResultDtobdf } from './API Utils/Dto/bdfare.model';
@@ -33,7 +33,7 @@ export class FlightController {
     private readonly sabreService: SabreService,
     private readonly bdFareService: BDFareService,
     private readonly flyHubService: FlyHubService,
-    private readonly testservice: BfFareUtil,
+    private readonly testservice: FlyHubUtil,
   ) {}
 
   // @Post('/flyhub')
@@ -142,7 +142,7 @@ export class FlightController {
   //   );
   // }
   // @Post('/test')
-  // async apiCheck(@Body() data: BookingDataDto) {
-  //   return await this.bdFareService.bookingDataModification(data);
+  // async apiCheck(@Body() data: dataAny) {
+  //   return await this.testservice.saveBookingData(data);
   // }
 }

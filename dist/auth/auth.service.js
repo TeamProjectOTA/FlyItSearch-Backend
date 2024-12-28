@@ -256,6 +256,9 @@ let AuthService = class AuthService {
         if (!email) {
             throw new common_1.NotFoundException('Please Enter Your Email');
         }
+        if (user.googleId) {
+            throw new common_1.ConflictException("This email is associated with a Google login. Password reset is not allowed.");
+        }
         if (!user) {
             throw new common_1.NotFoundException('There is no User Associated with this email');
         }
@@ -284,19 +287,21 @@ let AuthService = class AuthService {
         return { message: `Your password reset link has been sent to ${email}` };
     }
     async sendResetPasswordEmail(email, token) {
-        const transporter = nodemailer.createTransport({
-            host: `${process.env.EMAIL_HOST}`,
-            port: 465,
-            secure: true,
-            auth: {
-                user: `${process.env.EMAIL_USERNAME}`,
-                pass: `${process.env.EMAIL_PASSWORD}`,
-            },
-        });
         const mailOptions = {
-            from: process.env.EMAIL_OTP,
+            from: `"FlyitSearch Support" <${process.env.EMAIL_OTP}>`,
             to: email,
-            subject: 'Password Reset',
+            subject: 'Reset Your Password - FlyitSearch',
+            text: `
+    Hi,
+    
+    We received a request to reset your password. Please use the link below to reset it:
+    https://www.flyitsearch.com/resetpassword?token=${token}
+    
+    If you didn’t request this, you can safely ignore this email.
+    
+    Best regards,  
+    FlyitSearch Team
+      `,
             html: `
         <div style="
           font-family: Arial, sans-serif;
@@ -313,36 +318,74 @@ let AuthService = class AuthService {
             color: #13406b; 
             text-align: center; 
             margin-bottom: 20px;
-          ">Password Reset Request</h2>
-          <p style="margin:  0 0 10px; font-size: 13px">Hi,</p>
-          <div style="margin: 0 0 20px; font-size: 13px">
-            We received a request to reset your password. Please click the button below to reset your password.If you didn’t request this, you can safely ignore this email.</div>
+          ">Reset Your Password</h2>
+          <p style="
+            margin-bottom: 10px; 
+            font-size: 14px;
+            line-height: 1.6;
+          ">
+            Hi,
+          </p>
+          <p style="
+            margin-bottom: 20px; 
+            font-size: 14px; 
+            line-height: 1.6;
+          ">
+            We received a request to reset your password. Click the button below to securely reset it. If you didn’t request this, you can safely ignore this email.
+          </p>
           <div style="text-align: center; margin: 10px 0;">
             <a href="https://www.flyitsearch.com/resetpassword?token=${token}" style="
               display: inline-block;
-              padding: 9px 17px;
-              font-size: 15px;
+              padding: 10px 20px;
+              font-size: 16px;
               font-weight: bold;
               color: #fff;
               background-color: #13406b;
               text-decoration: none;
               border-radius: 6px;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            ">
+            " rel="noopener noreferrer">
               Reset Password
             </a>
           </div>
-          <p style="margin: 50px 0 0 0; font-size:14px">Best regards,</p>
-          <p style="margin: 0;font-size:14px; color: #13406b;"><strong>FlyitSearch Team</strong></p>
+          <p style="
+            margin-top: 30px; 
+            font-size: 12px; 
+            color: #666;
+            line-height: 1.6;
+          ">
+            Alternatively, copy and paste this link into your browser:
+            <br>
+            <a href="https://www.flyitsearch.com/resetpassword?token=${token}" style="color: #13406b; text-decoration: none;">
+              https://www.flyitsearch.com/resetpassword?token=${token}
+            </a>
+          </p>
+          <p style="
+            margin-top: 30px; 
+            font-size: 14px; 
+            line-height: 1.6;
+          ">
+            Best regards,<br>
+            <strong style="color: #13406b;">FlyitSearch Team</strong>
+          </p>
         </div>
       `,
         };
         try {
+            const transporter = nodemailer.createTransport({
+                host: process.env.EMAIL_HOST,
+                port: 465,
+                secure: true,
+                auth: {
+                    user: process.env.EMAIL_USERNAME,
+                    pass: process.env.EMAIL_PASSWORD,
+                },
+            });
             await transporter.sendMail(mailOptions);
         }
         catch (error) {
-            console.error('Error sending verification email:', error);
-            throw new Error('Failed to send verification email.');
+            console.error('Error sending email:', error);
+            throw new Error('Failed to send reset password email.');
         }
     }
     async signInUserForGoogle(user) {

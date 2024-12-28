@@ -6,13 +6,13 @@ import { BDFareService } from './API Utils/bdfare.flights.service';
 import { searchResultDtobdf } from './API Utils/Dto/bdfare.model';
 import { searchResultDto } from './API Utils/Dto/flyhub.model';
 import { FlyHubService } from './API Utils/flyhub.flight.service';
-import { BfFareUtil } from './API Utils/bdfare.util';
+import { FlyHubUtil } from './API Utils/flyhub.util';
 export declare class FlightController {
     private readonly sabreService;
     private readonly bdFareService;
     private readonly flyHubService;
     private readonly testservice;
-    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: BfFareUtil);
+    constructor(sabreService: SabreService, bdFareService: BDFareService, flyHubService: FlyHubService, testservice: FlyHubUtil);
     searchFlights(flightSearchModel: FlightSearchModel): Promise<any>;
     BfFareRules(data: searchResultDtobdf): Promise<any>;
     BdfarePriceCheck(data: searchResultDtobdf): Promise<any>;

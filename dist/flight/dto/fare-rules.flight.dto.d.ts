@@ -6,3 +6,5 @@ export declare class FareRulesDto {
     Carrier: string;
     FareBasisCode: string;
 }
+export declare class dataAny {
+}

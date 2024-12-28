@@ -33,9 +33,17 @@ __decorate([
 class BaggageDto {
 }
 exports.BaggageDto = BaggageDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], BaggageDto.prototype, "BaggageID", void 0);
 class MealDto {
 }
 exports.MealDto = MealDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    __metadata("design:type", String)
+], MealDto.prototype, "MealID", void 0);
 class PassengerDto {
 }
 exports.PassengerDto = PassengerDto;
@@ -76,15 +84,15 @@ __decorate([
 ], PassengerDto.prototype, "Gender", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ required: false }),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "PassportNumber", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ required: false }),
     __metadata("design:type", Date)
 ], PassengerDto.prototype, "PassportExpiryDate", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ required: false }),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "PassportNationality", void 0);
 __decorate([
@@ -125,21 +133,29 @@ __decorate([
     __metadata("design:type", Boolean)
 ], PassengerDto.prototype, "IsLeadPassenger", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ required: false }),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "FFAirline", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ required: false }),
     __metadata("design:type", String)
 ], PassengerDto.prototype, "FFNumber", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ type: BaggageDto, required: false }),
     __metadata("design:type", Array)
 ], PassengerDto.prototype, "Baggage", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ type: MealDto, required: false, }),
     __metadata("design:type", Array)
 ], PassengerDto.prototype, "Meal", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false, description: 'Visa information (optional)' }),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "visa", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ required: false }),
+    __metadata("design:type", String)
+], PassengerDto.prototype, "passport", void 0);
 class FlbFlightSearchDto {
 }
 exports.FlbFlightSearchDto = FlbFlightSearchDto;
@@ -152,7 +168,7 @@ __decorate([
     __metadata("design:type", String)
 ], FlbFlightSearchDto.prototype, "ResultID", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)(),
+    (0, swagger_1.ApiProperty)({ type: PassengerDto }),
     __metadata("design:type", Array)
 ], FlbFlightSearchDto.prototype, "Passengers", void 0);
 __decorate([

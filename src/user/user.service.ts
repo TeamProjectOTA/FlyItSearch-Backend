@@ -348,6 +348,10 @@ export class UserService {
     if (!travelBuddies || travelBuddies.length === 0) {
       throw new NotFoundException(`No Travel Buddies available for the user`);
     }
+    travelBuddies.forEach(buddy => {
+      delete buddy.id; 
+    });
+  
     return {
       travelBuddies,
       total,

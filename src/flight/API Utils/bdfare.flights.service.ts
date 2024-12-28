@@ -322,7 +322,7 @@ export class BDFareService {
   private bookingDataModification(data: any) {
     const { Passengers } = data;
   
-    // Separate adults and infants
+    
     const adults = Passengers.filter((p) => p.PaxType === 'Adult');
     const infants = Passengers.filter((p) => p.PaxType === 'Infant');
   
@@ -340,7 +340,7 @@ export class BDFareService {
         paxList: Passengers.map((passenger, index) => {
           const isInfant = passenger?.PaxType === 'Infant';
           const associatedAdult =
-            isInfant && adults[index % adults.length]; // Cycle through adults for infants
+            isInfant && adults[index % adults.length]; 
   
           return {
             ptc: passenger?.PaxType,
@@ -393,7 +393,7 @@ export class BDFareService {
     }
   
     if (segments.length === 1) {
-      return '1'; // One-way journey
+      return '1'; 
     }
   
     if (segments.length === 2) {
@@ -403,12 +403,12 @@ export class BDFareService {
         firstSegment.arrto === secondSegment.depfrom &&
         firstSegment.depfrom === secondSegment.arrto
       ) {
-        return '2'; // Round-trip
+        return '2'; 
       }
-      return '3'; // Two segments but not a round-trip
+      return '3'; 
     }
   
-    return '3'; // Multi-city or complex journey
+    return '3'; 
   }
   
 }
