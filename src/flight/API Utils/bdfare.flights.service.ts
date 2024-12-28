@@ -231,6 +231,7 @@ export class BDFareService {
       },
       data: data,
     };
+   
       const response: AxiosResponse = await axios(OrderSellRequest);
       const response1: AxiosResponse = await axios(OrderCreateRequest);
    

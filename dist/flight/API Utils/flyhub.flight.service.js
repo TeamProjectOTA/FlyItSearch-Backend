@@ -22,11 +22,17 @@ const flight_model_1 = require("../flight.model");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const booking_model_1 = require("../../book/booking.model");
+const travel_buddy_model_1 = require("../../travel-buddy/travel-buddy.model");
+const auth_service_1 = require("../../auth/auth.service");
+const user_entity_1 = require("../../user/entities/user.entity");
 let FlyHubService = class FlyHubService {
-    constructor(flyHubUtil, bookingIdSave, bookingSaveRepository) {
+    constructor(flyHubUtil, bookingIdSave, bookingSaveRepository, travelBuddyRepository, userReposiotory, authService) {
         this.flyHubUtil = flyHubUtil;
         this.bookingIdSave = bookingIdSave;
         this.bookingSaveRepository = bookingSaveRepository;
+        this.travelBuddyRepository = travelBuddyRepository;
+        this.userReposiotory = userReposiotory;
+        this.authService = authService;
         this.username = process.env.FLYHUB_UserName;
         this.apiKey = process.env.FLYHUB_ApiKey;
         this.apiUrl = process.env.FLyHub_Url;
@@ -227,6 +233,7 @@ let FlyHubService = class FlyHubService {
             },
             data: data,
         };
+        await this.saveTravelBuddy(data, header);
         try {
             const response0 = await axios_1.default.request(Price);
             if (response0.data.Results[0].HoldAllowed === false) {
@@ -349,14 +356,48 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
+    async saveTravelBuddy(flhdto, header) {
+        const email = await this.authService.decodeToken(header);
+        const user = await this.userReposiotory.findOne({ where: { email: email } });
+        const passengersWithTravelBuddy = await Promise.all(flhdto.Passengers.map(async (pax) => {
+            let travelBuddy = await this.travelBuddyRepository.findOne({
+                where: { passport: pax.PassportNumber,
+                    user: user }
+            });
+            if (!travelBuddy) {
+                travelBuddy = new travel_buddy_model_1.TravelBuddy();
+                travelBuddy.user = user;
+            }
+            travelBuddy.firstName = pax.FirstName;
+            travelBuddy.lastName = pax.LastName;
+            travelBuddy.gender = pax.Gender;
+            travelBuddy.title = pax.Title;
+            travelBuddy.paxtype = pax.PaxType;
+            travelBuddy.dob = pax.DateOfBirth;
+            travelBuddy.passport = pax.PassportNumber;
+            travelBuddy.passportexp = pax.PassportExpiryDate;
+            travelBuddy.nationality = pax.Nationality;
+            await this.travelBuddyRepository.save(travelBuddy);
+            return {
+                ...pax,
+                travelBuddy,
+            };
+        }));
+        return passengersWithTravelBuddy;
+    }
 };
 exports.FlyHubService = FlyHubService;
 exports.FlyHubService = FlyHubService = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
     __param(2, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __param(3, (0, typeorm_1.InjectRepository)(travel_buddy_model_1.TravelBuddy)),
+    __param(4, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [flyhub_util_1.FlyHubUtil,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        auth_service_1.AuthService])
 ], FlyHubService);
 //# sourceMappingURL=flyhub.flight.service.js.map

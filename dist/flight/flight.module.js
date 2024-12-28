@@ -35,6 +35,7 @@ const deposit_model_1 = require("../deposit/deposit.model");
 const bdfare_util_1 = require("./API Utils/bdfare.util");
 const whitelist_module_1 = require("../whitelist/whitelist.module");
 const ip_module_1 = require("../ip/ip.module");
+const travel_buddy_model_1 = require("../travel-buddy/travel-buddy.model");
 let FlightModule = class FlightModule {
 };
 exports.FlightModule = FlightModule;
@@ -50,6 +51,7 @@ exports.FlightModule = FlightModule = __decorate([
                 flight_model_1.BookingIdSave,
                 transection_model_1.Transection,
                 deposit_model_1.Wallet,
+                travel_buddy_model_1.TravelBuddy
             ]),
             axios_1.HttpModule,
             airports_module_1.AirportsModule,
@@ -59,7 +61,7 @@ exports.FlightModule = FlightModule = __decorate([
             mail_module_1.MailModule,
             transection_module_1.TransectionModule,
             whitelist_module_1.WhitelistModule,
-            ip_module_1.IpModule
+            ip_module_1.IpModule,
         ],
         controllers: [flight_controller_1.FlightController],
         providers: [

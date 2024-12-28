@@ -27,6 +27,7 @@ import { BfFareUtil } from './API Utils/bdfare.util';
 import { BookingModule } from 'src/book/booking.module';
 import { WhitelistModule } from 'src/whitelist/whitelist.module';
 import { IpModule } from 'src/ip/ip.module';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -38,6 +39,7 @@ import { IpModule } from 'src/ip/ip.module';
       BookingIdSave,
       Transection,
       Wallet,
+      TravelBuddy
     ]),
     HttpModule,
     AirportsModule,
@@ -47,7 +49,7 @@ import { IpModule } from 'src/ip/ip.module';
     MailModule,
     TransectionModule,
     WhitelistModule,
-    IpModule
+    IpModule,
   ],
   controllers: [FlightController],
   providers: [

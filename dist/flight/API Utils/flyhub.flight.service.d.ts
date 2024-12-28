@@ -3,14 +3,20 @@ import { FlbFlightSearchDto, FlyAirSearchDto, searchResultDto } from './Dto/flyh
 import { BookingIdSave, FlightSearchModel } from '../flight.model';
 import { Repository } from 'typeorm';
 import { BookingID, BookingSave } from 'src/book/booking.model';
+import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
+import { AuthService } from 'src/auth/auth.service';
+import { User } from 'src/user/entities/user.entity';
 export declare class FlyHubService {
     private readonly flyHubUtil;
     private readonly bookingIdSave;
     private readonly bookingSaveRepository;
+    private readonly travelBuddyRepository;
+    private readonly userReposiotory;
+    private readonly authService;
     private readonly username;
     private readonly apiKey;
     private readonly apiUrl;
-    constructor(flyHubUtil: FlyHubUtil, bookingIdSave: Repository<BookingIdSave>, bookingSaveRepository: Repository<BookingSave>);
+    constructor(flyHubUtil: FlyHubUtil, bookingIdSave: Repository<BookingIdSave>, bookingSaveRepository: Repository<BookingSave>, travelBuddyRepository: Repository<TravelBuddy>, userReposiotory: Repository<User>, authService: AuthService);
     getToken(): Promise<string>;
     searchFlights(reqBody: FlyAirSearchDto): Promise<any>;
     aircancel(BookingID: BookingID, header: any): Promise<any>;
@@ -23,4 +29,29 @@ export declare class FlyHubService {
     convertToFlyAirSearchDto(flightSearchModel: FlightSearchModel, userIp: string): Promise<any>;
     private determineJourneyType;
     makeTicket(BookingID: BookingID): Promise<any>;
+    saveTravelBuddy(flhdto: FlbFlightSearchDto, header: any): Promise<{
+        travelBuddy: TravelBuddy;
+        Title: string;
+        FirstName: string;
+        LastName: string;
+        PaxType: string;
+        DateOfBirth: Date;
+        Gender: string;
+        PassportNumber?: string;
+        PassportExpiryDate?: Date;
+        PassportNationality?: string;
+        Address1: string;
+        Address2?: string;
+        CountryCode: string;
+        Nationality: string;
+        ContactNumber: string;
+        Email: string;
+        IsLeadPassenger: boolean;
+        FFAirline?: string;
+        FFNumber?: string;
+        Baggage?: import("./Dto/flyhub.model").BaggageDto[];
+        Meal?: import("./Dto/flyhub.model").MealDto[];
+        visa?: string;
+        passport?: string;
+    }[]>;
 }
