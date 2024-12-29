@@ -104,10 +104,6 @@ __decorate([
     (0, swagger_1.ApiProperty)(),
     __metadata("design:type", RoomsDto)
 ], RateInfoRefDto.prototype, "Rooms", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ example: '100,110,112,113' }),
-    __metadata("design:type", String)
-], RateInfoRefDto.prototype, "InfoSource", void 0);
 class SabreRatingDto {
 }
 exports.SabreRatingDto = SabreRatingDto;

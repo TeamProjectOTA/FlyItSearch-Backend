@@ -29,7 +29,6 @@ export declare class RateInfoRefDto {
     PrepaidQualifier: string;
     StayDateRange: StayDateRangeDto;
     Rooms: RoomsDto;
-    InfoSource: string;
 }
 export declare class SabreRatingDto {
     Min: string;

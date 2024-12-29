@@ -66,9 +66,6 @@ export class RateInfoRefDto {
 
   @ApiProperty()
   Rooms: RoomsDto;
-
-  @ApiProperty({ example: '100,110,112,113' })
-  InfoSource: string;
 }
 
 export class SabreRatingDto {
