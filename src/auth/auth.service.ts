@@ -565,24 +565,6 @@ export class AuthService {
         googleId: googleResponse.data.sub,
         picture:googleResponse.data.picture
       };
-     
-      // const idToken = googleResponse.data.id_token; 
-      
-      // if (idToken) {
-      //   const ticket = await this.googleClient.verifyIdToken({
-      //     idToken,
-      //     audience: process.env.GOOGLE_CLIENT_ID,
-      //   });
-
-      //   const payload = ticket.getPayload();
-      //   if (!payload || payload.aud !== process.env.GOOGLE_CLIENT_ID) {
-      //     throw new HttpException('Invalid token audience', HttpStatus.UNAUTHORIZED);
-      //   }
-      // } else {
-      //   console.warn('ID token not provided. Skipping client ID validation.');
-      // }
-
-      
       const jwtToken = await this.validateUser(user);
       return jwtToken;
     } catch (error) {

@@ -51,7 +51,6 @@ let UploadsService = class UploadsService {
                     .file(existingProfilePicture.filename);
                 await bucketFile.delete();
                 fileDeleted = true;
-                console.log('File successfully deleted from Google Cloud bucket.');
             }
             catch (error) {
                 if (error.code === 404) {
@@ -86,7 +85,7 @@ let UploadsService = class UploadsService {
                 size: file.size,
             });
             const save = await this.profilePictureRepository.save(profilePicture);
-            return { Message: 'Image Uploaded Successful', save };
+            return { Message: 'Image Uploaded Successful', save: { link: save.link, size: save.size } };
         }
         catch (error) {
             console.error('Error uploading file to Google Cloud:', error.message);

@@ -10,7 +10,7 @@ import { ProfilePicture } from './uploads.model';
 import { Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 import path, { extname, join } from 'path';
-import { promises as fs } from 'fs';
+import { promises as fs, link } from 'fs';
 import { AuthService } from 'src/auth/auth.service';
 import { Storage } from '@google-cloud/storage';
 import { v4 as uuidv4 } from 'uuid';
@@ -58,7 +58,6 @@ export class UploadsService {
        
         await bucketFile.delete();
         fileDeleted = true;
-        console.log('File successfully deleted from Google Cloud bucket.');
       } catch (error) {
         if (error.code === 404) {
           console.warn('File not found in Google Cloud bucket. Proceeding with database deletion.');
@@ -103,7 +102,7 @@ export class UploadsService {
         size: file.size,
       });
       const save = await this.profilePictureRepository.save(profilePicture);
-      return { Message: 'Image Uploaded Successful', save };
+      return { Message: 'Image Uploaded Successful', save:{link:save.link,size:save.size} };
     } catch (error) {
       console.error('Error uploading file to Google Cloud:', error.message);
       throw new BadRequestException(
