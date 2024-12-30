@@ -260,7 +260,7 @@ let DepositService = class DepositService {
             throw new Error('Error occurred during payment validation.');
         }
     }
-    async surjoPayInit(header, amount) {
+    async surjoPayInit(header, amount, userIp) {
         const email = await this.authService.decodeToken(header);
         const user = await this.userRepository.findOne({ where: { email: email } });
         const timestamp = Date.now();
@@ -268,7 +268,15 @@ let DepositService = class DepositService {
         const tokenDetails = await this.paymentService.surjoAuthentication();
         const { token, token_type, store_id } = tokenDetails;
         const tran_id = `FSD${timestamp}${randomNumber}`;
+        const url = `${this.surjoBaseUrl}/api/secret-pay`;
         const data = {
+            prefix: this.surjoPrefix,
+            store_id: store_id,
+            token: token,
+            return_url: `http://localhost:8080/deposit/surjo/success/${email}`,
+            cancel_url: `http://localhost:8080/payment/cancel`,
+            order_id: tran_id,
+            client_ip: userIp,
             amount: amount,
             currency: 'BDT',
             customer_name: user.fullName,
@@ -277,22 +285,12 @@ let DepositService = class DepositService {
             customer_city: 'Dhaka',
             customer_email: email,
         };
+        const requestOptions = { headers: {
+                authorization: `${token_type} ${token}`,
+                'Content-Type': 'application/json',
+            }, };
         try {
-            const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/secret-pay`, {
-                prefix: this.surjoPrefix,
-                store_id: store_id,
-                token: token,
-                return_url: `${process.env.BASE_CALLBACKURL}deposit/surjo/success/${email}/${amount}`,
-                cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
-                order_id: tran_id,
-                client_ip: '192.67.2',
-                ...data,
-            }, {
-                headers: {
-                    authorization: `${token_type} ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios_1.default.post(url, data, requestOptions);
             return { surjoPay: response.data.checkout_url };
         }
         catch (error) {
@@ -300,7 +298,7 @@ let DepositService = class DepositService {
             return 'Payment Failed';
         }
     }
-    async surjoVerifyPayment(sp_order_id, email, amount, res) {
+    async surjoVerifyPayment(sp_order_id, email, res) {
         const tokenDetails = await this.paymentService.surjoAuthentication();
         const { token, token_type } = tokenDetails;
         try {
@@ -313,15 +311,15 @@ let DepositService = class DepositService {
                 },
             });
             const data = response.data[0];
-            if (data.sp_message === 'Success') {
+            if (data.sp_code === '1000') {
                 const user = await this.userRepository.findOne({
                     where: { email: email },
                 });
                 let addTransection = new transection_model_1.Transection();
                 addTransection.tranId = data.customer_order_id;
                 addTransection.tranDate = data.date_time;
-                addTransection.paidAmount = amount;
-                addTransection.offerAmmount = data.received_amount;
+                addTransection.paidAmount = Number(data.amount);
+                addTransection.offerAmmount = Number(data.amount);
                 addTransection.bankTranId = data.bank_trx_id;
                 addTransection.riskTitle = 'safe';
                 addTransection.cardType = 'Surjo-Pay';
@@ -334,8 +332,8 @@ let DepositService = class DepositService {
                     where: { email: email },
                     relations: ['wallet'],
                 });
-                addTransection.walletBalance = findUser.wallet.ammount + Number(amount);
-                findUser.wallet.ammount = findUser.wallet.ammount + Number(amount);
+                addTransection.walletBalance = findUser.wallet.ammount + Number(data.amount);
+                findUser.wallet.ammount = findUser.wallet.ammount + Number(data.amount);
                 addTransection.paymentType = 'Instaint Payment ';
                 addTransection.requestType = `Instaint Money added `;
                 addTransection.user = user;
@@ -343,7 +341,7 @@ let DepositService = class DepositService {
                 await this.transectionRepository.save(addTransection);
                 let addDeposit = new deposit_model_1.Deposit();
                 addDeposit.user = user;
-                addDeposit.ammount = amount;
+                addDeposit.ammount = isNaN(Number(data.amount.trim())) ? 0 : Number(data.amount.trim());
                 addDeposit.depositId = data.customer_order_id;
                 addDeposit.depositedFrom = data.method;
                 addDeposit.senderName = user.fullName;
@@ -356,15 +354,15 @@ let DepositService = class DepositService {
                 addDeposit.status = 'Approved';
                 addDeposit.depositType = 'MOBILEBANKING';
                 await this.depositRepository.save(addDeposit);
-                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+                return res.redirect(process.env.SUCCESS_CALLBACK);
             }
             else {
-                throw new Error('Payment validation failed. Invalid status.');
+                return res.redirect(process.env.FAILED_BKASH_CALLBACK);
             }
         }
         catch (error) {
             console.error('Error verifying payment:', error.response ? error.response.data : error.message);
-            return 'Payment Verification Failed';
+            return res.redirect(process.env.FAILED_BKASH_CALLBACK);
         }
     }
     async createPaymentBkash(amount, header) {

@@ -14,6 +14,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
+  // app.set('trust proxy', true);
   //app.useStaticAssets(join(__dirname, '..', 'uploads'));
   /*
   const allowedIP = ('192.168.10.30')
@@ -46,6 +47,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+  
   // app.use(bodyParser.json({ limit: '50mb' })); //document size increased
   // app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
   const port = 8080;

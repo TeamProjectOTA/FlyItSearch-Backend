@@ -369,7 +369,7 @@ let PaymentService = class PaymentService {
             throw new Error(`Error refunding transaction: ${error.message}. Response: ${error.response?.data || 'No additional information available.'}`);
         }
     }
-    async formdata(SearchResponse, header) {
+    async formdata(SearchResponse, header, userIp) {
         const email = await this.authService.decodeToken(header);
         const user = await this.userRepository.findOne({
             where: { email: email },
@@ -380,7 +380,7 @@ let PaymentService = class PaymentService {
         const total_amount = Math.ceil(airTicketPrice + paymentGatwayCharge);
         const bookingID = booking.BookingId;
         const data = {
-            amount: total_amount,
+            amount: airTicketPrice,
             currency: 'BDT',
             customer_name: user.fullName,
             customer_address: 'Dhaka',
@@ -389,7 +389,7 @@ let PaymentService = class PaymentService {
             customer_email: email,
         };
         return {
-            url: await this.surjoMakePayment(data, bookingID, header),
+            url: await this.surjoMakePayment(data, bookingID, header, userIp),
             airTicketPrice: airTicketPrice,
             paymentGatwayCharge: paymentGatwayCharge,
             total_amount: total_amount,
@@ -397,15 +397,18 @@ let PaymentService = class PaymentService {
     }
     async surjoAuthentication() {
         let details;
+        const surjo = `${this.surjoBaseUrl}/api/get_token`;
+        const authPayload = {
+            username: this.surjoUserName,
+            password: this.surjoPassword,
+        };
+        const requestOptions = {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
         try {
-            const response = await axios_1.default.post(`${this.surjoBaseUrl}/api/get_token`, {
-                username: this.surjoUserName,
-                password: this.surjoPassword,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios_1.default.post(surjo, authPayload, requestOptions);
             details = response.data;
         }
         catch (error) {
@@ -413,7 +416,7 @@ let PaymentService = class PaymentService {
         }
         return details;
     }
-    async surjoMakePayment(data, bookingId, header) {
+    async surjoMakePayment(data, bookingId, header, userIp) {
         const tokenDetails = await this.surjoAuthentication();
         const { token, token_type, store_id } = tokenDetails;
         const bookingID = bookingId;
@@ -434,7 +437,7 @@ let PaymentService = class PaymentService {
                     return_url: `${process.env.BASE_CALLBACKURL}payment/return/${bookingID}/${email}`,
                     cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
                     order_id: tran_id,
-                    client_ip: '192.67.5',
+                    client_ip: userIp || '192.67.5',
                     ...formData,
                 }, {
                     headers: {
@@ -466,7 +469,7 @@ let PaymentService = class PaymentService {
                 },
             });
             const data = response.data[0];
-            if (data.sp_message === 'Success') {
+            if (data.sp_code === '1000') {
                 const user = await this.userRepository.findOne({
                     where: { email: email },
                 });
@@ -504,12 +507,15 @@ let PaymentService = class PaymentService {
                 addTransection.bookingId = bookingID;
                 addTransection.user = user;
                 await this.transectionRepository.save(addTransection);
+                return res.redirect(process.env.SUCCESS_CALLBACK);
             }
-            return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+            else {
+                return res.redirect(process.env.FAILED_BKASH_CALLBACK);
+            }
         }
         catch (error) {
             console.error('Error verifying payment:', error.response ? error.response.data : error.message);
-            return 'Payment Verification Failed';
+            return res.redirect(process.env.FAILED_BKASH_CALLBACK);
         }
     }
 };

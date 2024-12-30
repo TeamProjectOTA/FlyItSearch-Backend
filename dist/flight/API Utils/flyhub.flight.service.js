@@ -105,7 +105,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airRetrive(BookingID, header) {
+    async airRetrive(BookingID, header, userIp) {
         const findBooking = await this.bookingSaveRepository.findOne({
             where: { bookingId: BookingID.BookingID },
             relations: ['user'],
@@ -133,7 +133,7 @@ let FlyHubService = class FlyHubService {
         };
         try {
             const response = await axios_1.default.request(ticketRetrive);
-            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID, findBooking.bookingStatus, findBooking.TripType, findBooking.bookingDate, header);
+            return this.flyHubUtil.airRetriveDataTransformer(response?.data, BookingID.BookingID, findBooking.bookingStatus, findBooking.TripType, findBooking.bookingDate, header, userIp);
         }
         catch (error) {
             throw error?.response?.data;
@@ -202,7 +202,7 @@ let FlyHubService = class FlyHubService {
             throw error?.response?.data;
         }
     }
-    async airbook(data, header, currentTimestamp, personIds) {
+    async airbook(data, header, currentTimestamp, personIds, userIp) {
         const token = await this.getToken();
         const Price = {
             method: 'post',
@@ -243,7 +243,7 @@ let FlyHubService = class FlyHubService {
             else {
                 const response1 = await axios_1.default.request(PreBookticket);
                 const response = await axios_1.default.request(Bookticket);
-                return await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp, personIds);
+                return await this.flyHubUtil.bookingDataTransformerFlyhb(response.data, header, currentTimestamp, personIds, userIp);
             }
         }
         catch (error) {
@@ -391,7 +391,7 @@ exports.FlyHubService = FlyHubService;
 __decorate([
     (0, swagger_1.ApiBody)({ type: flyhub_model_1.FlbFlightSearchDto }),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, Object, Object, Object]),
+    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, Object, Object, Object, Object]),
     __metadata("design:returntype", Promise)
 ], FlyHubService.prototype, "airbook", null);
 exports.FlyHubService = FlyHubService = __decorate([

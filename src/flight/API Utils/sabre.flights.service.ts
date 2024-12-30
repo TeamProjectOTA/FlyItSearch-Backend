@@ -34,7 +34,6 @@ export class SabreService {
     const client_secret = base64.encode(process.env.SABRE_PASSWORD);
     const token = base64.encode(`${client_id}:${client_secret}`);
     const data = 'grant_type=client_credentials';
-console.log()
     const headers = {
       Authorization: `Basic ${token}`,
       Accept: '/',

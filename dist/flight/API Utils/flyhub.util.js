@@ -245,7 +245,7 @@ let FlyHubUtil = class FlyHubUtil {
         }
         return FlightItenary;
     }
-    async airRetriveDataTransformer(SearchResponse, fisId, bookingStatus, tripType, bookingDate, header) {
+    async airRetriveDataTransformer(SearchResponse, fisId, bookingStatus, tripType, bookingDate, header, userIp) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -455,13 +455,15 @@ let FlyHubUtil = class FlyHubUtil {
                 }
             }
         }
+        const surjopay = await this.paymentService.formdata(FlightItenary, header, userIp);
         const bkash = await this.paymentService.bkashInit(FlightItenary, header);
         return {
             bookingData: FlightItenary,
+            surjopay: surjopay,
             bkash: bkash,
         };
     }
-    async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp, personIds) {
+    async bookingDataTransformerFlyhb(SearchResponse, header, currentTimestamp, personIds, userIp) {
         const FlightItenary = [];
         const { Results } = SearchResponse;
         const PaxTypeMapping = {
@@ -663,9 +665,11 @@ let FlyHubUtil = class FlyHubUtil {
             }
         }
         await this.saveBookingData(FlightItenary, header, personIds);
+        const surjopay = await this.paymentService.formdata(FlightItenary, header, userIp);
         const bkash = await this.paymentService.bkashInit(FlightItenary, header);
         return {
             bookingData: FlightItenary,
+            surjopay: surjopay,
             bkash: bkash,
         };
     }

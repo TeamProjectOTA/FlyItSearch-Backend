@@ -32,10 +32,10 @@ export declare class DepositService {
         sslcommerz: any;
     }>;
     validateOrder(val_id: string, email: string, amount: number): Promise<any>;
-    surjoPayInit(header: any, amount: number): Promise<"Payment Failed" | {
+    surjoPayInit(header: any, amount: number, userIp: any): Promise<"Payment Failed" | {
         surjoPay: any;
     }>;
-    surjoVerifyPayment(sp_order_id: string, email: string, amount: number, res: any): Promise<any>;
+    surjoVerifyPayment(sp_order_id: string, email: string, res: any): Promise<any>;
     createPaymentBkash(amount: number, header: any): Promise<{
         bkash: any;
     }>;

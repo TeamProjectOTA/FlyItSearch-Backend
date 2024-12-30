@@ -5,6 +5,5 @@ export declare class HotelController {
     private readonly hotelService;
     private readonly sabreHotel;
     constructor(hotelService: HotelService, sabreHotel: SabreHotel);
-    testToken(): Promise<string>;
     hotelRequest(hoteldto: RootDto): Promise<any>;
 }

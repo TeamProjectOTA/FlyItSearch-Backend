@@ -7,13 +7,9 @@ import { GetHotelAvailRQDto, RootDto } from './DTO/hoteldto';
 @ApiTags('Hotel api')
 @Controller('hotel')
 export class HotelController {
-  constructor(private readonly hotelService: HotelService,private readonly sabreHotel:SabreHotel) {
-
-  
-  }
-  @Get("/token")
-  async testToken(){
-    return await this.sabreHotel.restToken()
+  constructor(
+    private readonly hotelService: HotelService,
+    private readonly sabreHotel:SabreHotel) {
   }
 
   @Post('/sabre')

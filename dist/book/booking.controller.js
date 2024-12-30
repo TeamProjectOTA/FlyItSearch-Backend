@@ -28,11 +28,15 @@ let BookingController = class BookingController {
         this.flyHubService = flyHubService;
         this.bdfareService = bdfareService;
     }
-    async airbook(data, header) {
+    async airbook(data, header, request) {
         const nowdate = new Date(Date.now());
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
         const dhakaTimeFormatted = dhakaTime.toISOString();
+        let userIp = request.ip;
+        if (userIp.startsWith('::ffff:')) {
+            userIp = userIp.split(':').pop();
+        }
         const { Passengers } = data;
         const personIds = [];
         Passengers.forEach((passenger, index) => {
@@ -49,13 +53,17 @@ let BookingController = class BookingController {
             delete passenger.visa;
             delete passenger.passport;
         });
-        return await this.flyHubService.airbook(data, header, dhakaTimeFormatted, personIds);
+        return await this.flyHubService.airbook(data, header, dhakaTimeFormatted, personIds, userIp);
     }
     async aircanel(bookingIdDto, header) {
         return await this.flyHubService.aircancel(bookingIdDto, header);
     }
-    async airRetrive(bookingIdDto, header) {
-        return await this.flyHubService.airRetrive(bookingIdDto, header);
+    async airRetrive(bookingIdDto, header, request) {
+        let userIp = request.ip;
+        if (userIp.startsWith('::ffff:')) {
+            userIp = userIp.split(':').pop();
+        }
+        return await this.flyHubService.airRetrive(bookingIdDto, header, userIp);
     }
     async bdfCancel(bookingIdDto) {
         return await this.bdfareService.flightBookingCancel(bookingIdDto);
@@ -107,8 +115,9 @@ __decorate([
     (0, swagger_1.ApiBody)({ type: flyhub_model_1.FlbFlightSearchDto }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, Object]),
+    __metadata("design:paramtypes", [flyhub_model_1.FlbFlightSearchDto, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airbook", null);
 __decorate([
@@ -127,8 +136,9 @@ __decorate([
     (0, common_1.Post)('flh/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [booking_model_1.BookingID, Object]),
+    __metadata("design:paramtypes", [booking_model_1.BookingID, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetrive", null);
 __decorate([

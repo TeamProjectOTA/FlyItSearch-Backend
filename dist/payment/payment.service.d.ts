@@ -32,13 +32,13 @@ export declare class PaymentService {
     executePaymentBkash(paymentID: string, status: string, bookingId: string, res: any, offerAmount: string): Promise<any>;
     searchTransaction(transactionId: string): Promise<any>;
     refundTransaction(paymentId: string, amount: number, trxID: string, email: string): Promise<any>;
-    formdata(SearchResponse?: any, header?: any): Promise<{
+    formdata(SearchResponse?: any, header?: any, userIp?: any): Promise<{
         url: any;
         airTicketPrice: any;
         paymentGatwayCharge: number;
         total_amount: number;
     }>;
     surjoAuthentication(): Promise<any>;
-    surjoMakePayment(data: any, bookingId: string, header: any): Promise<any>;
+    surjoMakePayment(data: any, bookingId: string, header: any, userIp: any): Promise<any>;
     surjoVerifyPayment(sp_order_id: string, bookingID: string, email: string, res: any): Promise<any>;
 }

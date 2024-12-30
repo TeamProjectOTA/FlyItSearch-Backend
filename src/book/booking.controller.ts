@@ -7,6 +7,7 @@ import {
   UseGuards,
   Query,
   Get,
+  Req,
  
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
@@ -17,6 +18,7 @@ import { FlbFlightSearchDto } from 'src/flight/API Utils/Dto/flyhub.model';
 import { UserTokenGuard } from 'src/auth/user-tokens.guard';
 import { AdmintokenGuard } from 'src/auth/admin.tokens.guard';
 import { BDFareService } from 'src/flight/API Utils/bdfare.flights.service';
+import { Request } from 'express';
 
 @ApiTags('Booking-Details')
 @Controller('booking')
@@ -32,11 +34,15 @@ export class BookingController {
   @UseGuards(UserTokenGuard)
   @Post('flh/airBook/')
   @ApiBody({type:FlbFlightSearchDto})
-  async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers) {
+  async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers,@Req() request:Request) {
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
     const dhakaTimeFormatted = dhakaTime.toISOString();
+    let userIp = request.ip;
+    if (userIp.startsWith('::ffff:')) {
+      userIp = userIp.split(':').pop();
+    } 
 
     const { Passengers } = data;
     const personIds: { index: number; visa?: string; passport?: string }[] = [];
@@ -64,6 +70,7 @@ export class BookingController {
       header,
       dhakaTimeFormatted,
       personIds,
+      userIp,
     );
   }
   @UseGuards(UserTokenGuard)
@@ -82,8 +89,13 @@ export class BookingController {
   async airRetrive(
     @Body() bookingIdDto: BookingID,
     @Headers() header: Headers,
+    @Req() request:Request
   ): Promise<any> {
-    return await this.flyHubService.airRetrive(bookingIdDto, header);
+    let userIp = request.ip;
+    if (userIp.startsWith('::ffff:')) {
+      userIp = userIp.split(':').pop();
+    } 
+    return await this.flyHubService.airRetrive(bookingIdDto, header,userIp);
   }
   @Post('bdfare/cancelBooking')
   async bdfCancel(@Body() bookingIdDto: BookingID) {

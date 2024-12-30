@@ -23,6 +23,21 @@ let IpController = class IpController {
     async searchCount(email, points) {
         return await this.ipService.update(email, points);
     }
+    getRequestInfo(request) {
+        const xForwardedFor = request.headers['x-forwarded-for'];
+        const ipList = xForwardedFor?.split(',').map(ip => ip.trim());
+        const userIp = ipList?.[0] || request.socket.remoteAddress;
+        return {
+            method: request.method,
+            url: request.url,
+            headers: request.headers,
+            body: request.body,
+            ip: userIp,
+            query: request.query,
+            params: request.params,
+            xForwardedFor: xForwardedFor || 'Not Available',
+        };
+    }
 };
 exports.IpController = IpController;
 __decorate([
@@ -33,6 +48,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Number]),
     __metadata("design:returntype", Promise)
 ], IpController.prototype, "searchCount", null);
+__decorate([
+    (0, common_1.Get)("/ipcheck"),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], IpController.prototype, "getRequestInfo", null);
 exports.IpController = IpController = __decorate([
     (0, swagger_1.ApiTags)('SearchCount'),
     (0, common_1.Controller)('SearchCount'),

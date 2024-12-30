@@ -23,20 +23,11 @@ let HotelController = class HotelController {
         this.hotelService = hotelService;
         this.sabreHotel = sabreHotel;
     }
-    async testToken() {
-        return await this.sabreHotel.restToken();
-    }
     async hotelRequest(hoteldto) {
         return await this.sabreHotel.sabreHotelRequest(hoteldto);
     }
 };
 exports.HotelController = HotelController;
-__decorate([
-    (0, common_1.Get)("/token"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], HotelController.prototype, "testToken", null);
 __decorate([
     (0, common_1.Post)('/sabre'),
     __param(0, (0, common_1.Body)()),
@@ -47,6 +38,7 @@ __decorate([
 exports.HotelController = HotelController = __decorate([
     (0, swagger_1.ApiTags)('Hotel api'),
     (0, common_1.Controller)('hotel'),
-    __metadata("design:paramtypes", [hotel_service_1.HotelService, sabre_hotel_service_1.SabreHotel])
+    __metadata("design:paramtypes", [hotel_service_1.HotelService,
+        sabre_hotel_service_1.SabreHotel])
 ], HotelController);
 //# sourceMappingURL=hotel.controller.js.map

@@ -300,6 +300,7 @@ export class FlyHubUtil {
     tripType?: any,
     bookingDate?: any,
     header?: any,
+    userIp?:any
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -568,7 +569,7 @@ export class FlyHubUtil {
     // const sslpaymentLink = await this.paymentService
     //   .dataModification(FlightItenary, header)
     //   .catch(() => null);
-    //const surjopay = await this.paymentService.formdata(FlightItenary, header);
+    const surjopay = await this.paymentService.formdata(FlightItenary, header,userIp);
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     // const price = FlightItenary?.[0]?.NetFare || 0;
@@ -592,7 +593,7 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       // sslpaymentLink: sslpaymentLink,
-      //surjopay: surjopay,
+      surjopay: surjopay,
       bkash: bkash,
       // walletPayment: { walletAmmount, price, priceAfterPayment },
     };
@@ -603,6 +604,7 @@ export class FlyHubUtil {
     header: any,
     currentTimestamp: any,
     personIds: any,
+    userIp:any
   ): Promise<any> {
 
     
@@ -869,7 +871,7 @@ export class FlyHubUtil {
     // const sslpaymentLink = await this.paymentService
     //   .dataModification(FlightItenary, header)
     //   .catch(() => null);
-    //const surjopay = await this.paymentService.formdata(FlightItenary, header);
+    const surjopay = await this.paymentService.formdata(FlightItenary, header,userIp);
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     // const price = FlightItenary?.[0]?.NetFare || 0;
@@ -893,7 +895,7 @@ export class FlyHubUtil {
     return {
       bookingData: FlightItenary,
       //sslpaymentLink: sslpaymentLink,
-      //surjopay: surjopay,
+      surjopay: surjopay,
       bkash: bkash,
       //walletPayment: { walletAmmount, price, priceAfterPayment },
     };

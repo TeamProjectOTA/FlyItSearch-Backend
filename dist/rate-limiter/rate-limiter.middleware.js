@@ -23,7 +23,10 @@ let RateLimiterMiddleware = class RateLimiterMiddleware {
         };
     }
     async use(req, res, next) {
-        const ip = req.ip;
+        const xForwardedFor = req.headers['x-forwarded-for'];
+        const ipList = xForwardedFor?.split(',').map(ip => ip.trim());
+        const userIp = ipList?.[0] || req.socket.remoteAddress;
+        const ip = userIp;
         const userRole = req.user?.role || 'unregistered';
         const email = req.user?.email;
         const { points, duration } = this.rateLimits[userRole];

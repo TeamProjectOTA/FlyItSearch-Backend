@@ -72,11 +72,15 @@ let DepositController = class DepositController {
                 .json({ message: 'Internal server error', error: error.message });
         }
     }
-    async surjoPay(header, depositDto) {
-        return await this.depositService.surjoPayInit(header, depositDto.amount);
+    async surjoPay(header, depositDto, request) {
+        let userIp = request.ip;
+        if (userIp.startsWith('::ffff:')) {
+            userIp = userIp.split(':').pop();
+        }
+        return await this.depositService.surjoPayInit(header, depositDto.amount, userIp);
     }
-    async depositSuccessSurjoPay(email, amount, order_id, res) {
-        const paymentData = await this.depositService.surjoVerifyPayment(order_id, email, amount, res);
+    async depositSuccessSurjoPay(email, order_id, res) {
+        const paymentData = await this.depositService.surjoVerifyPayment(order_id, email, res);
         return paymentData;
     }
     async bkash(header, depositDto) {
@@ -178,18 +182,18 @@ __decorate([
     (0, common_1.Post)('surjo/deposit'),
     __param(0, (0, common_1.Headers)()),
     __param(1, (0, common_1.Body)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, deposit_model_1.DepositDto]),
+    __metadata("design:paramtypes", [Object, deposit_model_1.DepositDto, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "surjoPay", null);
 __decorate([
-    (0, common_1.Get)('surjo/success/:email/:amount'),
+    (0, common_1.Get)('surjo/success/:email'),
     __param(0, (0, common_1.Param)('email')),
-    __param(1, (0, common_1.Param)('amount')),
-    __param(2, (0, common_1.Query)('order_id')),
-    __param(3, (0, common_1.Res)()),
+    __param(1, (0, common_1.Query)('order_id')),
+    __param(2, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Number, String, Object]),
+    __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], DepositController.prototype, "depositSuccessSurjoPay", null);
 __decorate([

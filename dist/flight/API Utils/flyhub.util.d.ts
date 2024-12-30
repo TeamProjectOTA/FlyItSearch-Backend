@@ -16,8 +16,8 @@ export declare class FlyHubUtil {
     private readonly bookingSave;
     constructor(BookService: BookingService, mailService: MailService, paymentService: PaymentService, authService: AuthService, bookingIdSave: Repository<BookingIdSave>, walletRepository: Repository<Wallet>, bookingSave: Repository<BookingSave>);
     restBFMParser(SearchResponse: any, journeyType?: string): Promise<any[]>;
-    airRetriveDataTransformer(SearchResponse: any, fisId: string, bookingStatus?: any, tripType?: any, bookingDate?: any, header?: any): Promise<any>;
-    bookingDataTransformerFlyhb(SearchResponse: any, header: any, currentTimestamp: any, personIds: any): Promise<any>;
+    airRetriveDataTransformer(SearchResponse: any, fisId: string, bookingStatus?: any, tripType?: any, bookingDate?: any, header?: any, userIp?: any): Promise<any>;
+    bookingDataTransformerFlyhb(SearchResponse: any, header: any, currentTimestamp: any, personIds: any, userIp: any): Promise<any>;
     saveBookingData(SearchResponse: any, header: any, personIds: any): Promise<any>;
     bookingCancelDataTranformerFlyhub(SearchResponse: any, fisId: string, header?: any): Promise<any>;
     airRetriveDataTransformerAdmin(SearchResponse: any, fisId: string, bookingStatus?: any, tripType?: any, bookingDate?: any): Promise<any>;
