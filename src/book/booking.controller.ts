@@ -97,14 +97,21 @@ export class BookingController {
     } 
     return await this.flyHubService.airRetrive(bookingIdDto, header,userIp);
   }
-  @Post('bdfare/cancelBooking')
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
+  @Post('api2/cancelBooking')
   async bdfCancel(@Body() bookingIdDto: BookingID) {
     return await this.bdfareService.flightBookingCancel(bookingIdDto);
   }
-
-  @Post('bdfare/airRetrive')
-  async airRetriveBDF(@Body() bookingIdDto: BookingID): Promise<any> {
-    return await this.bdfareService.flightRetrieve(bookingIdDto);
+  @ApiBearerAuth('access_token')
+  @UseGuards(UserTokenGuard)
+  @Post('api2/airRetrive')
+  async airRetriveBDF(@Body() bookingIdDto: BookingID,@Req() request:Request,@Headers() header: Headers,): Promise<any> {
+    let userIp = request.ip;
+    if (userIp.startsWith('::ffff:')) {
+      userIp = userIp.split(':').pop();
+    } 
+    return await this.bdfareService.flightRetrieve(bookingIdDto,header,userIp);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
@@ -153,7 +160,11 @@ export class BookingController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Post('api2/booking')
-  async bdfareBook(@Body() bookingdto:BookingDataDto,@Headers() header: Headers){
+  async bdfareBook(@Body() bookingdto:BookingDataDto,@Headers() header: Headers,@Req() request:Request){
+    let userIp = request.ip;
+    if (userIp.startsWith('::ffff:')) {
+      userIp = userIp.split(':').pop();
+    } 
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
@@ -181,6 +192,8 @@ export class BookingController {
     });
     return await this.bdfareService.flightBooking(bookingdto,header,
       dhakaTimeFormatted,
-      personIds,)
+      personIds,
+      userIp
+    )
   }
 }

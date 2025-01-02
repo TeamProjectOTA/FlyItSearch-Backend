@@ -617,8 +617,8 @@ export class PaymentService {
         let addTransection: Transection = new Transection();
         addTransection.tranId = data.customer_order_id;
         addTransection.tranDate = data.date_time;
-        addTransection.paidAmount = data.amount;
-        addTransection.offerAmmount = data.received_amount;
+        addTransection.paidAmount = Number(data.amount);
+        addTransection.offerAmmount = Number(data.amount);
         addTransection.bankTranId = data.bank_trx_id;
         addTransection.riskTitle = 'safe';
         addTransection.cardType = 'Surjo-Pay';

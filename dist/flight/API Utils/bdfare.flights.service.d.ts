@@ -18,9 +18,9 @@ export declare class BDFareService {
     fareRules(data: searchResultDtobdf): Promise<any>;
     offerPrice(data: searchResultDtobdf): Promise<any>;
     miniRule(data: searchResultDtobdf): Promise<any>;
-    flightBooking(bookingdata: BookingDataDto, header: any, currentTimestamp: any, personIds: any): Promise<any>;
-    flightRetrieve(BookingID: BookingID): Promise<any>;
-    flightBookingCancel(BookingID: BookingID): Promise<any>;
+    flightBooking(bookingdata: BookingDataDto, header: any, currentTimestamp: any, personIds: any, userIp: any): Promise<any>;
+    flightRetrieve(BookingID: BookingID, header?: any, userIp?: any): Promise<any>;
+    flightBookingCancel(BookingID: BookingID, header?: any): Promise<any>;
     flightBookingChange(): Promise<void>;
     private bookingDataModification;
     private determineJourneyType;

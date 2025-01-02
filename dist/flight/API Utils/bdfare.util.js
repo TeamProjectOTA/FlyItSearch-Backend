@@ -20,8 +20,10 @@ const flight_model_1 = require("../flight.model");
 const typeorm_2 = require("typeorm");
 const booking_model_1 = require("../../book/booking.model");
 const booking_service_1 = require("../../book/booking.service");
+const payment_service_1 = require("../../payment/payment.service");
 let BfFareUtil = class BfFareUtil {
-    constructor(airportService, BookService, bookingIdSave, bookingSave) {
+    constructor(paymentService, airportService, BookService, bookingIdSave, bookingSave) {
+        this.paymentService = paymentService;
         this.airportService = airportService;
         this.BookService = BookService;
         this.bookingIdSave = bookingIdSave;
@@ -47,12 +49,12 @@ let BfFareUtil = class BfFareUtil {
                 const isRefundable = offer?.refundable || false;
                 const paxSegments = offer?.paxSegmentList || [];
                 const fareDetails = offer?.fareDetailList || [];
-                const totalFare = offer?.price?.totalPayable?.total || 0;
+                let netFare = offer?.price?.totalPayable?.total || 0;
                 const currency = offer?.price?.totalPayable?.curreny || 'BDT';
                 const baggageAllowances = offer?.baggageAllowanceList || [];
                 const seatsRemaining = offer?.seatsRemaining || 'N/A';
                 const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-                const netFare = offer?.price?.gross?.total || 0;
+                let totalFare = offer?.price?.gross?.total || 0;
                 let tripType = 'Unknown';
                 if (journeyType === '1') {
                     tripType = 'Oneway';
@@ -176,30 +178,32 @@ let BfFareUtil = class BfFareUtil {
                     };
                     AllLegsInfo.push(legInfo);
                 }
-                FlightItenary.push({
-                    System: 'API2',
-                    SearchId: SearchResponse.traceId,
-                    ResultId: offerID,
-                    PassportMadatory: SearchResponse.passportRequired,
-                    FareType: fareType,
-                    Refundable: isRefundable,
-                    TripType: tripType,
-                    InstantPayment: instantPayment,
-                    GrossFare: totalFare,
-                    IsBookable: IsBookable,
-                    Carrier: validatingCarrier,
-                    CarrierName: carrierName,
-                    BaseFare: totalBaseFare,
-                    Taxes: tax,
-                    SerViceFee: service,
-                    NetFare: netFare,
-                    Currency: currency,
-                    SeatsRemaining: seatsRemaining,
-                    PriceBreakDown: mergedData,
-                    RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
-                    SSR: SearchResponse.availableSSR,
-                    AllLegsInfo: AllLegsInfo,
-                });
+                if (fareType == "OnHold") {
+                    FlightItenary.push({
+                        System: 'API2',
+                        SearchId: SearchResponse.traceId,
+                        ResultId: offerID,
+                        PassportMadatory: SearchResponse.passportRequired,
+                        FareType: fareType,
+                        Refundable: isRefundable,
+                        TripType: tripType,
+                        InstantPayment: instantPayment,
+                        GrossFare: totalFare,
+                        IsBookable: IsBookable,
+                        Carrier: validatingCarrier,
+                        CarrierName: carrierName,
+                        BaseFare: totalBaseFare,
+                        Taxes: tax,
+                        SerViceFee: service,
+                        NetFare: netFare,
+                        Currency: currency,
+                        SeatsRemaining: seatsRemaining,
+                        PriceBreakDown: mergedData,
+                        RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
+                        SSR: SearchResponse.availableSSR,
+                        AllLegsInfo: AllLegsInfo,
+                    });
+                }
             }
             return FlightItenary;
         }
@@ -384,7 +388,7 @@ let BfFareUtil = class BfFareUtil {
         }
         return FlightItenary;
     }
-    async airRetrive(SearchResponse, fisId, bookingStatus, tripType, bookingDate, header) {
+    async airRetrive(SearchResponse, fisId, bookingStatus, tripType, bookingDate, header, userIp) {
         const FlightItenary = [];
         const { orderItem } = SearchResponse;
         for (const offerData of orderItem) {
@@ -408,12 +412,12 @@ let BfFareUtil = class BfFareUtil {
             const isRefundable = offer?.refundable || false;
             const paxSegments = offer?.paxSegmentList || [];
             const fareDetails = offer?.fareDetailList || [];
-            const totalFare = offer?.price?.totalPayable?.total || 0;
+            const netFare = offer?.price?.totalPayable?.total || 0;
             const currency = offer?.price?.totalPayable?.curreny || 'BDT';
             const baggageAllowances = offer?.baggageAllowanceList || [];
             const seatsRemaining = offer?.seatsRemaining || 'N/A';
             const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-            const netFare = offer?.price?.gross?.total || 0;
+            const totalFare = offer?.price?.gross?.total || 0;
             const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
             const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
             const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
@@ -579,10 +583,16 @@ let BfFareUtil = class BfFareUtil {
                 AllLegsInfo: AllLegsInfo,
                 PassengerList: passengerList,
             });
-            return FlightItenary;
+            const surjopay = await this.paymentService.formdata(FlightItenary, header, userIp).catch(() => 'NA');
+            const bkash = await this.paymentService.bkashInit(FlightItenary, header).catch(() => "NA");
+            return {
+                bookingData: FlightItenary,
+                surjopay: surjopay,
+                bkash: bkash,
+            };
         }
     }
-    async bookingDataTransformer(SearchResponse, header, currentTimestamp, personIds) {
+    async bookingDataTransformer(SearchResponse, header, currentTimestamp, personIds, userIp) {
         const FlightItenary = [];
         const { orderItem } = SearchResponse;
         for (const offerData of orderItem) {
@@ -607,12 +617,12 @@ let BfFareUtil = class BfFareUtil {
             const isRefundable = offer?.refundable || false;
             const paxSegments = offer?.paxSegmentList || [];
             const fareDetails = offer?.fareDetailList || [];
-            const totalFare = offer?.price?.totalPayable?.total || 0;
+            const netFare = offer?.price?.totalPayable?.total || 0;
             const currency = offer?.price?.totalPayable?.curreny || 'BDT';
             const baggageAllowances = offer?.baggageAllowanceList || [];
             const seatsRemaining = offer?.seatsRemaining || 'N/A';
             const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-            const netFare = offer?.price?.gross?.total || 0;
+            const totalFare = offer?.price?.gross?.total || 0;
             const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
             const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
             const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
@@ -784,9 +794,15 @@ let BfFareUtil = class BfFareUtil {
                 AllLegsInfo: AllLegsInfo,
                 PassengerList: passengerList,
             });
-            await this.saveBookingData(FlightItenary, header, personIds);
-            return FlightItenary;
         }
+        await this.saveBookingData(FlightItenary, header, personIds);
+        const surjopay = await this.paymentService.formdata(FlightItenary, header, userIp);
+        const bkash = await this.paymentService.bkashInit(FlightItenary, header);
+        return {
+            bookingData: FlightItenary,
+            surjopay: surjopay,
+            bkash: bkash,
+        };
     }
     async saveBookingData(SearchResponse, header, personIds) {
         const booking = SearchResponse[0];
@@ -843,9 +859,10 @@ let BfFareUtil = class BfFareUtil {
 exports.BfFareUtil = BfFareUtil;
 exports.BfFareUtil = BfFareUtil = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
-    __param(3, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
-    __metadata("design:paramtypes", [airports_service_1.AirportsService,
+    __param(3, (0, typeorm_1.InjectRepository)(flight_model_1.BookingIdSave)),
+    __param(4, (0, typeorm_1.InjectRepository)(booking_model_1.BookingSave)),
+    __metadata("design:paramtypes", [payment_service_1.PaymentService,
+        airports_service_1.AirportsService,
         booking_service_1.BookingService,
         typeorm_2.Repository,
         typeorm_2.Repository])

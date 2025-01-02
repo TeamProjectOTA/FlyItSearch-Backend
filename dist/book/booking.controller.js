@@ -68,8 +68,12 @@ let BookingController = class BookingController {
     async bdfCancel(bookingIdDto) {
         return await this.bdfareService.flightBookingCancel(bookingIdDto);
     }
-    async airRetriveBDF(bookingIdDto) {
-        return await this.bdfareService.flightRetrieve(bookingIdDto);
+    async airRetriveBDF(bookingIdDto, request, header) {
+        let userIp = request.ip;
+        if (userIp.startsWith('::ffff:')) {
+            userIp = userIp.split(':').pop();
+        }
+        return await this.bdfareService.flightRetrieve(bookingIdDto, header, userIp);
     }
     async airRetriveAdmin(bookingIdDto) {
         return await this.flyHubService.airRetriveAdmin(bookingIdDto);
@@ -83,7 +87,11 @@ let BookingController = class BookingController {
     async ticketMake(bookingIdDto) {
         return await this.flyHubService.makeTicket(bookingIdDto);
     }
-    async bdfareBook(bookingdto, header) {
+    async bdfareBook(bookingdto, header, request) {
+        let userIp = request.ip;
+        if (userIp.startsWith('::ffff:')) {
+            userIp = userIp.split(':').pop();
+        }
         const nowdate = new Date(Date.now());
         const dhakaOffset = 6 * 60 * 60 * 1000;
         const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
@@ -104,7 +112,7 @@ let BookingController = class BookingController {
             delete passenger.visa;
             delete passenger.passport;
         });
-        return await this.bdfareService.flightBooking(bookingdto, header, dhakaTimeFormatted, personIds);
+        return await this.bdfareService.flightBooking(bookingdto, header, dhakaTimeFormatted, personIds, userIp);
     }
 };
 exports.BookingController = BookingController;
@@ -142,17 +150,23 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetrive", null);
 __decorate([
-    (0, common_1.Post)('bdfare/cancelBooking'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('api2/cancelBooking'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [booking_model_1.BookingID]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "bdfCancel", null);
 __decorate([
-    (0, common_1.Post)('bdfare/airRetrive'),
+    (0, swagger_1.ApiBearerAuth)('access_token'),
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
+    (0, common_1.Post)('api2/airRetrive'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Req)()),
+    __param(2, (0, common_1.Headers)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [booking_model_1.BookingID]),
+    __metadata("design:paramtypes", [booking_model_1.BookingID, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "airRetriveBDF", null);
 __decorate([
@@ -212,8 +226,9 @@ __decorate([
     (0, common_1.Post)('api2/booking'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
+    __param(2, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [booking_model_1.BookingDataDto, Object]),
+    __metadata("design:paramtypes", [booking_model_1.BookingDataDto, Object, Object]),
     __metadata("design:returntype", Promise)
 ], BookingController.prototype, "bdfareBook", null);
 exports.BookingController = BookingController = __decorate([

@@ -317,16 +317,16 @@ export class DepositService {
       prefix: this.surjoPrefix,
       store_id: store_id,
       token: token,
-      return_url: `http://localhost:8080/deposit/surjo/success/${email}`, // Dynamic return URL
-      cancel_url: `http://localhost:8080/payment/cancel`,
+      return_url: `http://192.168.10.91:8080/deposit/surjo/success/${email}`, // Dynamic return URL
+      cancel_url: `http://192.168.10.91:8080/payment/cancel`,
       order_id: tran_id,
       client_ip: userIp,
       amount: amount,
       currency: 'BDT',
       customer_name: user.fullName,
-      customer_address: 'Dhaka',
+      customer_address: 'Not',
       customer_phone: user.phone,
-      customer_city: 'Dhaka',
+      customer_city: 'Applicable',
       customer_email: email,
     };
     const requestOptions={headers: {

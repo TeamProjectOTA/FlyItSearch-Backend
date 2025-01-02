@@ -13,7 +13,7 @@ export declare class BookingController {
     aircanel(bookingIdDto: BookingID, header: Headers): Promise<any>;
     airRetrive(bookingIdDto: BookingID, header: Headers, request: Request): Promise<any>;
     bdfCancel(bookingIdDto: BookingID): Promise<any>;
-    airRetriveBDF(bookingIdDto: BookingID): Promise<any>;
+    airRetriveBDF(bookingIdDto: BookingID, request: Request, header: Headers): Promise<any>;
     airRetriveAdmin(bookingIdDto: BookingID): Promise<any>;
     findAll(bookingStatus?: string, page?: number, limit?: number): Promise<{
         data: import("./booking.model").BookingSave[];
@@ -23,5 +23,5 @@ export declare class BookingController {
     }>;
     findUserWithBookings(header: Headers, bookingStatus: string): Promise<any>;
     ticketMake(bookingIdDto: BookingID): Promise<any>;
-    bdfareBook(bookingdto: BookingDataDto, header: Headers): Promise<any>;
+    bdfareBook(bookingdto: BookingDataDto, header: Headers, request: Request): Promise<any>;
 }

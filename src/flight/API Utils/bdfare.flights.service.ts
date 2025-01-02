@@ -105,22 +105,23 @@ export class BDFareService {
   }
 
   async airShopping(flightSearchModel: FlightSearchModel): Promise<any> {
+    // console.log(this.apiKey)
     const requestDto = this.transformToRequestDto(flightSearchModel);
     const tripType = requestDto.request.shoppingCriteria.tripType;
-
-    //return requestDto
-    const response: AxiosResponse = await axios.post(
-      `${this.apiUrl}/AirShopping`,
-      requestDto,
-      {
+       const url=`${this.apiUrl}/AirShopping`
+       const requestHeader=  {
         headers: {
           'X-API-KEY': this.apiKey,
         },
-      },
-    );
+      }
+    //  console.log(url,requestHeader)
+    //return requestDto
+    const response: AxiosResponse = await axios.post(
+     url,requestDto,requestHeader);
 
     if (response.data.response != null) {
-      //return response.data
+     
+      //return response.data.response
       return await this.bdfareUtil.afterSerarchDataModifierBdFare(
         response.data.response,
         tripType,
@@ -143,7 +144,9 @@ export class BDFareService {
           },
         },
       );
-
+      if(!response.data.response){
+        return {}
+      }
       return response.data.response;
     } catch (error) {
       console.error('Error calling external API', error);
@@ -158,18 +161,21 @@ export class BDFareService {
       traceId: data.SearchId,
       offerId: data.ResultId,
     };
+    const url= `${this.apiUrl}/OfferPrice`
+    const requestHeader={
+      headers: {
+        'X-API-KEY': this.apiKey,
+      },
+    }
     try {
       const response: AxiosResponse = await axios.post(
-        `${this.apiUrl}/OfferPrice`,
-        transformedData,
-        {
-          headers: {
-            'X-API-KEY': this.apiKey,
-          },
-        },
+        url, transformedData,requestHeader
       );
       //console.log(response)
       //return response.data.response
+      if(!response.data.response){
+        return []
+      }
       return await this.bdfareUtil.afterSerarchDataModifierBdFare(
         response.data.response,
       );
@@ -195,7 +201,9 @@ export class BDFareService {
             'X-API-KEY': this.apiKey,
           },
         },
-      );
+      );if(!response.data.response){
+        return {}
+      }
       return response.data.response;
     } catch (error) {
       console.error('Error calling external API', error);
@@ -208,7 +216,9 @@ export class BDFareService {
 
   async flightBooking(bookingdata:BookingDataDto,  header: any,
     currentTimestamp: any,
-    personIds: any,) {
+    personIds: any,
+    userIp:any) {
+    //console.log(bookingdata)
     const data= this.bookingDataModification(bookingdata)
    //return data
     const OrderSellRequest = {
@@ -234,11 +244,12 @@ export class BDFareService {
    
       const response: AxiosResponse = await axios(OrderSellRequest);
       const response1: AxiosResponse = await axios(OrderCreateRequest);
+      // console.log(response1)
    
-    return await this.bdfareUtil.bookingDataTransformer(response1.data.response,header,currentTimestamp,personIds);
+    return await this.bdfareUtil.bookingDataTransformer(response1.data.response,header,currentTimestamp,personIds,userIp);
   }
 
-  async flightRetrieve(BookingID: BookingID): Promise<any> {
+  async flightRetrieve(BookingID: BookingID,header?:any,userIp?:any): Promise<any> {
     const findBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
@@ -268,6 +279,8 @@ export class BDFareService {
         findBooking.bookingStatus,
         findBooking.TripType,
         findBooking.bookingDate,
+        header,
+        userIp
         );
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -276,7 +289,7 @@ export class BDFareService {
     }
   }
 
-  async flightBookingCancel(BookingID: BookingID): Promise<any> {
+  async flightBookingCancel(BookingID: BookingID,header?:any): Promise<any> {
 
     const bookingId = await this.bookingIdSave.findOne({
       where: { flyitSearchId: BookingID.BookingID },
@@ -296,8 +309,7 @@ export class BDFareService {
           },
         },
       );
-
-      
+      console.log(response.data)
       if (response.data.response.orderStatus == 'Cancelled') {
         const findBooking = await this.bookingSaveRepository.findOne({
           where: { bookingId: BookingID.BookingID },
@@ -305,12 +317,12 @@ export class BDFareService {
         });
         findBooking.bookingStatus=response.data.response.orderStatus
         await this.bookingSaveRepository.save(findBooking)
-        const airRetrive = await this.flightRetrieve(BookingID);
+        const airRetrive = await this.flightRetrieve(BookingID,header);
         const status = response.data.response.orderStatus;
         const bookingId = response.data.response.orderReference;
         const email = airRetrive[0]?.PassengerList[0]?.Email;
         //console.log(status,bookingId,email)
-        await this.mailService.cancelMail(bookingId, status, email);
+        //await this.mailService.cancelMail(bookingId, status, email);
         return airRetrive;
       }
     } catch (error) {
