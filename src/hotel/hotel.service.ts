@@ -14,7 +14,6 @@ export class HotelService {
   }
 
   async getRedirectUrl(): Promise<string> {
-    // Perform any logic here, e.g., fetch URL from a database
     const url = 'https://bdfare.com/api/enterprise';
     return url;
   }
