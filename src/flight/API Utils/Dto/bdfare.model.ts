@@ -65,5 +65,5 @@ export class searchResultDtobdf {
   @ApiProperty()
   SearchId: string;
   @ApiProperty()
-  ResultId: string[];
+  ResultId: string;
 }

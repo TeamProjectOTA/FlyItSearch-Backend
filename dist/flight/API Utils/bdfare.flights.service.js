@@ -110,7 +110,7 @@ let BDFareService = class BDFareService {
     async fareRules(data) {
         const transformedData = {
             traceId: data.SearchId,
-            offerId: data.ResultId[0],
+            offerId: data.ResultId,
         };
         try {
             const response = await axios_1.default.post(`${this.apiUrl}/FareRules`, transformedData, {
@@ -131,7 +131,7 @@ let BDFareService = class BDFareService {
     async offerPrice(data) {
         const transformedData = {
             traceId: data.SearchId,
-            offerId: data.ResultId,
+            offerId: [data.ResultId],
         };
         const url = `${this.apiUrl}/OfferPrice`;
         const requestHeader = {
@@ -154,7 +154,7 @@ let BDFareService = class BDFareService {
     async miniRule(data) {
         const transformedData = {
             traceId: data.SearchId,
-            offerId: data.ResultId[0],
+            offerId: data.ResultId,
         };
         try {
             const response = await axios_1.default.post(`${this.apiUrl}/MiniRule`, transformedData, {
@@ -266,7 +266,7 @@ let BDFareService = class BDFareService {
         const infants = Passengers.filter((p) => p.PaxType === 'Infant');
         const dataModified = {
             traceId: data.SearchId,
-            offerId: [data.ResultId[0]],
+            offerId: [data.ResultId],
             request: {
                 contactInfo: {
                     phone: {

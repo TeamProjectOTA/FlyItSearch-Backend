@@ -11,13 +11,13 @@ const common_1 = require("@nestjs/common");
 const axios_1 = require("axios");
 let HotelService = class HotelService {
     async getIp() {
-        const url = 'https://httpbin.org/ip';
         try {
-            const response = await axios_1.default.get(url);
-            return response.data;
+            const response = await axios_1.default.get('https://api.ipify.org?format=json');
+            console.log('Public IP Address:', response.data.ip);
+            return response.data.ip;
         }
         catch (error) {
-            throw new Error(`Failed to fetch IP: ${error.message}`);
+            console.error('Error fetching public IP:', error);
         }
     }
     async getRedirectUrl() {

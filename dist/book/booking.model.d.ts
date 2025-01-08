@@ -74,7 +74,7 @@ export declare class PassengerDto {
 }
 export declare class BookingDataDto {
     SearchId: string;
-    ResultId: string[];
+    ResultId: string;
     Passengers: PassengerDto[];
 }
 export {};

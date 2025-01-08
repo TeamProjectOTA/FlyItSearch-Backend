@@ -138,7 +138,7 @@ export class BDFareService {
   async fareRules(data: searchResultDtobdf) {
     const transformedData = {
       traceId: data.SearchId,
-      offerId: data.ResultId[0], // Assuming you only need the first item from ResultId array
+      offerId: data.ResultId, // Assuming you only need the first item from ResultId array
     };
     try {
       const response: AxiosResponse = await axios.post(
@@ -165,7 +165,7 @@ export class BDFareService {
   async offerPrice(data: searchResultDtobdf): Promise<any> {
     const transformedData = {
       traceId: data.SearchId,
-      offerId: data.ResultId,
+      offerId: [data.ResultId],
     };
     const url = `${this.apiUrl}/OfferPrice`;
     const requestHeader = {
@@ -198,7 +198,7 @@ export class BDFareService {
   async miniRule(data: searchResultDtobdf): Promise<any> {
     const transformedData = {
       traceId: data.SearchId,
-      offerId: data.ResultId[0],
+      offerId: data.ResultId,
     };
     try {
       const response: AxiosResponse = await axios.post(
@@ -360,7 +360,7 @@ export class BDFareService {
 
     const dataModified = {
       traceId: data.SearchId,
-      offerId: [data.ResultId[0]],
+      offerId: [data.ResultId],
       request: {
         contactInfo: {
           phone: {

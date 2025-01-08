@@ -33,5 +33,5 @@ export declare class RequestDto {
 }
 export declare class searchResultDtobdf {
     SearchId: string;
-    ResultId: string[];
+    ResultId: string;
 }

@@ -4,14 +4,15 @@ import axios from 'axios';
 @Injectable()
 export class HotelService {
   async getIp(): Promise<any> {
-    const url = 'https://httpbin.org/ip';
     try {
-      const response = await axios.get(url);
-      return response.data; // Return the response data
+      const response = await axios.get('https://api.ipify.org?format=json');
+      console.log('Public IP Address:', response.data.ip);
+      return response.data.ip;
     } catch (error) {
-      throw new Error(`Failed to fetch IP: ${error.message}`);
+      console.error('Error fetching public IP:', error);
     }
   }
+
   async getRedirectUrl(): Promise<string> {
     // Perform any logic here, e.g., fetch URL from a database
     const url = 'https://bdfare.com/api/enterprise';

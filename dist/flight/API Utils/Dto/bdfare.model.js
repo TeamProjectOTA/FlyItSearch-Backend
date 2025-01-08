@@ -112,6 +112,6 @@ __decorate([
 ], searchResultDtobdf.prototype, "SearchId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    __metadata("design:type", Array)
+    __metadata("design:type", String)
 ], searchResultDtobdf.prototype, "ResultId", void 0);
 //# sourceMappingURL=bdfare.model.js.map

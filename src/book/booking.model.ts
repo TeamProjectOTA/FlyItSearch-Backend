@@ -202,7 +202,7 @@ export class BookingDataDto {
   @ApiProperty()
   @IsArray()
   @IsString({ each: true })
-  ResultId: string[];
+  ResultId: string;
 
   @IsArray()
   @ApiProperty({ type: [PassengerDto] })

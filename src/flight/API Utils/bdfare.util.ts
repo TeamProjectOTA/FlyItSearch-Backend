@@ -27,15 +27,16 @@ export class BfFareUtil {
     if (offersGroup != null) {
       for (const offerData of offersGroup) {
         const offer = offerData?.offer;
-        const offerID = [];
-        if (Array.isArray(offer?.upSellBrandList)) {
-          offerID.push(
-            ...offer.upSellBrandList.map((item) => item.upSellBrand?.offerId),
-          );
-        } else {
-          offerID.push(offer.offerId);
-        }
-
+        //console.log(offer.offerId)
+        const offerID = offer.offerId;
+        // if (Array.isArray(offer?.upSellBrandList)) {
+        //   offerID.push(
+        //     ...offer.upSellBrandList.map((item) => item.upSellBrand?.offerId),
+        //   );
+        // } else {
+        //   offerID.push(offer.offerId);
+        // }
+       
         const validatingCarrier = offer?.validatingCarrier || 'N/A';
         const fareType = offer?.fareType || 'Regular';
         const IsBookable = offer?.fareType === 'OnHold';
@@ -287,14 +288,15 @@ export class BfFareUtil {
     if (offersGroup) {
       for (const offerData of offersGroup) {
         const offer = offerData?.offer;
-        const offerID = [];
-        if (Array.isArray(offer?.upSellBrandList)) {
-          offerID.push(
-            ...offer.upSellBrandList.map((item) => item.upSellBrand?.offerId),
-          );
-        } else {
-          offerID.push(offer.offerId);
-        }
+        //console.log(offer.offerId)
+        const offerID = offer.offerId;
+        // if (Array.isArray(offer?.upSellBrandList)) {
+        //   offerID.push(
+        //     ...offer.upSellBrandList.map((item) => item.upSellBrand?.offerId),
+        //   );
+        // } else {
+        //   offerID.push(offer.offerId);
+        // }
 
         const validatingCarrier = offer?.validatingCarrier || 'N/A';
         const fareType = offer?.fareType || 'Regular';
