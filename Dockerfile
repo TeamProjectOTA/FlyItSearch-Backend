@@ -1,29 +1,46 @@
-# Use a newer Node.js image
-FROM node:18
+# Stage 1: Build the application
+FROM node:20-alpine AS builder
+
+# Install only necessary build tools
+RUN apk add --no-cache g++ make python3
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json files
+# Copy only package files to install dependencies
 COPY package*.json ./
 
-# Install the project dependencies
+# Install only production dependencies initially
+RUN npm ci --only=production
+
+# Install devDependencies temporarily for the build
 RUN npm install
 
-# Copy the .env file (if needed)
-COPY .env ./
-
-# Copy the rest of the application code
+# Copy the entire application source code
 COPY . .
 
-# Build the NestJS application
+# Build the application
 RUN npm run build
 
-# Expose port 3000
-EXPOSE 3000
 
-# Set the PORT environment variable to 3000
-ENV PORT 3000
+# Stage 2: Production environment
+FROM node:20-alpine
 
-# Command to run the application
-CMD ["npm", "run", "start:prod"]
+# Set the working directory
+WORKDIR /app
+
+# Copy only the necessary files from the builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production --no-audit --no-fund
+
+# Remove unnecessary files to reduce image size
+RUN rm -rf /tmp/* /var/cache/apk/*
+
+# Expose the application port
+EXPOSE 8080
+
+# Start the application
+CMD [ "npm", "run", "start:prod" ]
