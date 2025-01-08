@@ -31,9 +31,9 @@ export class UserService {
     @InjectRepository(IpAddress)
     private readonly ipAddressRepository: Repository<IpAddress>,
     @InjectRepository(BookingSave)
-    private readonly bookingSaveRepository:Repository<BookingSave>,
+    private readonly bookingSaveRepository: Repository<BookingSave>,
     @InjectRepository(TravelBuddy)
-    private readonly travelBuddyRepository:Repository<TravelBuddy>
+    private readonly travelBuddyRepository: Repository<TravelBuddy>,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<any> {
@@ -192,20 +192,17 @@ export class UserService {
     const pageNumber = Math.max(1, page);
     const limitNumber = limit > 0 ? limit : 10;
     const offset = (pageNumber - 1) * limitNumber;
-  
-   
+
     const verifyUser = await this.authservice.verifyUserToken(header);
     if (!verifyUser) {
       throw new UnauthorizedException();
     }
-  
-    
+
     const email = await this.authservice.decodeToken(header);
-  
-    
+
     const [bookings, total] = await this.bookingSaveRepository
       .createQueryBuilder('bookingSave')
-      .innerJoin('bookingSave.user', 'user') 
+      .innerJoin('bookingSave.user', 'user')
       .where('user.email = :email', { email })
       .andWhere('LOWER(bookingSave.bookingStatus) = LOWER(:bookingStatus)', {
         bookingStatus,
@@ -214,12 +211,11 @@ export class UserService {
       .skip(offset)
       .take(limitNumber)
       .getManyAndCount();
-  
+
     if (!bookings || bookings.length === 0) {
       throw new NotFoundException(`No ${bookingStatus} available for the user`);
     }
-  
-    
+
     const filteredBookings = bookings.map((booking) => ({
       id: booking.id,
       system: booking.system,
@@ -238,8 +234,7 @@ export class UserService {
       laginfo: booking.laginfo,
       personId: booking.personId,
     }));
-  
-                                                                       
+
     return {
       bookings: filteredBookings,
       total,
@@ -248,8 +243,7 @@ export class UserService {
       totalPages: Math.ceil(total / limitNumber),
     };
   }
-  
-  
+
   async findAllUserWithBookings(page: number, limit: number): Promise<any> {
     //Pagination Complete
 
@@ -339,7 +333,7 @@ export class UserService {
     const email = await this.authservice.decodeToken(header);
     const [travelBuddies, total] = await this.travelBuddyRepository
       .createQueryBuilder('travelbuddy')
-      .innerJoin('travelbuddy.user', 'user') 
+      .innerJoin('travelbuddy.user', 'user')
       .where('user.email = :email', { email })
       .orderBy('travelbuddy.id', 'DESC')
       .skip(offset)
@@ -348,10 +342,10 @@ export class UserService {
     if (!travelBuddies || travelBuddies.length === 0) {
       throw new NotFoundException(`No Travel Buddies available for the user`);
     }
-    travelBuddies.forEach(buddy => {
-      delete buddy.id; 
+    travelBuddies.forEach((buddy) => {
+      delete buddy.id;
     });
-  
+
     return {
       travelBuddies,
       total,

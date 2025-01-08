@@ -195,7 +195,7 @@ export class PassengerDto {
   IsLeadPassenger: boolean;
 }
 
-export class  BookingDataDto {
+export class BookingDataDto {
   @ApiProperty()
   @IsString()
   SearchId: string;

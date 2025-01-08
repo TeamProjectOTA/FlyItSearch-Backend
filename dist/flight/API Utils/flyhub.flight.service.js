@@ -359,11 +359,12 @@ let FlyHubService = class FlyHubService {
     }
     async saveTravelBuddy(flhdto, header) {
         const email = await this.authService.decodeToken(header);
-        const user = await this.userReposiotory.findOne({ where: { email: email } });
+        const user = await this.userReposiotory.findOne({
+            where: { email: email },
+        });
         const passengersWithTravelBuddy = await Promise.all(flhdto.Passengers.map(async (pax) => {
             let travelBuddy = await this.travelBuddyRepository.findOne({
-                where: { passport: pax.PassportNumber,
-                    user: user }
+                where: { passport: pax.PassportNumber, user: user },
             });
             if (!travelBuddy) {
                 travelBuddy = new travel_buddy_model_1.TravelBuddy();

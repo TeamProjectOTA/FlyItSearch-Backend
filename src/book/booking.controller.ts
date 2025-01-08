@@ -8,7 +8,6 @@ import {
   Query,
   Get,
   Req,
- 
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { BookingDataDto, BookingID } from './booking.model';
@@ -30,11 +29,14 @@ export class BookingController {
   ) {}
 
   @ApiBearerAuth('access_token')
- 
   @UseGuards(UserTokenGuard)
   @Post('flh/airBook/')
-  @ApiBody({type:FlbFlightSearchDto})
-  async airbook(@Body() data: FlbFlightSearchDto, @Headers() header: Headers,@Req() request:Request) {
+  @ApiBody({ type: FlbFlightSearchDto })
+  async airbook(
+    @Body() data: FlbFlightSearchDto,
+    @Headers() header: Headers,
+    @Req() request: Request,
+  ) {
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
@@ -42,7 +44,7 @@ export class BookingController {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
-    } 
+    }
 
     const { Passengers } = data;
     const personIds: { index: number; visa?: string; passport?: string }[] = [];
@@ -89,13 +91,13 @@ export class BookingController {
   async airRetrive(
     @Body() bookingIdDto: BookingID,
     @Headers() header: Headers,
-    @Req() request:Request
+    @Req() request: Request,
   ): Promise<any> {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
-    } 
-    return await this.flyHubService.airRetrive(bookingIdDto, header,userIp);
+    }
+    return await this.flyHubService.airRetrive(bookingIdDto, header, userIp);
   }
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
@@ -106,12 +108,20 @@ export class BookingController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Post('api2/airRetrive')
-  async airRetriveBDF(@Body() bookingIdDto: BookingID,@Req() request:Request,@Headers() header: Headers,): Promise<any> {
+  async airRetriveBDF(
+    @Body() bookingIdDto: BookingID,
+    @Req() request: Request,
+    @Headers() header: Headers,
+  ): Promise<any> {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
-    } 
-    return await this.bdfareService.flightRetrieve(bookingIdDto,header,userIp);
+    }
+    return await this.bdfareService.flightRetrieve(
+      bookingIdDto,
+      header,
+      userIp,
+    );
   }
   @ApiBearerAuth('access_token')
   @UseGuards(AdmintokenGuard)
@@ -160,11 +170,15 @@ export class BookingController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Post('api2/booking')
-  async bdfareBook(@Body() bookingdto:BookingDataDto,@Headers() header: Headers,@Req() request:Request){
+  async bdfareBook(
+    @Body() bookingdto: BookingDataDto,
+    @Headers() header: Headers,
+    @Req() request: Request,
+  ) {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
-    } 
+    }
     const nowdate = new Date(Date.now());
     const dhakaOffset = 6 * 60 * 60 * 1000; // UTC+6
     const dhakaTime = new Date(nowdate.getTime() + dhakaOffset);
@@ -190,10 +204,12 @@ export class BookingController {
       delete passenger.visa;
       delete passenger.passport;
     });
-    return await this.bdfareService.flightBooking(bookingdto,header,
+    return await this.bdfareService.flightBooking(
+      bookingdto,
+      header,
       dhakaTimeFormatted,
       personIds,
-      userIp
-    )
+      userIp,
+    );
   }
 }

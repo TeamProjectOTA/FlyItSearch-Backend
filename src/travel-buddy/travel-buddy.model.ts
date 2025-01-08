@@ -17,7 +17,7 @@ export class TravelBuddyDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  paxtype:string
+  paxtype: string;
   @ApiProperty()
   @IsString()
   gender: string;
@@ -53,7 +53,7 @@ export class TravelBuddy {
   @Column()
   nationality: string;
   @Column()
-  paxtype:string;
+  paxtype: string;
   @Column()
   dob: Date;
   @Column()

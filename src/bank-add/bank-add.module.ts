@@ -6,7 +6,7 @@ import { BankAdd } from './bank-add.model';
 import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BankAdd]),AuthModule],
+  imports: [TypeOrmModule.forFeature([BankAdd]), AuthModule],
   controllers: [BankAddController],
   providers: [BankAddService],
 })

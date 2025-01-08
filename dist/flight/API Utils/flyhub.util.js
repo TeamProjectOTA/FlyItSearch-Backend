@@ -158,45 +158,57 @@ let FlyHubUtil = class FlyHubUtil {
                             return null;
                         const firstSegment = segmentsList[0];
                         const lastSegment = segmentsList[segmentsList.length - 1];
+                        let totalDuration = 0;
+                        const segments = segmentsList.map((segment, index) => {
+                            const segmentDuration = parseInt(segment?.JourneyDuration, 10);
+                            totalDuration += segmentDuration;
+                            let TransitTime = 0;
+                            if (index < segmentsList.length - 1) {
+                                const currentArrTime = new Date(segment?.Destination?.ArrTime).getTime();
+                                const nextDepTime = new Date(segmentsList[index + 1]?.Origin?.DepTime).getTime();
+                                TransitTime = (nextDepTime - currentArrTime) / (1000 * 60);
+                                totalDuration += TransitTime;
+                            }
+                            return {
+                                MarketingCarrier: segment?.Airline?.AirlineCode,
+                                MarketingCarrierName: segment?.Airline?.AirlineName,
+                                MarketingFlightNumber: segment?.Airline?.FlightNumber,
+                                OperatingCarrier: segment?.Airline?.OperatingCarrier,
+                                OperatingFlightNumber: segment?.Airline?.FlightNumber,
+                                OperatingCarrierName: segment?.Airline?.AirlineName,
+                                DepFrom: segment?.Origin?.Airport?.AirportCode,
+                                DepAirPort: segment?.Origin?.Airport?.AirportName,
+                                DepLocation: `${segment?.Origin?.Airport?.CityName}, ${segment?.Origin?.Airport?.CountryName}`,
+                                DepDateAdjustment: 0,
+                                DepTime: segment?.Origin?.DepTime,
+                                ArrTo: segment?.Destination?.Airport?.AirportCode,
+                                ArrAirPort: segment?.Destination?.Airport?.AirportName,
+                                ArrLocation: `${segment?.Destination?.Airport?.CityName}, ${segment?.Destination?.Airport?.CountryName}`,
+                                ArrDateAdjustment: 0,
+                                ArrTime: segment?.Destination?.ArrTime,
+                                TransitTime,
+                                OperatedBy: segment?.Airline?.AirlineName,
+                                StopCount: segment?.StopQuantity,
+                                Duration: segmentDuration,
+                                AircraftTypeName: segment?.Equipment,
+                                Amenities: {},
+                                DepartureGate: segment?.Origin?.Airport?.Terminal || 'TBA',
+                                ArrivalGate: segment?.Destination?.Airport?.Terminal || 'TBA',
+                                HiddenStops: [],
+                                SegmentCode: {
+                                    bookingCode: segment?.Airline?.BookingClass,
+                                    cabinCode: segment?.Airline?.CabinClass,
+                                    seatsAvailable: Result?.Availabilty,
+                                },
+                            };
+                        });
                         const legInfo = {
                             DepDate: firstSegment?.Origin?.DepTime,
                             DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
                             ArrTo: lastSegment.Destination?.Airport?.AirportCode,
-                            Duration: segmentsList?.reduce((acc, segment) => acc + parseInt(segment?.JourneyDuration), 0),
+                            Duration: totalDuration,
+                            Segments: segments,
                         };
-                        const seatsAvailable = Result?.Availabilty;
-                        const segments = segmentsList?.map((segment) => ({
-                            MarketingCarrier: segment?.Airline?.AirlineCode,
-                            MarketingCarrierName: segment?.Airline?.AirlineName,
-                            MarketingFlightNumber: segment?.Airline?.FlightNumber,
-                            OperatingCarrier: segment?.Airline?.OperatingCarrier,
-                            OperatingFlightNumber: segment?.Airline?.FlightNumber,
-                            OperatingCarrierName: segment?.Airline?.AirlineName,
-                            DepFrom: segment?.Origin?.Airport?.AirportCode,
-                            DepAirPort: segment?.Origin?.Airport?.AirportName,
-                            DepLocation: `${segment?.Origin?.Airport?.CityName}, ${segment?.Origin?.Airport?.CountryName}`,
-                            DepDateAdjustment: 0,
-                            DepTime: segment?.Origin?.DepTime,
-                            ArrTo: segment?.Destination?.Airport?.AirportCode,
-                            ArrAirPort: segment?.Destination?.Airport?.AirportName,
-                            ArrLocation: `${segment?.Destination?.Airport?.CityName}, ${segment?.Destination?.Airport?.CountryName}`,
-                            ArrDateAdjustment: 0,
-                            ArrTime: segment?.Destination?.ArrTime,
-                            OperatedBy: segment?.Airline?.AirlineName,
-                            StopCount: segment?.StopQuantity,
-                            Duration: parseInt(segment?.JourneyDuration),
-                            AircraftTypeName: segment?.Equipment,
-                            Amenities: {},
-                            DepartureGate: segment?.Origin?.Airport?.Terminal || 'TBA',
-                            ArrivalGate: segment?.Destination?.Airport?.Terminal || 'TBA',
-                            HiddenStops: [],
-                            SegmentCode: {
-                                bookingCode: segment?.Airline?.BookingClass,
-                                cabinCode: segment?.Airline?.CabinClass,
-                                seatsAvailable: seatsAvailable,
-                            },
-                        }));
-                        legInfo['Segments'] = segments;
                         return legInfo;
                     };
                     const groupedSegments = AllSegments?.reduce((acc, segment) => {
@@ -212,7 +224,7 @@ let FlyHubUtil = class FlyHubUtil {
                             AllLegsInfo.push(legInfo);
                         }
                     }
-                    if (FareType !== "InstantTicketing") {
+                    if (FareType !== 'InstantTicketing') {
                         FlightItenary.push({
                             System: 'API1',
                             ResultId: Result?.ResultID,
@@ -513,8 +525,7 @@ let FlyHubUtil = class FlyHubUtil {
                     const Refundable = Result?.IsRefundable;
                     let TimeLimit = null;
                     const timestamp = new Date(currentTimestamp);
-                    const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000)
-                        .toISOString();
+                    const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
                     TimeLimit = `${lastTicketDate}`;
                     const PriceBreakDown = AllPassenger.map((allPassenger) => {
                         const PaxType = allPassenger?.PaxType;

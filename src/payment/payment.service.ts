@@ -468,7 +468,7 @@ export class PaymentService {
   }
 
   //surjo
-  async formdata(SearchResponse?: any, header?: any,userIp?:any) {
+  async formdata(SearchResponse?: any, header?: any, userIp?: any) {
     const email = await this.authService.decodeToken(header);
     const user = await this.userRepository.findOne({
       where: { email: email },
@@ -488,7 +488,7 @@ export class PaymentService {
       customer_email: email,
     };
     return {
-      url: await this.surjoMakePayment(data, bookingID, header,userIp),
+      url: await this.surjoMakePayment(data, bookingID, header, userIp),
       airTicketPrice: airTicketPrice,
       paymentGatwayCharge: paymentGatwayCharge,
       total_amount: total_amount,
@@ -503,14 +503,14 @@ export class PaymentService {
       username: this.surjoUserName,
       password: this.surjoPassword,
     };
-    
+
     const requestOptions = {
       headers: {
         'Content-Type': 'application/json',
       },
-    };    
+    };
     try {
-      const response = await axios.post(surjo,authPayload,requestOptions);
+      const response = await axios.post(surjo, authPayload, requestOptions);
       details = response.data;
     } catch (error) {
       console.error(
@@ -522,7 +522,12 @@ export class PaymentService {
     return details;
   }
 
-  async surjoMakePayment(data: any, bookingId: string, header: any,userIp:any) {
+  async surjoMakePayment(
+    data: any,
+    bookingId: string,
+    header: any,
+    userIp: any,
+  ) {
     const tokenDetails = await this.surjoAuthentication();
     const { token, token_type, store_id } = tokenDetails;
     const bookingID = bookingId;
@@ -546,7 +551,7 @@ export class PaymentService {
             return_url: `${process.env.BASE_CALLBACKURL}payment/return/${bookingID}/${email}`,
             cancel_url: `${process.env.BASE_CALLBACKURL}payment/cancel`,
             order_id: tran_id,
-            client_ip: userIp||'192.67.5',
+            client_ip: userIp || '192.67.5',
             ...formData,
           },
           {
@@ -592,7 +597,7 @@ export class PaymentService {
         },
       );
       const data = response.data[0];
-      if (data.sp_code=== '1000') {
+      if (data.sp_code === '1000') {
         const user = await this.userRepository.findOne({
           where: { email: email },
         });
@@ -634,8 +639,8 @@ export class PaymentService {
         addTransection.bookingId = bookingID;
         addTransection.user = user;
         await this.transectionRepository.save(addTransection);
-        return res.redirect(process.env.SUCCESS_CALLBACK)
-      }else {
+        return res.redirect(process.env.SUCCESS_CALLBACK);
+      } else {
         return res.redirect(process.env.FAILED_BKASH_CALLBACK);
       }
     } catch (error) {

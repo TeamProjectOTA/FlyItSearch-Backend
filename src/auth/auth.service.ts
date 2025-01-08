@@ -25,7 +25,7 @@ import { ProfilePicture } from 'src/uploads/uploads.model';
 export class AuthService {
   //private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   private readonly time: number;
-  
+
   constructor(
     @InjectRepository(Admin)
     private readonly adminRepository: Repository<Admin>,
@@ -33,7 +33,7 @@ export class AuthService {
     private readonly userRepository: Repository<User>,
     private readonly jwtservice: JwtService,
     @InjectRepository(ProfilePicture)
-    private readonly profilePictureRepository:Repository<ProfilePicture>
+    private readonly profilePictureRepository: Repository<ProfilePicture>,
   ) {
     //86400
     this.time = 86400;
@@ -309,9 +309,11 @@ export class AuthService {
       throw new NotFoundException('Please Enter Your Email');
     }
     if (user.googleId) {
-      throw new ConflictException("This email is associated with a Google login. Password reset is not allowed.");
+      throw new ConflictException(
+        'This email is associated with a Google login. Password reset is not allowed.',
+      );
     }
-    
+
     if (!user) {
       throw new NotFoundException(
         'There is no User Associated with this email',
@@ -436,24 +438,23 @@ export class AuthService {
         </div>
       `,
     };
-    
+
     try {
       const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: 465,
-        secure: true, 
+        secure: true,
         auth: {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
         },
       });
-    
+
       await transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending email:', error);
       throw new Error('Failed to send reset password email.');
     }
-    
   }
 
   async signInUserForGoogle(user: User): Promise<any> {
@@ -487,7 +488,7 @@ export class AuthService {
   }
 
   async validateUser(user: any): Promise<any> {
-    const { email, fullName, googleId,picture } = user;
+    const { email, fullName, googleId, picture } = user;
     let existingUser = await this.userRepository.findOne({ where: { email } });
 
     if (!existingUser) {
@@ -518,13 +519,12 @@ export class AuthService {
       newUser.wallet = newWallet;
       existingUser = await this.userRepository.save(newUser);
       const profilePicture = new ProfilePicture();
-      profilePicture.user = existingUser; 
-      profilePicture.filename = 'fromGoogle'; 
-      profilePicture.link = picture; 
-      profilePicture.size = 55; 
-      
-      await this.profilePictureRepository.save(profilePicture);
+      profilePicture.user = existingUser;
+      profilePicture.filename = 'fromGoogle';
+      profilePicture.link = picture;
+      profilePicture.size = 55;
 
+      await this.profilePictureRepository.save(profilePicture);
     }
     return await this.signInUserForGoogle(existingUser);
   }
@@ -556,14 +556,14 @@ export class AuthService {
   async verifyGoogleToken(token: string) {
     try {
       const googleResponse = await axios.get(
-        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`
-      ); 
-      
+        `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`,
+      );
+
       const user = {
         email: googleResponse.data.email,
         fullName: googleResponse.data.name,
         googleId: googleResponse.data.sub,
-        picture:googleResponse.data.picture
+        picture: googleResponse.data.picture,
       };
       const jwtToken = await this.validateUser(user);
       return jwtToken;

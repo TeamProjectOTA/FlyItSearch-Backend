@@ -193,54 +193,65 @@ export class FlyHubUtil {
 
           const processSegments = (segmentsList) => {
             if (segmentsList.length === 0) return null;
-
             const firstSegment = segmentsList[0];
             const lastSegment = segmentsList[segmentsList.length - 1];
+            let totalDuration = 0;
+            const segments = segmentsList.map((segment, index) => {
+              const segmentDuration = parseInt(segment?.JourneyDuration, 10);
+              totalDuration += segmentDuration;
+              let TransitTime = 0;
+              if (index < segmentsList.length - 1) {
+                const currentArrTime = new Date(
+                  segment?.Destination?.ArrTime,
+                ).getTime();
+                const nextDepTime = new Date(
+                  segmentsList[index + 1]?.Origin?.DepTime,
+                ).getTime();
+                TransitTime = (nextDepTime - currentArrTime) / (1000 * 60);
+                totalDuration += TransitTime;
+              }
+              return {
+                MarketingCarrier: segment?.Airline?.AirlineCode,
+                MarketingCarrierName: segment?.Airline?.AirlineName,
+                MarketingFlightNumber: segment?.Airline?.FlightNumber,
+                OperatingCarrier: segment?.Airline?.OperatingCarrier,
+                OperatingFlightNumber: segment?.Airline?.FlightNumber,
+                OperatingCarrierName: segment?.Airline?.AirlineName,
+                DepFrom: segment?.Origin?.Airport?.AirportCode,
+                DepAirPort: segment?.Origin?.Airport?.AirportName,
+                DepLocation: `${segment?.Origin?.Airport?.CityName}, ${segment?.Origin?.Airport?.CountryName}`,
+                DepDateAdjustment: 0,
+                DepTime: segment?.Origin?.DepTime,
+                ArrTo: segment?.Destination?.Airport?.AirportCode,
+                ArrAirPort: segment?.Destination?.Airport?.AirportName,
+                ArrLocation: `${segment?.Destination?.Airport?.CityName}, ${segment?.Destination?.Airport?.CountryName}`,
+                ArrDateAdjustment: 0,
+                ArrTime: segment?.Destination?.ArrTime,
+                TransitTime,
+                OperatedBy: segment?.Airline?.AirlineName,
+                StopCount: segment?.StopQuantity,
+                Duration: segmentDuration,
+                AircraftTypeName: segment?.Equipment,
+                Amenities: {},
+                DepartureGate: segment?.Origin?.Airport?.Terminal || 'TBA',
+                ArrivalGate: segment?.Destination?.Airport?.Terminal || 'TBA',
+                HiddenStops: [],
+                SegmentCode: {
+                  bookingCode: segment?.Airline?.BookingClass,
+                  cabinCode: segment?.Airline?.CabinClass,
+                  seatsAvailable: Result?.Availabilty,
+                },
+              };
+            });
+
             const legInfo = {
               DepDate: firstSegment?.Origin?.DepTime,
               DepFrom: firstSegment?.Origin?.Airport?.AirportCode,
               ArrTo: lastSegment.Destination?.Airport?.AirportCode,
-
-              Duration: segmentsList?.reduce(
-                (acc, segment) => acc + parseInt(segment?.JourneyDuration),
-                0,
-              ),
+              Duration: totalDuration,
+              Segments: segments,
             };
-            const seatsAvailable = Result?.Availabilty;
 
-            const segments = segmentsList?.map((segment) => ({
-              MarketingCarrier: segment?.Airline?.AirlineCode,
-              MarketingCarrierName: segment?.Airline?.AirlineName,
-              MarketingFlightNumber: segment?.Airline?.FlightNumber,
-              OperatingCarrier: segment?.Airline?.OperatingCarrier,
-              OperatingFlightNumber: segment?.Airline?.FlightNumber,
-              OperatingCarrierName: segment?.Airline?.AirlineName,
-              DepFrom: segment?.Origin?.Airport?.AirportCode,
-              DepAirPort: segment?.Origin?.Airport?.AirportName,
-              DepLocation: `${segment?.Origin?.Airport?.CityName}, ${segment?.Origin?.Airport?.CountryName}`,
-              DepDateAdjustment: 0,
-              DepTime: segment?.Origin?.DepTime,
-              ArrTo: segment?.Destination?.Airport?.AirportCode,
-              ArrAirPort: segment?.Destination?.Airport?.AirportName,
-              ArrLocation: `${segment?.Destination?.Airport?.CityName}, ${segment?.Destination?.Airport?.CountryName}`,
-              ArrDateAdjustment: 0,
-              ArrTime: segment?.Destination?.ArrTime,
-              OperatedBy: segment?.Airline?.AirlineName,
-              StopCount: segment?.StopQuantity,
-              Duration: parseInt(segment?.JourneyDuration),
-              AircraftTypeName: segment?.Equipment,
-              Amenities: {},
-              DepartureGate: segment?.Origin?.Airport?.Terminal || 'TBA',
-              ArrivalGate: segment?.Destination?.Airport?.Terminal || 'TBA',
-              HiddenStops: [],
-              SegmentCode: {
-                bookingCode: segment?.Airline?.BookingClass,
-                cabinCode: segment?.Airline?.CabinClass,
-                seatsAvailable: seatsAvailable,
-              },
-            }));
-
-            legInfo['Segments'] = segments;
             return legInfo;
           };
 
@@ -258,35 +269,34 @@ export class FlyHubUtil {
               AllLegsInfo.push(legInfo);
             }
           }
-          if(FareType!=="InstantTicketing"){
-
-          FlightItenary.push({
-            System: 'API1',
-            ResultId: Result?.ResultID,
-            SearchId: SearchResponse?.SearchId,
-            PassportMadatory: Result?.PassportMadatory,
-            InstantPayment: Instant_Payment,
-            IsBookable: IsBookable,
-            TripType: TripType,
-            FareType: FareType,
-            Carrier: ValidatingCarrier,
-            CarrierName: CarrierName,
-            Cabinclass: Cabinclass,
-            BaseFare: Math.ceil(equivalentAmount1),
-            Taxes: Taxes,
-            SerViceFee: extraService + servicefee || 0,
-            NetFare: Math.ceil(TotalFare), //change this before deploy
-            GrossFare: Math.ceil(NetFare),
-            PartialOption: partialoption,
-            PartialFare: Math.ceil(PartialAmount),
-            TimeLimit: TimeLimit,
-            RePriceStatus: SearchResponse?.RePriceStatus,
-            Refundable: Refundable,
-            ExtraService: Result?.ExtraServices || null,
-            PriceBreakDown: PriceBreakDown,
-            AllLegsInfo: AllLegsInfo,
-          });
-        }
+          if (FareType !== 'InstantTicketing') {
+            FlightItenary.push({
+              System: 'API1',
+              ResultId: Result?.ResultID,
+              SearchId: SearchResponse?.SearchId,
+              PassportMadatory: Result?.PassportMadatory,
+              InstantPayment: Instant_Payment,
+              IsBookable: IsBookable,
+              TripType: TripType,
+              FareType: FareType,
+              Carrier: ValidatingCarrier,
+              CarrierName: CarrierName,
+              Cabinclass: Cabinclass,
+              BaseFare: Math.ceil(equivalentAmount1),
+              Taxes: Taxes,
+              SerViceFee: extraService + servicefee || 0,
+              NetFare: Math.ceil(TotalFare), //change this before deploy
+              GrossFare: Math.ceil(NetFare),
+              PartialOption: partialoption,
+              PartialFare: Math.ceil(PartialAmount),
+              TimeLimit: TimeLimit,
+              RePriceStatus: SearchResponse?.RePriceStatus,
+              Refundable: Refundable,
+              ExtraService: Result?.ExtraServices || null,
+              PriceBreakDown: PriceBreakDown,
+              AllLegsInfo: AllLegsInfo,
+            });
+          }
         }
       }
     }
@@ -300,7 +310,7 @@ export class FlyHubUtil {
     tripType?: any,
     bookingDate?: any,
     header?: any,
-    userIp?:any
+    userIp?: any,
   ): Promise<any> {
     const FlightItenary = [];
     const { Results } = SearchResponse;
@@ -569,7 +579,11 @@ export class FlyHubUtil {
     // const sslpaymentLink = await this.paymentService
     //   .dataModification(FlightItenary, header)
     //   .catch(() => null);
-    const surjopay = await this.paymentService.formdata(FlightItenary, header,userIp);
+    const surjopay = await this.paymentService.formdata(
+      FlightItenary,
+      header,
+      userIp,
+    );
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     // const price = FlightItenary?.[0]?.NetFare || 0;
@@ -604,10 +618,8 @@ export class FlyHubUtil {
     header: any,
     currentTimestamp: any,
     personIds: any,
-    userIp:any
+    userIp: any,
   ): Promise<any> {
-
-    
     const FlightItenary = [];
     const { Results } = SearchResponse;
     const PaxTypeMapping = {
@@ -692,8 +704,7 @@ export class FlyHubUtil {
           const timestamp = new Date(currentTimestamp);
           const lastTicketDate: any = new Date(
             timestamp.getTime() + 20 * 60 * 1000,
-          )
-            .toISOString()
+          ).toISOString();
           TimeLimit = `${lastTicketDate}`; // changes done
 
           const PriceBreakDown: any[] = AllPassenger.map((allPassenger) => {
@@ -871,7 +882,11 @@ export class FlyHubUtil {
     // const sslpaymentLink = await this.paymentService
     //   .dataModification(FlightItenary, header)
     //   .catch(() => null);
-    const surjopay = await this.paymentService.formdata(FlightItenary, header,userIp);
+    const surjopay = await this.paymentService.formdata(
+      FlightItenary,
+      header,
+      userIp,
+    );
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     // const price = FlightItenary?.[0]?.NetFare || 0;
@@ -914,10 +929,7 @@ export class FlyHubUtil {
       if (booking.AllLegsInfo.length === 1) {
         tripType = 'OneWay';
       } else if (booking.AllLegsInfo.length === 2) {
-        if (
-          booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo 
-        )
-         {
+        if (booking.AllLegsInfo[0].DepFrom === booking.AllLegsInfo[1].ArrTo) {
           tripType = 'Return';
         } else {
           tripType = 'Multicity';

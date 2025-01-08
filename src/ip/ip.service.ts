@@ -16,7 +16,7 @@ export class IpService {
   async findByEmail(email: string) {
     return this.ipRepository.findOne({ where: { email } });
   }
-  
+
   async create(
     ip: string,
     role: string,

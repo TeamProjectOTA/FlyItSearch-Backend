@@ -303,7 +303,7 @@ export class DepositService {
       throw new Error('Error occurred during payment validation.');
     }
   }
-  async surjoPayInit(header: any, amount: number,userIp:any) {
+  async surjoPayInit(header: any, amount: number, userIp: any) {
     const email = await this.authService.decodeToken(header);
     const user = await this.userRepository.findOne({ where: { email: email } });
     const timestamp = Date.now();
@@ -311,8 +311,8 @@ export class DepositService {
     const tokenDetails = await this.paymentService.surjoAuthentication();
     const { token, token_type, store_id } = tokenDetails;
     const tran_id = `FSD${timestamp}${randomNumber}`;
-   
-    const url=`${this.surjoBaseUrl}/api/secret-pay`
+
+    const url = `${this.surjoBaseUrl}/api/secret-pay`;
     const data = {
       prefix: this.surjoPrefix,
       store_id: store_id,
@@ -329,13 +329,15 @@ export class DepositService {
       customer_city: 'Applicable',
       customer_email: email,
     };
-    const requestOptions={headers: {
-      authorization: `${token_type} ${token}`,
-      'Content-Type': 'application/json',
-    },}
-    
+    const requestOptions = {
+      headers: {
+        authorization: `${token_type} ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
     try {
-      const response = await axios.post(url,data,requestOptions);
+      const response = await axios.post(url, data, requestOptions);
       return { surjoPay: response.data.checkout_url }; // Payment response
     } catch (error) {
       console.error(
@@ -345,11 +347,7 @@ export class DepositService {
       return 'Payment Failed';
     }
   }
-  async surjoVerifyPayment(
-    sp_order_id: string,
-    email: string,
-    res: any,
-  ) {
+  async surjoVerifyPayment(sp_order_id: string, email: string, res: any) {
     const tokenDetails = await this.paymentService.surjoAuthentication();
     const { token, token_type } = tokenDetails;
 
@@ -367,7 +365,7 @@ export class DepositService {
         },
       );
       const data = response.data[0];
-      if (data.sp_code==='1000') {
+      if (data.sp_code === '1000') {
         const user = await this.userRepository.findOne({
           where: { email: email },
         });
@@ -388,16 +386,19 @@ export class DepositService {
           where: { email: email },
           relations: ['wallet'],
         });
-        addTransection.walletBalance = findUser.wallet.ammount + Number(data.amount);
-         findUser.wallet.ammount = findUser.wallet.ammount + Number(data.amount);
+        addTransection.walletBalance =
+          findUser.wallet.ammount + Number(data.amount);
+        findUser.wallet.ammount = findUser.wallet.ammount + Number(data.amount);
         addTransection.paymentType = 'Instaint Payment ';
         addTransection.requestType = `Instaint Money added `;
         addTransection.user = user;
-         await this.walletRepository.save(findUser.wallet);
+        await this.walletRepository.save(findUser.wallet);
         await this.transectionRepository.save(addTransection);
-         let addDeposit: Deposit = new Deposit();
+        let addDeposit: Deposit = new Deposit();
         addDeposit.user = user;
-        addDeposit.ammount = isNaN(Number(data.amount.trim())) ? 0 : Number(data.amount.trim());
+        addDeposit.ammount = isNaN(Number(data.amount.trim()))
+          ? 0
+          : Number(data.amount.trim());
         // Must be changed
         addDeposit.depositId = data.customer_order_id;
         addDeposit.depositedFrom = data.method;
@@ -410,9 +411,9 @@ export class DepositService {
           .format('YYYY-MM-DD HH:mm:ss');
         addDeposit.status = 'Approved';
         addDeposit.depositType = 'MOBILEBANKING';
-       
+
         await this.depositRepository.save(addDeposit);
-        return res.redirect(process.env.SUCCESS_CALLBACK);  
+        return res.redirect(process.env.SUCCESS_CALLBACK);
       } else {
         return res.redirect(process.env.FAILED_BKASH_CALLBACK);
       }

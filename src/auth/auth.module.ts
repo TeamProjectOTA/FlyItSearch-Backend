@@ -12,13 +12,18 @@ import { IpAddress } from 'src/ip/ip.model';
 import { ProfilePicture } from 'src/uploads/uploads.model';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Admin, User, Transection, IpAddress,ProfilePicture]),
+    TypeOrmModule.forFeature([
+      Admin,
+      User,
+      Transection,
+      IpAddress,
+      ProfilePicture,
+    ]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '86400s' }, //changed hare for expired time changed
     }),
-    
   ],
   providers: [AuthService],
   controllers: [AuthController],

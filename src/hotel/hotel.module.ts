@@ -6,6 +6,6 @@ import { SabreHotelUtils } from './API Utils/sabre.hotel.util';
 
 @Module({
   controllers: [HotelController],
-  providers: [HotelService,SabreHotel,SabreHotelUtils],
+  providers: [HotelService, SabreHotel, SabreHotelUtils],
 })
 export class HotelModule {}

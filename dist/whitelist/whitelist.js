@@ -23,9 +23,9 @@ let WhitelistService = class WhitelistService {
     }
     async findAll() {
         const data = await this.ipWhitelistRepository.find({
-            select: ['ip_address']
+            select: ['ip_address'],
         });
-        const ipAddress = data.map(item => item.ip_address);
+        const ipAddress = data.map((item) => item.ip_address);
         return ipAddress;
     }
     async save(ipWhitelistDTO) {

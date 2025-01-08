@@ -138,16 +138,23 @@ export class DepositController {
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
   @Post('surjo/deposit')
-  async surjoPay(@Headers() header: any, @Body() depositDto: DepositDto,@Req() request:Request) {
+  async surjoPay(
+    @Headers() header: any,
+    @Body() depositDto: DepositDto,
+    @Req() request: Request,
+  ) {
     let userIp = request.ip;
     if (userIp.startsWith('::ffff:')) {
       userIp = userIp.split(':').pop();
-    } 
+    }
     // console.log(request)
-   
-    return await this.depositService.surjoPayInit(header, depositDto.amount,userIp);
-  }
 
+    return await this.depositService.surjoPayInit(
+      header,
+      depositDto.amount,
+      userIp,
+    );
+  }
 
   @Get('surjo/success/:email')
   async depositSuccessSurjoPay(

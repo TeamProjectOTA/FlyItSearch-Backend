@@ -257,7 +257,7 @@ let AuthService = class AuthService {
             throw new common_1.NotFoundException('Please Enter Your Email');
         }
         if (user.googleId) {
-            throw new common_1.ConflictException("This email is associated with a Google login. Password reset is not allowed.");
+            throw new common_1.ConflictException('This email is associated with a Google login. Password reset is not allowed.');
         }
         if (!user) {
             throw new common_1.NotFoundException('There is no User Associated with this email');
@@ -481,7 +481,7 @@ let AuthService = class AuthService {
                 email: googleResponse.data.email,
                 fullName: googleResponse.data.name,
                 googleId: googleResponse.data.sub,
-                picture: googleResponse.data.picture
+                picture: googleResponse.data.picture,
             };
             const jwtToken = await this.validateUser(user);
             return jwtToken;

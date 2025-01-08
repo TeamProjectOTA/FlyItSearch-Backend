@@ -17,12 +17,12 @@ export class IpController {
   ) {
     return await this.ipService.update(email, points);
   }
-  @Get("/ipcheck")
+  @Get('/ipcheck')
   getRequestInfo(@Req() request: Request): any {
     const xForwardedFor = request.headers['x-forwarded-for'] as string;
-    const ipList = xForwardedFor?.split(',').map(ip => ip.trim());
+    const ipList = xForwardedFor?.split(',').map((ip) => ip.trim());
     const userIp = ipList?.[0] || request.socket.remoteAddress; // Use the first IP or fallback
-    
+
     return {
       method: request.method,
       url: request.url,
@@ -31,7 +31,7 @@ export class IpController {
       ip: userIp,
       query: request.query,
       params: request.params,
-      xForwardedFor: xForwardedFor || 'Not Available', 
+      xForwardedFor: xForwardedFor || 'Not Available',
     };
   }
 }

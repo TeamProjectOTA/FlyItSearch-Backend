@@ -282,7 +282,7 @@ let UserService = class UserService {
         if (!travelBuddies || travelBuddies.length === 0) {
             throw new common_1.NotFoundException(`No Travel Buddies available for the user`);
         }
-        travelBuddies.forEach(buddy => {
+        travelBuddies.forEach((buddy) => {
             delete buddy.id;
         });
         return {

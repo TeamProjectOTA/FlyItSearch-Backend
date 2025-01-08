@@ -39,7 +39,7 @@ import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
       BookingIdSave,
       Transection,
       Wallet,
-      TravelBuddy
+      TravelBuddy,
     ]),
     HttpModule,
     AirportsModule,

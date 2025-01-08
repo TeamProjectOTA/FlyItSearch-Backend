@@ -24,7 +24,13 @@ exports.UserModule = UserModule;
 exports.UserModule = UserModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress, booking_model_1.BookingSave, travel_buddy_model_1.TravelBuddy]),
+            typeorm_1.TypeOrmModule.forFeature([
+                user_entity_1.User,
+                transection_model_1.Transection,
+                ip_model_1.IpAddress,
+                booking_model_1.BookingSave,
+                travel_buddy_model_1.TravelBuddy,
+            ]),
             auth_module_1.AuthModule,
             ip_module_1.IpModule,
         ],

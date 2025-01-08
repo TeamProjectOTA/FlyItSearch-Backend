@@ -36,11 +36,11 @@ export class FlyHubService {
     @InjectRepository(BookingSave)
     private readonly bookingSaveRepository: Repository<BookingSave>,
     @InjectRepository(TravelBuddy)
-  private readonly travelBuddyRepository:Repository<TravelBuddy> ,
-  @InjectRepository(User)
-  private readonly userReposiotory:Repository<User>,
-  private readonly authService:AuthService ,
-) {}
+    private readonly travelBuddyRepository: Repository<TravelBuddy>,
+    @InjectRepository(User)
+    private readonly userReposiotory: Repository<User>,
+    private readonly authService: AuthService,
+  ) {}
 
   async getToken(): Promise<string> {
     try {
@@ -132,7 +132,11 @@ export class FlyHubService {
       throw error?.response?.data;
     }
   }
-  async airRetrive(BookingID: BookingID, header?: any,userIp?:any): Promise<any> {
+  async airRetrive(
+    BookingID: BookingID,
+    header?: any,
+    userIp?: any,
+  ): Promise<any> {
     const findBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
@@ -172,7 +176,7 @@ export class FlyHubService {
         findBooking.TripType,
         findBooking.bookingDate,
         header,
-        userIp
+        userIp,
       );
     } catch (error) {
       throw error?.response?.data;
@@ -244,14 +248,13 @@ export class FlyHubService {
     }
   }
 
-
-  @ApiBody({type:FlbFlightSearchDto})
+  @ApiBody({ type: FlbFlightSearchDto })
   async airbook(
     data: FlbFlightSearchDto,
     header: any,
     currentTimestamp: any,
     personIds: any,
-    userIp:any
+    userIp: any,
   ) {
     const token = await this.getToken();
 
@@ -285,7 +288,7 @@ export class FlyHubService {
       },
       data: data,
     };
-    await this.saveTravelBuddy(data,header)
+    await this.saveTravelBuddy(data, header);
     try {
       const response0 = await axios.request(Price);
       if (response0.data.Results[0].HoldAllowed === false) {
@@ -301,7 +304,7 @@ export class FlyHubService {
           header,
           currentTimestamp,
           personIds,
-          userIp
+          userIp,
         );
       }
     } catch (error) {
@@ -445,37 +448,37 @@ export class FlyHubService {
     }
   }
 
-  async saveTravelBuddy(flhdto:FlbFlightSearchDto,header: any
-  ){
-    const email=await this.authService.decodeToken(header)
-    const user= await this.userReposiotory.findOne({where:{email:email}})
+  async saveTravelBuddy(flhdto: FlbFlightSearchDto, header: any) {
+    const email = await this.authService.decodeToken(header);
+    const user = await this.userReposiotory.findOne({
+      where: { email: email },
+    });
     const passengersWithTravelBuddy = await Promise.all(
       flhdto.Passengers.map(async (pax) => {
         let travelBuddy = await this.travelBuddyRepository.findOne({
-          where: {passport:pax.PassportNumber,
-            user: user}
+          where: { passport: pax.PassportNumber, user: user },
         });
-         if(!travelBuddy){
+        if (!travelBuddy) {
           travelBuddy = new TravelBuddy();
-          travelBuddy.user=user
-         }
-         travelBuddy.firstName=pax.FirstName
-         travelBuddy.lastName=pax.LastName
-         travelBuddy.gender=pax.Gender
-         travelBuddy.title=pax.Title
-         travelBuddy.paxtype=pax.PaxType
-         travelBuddy.dob=pax.DateOfBirth
-         travelBuddy.passport=pax.PassportNumber
-         travelBuddy.passportexp=pax.PassportExpiryDate
-         travelBuddy.nationality=pax.Nationality
-         await this.travelBuddyRepository.save(travelBuddy);
+          travelBuddy.user = user;
+        }
+        travelBuddy.firstName = pax.FirstName;
+        travelBuddy.lastName = pax.LastName;
+        travelBuddy.gender = pax.Gender;
+        travelBuddy.title = pax.Title;
+        travelBuddy.paxtype = pax.PaxType;
+        travelBuddy.dob = pax.DateOfBirth;
+        travelBuddy.passport = pax.PassportNumber;
+        travelBuddy.passportexp = pax.PassportExpiryDate;
+        travelBuddy.nationality = pax.Nationality;
+        await this.travelBuddyRepository.save(travelBuddy);
         return {
           ...pax,
           travelBuddy,
         };
-      })
+      }),
     );
 
-   return passengersWithTravelBuddy
+    return passengersWithTravelBuddy;
   }
 }

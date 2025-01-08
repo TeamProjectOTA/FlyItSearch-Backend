@@ -1,4 +1,9 @@
-import { Injectable, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
+} from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { BookingIdSave, FlightSearchModel } from '../flight.model';
 import {
@@ -78,7 +83,7 @@ export class BDFareService {
     );
     shoppingCriteria.travelPreferences = travelPreferences;
     shoppingCriteria.returnUPSellInfo = false;
-    shoppingCriteria.preferCombine=true;
+    shoppingCriteria.preferCombine = true;
     const requestInner = new RequestInnerDto();
     requestInner.originDest = originDest;
     requestInner.pax = pax;
@@ -105,23 +110,24 @@ export class BDFareService {
   }
 
   async airShopping(flightSearchModel: FlightSearchModel): Promise<any> {
-    // console.log(this.apiKey)
     const requestDto = this.transformToRequestDto(flightSearchModel);
     const tripType = requestDto.request.shoppingCriteria.tripType;
-       const url=`${this.apiUrl}/AirShopping`
-       const requestHeader=  {
-        headers: {
-          'X-API-KEY': this.apiKey,
-        },
-      }
-    //  console.log(url,requestHeader)
+    const url = `${this.apiUrl}/AirShopping`;
+    const requestHeader = {
+      headers: {
+        'X-API-KEY': this.apiKey,
+      },
+    };
+    //console.log(url,requestHeader)
     //return requestDto
     const response: AxiosResponse = await axios.post(
-     url,requestDto,requestHeader);
-
+      url,
+      requestDto,
+      requestHeader,
+    );
+    //console.log(response)
     if (response.data.response != null) {
-     
-      //return response.data.response
+      // return response.data.response;
       return await this.bdfareUtil.afterSerarchDataModifierBdFare(
         response.data.response,
         tripType,
@@ -144,8 +150,8 @@ export class BDFareService {
           },
         },
       );
-      if(!response.data.response){
-        return {}
+      if (!response.data.response) {
+        return {};
       }
       return response.data.response;
     } catch (error) {
@@ -161,20 +167,22 @@ export class BDFareService {
       traceId: data.SearchId,
       offerId: data.ResultId,
     };
-    const url= `${this.apiUrl}/OfferPrice`
-    const requestHeader={
+    const url = `${this.apiUrl}/OfferPrice`;
+    const requestHeader = {
       headers: {
         'X-API-KEY': this.apiKey,
       },
-    }
+    };
     try {
       const response: AxiosResponse = await axios.post(
-        url, transformedData,requestHeader
+        url,
+        transformedData,
+        requestHeader,
       );
       //console.log(response)
       //return response.data.response
-      if(!response.data.response){
-        return []
+      if (!response.data.response) {
+        return [];
       }
       return await this.bdfareUtil.afterSerarchDataModifierBdFare(
         response.data.response,
@@ -201,8 +209,9 @@ export class BDFareService {
             'X-API-KEY': this.apiKey,
           },
         },
-      );if(!response.data.response){
-        return {}
+      );
+      if (!response.data.response) {
+        return {};
       }
       return response.data.response;
     } catch (error) {
@@ -214,42 +223,55 @@ export class BDFareService {
     }
   }
 
-  async flightBooking(bookingdata:BookingDataDto,  header: any,
+  async flightBooking(
+    bookingdata: BookingDataDto,
+    header: any,
     currentTimestamp: any,
     personIds: any,
-    userIp:any) {
+    userIp: any,
+  ) {
     //console.log(bookingdata)
-    const data= this.bookingDataModification(bookingdata)
-   //return data
+    const data = this.bookingDataModification(bookingdata);
+    //return data
     const OrderSellRequest = {
       method: 'post',
       maxBodyLength: Infinity,
-      url:  `${this.apiUrl}/OrderSell`,
+      url: `${this.apiUrl}/OrderSell`,
       headers: {
         'Content-Type': 'application/json',
-       'X-API-KEY': this.apiKey,
+        'X-API-KEY': this.apiKey,
       },
       data: data,
     };
-    const OrderCreateRequest= {
+    const OrderCreateRequest = {
       method: 'post',
       maxBodyLength: Infinity,
-      url:  `${this.apiUrl}/OrderCreate`,
+      url: `${this.apiUrl}/OrderCreate`,
       headers: {
         'Content-Type': 'application/json',
-       'X-API-KEY': this.apiKey,
+        'X-API-KEY': this.apiKey,
       },
       data: data,
     };
-   
-      const response: AxiosResponse = await axios(OrderSellRequest);
-      const response1: AxiosResponse = await axios(OrderCreateRequest);
-      // console.log(response1)
-   
-    return await this.bdfareUtil.bookingDataTransformer(response1.data.response,header,currentTimestamp,personIds,userIp);
+
+    const response: AxiosResponse = await axios(OrderSellRequest);
+    const response1: AxiosResponse = await axios(OrderCreateRequest);
+    // console.log(response1)
+
+    return await this.bdfareUtil.bookingDataTransformer(
+      response1.data.response,
+      header,
+      currentTimestamp,
+      personIds,
+      userIp,
+    );
   }
 
-  async flightRetrieve(BookingID: BookingID,header?:any,userIp?:any): Promise<any> {
+  async flightRetrieve(
+    BookingID: BookingID,
+    header?: any,
+    userIp?: any,
+  ): Promise<any> {
     const findBooking = await this.bookingSaveRepository.findOne({
       where: { bookingId: BookingID.BookingID },
       relations: ['user'],
@@ -257,8 +279,8 @@ export class BDFareService {
     const bookingId = await this.bookingIdSave.findOne({
       where: { flyitSearchId: BookingID.BookingID },
     });
-    if(!bookingId){
-      throw new NotFoundException("No booking found on this id")
+    if (!bookingId) {
+      throw new NotFoundException('No booking found on this id');
     }
     const orderReference = { orderReference: bookingId.flyhubId };
     try {
@@ -280,8 +302,8 @@ export class BDFareService {
         findBooking.TripType,
         findBooking.bookingDate,
         header,
-        userIp
-        );
+        userIp,
+      );
     } catch (error) {
       if (axios.isAxiosError(error)) {
         return error.response?.data || error.message;
@@ -289,13 +311,12 @@ export class BDFareService {
     }
   }
 
-  async flightBookingCancel(BookingID: BookingID,header?:any): Promise<any> {
-
+  async flightBookingCancel(BookingID: BookingID, header?: any): Promise<any> {
     const bookingId = await this.bookingIdSave.findOne({
       where: { flyitSearchId: BookingID.BookingID },
     });
-    if(!bookingId){
-      throw new NotFoundException("No booking found on this id")
+    if (!bookingId) {
+      throw new NotFoundException('No booking found on this id');
     }
     const orderReference = { orderReference: bookingId.flyhubId };
     try {
@@ -309,15 +330,15 @@ export class BDFareService {
           },
         },
       );
-      console.log(response.data)
+      console.log(response.data);
       if (response.data.response.orderStatus == 'Cancelled') {
         const findBooking = await this.bookingSaveRepository.findOne({
           where: { bookingId: BookingID.BookingID },
           relations: ['user'],
         });
-        findBooking.bookingStatus=response.data.response.orderStatus
-        await this.bookingSaveRepository.save(findBooking)
-        const airRetrive = await this.flightRetrieve(BookingID,header);
+        findBooking.bookingStatus = response.data.response.orderStatus;
+        await this.bookingSaveRepository.save(findBooking);
+        const airRetrive = await this.flightRetrieve(BookingID, header);
         const status = response.data.response.orderStatus;
         const bookingId = response.data.response.orderReference;
         const email = airRetrive[0]?.PassengerList[0]?.Email;
@@ -333,11 +354,10 @@ export class BDFareService {
 
   private bookingDataModification(data: any) {
     const { Passengers } = data;
-  
-    
+
     const adults = Passengers.filter((p) => p.PaxType === 'Adult');
     const infants = Passengers.filter((p) => p.PaxType === 'Infant');
-  
+
     const dataModified = {
       traceId: data.SearchId,
       offerId: [data.ResultId[0]],
@@ -351,9 +371,8 @@ export class BDFareService {
         },
         paxList: Passengers.map((passenger, index) => {
           const isInfant = passenger?.PaxType === 'Infant';
-          const associatedAdult =
-            isInfant && adults[index % adults.length]; 
-  
+          const associatedAdult = isInfant && adults[index % adults.length];
+
           return {
             ptc: passenger?.PaxType,
             individual: {
@@ -371,15 +390,18 @@ export class BDFareService {
                     },
                   }
                 : {}),
-              ...(isInfant && associatedAdult && {
-                associatePax: {
-                  givenName: associatedAdult.FirstName,
-                  surname: associatedAdult.LastName,
-                },
-              }),
+              ...(isInfant &&
+                associatedAdult && {
+                  associatePax: {
+                    givenName: associatedAdult.FirstName,
+                    surname: associatedAdult.LastName,
+                  },
+                }),
             },
             sellSSR:
-              passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
+              passenger?.FFAirline ||
+              passenger?.SSRType ||
+              passenger?.SSRRemarks
                 ? [
                     {
                       ssrRemark: passenger?.SSRRemarks,
@@ -395,32 +417,31 @@ export class BDFareService {
         }),
       },
     };
-  
+
     return dataModified;
   }
-  
+
   private determineJourneyType(segments: any[]): string {
     if (!segments || segments.length === 0) {
-      throw new Error("Segments array is empty or undefined.");
+      throw new Error('Segments array is empty or undefined.');
     }
-  
+
     if (segments.length === 1) {
-      return '1'; 
+      return '1';
     }
-  
+
     if (segments.length === 2) {
       const [firstSegment, secondSegment] = segments;
-  
+
       if (
         firstSegment.arrto === secondSegment.depfrom &&
         firstSegment.depfrom === secondSegment.arrto
       ) {
-        return '2'; 
+        return '2';
       }
-      return '3'; 
+      return '3';
     }
-  
-    return '3'; 
+
+    return '3';
   }
-  
 }

@@ -285,10 +285,12 @@ let DepositService = class DepositService {
             customer_city: 'Applicable',
             customer_email: email,
         };
-        const requestOptions = { headers: {
+        const requestOptions = {
+            headers: {
                 authorization: `${token_type} ${token}`,
                 'Content-Type': 'application/json',
-            }, };
+            },
+        };
         try {
             const response = await axios_1.default.post(url, data, requestOptions);
             return { surjoPay: response.data.checkout_url };
@@ -332,7 +334,8 @@ let DepositService = class DepositService {
                     where: { email: email },
                     relations: ['wallet'],
                 });
-                addTransection.walletBalance = findUser.wallet.ammount + Number(data.amount);
+                addTransection.walletBalance =
+                    findUser.wallet.ammount + Number(data.amount);
                 findUser.wallet.ammount = findUser.wallet.ammount + Number(data.amount);
                 addTransection.paymentType = 'Instaint Payment ';
                 addTransection.requestType = `Instaint Money added `;
@@ -341,7 +344,9 @@ let DepositService = class DepositService {
                 await this.transectionRepository.save(addTransection);
                 let addDeposit = new deposit_model_1.Deposit();
                 addDeposit.user = user;
-                addDeposit.ammount = isNaN(Number(data.amount.trim())) ? 0 : Number(data.amount.trim());
+                addDeposit.ammount = isNaN(Number(data.amount.trim()))
+                    ? 0
+                    : Number(data.amount.trim());
                 addDeposit.depositId = data.customer_order_id;
                 addDeposit.depositedFrom = data.method;
                 addDeposit.senderName = user.fullName;

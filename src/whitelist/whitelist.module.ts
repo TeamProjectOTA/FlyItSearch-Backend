@@ -5,9 +5,9 @@ import { WhitelistController } from './whitelist.controller';
 import { IPWhitelist } from './whitelist.model';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([IPWhitelist])],
+  imports: [TypeOrmModule.forFeature([IPWhitelist])],
   providers: [WhitelistService],
-  exports:[WhitelistService],
-  controllers: [WhitelistController]
+  exports: [WhitelistService],
+  controllers: [WhitelistController],
 })
 export class WhitelistModule {}

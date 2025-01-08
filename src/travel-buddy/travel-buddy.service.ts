@@ -43,16 +43,16 @@ export class TravelBuddyService {
         user,
       });
     }
-    const savedata=await this.travelBuddyRepository.save(saveTravelBuddy);
+    const savedata = await this.travelBuddyRepository.save(saveTravelBuddy);
     return {
-      Title:savedata.title,
-      Name:savedata.firstName+` `+savedata.lastName,
-      Gender:savedata.gender,
-      Nationality:savedata.nationality,
-      PassportNumber:savedata.passport,
-      DateOfBirth:savedata.dob,
-      PassportExpiry:savedata.passportexp 
-    }
+      Title: savedata.title,
+      Name: savedata.firstName + ` ` + savedata.lastName,
+      Gender: savedata.gender,
+      Nationality: savedata.nationality,
+      PassportNumber: savedata.passport,
+      DateOfBirth: savedata.dob,
+      PassportExpiry: savedata.passportexp,
+    };
   }
   async updateTravelBuddy(
     createTravelBuddyDto: TravelBuddyDto,

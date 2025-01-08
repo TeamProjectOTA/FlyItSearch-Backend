@@ -25,7 +25,7 @@ let IpController = class IpController {
     }
     getRequestInfo(request) {
         const xForwardedFor = request.headers['x-forwarded-for'];
-        const ipList = xForwardedFor?.split(',').map(ip => ip.trim());
+        const ipList = xForwardedFor?.split(',').map((ip) => ip.trim());
         const userIp = ipList?.[0] || request.socket.remoteAddress;
         return {
             method: request.method,
@@ -49,7 +49,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], IpController.prototype, "searchCount", null);
 __decorate([
-    (0, common_1.Get)("/ipcheck"),
+    (0, common_1.Get)('/ipcheck'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

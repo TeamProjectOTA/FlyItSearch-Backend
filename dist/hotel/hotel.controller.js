@@ -26,6 +26,13 @@ let HotelController = class HotelController {
     async hotelRequest(hoteldto) {
         return await this.sabreHotel.sabreHotelRequest(hoteldto);
     }
+    async getIp() {
+        return this.hotelService.getIp();
+    }
+    async redirectUrl(res) {
+        const url = await this.hotelService.getRedirectUrl();
+        res.redirect(url);
+    }
 };
 exports.HotelController = HotelController;
 __decorate([
@@ -35,6 +42,19 @@ __decorate([
     __metadata("design:paramtypes", [hoteldto_1.RootDto]),
     __metadata("design:returntype", Promise)
 ], HotelController.prototype, "hotelRequest", null);
+__decorate([
+    (0, common_1.Get)('ip'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], HotelController.prototype, "getIp", null);
+__decorate([
+    (0, common_1.Get)(),
+    __param(0, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], HotelController.prototype, "redirectUrl", null);
 exports.HotelController = HotelController = __decorate([
     (0, swagger_1.ApiTags)('Hotel api'),
     (0, common_1.Controller)('hotel'),

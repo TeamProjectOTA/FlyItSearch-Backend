@@ -20,7 +20,7 @@ exports.WhitelistModule = WhitelistModule = __decorate([
         imports: [typeorm_1.TypeOrmModule.forFeature([whitelist_model_1.IPWhitelist])],
         providers: [whitelist_1.WhitelistService],
         exports: [whitelist_1.WhitelistService],
-        controllers: [whitelist_controller_1.WhitelistController]
+        controllers: [whitelist_controller_1.WhitelistController],
     })
 ], WhitelistModule);
 //# sourceMappingURL=whitelist.module.js.map

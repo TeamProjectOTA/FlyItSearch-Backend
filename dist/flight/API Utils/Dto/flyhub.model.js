@@ -145,7 +145,7 @@ __decorate([
     __metadata("design:type", Array)
 ], PassengerDto.prototype, "Baggage", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: MealDto, required: false, }),
+    (0, swagger_1.ApiProperty)({ type: MealDto, required: false }),
     __metadata("design:type", Array)
 ], PassengerDto.prototype, "Meal", void 0);
 __decorate([

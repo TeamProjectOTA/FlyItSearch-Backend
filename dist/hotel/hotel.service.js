@@ -8,7 +8,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HotelService = void 0;
 const common_1 = require("@nestjs/common");
+const axios_1 = require("axios");
 let HotelService = class HotelService {
+    async getIp() {
+        const url = 'https://httpbin.org/ip';
+        try {
+            const response = await axios_1.default.get(url);
+            return response.data;
+        }
+        catch (error) {
+            throw new Error(`Failed to fetch IP: ${error.message}`);
+        }
+    }
+    async getRedirectUrl() {
+        const url = 'https://bdfare.com/api/enterprise';
+        return url;
+    }
 };
 exports.HotelService = HotelService;
 exports.HotelService = HotelService = __decorate([

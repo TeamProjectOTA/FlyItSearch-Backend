@@ -39,8 +39,7 @@ export class ShoppingCriteriaDto {
   @ApiProperty({ default: true })
   returnUPSellInfo: boolean;
   @ApiProperty({ default: true })
- preferCombine: boolean;
-
+  preferCombine: boolean;
 }
 
 export class RequestInnerDto {

@@ -37,30 +37,29 @@ export class Shedule {
         const userBooking = await this.bookingRepository.findOne({
           where: { bookingId: booking.bookingId },
         });
-        if(userBooking.system=="API1"){
-        const cancelData = await this.aircancel(booking.bookingId);
-        //this.logger.log("API1 hit ")
-        if (cancelData?.BookingStatus) {
-          userBooking.bookingStatus = cancelData?.BookingStatus;
-        } else {
-          userBooking.bookingStatus = 'Cancelled';
-        }}else if(userBooking.system=="API2"){
-          const cancelData=await this.flightBookingCancel(booking.bookingId)
+        if (userBooking.system == 'API1') {
+          const cancelData = await this.aircancel(booking.bookingId);
+          //this.logger.log("API1 hit ")
+          if (cancelData?.BookingStatus) {
+            userBooking.bookingStatus = cancelData?.BookingStatus;
+          } else {
+            userBooking.bookingStatus = 'Cancelled';
+          }
+        } else if (userBooking.system == 'API2') {
+          const cancelData = await this.flightBookingCancel(booking.bookingId);
           //this.logger.log("API2 hit "+cancelData.orderStatus)
-          if(cancelData.orderStatus){
-            userBooking.bookingStatus=cancelData?.orderStatus
-          }else {
+          if (cancelData.orderStatus) {
+            userBooking.bookingStatus = cancelData?.orderStatus;
+          } else {
             userBooking.bookingStatus = 'Cancelled';
           }
         }
-       
+
         await this.bookingRepository.save(userBooking);
       }
     }
     //this.logger.log('Hitting the sheduling in every 5min ');
   }
-
-
 
   async getToken(): Promise<string> {
     try {
@@ -121,7 +120,6 @@ export class Shedule {
   }
 
   async flightBookingCancel(BookingID: string): Promise<any> {
-
     const bookingId = await this.bookingIdRepository.findOne({
       where: { flyitSearchId: BookingID },
     });
@@ -140,7 +138,7 @@ export class Shedule {
       if (response.data.response.orderStatus == 'Cancelled') {
         return response.data.response;
       }
-      return response.data
+      return response.data;
     } catch (error) {
       console.log(error);
     }

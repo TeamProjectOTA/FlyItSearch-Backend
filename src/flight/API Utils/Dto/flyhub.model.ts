@@ -105,11 +105,11 @@ export class PassengerDto {
   FFAirline?: string;
   @ApiProperty({ required: false })
   FFNumber?: string;
-  @ApiProperty({ type: BaggageDto,required: false  })
+  @ApiProperty({ type: BaggageDto, required: false })
   Baggage?: BaggageDto[];
-  @ApiProperty({ type:MealDto,required: false ,})
+  @ApiProperty({ type: MealDto, required: false })
   Meal?: MealDto[];
-  @ApiProperty({ required: false ,description: 'Visa information (optional)' })
+  @ApiProperty({ required: false, description: 'Visa information (optional)' })
   visa?: string;
   @ApiProperty({ required: false })
   passport?: string;
@@ -120,7 +120,7 @@ export class FlbFlightSearchDto {
   SearchID: string;
   @ApiProperty()
   ResultID: string;
-  @ApiProperty({type:PassengerDto})
+  @ApiProperty({ type: PassengerDto })
   Passengers: PassengerDto[];
   @ApiProperty()
   PromotionCode?: string;

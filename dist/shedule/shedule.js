@@ -44,7 +44,7 @@ let Shedule = Shedule_1 = class Shedule {
                 const userBooking = await this.bookingRepository.findOne({
                     where: { bookingId: booking.bookingId },
                 });
-                if (userBooking.system == "API1") {
+                if (userBooking.system == 'API1') {
                     const cancelData = await this.aircancel(booking.bookingId);
                     if (cancelData?.BookingStatus) {
                         userBooking.bookingStatus = cancelData?.BookingStatus;
@@ -53,7 +53,7 @@ let Shedule = Shedule_1 = class Shedule {
                         userBooking.bookingStatus = 'Cancelled';
                     }
                 }
-                else if (userBooking.system == "API2") {
+                else if (userBooking.system == 'API2') {
                     const cancelData = await this.flightBookingCancel(booking.bookingId);
                     if (cancelData.orderStatus) {
                         userBooking.bookingStatus = cancelData?.orderStatus;

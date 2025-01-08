@@ -207,7 +207,7 @@ let BDFareService = class BDFareService {
             where: { flyitSearchId: BookingID.BookingID },
         });
         if (!bookingId) {
-            throw new common_1.NotFoundException("No booking found on this id");
+            throw new common_1.NotFoundException('No booking found on this id');
         }
         const orderReference = { orderReference: bookingId.flyhubId };
         try {
@@ -230,7 +230,7 @@ let BDFareService = class BDFareService {
             where: { flyitSearchId: BookingID.BookingID },
         });
         if (!bookingId) {
-            throw new common_1.NotFoundException("No booking found on this id");
+            throw new common_1.NotFoundException('No booking found on this id');
         }
         const orderReference = { orderReference: bookingId.flyhubId };
         try {
@@ -295,14 +295,17 @@ let BDFareService = class BDFareService {
                                     },
                                 }
                                 : {}),
-                            ...(isInfant && associatedAdult && {
+                            ...(isInfant &&
+                                associatedAdult && {
                                 associatePax: {
                                     givenName: associatedAdult.FirstName,
                                     surname: associatedAdult.LastName,
                                 },
                             }),
                         },
-                        sellSSR: passenger?.FFAirline || passenger?.SSRType || passenger?.SSRRemarks
+                        sellSSR: passenger?.FFAirline ||
+                            passenger?.SSRType ||
+                            passenger?.SSRRemarks
                             ? [
                                 {
                                     ssrRemark: passenger?.SSRRemarks,
@@ -322,7 +325,7 @@ let BDFareService = class BDFareService {
     }
     determineJourneyType(segments) {
         if (!segments || segments.length === 0) {
-            throw new Error("Segments array is empty or undefined.");
+            throw new Error('Segments array is empty or undefined.');
         }
         if (segments.length === 1) {
             return '1';

@@ -49,26 +49,30 @@ export class UploadsService {
 
     if (existingProfilePicture) {
       let fileDeleted = false;
-    
+
       try {
         const bucketFile = this.storage
           .bucket(this.bucket)
           .file(existingProfilePicture.filename);
-    
-       
+
         await bucketFile.delete();
         fileDeleted = true;
       } catch (error) {
         if (error.code === 404) {
-          console.warn('File not found in Google Cloud bucket. Proceeding with database deletion.');
+          console.warn(
+            'File not found in Google Cloud bucket. Proceeding with database deletion.',
+          );
         } else {
-          console.error('Error deleting file from Google Cloud:', error.message);
+          console.error(
+            'Error deleting file from Google Cloud:',
+            error.message,
+          );
           throw new BadRequestException(
             'Failed to delete the profile picture file from Google Cloud.',
           );
         }
       }
-    
+
       try {
         await this.profilePictureRepository.remove(existingProfilePicture);
       } catch (error) {
@@ -76,10 +80,7 @@ export class UploadsService {
           'Failed to delete the profile picture from the database.',
         );
       }
-    
-     
     }
-    
 
     const fileExtension = extname(file.originalname);
     const folderName = 'ProfilePicture';
@@ -102,7 +103,10 @@ export class UploadsService {
         size: file.size,
       });
       const save = await this.profilePictureRepository.save(profilePicture);
-      return { Message: 'Image Uploaded Successful', save:{link:save.link,size:save.size} };
+      return {
+        Message: 'Image Uploaded Successful',
+        save: { link: save.link, size: save.size },
+      };
     } catch (error) {
       console.error('Error uploading file to Google Cloud:', error.message);
       throw new BadRequestException(

@@ -18,7 +18,8 @@ let WhitelistGuard = class WhitelistGuard {
     }
     async canActivate(context) {
         const request = context.switchToHttp().getRequest();
-        let clientIP = request.headers['x-forwarded-for'] || request.socket.remoteAddress;
+        let clientIP = request.headers['x-forwarded-for'] ||
+            request.socket.remoteAddress;
         if (clientIP.startsWith('::ffff:')) {
             clientIP = clientIP.replace('::ffff:', '');
         }

@@ -24,7 +24,13 @@ exports.AuthModule = AuthModule;
 exports.AuthModule = AuthModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, user_entity_1.User, transection_model_1.Transection, ip_model_1.IpAddress, uploads_model_1.ProfilePicture]),
+            typeorm_1.TypeOrmModule.forFeature([
+                admin_entity_1.Admin,
+                user_entity_1.User,
+                transection_model_1.Transection,
+                ip_model_1.IpAddress,
+                uploads_model_1.ProfilePicture,
+            ]),
             jwt_1.JwtModule.register({
                 global: true,
                 secret: jwt_constaints_1.jwtConstants.secret,

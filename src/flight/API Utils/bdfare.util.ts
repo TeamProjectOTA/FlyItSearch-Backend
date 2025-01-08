@@ -10,14 +10,14 @@ import { PaymentService } from 'src/payment/payment.service';
 @Injectable()
 export class BfFareUtil {
   constructor(
-  private readonly paymentService: PaymentService,
-  private readonly airportService: AirportsService,
-  private readonly BookService: BookingService,
-  @InjectRepository(BookingIdSave)
-  private readonly bookingIdSave: Repository<BookingIdSave>,
-  @InjectRepository(BookingSave)
+    private readonly paymentService: PaymentService,
+    private readonly airportService: AirportsService,
+    private readonly BookService: BookingService,
+    @InjectRepository(BookingIdSave)
+    private readonly bookingIdSave: Repository<BookingIdSave>,
+    @InjectRepository(BookingSave)
     private readonly bookingSave: Repository<BookingSave>,
-) {}
+  ) {}
   async afterSerarchDataModifierBdFare(
     SearchResponse: any,
     journeyType?: string,
@@ -51,6 +51,7 @@ export class BfFareUtil {
         const carrierName =
           offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
         let totalFare = offer?.price?.gross?.total || 0;
+        let discount = offer?.price?.discount?.total || 0;
         let tripType = 'Unknown';
         if (journeyType === '1') {
           tripType = 'Oneway';
@@ -170,6 +171,29 @@ export class BfFareUtil {
               return airportName || 'Unknown Airport';
             }),
           );
+          let totalDuration = 0; 
+
+       
+          groupSegments.forEach((segment, index) => {
+            totalDuration += parseInt(segment?.duration || '0', 10); 
+
+            if (index < groupSegments.length - 1) {
+              const currentArrTime = new Date(
+                segment?.arrival?.aircraftScheduledDateTime.replace(
+                  'Z',
+                  '',
+                ),
+              ).getTime(); 
+              const nextDepTime = new Date(
+                groupSegments[index + 1]?.departure?.aircraftScheduledDateTime.replace(
+                  'Z',
+                  '',
+                ),
+              ).getTime(); 
+              const transitTime = (nextDepTime - currentArrTime) / (1000 * 60); 
+              totalDuration += transitTime; 
+            }
+          });
           const legInfo = {
             DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace(
               'Z',
@@ -177,15 +201,11 @@ export class BfFareUtil {
             ),
             DepFrom: firstSegment?.departure?.iatA_LocationCode,
             ArrTo: lastSegment?.arrival?.iatA_LocationCode,
-            Duration: groupSegments.reduce(
-              (acc, segment) => acc + parseInt(segment?.duration || '0', 10),
-              0,
-            ),
+            Duration: totalDuration,
             Segments: groupSegments.map((segment, index) => ({
               MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
               MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
-              MarketingFlightNumber:
-                segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
+              MarketingFlightNumber:segment?.marketingCarrierInfo?.marketingCarrierFlightNumber,
               OperatingCarrierName: segment?.operatingCarrierInfo?.carrierName,
               OperatingCarrier: segment?.operatingCarrierInfo?.carrierDesigCode,
               OperatingFlightNumber: segment?.flightNumber,
@@ -223,35 +243,35 @@ export class BfFareUtil {
           };
           AllLegsInfo.push(legInfo);
         }
-     if(fareType=="OnHold"){
-        FlightItenary.push({
-          System: 'API2',
-          SearchId: SearchResponse.traceId, //traceId
-          ResultId: offerID, //offerId
-          PassportMadatory: SearchResponse.passportRequired,
-          FareType: fareType,
-          Refundable: isRefundable,
-          TripType: tripType,
-          InstantPayment: instantPayment,
-          GrossFare: totalFare,
-          IsBookable: IsBookable,
-          Carrier: validatingCarrier,
-          CarrierName: carrierName,
-          BaseFare: totalBaseFare,
-          Taxes: tax,
-          SerViceFee: service,
-          NetFare: netFare,
-          Currency: currency,
-          SeatsRemaining: seatsRemaining,
-          PriceBreakDown: mergedData,
-          RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
-          SSR: SearchResponse.availableSSR,
-          AllLegsInfo: AllLegsInfo,
-        });
-     }
-      
-    }
-    return FlightItenary;
+        if (fareType == 'OnHold') {
+          FlightItenary.push({
+            System: 'API2',
+            SearchId: SearchResponse.traceId, //traceId
+            ResultId: offerID, //offerId
+            PassportMadatory: SearchResponse.passportRequired,
+            FareType: fareType,
+            Refundable: isRefundable,
+            TripType: tripType,
+            InstantPayment: instantPayment,
+            GrossFare: totalFare,
+            discount: discount,
+            IsBookable: IsBookable,
+            Carrier: validatingCarrier,
+            CarrierName: carrierName,
+            BaseFare: totalBaseFare,
+            Taxes: tax,
+            SerViceFee: service,
+            NetFare: netFare,
+            Currency: currency,
+            SeatsRemaining: seatsRemaining,
+            PriceBreakDown: mergedData,
+            RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
+            SSR: SearchResponse.availableSSR,
+            AllLegsInfo: AllLegsInfo,
+          });
+        }
+      }
+      return FlightItenary;
     } else {
       return [];
     }
@@ -281,7 +301,7 @@ export class BfFareUtil {
         const IsBookable = offer?.fareType === 'OnHold';
         const instantPayment = offer?.fareType !== 'OnHold';
         const isRefundable = offer?.refundable || false;
-        
+
         const paxSegments = offer?.paxSegmentList || [];
         const fareDetails = offer?.fareDetailList || [];
         const totalFare = offer?.price?.totalPayable?.total || 0;
@@ -493,16 +513,15 @@ export class BfFareUtil {
     return FlightItenary;
   }
 
- 
-
   async airRetrive(
-    SearchResponse: any, 
+    SearchResponse: any,
     fisId: string,
     bookingStatus?: any,
     tripType?: any,
     bookingDate?: any,
     header?: any,
-    userIp?:any): Promise<any> {
+    userIp?: any,
+  ): Promise<any> {
     const FlightItenary = [];
     const { orderItem } = SearchResponse;
     //return SearchResponse
@@ -537,8 +556,6 @@ export class BfFareUtil {
         offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
       const totalFare = offer?.price?.gross?.total || 0;
       const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
-
-      
 
       const totalBaseFare = fareDetails.reduce(
         (sum, item) => sum + item.fareDetail.baseFare,
@@ -732,7 +749,7 @@ export class BfFareUtil {
         System: 'API2',
         SearchId: SearchResponse.traceId, //traceId
         BookingId: fisId,
-        BookingDate:bookingDate,
+        BookingDate: bookingDate,
         BookingStatus: bookingStatus,
         PassportMadatory: SearchResponse.passportRequired,
         FareType: fareType,
@@ -757,29 +774,33 @@ export class BfFareUtil {
         AllLegsInfo: AllLegsInfo,
         PassengerList: passengerList,
       });
-  // const sslpaymentLink = await this.paymentService
-    //   .dataModification(FlightItenary, header)
-    //   .catch(() => null);
-      const surjopay = await this.paymentService.formdata(FlightItenary, header,userIp).catch(() => 'NA');
-      const bkash = await this.paymentService.bkashInit(FlightItenary, header).catch(()=>"NA");
-// const price = FlightItenary?.[0]?.NetFare || 0;
+      // const sslpaymentLink = await this.paymentService
+      //   .dataModification(FlightItenary, header)
+      //   .catch(() => null);
+      const surjopay = await this.paymentService
+        .formdata(FlightItenary, header, userIp)
+        .catch(() => 'NA');
+      const bkash = await this.paymentService
+        .bkashInit(FlightItenary, header)
+        .catch(() => 'NA');
+      // const price = FlightItenary?.[0]?.NetFare || 0;
 
-    // const email = await this.authService.decodeToken(header).catch(() => 'NA');
+      // const email = await this.authService.decodeToken(header).catch(() => 'NA');
 
-    // let wallet = await this.walletRepository
-    //   .createQueryBuilder('wallet')
-    //   .innerJoinAndSelect('wallet.user', 'user')
-    //   .where('user.email = :email', { email })
-    //   .getOne()
-    //   .catch(() => null);
+      // let wallet = await this.walletRepository
+      //   .createQueryBuilder('wallet')
+      //   .innerJoinAndSelect('wallet.user', 'user')
+      //   .where('user.email = :email', { email })
+      //   .getOne()
+      //   .catch(() => null);
 
-    // const walletAmmount = wallet?.ammount || 0;
+      // const walletAmmount = wallet?.ammount || 0;
 
-    // let priceAfterPayment: number = walletAmmount - price;
+      // let priceAfterPayment: number = walletAmmount - price;
 
-    // if (priceAfterPayment < 0) {
-    //   priceAfterPayment = 0;
-    // }
+      // if (priceAfterPayment < 0) {
+      //   priceAfterPayment = 0;
+      // }
 
       return {
         bookingData: FlightItenary,
@@ -796,33 +817,30 @@ export class BfFareUtil {
     header: any,
     currentTimestamp: any,
     personIds: any,
-    userIp:any
+    userIp: any,
   ): Promise<any> {
     const FlightItenary = [];
     const { orderItem } = SearchResponse;
     //console.log(personIds)
     //return SearchResponse
     for (const offerData of orderItem) {
-      
       const randomId =
-      'FIS' +
-      Math.floor(Math.random() * 10 ** 13)
-        .toString()
-        .padStart(13, '0');
-    let add: BookingIdSave = new BookingIdSave();
-    add.flyitSearchId = randomId;
-    add.flyhubId = SearchResponse?.orderReference;
-    await this.bookingIdSave.save(add);
-      
-    let TimeLimit: string = null;
-    const timestamp = new Date(currentTimestamp);
-    const lastTicketDate: any = new Date(
-      timestamp.getTime() + 20 * 60 * 1000,
-    )
-      .toISOString()
-    TimeLimit = `${lastTicketDate}`; 
-   
-    
+        'FIS' +
+        Math.floor(Math.random() * 10 ** 13)
+          .toString()
+          .padStart(13, '0');
+      let add: BookingIdSave = new BookingIdSave();
+      add.flyitSearchId = randomId;
+      add.flyhubId = SearchResponse?.orderReference;
+      await this.bookingIdSave.save(add);
+
+      let TimeLimit: string = null;
+      const timestamp = new Date(currentTimestamp);
+      const lastTicketDate: any = new Date(
+        timestamp.getTime() + 20 * 60 * 1000,
+      ).toISOString();
+      TimeLimit = `${lastTicketDate}`;
+
       // const TimeLimit = SearchResponse.paymentTimeLimit;
       const offer = offerData;
       const validatingCarrier = offer?.validatingCarrier || 'N/A';
@@ -840,8 +858,6 @@ export class BfFareUtil {
         offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
       const totalFare = offer?.price?.gross?.total || 0;
       const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
-
-    
 
       const totalBaseFare = fareDetails.reduce(
         (sum, item) => sum + item.fareDetail.baseFare,
@@ -1071,7 +1087,11 @@ export class BfFareUtil {
     // const sslpaymentLink = await this.paymentService
     //   .dataModification(FlightItenary, header)
     //   .catch(() => null);
-    const surjopay = await this.paymentService.formdata(FlightItenary, header,userIp);
+    const surjopay = await this.paymentService.formdata(
+      FlightItenary,
+      header,
+      userIp,
+    );
     const bkash = await this.paymentService.bkashInit(FlightItenary, header);
 
     // const price = FlightItenary?.[0]?.NetFare || 0;
@@ -1100,7 +1120,6 @@ export class BfFareUtil {
       //walletPayment: { walletAmmount, price, priceAfterPayment },
     };
   }
-
 
   async saveBookingData(
     SearchResponse: any,

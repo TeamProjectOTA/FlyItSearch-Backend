@@ -26,11 +26,11 @@ export class RateLimiterGuard implements CanActivate {
     //console.log(request)
     let ip: string;
     if (typeof xForwardedFor === 'string') {
-      ip = xForwardedFor.split(',')[0]; 
+      ip = xForwardedFor.split(',')[0];
     } else if (Array.isArray(xForwardedFor)) {
-      ip = xForwardedFor[0]; 
+      ip = xForwardedFor[0];
     } else {
-      ip = request.socket.remoteAddress || ''; 
+      ip = request.socket.remoteAddress || '';
     }
     let userRole = 'unregistered';
     let email: string | null = null;
@@ -59,7 +59,7 @@ export class RateLimiterGuard implements CanActivate {
 
             if (admin) {
               userRole = admin.role;
-              email = null; 
+              email = null;
             }
           }
         } catch (err) {
@@ -68,7 +68,6 @@ export class RateLimiterGuard implements CanActivate {
       }
     }
 
-   
     const rateLimits = {
       unregistered: { points: 15, duration: 86400 },
       registered: { points: 60, duration: 86400 },
@@ -76,7 +75,8 @@ export class RateLimiterGuard implements CanActivate {
       superAdmin: { points: Number.MAX_SAFE_INTEGER, duration: 86400 },
     };
 
-    const { points, duration } = rateLimits[userRole] || rateLimits.unregistered;
+    const { points, duration } =
+      rateLimits[userRole] || rateLimits.unregistered;
     const currentTime = Date.now();
 
     try {

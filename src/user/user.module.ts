@@ -13,7 +13,13 @@ import { TravelBuddy } from 'src/travel-buddy/travel-buddy.model';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Transection, IpAddress,BookingSave,TravelBuddy]),
+    TypeOrmModule.forFeature([
+      User,
+      Transection,
+      IpAddress,
+      BookingSave,
+      TravelBuddy,
+    ]),
     AuthModule,
     IpModule,
   ],

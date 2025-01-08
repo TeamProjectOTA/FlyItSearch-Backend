@@ -53,7 +53,7 @@ let TravelBuddyService = class TravelBuddyService {
             Nationality: savedata.nationality,
             PassportNumber: savedata.passport,
             DateOfBirth: savedata.dob,
-            PassportExpiry: savedata.passportexp
+            PassportExpiry: savedata.passportexp,
         };
     }
     async updateTravelBuddy(createTravelBuddyDto, id) {

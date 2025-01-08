@@ -46,9 +46,9 @@ export class FlightController {
   // async getApiResponse(@Body() bdfaredto: RequestDto): Promise<any> {
   //   return await this.bdFareService.processApi(bdfaredto);
   // }
-@ApiBearerAuth('access_token')
-//@UseGuards(WhitelistGuard)
-//@UseGuards(RateLimiterGuard)
+  @ApiBearerAuth('access_token')
+  //@UseGuards(WhitelistGuard)
+  //@UseGuards(RateLimiterGuard)
   @Post('/bdFare')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,

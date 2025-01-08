@@ -33,7 +33,4 @@ export class FareRulesDto {
   FareBasisCode: string;
 }
 
-export class dataAny{
-  
- 
-}
+export class dataAny {}

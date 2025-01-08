@@ -55,6 +55,7 @@ let BfFareUtil = class BfFareUtil {
                 const seatsRemaining = offer?.seatsRemaining || 'N/A';
                 const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
                 let totalFare = offer?.price?.gross?.total || 0;
+                let discount = offer?.price?.discount?.total || 0;
                 let tripType = 'Unknown';
                 if (journeyType === '1') {
                     tripType = 'Oneway';
@@ -141,11 +142,21 @@ let BfFareUtil = class BfFareUtil {
                         const airportName = await this.airportService.airportName(segment?.arrival?.iatA_LocationCode);
                         return airportName || 'Unknown Airport';
                     }));
+                    let totalDuration = 0;
+                    groupSegments.forEach((segment, index) => {
+                        totalDuration += parseInt(segment?.duration || '0', 10);
+                        if (index < groupSegments.length - 1) {
+                            const currentArrTime = new Date(segment?.arrival?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                            const nextDepTime = new Date(groupSegments[index + 1]?.departure?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                            const transitTime = (nextDepTime - currentArrTime) / (1000 * 60);
+                            totalDuration += transitTime;
+                        }
+                    });
                     const legInfo = {
                         DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
                         DepFrom: firstSegment?.departure?.iatA_LocationCode,
                         ArrTo: lastSegment?.arrival?.iatA_LocationCode,
-                        Duration: groupSegments.reduce((acc, segment) => acc + parseInt(segment?.duration || '0', 10), 0),
+                        Duration: totalDuration,
                         Segments: groupSegments.map((segment, index) => ({
                             MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
                             MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
@@ -178,7 +189,7 @@ let BfFareUtil = class BfFareUtil {
                     };
                     AllLegsInfo.push(legInfo);
                 }
-                if (fareType == "OnHold") {
+                if (fareType == 'OnHold') {
                     FlightItenary.push({
                         System: 'API2',
                         SearchId: SearchResponse.traceId,
@@ -189,6 +200,7 @@ let BfFareUtil = class BfFareUtil {
                         TripType: tripType,
                         InstantPayment: instantPayment,
                         GrossFare: totalFare,
+                        discount: discount,
                         IsBookable: IsBookable,
                         Carrier: validatingCarrier,
                         CarrierName: carrierName,
@@ -583,8 +595,12 @@ let BfFareUtil = class BfFareUtil {
                 AllLegsInfo: AllLegsInfo,
                 PassengerList: passengerList,
             });
-            const surjopay = await this.paymentService.formdata(FlightItenary, header, userIp).catch(() => 'NA');
-            const bkash = await this.paymentService.bkashInit(FlightItenary, header).catch(() => "NA");
+            const surjopay = await this.paymentService
+                .formdata(FlightItenary, header, userIp)
+                .catch(() => 'NA');
+            const bkash = await this.paymentService
+                .bkashInit(FlightItenary, header)
+                .catch(() => 'NA');
             return {
                 bookingData: FlightItenary,
                 surjopay: surjopay,
@@ -606,8 +622,7 @@ let BfFareUtil = class BfFareUtil {
             await this.bookingIdSave.save(add);
             let TimeLimit = null;
             const timestamp = new Date(currentTimestamp);
-            const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000)
-                .toISOString();
+            const lastTicketDate = new Date(timestamp.getTime() + 20 * 60 * 1000).toISOString();
             TimeLimit = `${lastTicketDate}`;
             const offer = offerData;
             const validatingCarrier = offer?.validatingCarrier || 'N/A';

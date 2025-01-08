@@ -72,8 +72,7 @@ export class AuthController {
   async authenticateWithGoogle(@Param('token') token: string) {
     try {
       const user = await this.authservice.verifyGoogleToken(token);
-      return user
-      
+      return user;
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
     }
