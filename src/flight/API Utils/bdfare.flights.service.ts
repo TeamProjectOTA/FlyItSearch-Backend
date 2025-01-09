@@ -120,6 +120,8 @@ export class BDFareService {
     };
     //console.log(url,requestHeader)
     //return requestDto
+
+    try{
     const response: AxiosResponse = await axios.post(
       url,
       requestDto,
@@ -133,7 +135,11 @@ export class BDFareService {
         tripType,
       );
     }
-    return [];
+    return [];}
+    catch(e){
+      console.log(e)
+      return []
+    }
   }
   async fareRules(data: searchResultDtobdf) {
     const transformedData = {

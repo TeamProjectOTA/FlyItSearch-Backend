@@ -57,7 +57,7 @@ let DepositController = class DepositController {
             const { val_id } = req.body;
             const validationResponse = await this.depositService.validateOrder(val_id, email, amount);
             if (validationResponse?.status === 'VALID') {
-                return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+                return res.redirect(process.env.SUCCESS_CALLBACK);
             }
             else {
                 return res

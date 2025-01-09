@@ -121,7 +121,7 @@ export class DepositController {
       );
 
       if (validationResponse?.status === 'VALID') {
-        return res.redirect(process.env.BASE_FRONT_CALLBACK_URL);
+        return res.redirect(process.env.SUCCESS_CALLBACK);
       } else {
         return res
           .status(400)

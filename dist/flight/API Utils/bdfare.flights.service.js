@@ -101,11 +101,17 @@ let BDFareService = class BDFareService {
                 'X-API-KEY': this.apiKey,
             },
         };
-        const response = await axios_1.default.post(url, requestDto, requestHeader);
-        if (response.data.response != null) {
-            return await this.bdfareUtil.afterSerarchDataModifierBdFare(response.data.response, tripType);
+        try {
+            const response = await axios_1.default.post(url, requestDto, requestHeader);
+            if (response.data.response != null) {
+                return await this.bdfareUtil.afterSerarchDataModifierBdFare(response.data.response, tripType);
+            }
+            return [];
         }
-        return [];
+        catch (e) {
+            console.log(e);
+            return [];
+        }
     }
     async fareRules(data) {
         const transformedData = {
