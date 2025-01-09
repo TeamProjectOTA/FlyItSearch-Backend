@@ -1,46 +1,29 @@
-# Stage 1: Build the application
+# Use Node 20 Alpine image
 FROM node:20-alpine AS builder
 
-# Install only necessary build tools
+# Install build dependencies
 RUN apk add --no-cache g++ make python3
 
-# Set the working directory
+# Install NestJS CLI globally
+RUN npm install -g @nestjs/cli
+
+# Set working directory
 WORKDIR /app
 
-# Copy only package files to install dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install only production dependencies initially
-RUN npm ci --only=production
+# Install production dependencies (ignoring dev dependencies)
+RUN npm install --omit=dev
 
-# Install devDependencies temporarily for the build
-RUN npm install
-
-# Copy the entire application source code
+# Copy the rest of the app code
 COPY . .
 
-# Build the application
+# Build the app using NestJS CLI
 RUN npm run build
 
+# Expose the app on port 3000
+EXPOSE 3000
 
-# Stage 2: Production environment
-FROM node:20-alpine
-
-# Set the working directory
-WORKDIR /app
-
-# Copy only the necessary files from the builder stage
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package*.json ./
-
-# Install only production dependencies
-RUN npm ci --only=production --no-audit --no-fund
-
-# Remove unnecessary files to reduce image size
-RUN rm -rf /tmp/* /var/cache/apk/*
-
-# Expose the application port
-EXPOSE 8080
-
-# Start the application
-CMD [ "npm", "run", "start:prod" ]
+# Start the app in production mode
+CMD ["npm", "run", "start:prod"]
