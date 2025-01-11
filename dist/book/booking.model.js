@@ -313,7 +313,6 @@ __decorate([
 ], BookingDataDto.prototype, "SearchId", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
-    (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsString)({ each: true }),
     __metadata("design:type", String)
 ], BookingDataDto.prototype, "ResultId", void 0);

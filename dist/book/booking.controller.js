@@ -119,7 +119,7 @@ exports.BookingController = BookingController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('flh/airBook/'),
+    (0, common_1.Post)('api1/airBook/'),
     (0, swagger_1.ApiBody)({ type: flyhub_model_1.FlbFlightSearchDto }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
@@ -131,7 +131,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('flh/cancelBooking'),
+    (0, common_1.Post)('api1/cancelBooking'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
     __metadata("design:type", Function),
@@ -141,7 +141,7 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('flh/airRetrive'),
+    (0, common_1.Post)('api1/airRetrive'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Headers)()),
     __param(2, (0, common_1.Req)()),
@@ -213,7 +213,7 @@ __decorate([
 ], BookingController.prototype, "findUserWithBookings", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('flh/makeTicket'),
+    (0, common_1.Post)('api1/makeTicket'),
     (0, common_1.UseGuards)(admin_tokens_guard_1.AdmintokenGuard),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

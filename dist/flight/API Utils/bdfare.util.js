@@ -323,11 +323,21 @@ let BfFareUtil = class BfFareUtil {
                         const airportName = await this.airportService.airportName(segment?.arrival?.iatA_LocationCode);
                         return airportName || 'Unknown Airport';
                     }));
+                    let totalDuration = 0;
+                    groupSegments.forEach((segment, index) => {
+                        totalDuration += parseInt(segment?.duration || '0', 10);
+                        if (index < groupSegments.length - 1) {
+                            const currentArrTime = new Date(segment?.arrival?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                            const nextDepTime = new Date(groupSegments[index + 1]?.departure?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                            const transitTime = (nextDepTime - currentArrTime) / (1000 * 60);
+                            totalDuration += transitTime;
+                        }
+                    });
                     const legInfo = {
                         DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
                         DepFrom: firstSegment?.departure?.iatA_LocationCode,
                         ArrTo: lastSegment?.arrival?.iatA_LocationCode,
-                        Duration: groupSegments.reduce((acc, segment) => acc + parseInt(segment?.duration || '0', 10), 0),
+                        Duration: totalDuration,
                         Segments: groupSegments.map((segment, index) => ({
                             MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
                             MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
@@ -338,11 +348,11 @@ let BfFareUtil = class BfFareUtil {
                             DepFrom: segment?.departure?.iatA_LocationCode,
                             DepTime: segment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
                             DepAirPort: departureLocations[index].name,
-                            DepLocation: `${departureLocations[index].cityName},${departureLocations[index].countryName}`,
+                            DepLocation: `${departureLocations[index].location}`,
                             ArrTo: segment?.arrival?.iatA_LocationCode,
                             ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace('Z', ''),
                             ArrAirPort: arivalLocations[index].name,
-                            ArrLocation: `${arivalLocations[index].cityName},${arivalLocations[index].countryName}`,
+                            ArrLocation: `${arivalLocations[index].location}`,
                             CabinClass: segment?.cabinType,
                             Duration: segment?.duration,
                             AircraftTypeNameIatA: segment?.iatA_AircraftType?.iatA_AircraftTypeCode,
@@ -495,11 +505,21 @@ let BfFareUtil = class BfFareUtil {
                     const airportName = await this.airportService.airportName(segment?.arrival?.iatA_LocationCode);
                     return airportName || 'Unknown Airport';
                 }));
+                let totalDuration = 0;
+                groupSegments.forEach((segment, index) => {
+                    totalDuration += parseInt(segment?.duration || '0', 10);
+                    if (index < groupSegments.length - 1) {
+                        const currentArrTime = new Date(segment?.arrival?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                        const nextDepTime = new Date(groupSegments[index + 1]?.departure?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                        const transitTime = (nextDepTime - currentArrTime) / (1000 * 60);
+                        totalDuration += transitTime;
+                    }
+                });
                 const legInfo = {
                     DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
                     DepFrom: firstSegment?.departure?.iatA_LocationCode,
                     ArrTo: lastSegment?.arrival?.iatA_LocationCode,
-                    Duration: groupSegments.reduce((acc, segment) => acc + parseInt(segment?.duration || '0', 10), 0),
+                    Duration: totalDuration,
                     Segments: groupSegments.map((segment, index) => ({
                         MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
                         MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,
@@ -703,11 +723,21 @@ let BfFareUtil = class BfFareUtil {
                     const airportName = await this.airportService.airportName(segment?.arrival?.iatA_LocationCode);
                     return airportName || 'Unknown Airport';
                 }));
+                let totalDuration = 0;
+                groupSegments.forEach((segment, index) => {
+                    totalDuration += parseInt(segment?.duration || '0', 10);
+                    if (index < groupSegments.length - 1) {
+                        const currentArrTime = new Date(segment?.arrival?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                        const nextDepTime = new Date(groupSegments[index + 1]?.departure?.aircraftScheduledDateTime.replace('Z', '')).getTime();
+                        const transitTime = (nextDepTime - currentArrTime) / (1000 * 60);
+                        totalDuration += transitTime;
+                    }
+                });
                 const legInfo = {
                     DepDate: firstSegment?.departure?.aircraftScheduledDateTime.replace('Z', ''),
                     DepFrom: firstSegment?.departure?.iatA_LocationCode,
                     ArrTo: lastSegment?.arrival?.iatA_LocationCode,
-                    Duration: groupSegments.reduce((acc, segment) => acc + parseInt(segment?.duration || '0', 10), 0),
+                    Duration: totalDuration,
                     Segments: groupSegments.map((segment, index) => ({
                         MarketingCarrier: segment?.marketingCarrierInfo?.carrierDesigCode,
                         MarketingCarrierName: segment?.marketingCarrierInfo?.carrierName,

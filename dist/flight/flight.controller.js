@@ -89,6 +89,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlights", null);
 __decorate([
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('/bdFare/fareRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -96,6 +97,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "BfFareRules", null);
 __decorate([
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('/bdFare/priceCheck'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -103,6 +105,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "BdfarePriceCheck", null);
 __decorate([
+    (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
     (0, common_1.Post)('/bdFareMiniRule'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),

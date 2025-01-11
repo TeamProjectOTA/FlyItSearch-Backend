@@ -30,7 +30,7 @@ export class BookingController {
 
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('flh/airBook/')
+  @Post('api1/airBook/')
   @ApiBody({ type: FlbFlightSearchDto })
   async airbook(
     @Body() data: FlbFlightSearchDto,
@@ -77,7 +77,7 @@ export class BookingController {
   }
   @UseGuards(UserTokenGuard)
   @ApiBearerAuth('access_token')
-  @Post('flh/cancelBooking')
+  @Post('api1/cancelBooking')
   async aircanel(
     @Body() bookingIdDto: BookingID,
     @Headers() header: Headers,
@@ -87,7 +87,7 @@ export class BookingController {
 
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('flh/airRetrive')
+  @Post('api1/airRetrive')
   async airRetrive(
     @Body() bookingIdDto: BookingID,
     @Headers() header: Headers,
@@ -162,7 +162,7 @@ export class BookingController {
     return this.bookingService.findUserWithBookings(header, bookingStatus);
   }
   @ApiBearerAuth('access_token')
-  @Post('flh/makeTicket')
+  @Post('api1/makeTicket')
   @UseGuards(AdmintokenGuard)
   async ticketMake(@Body() bookingIdDto: BookingID) {
     return await this.flyHubService.makeTicket(bookingIdDto);

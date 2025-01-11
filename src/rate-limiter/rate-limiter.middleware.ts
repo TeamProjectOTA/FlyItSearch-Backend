@@ -17,7 +17,7 @@ export class RateLimiterMiddleware implements NestMiddleware {
     const xForwardedFor = req.headers['x-forwarded-for'] as string;
     const ipList = xForwardedFor?.split(',').map((ip) => ip.trim());
     const userIp = ipList?.[0] || req.socket.remoteAddress;
-    const ip = userIp;
+    const ip = userIp?.startsWith('::ffff:') ? userIp.substring(7) : userIp;
     const userRole = req.user?.role || 'unregistered';
     const email = req.user?.email;
 

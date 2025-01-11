@@ -200,7 +200,6 @@ export class BookingDataDto {
   @IsString()
   SearchId: string;
   @ApiProperty()
-  @IsArray()
   @IsString({ each: true })
   ResultId: string;
 

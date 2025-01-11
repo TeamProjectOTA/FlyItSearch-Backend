@@ -55,16 +55,17 @@ export class FlightController {
   ): Promise<any> {
     return this.bdFareService.airShopping(flightSearchModel);
   }
-
+  @UseGuards(UserTokenGuard)
   @Post('/bdFare/fareRules')
   async BfFareRules(@Body() data: searchResultDtobdf): Promise<any> {
     return this.bdFareService.fareRules(data);
   }
-
+  @UseGuards(UserTokenGuard)
   @Post('/bdFare/priceCheck')
   async BdfarePriceCheck(@Body() data: searchResultDtobdf): Promise<any> {
     return this.bdFareService.offerPrice(data);
   }
+  @UseGuards(UserTokenGuard)
   @Post('/bdFareMiniRule')
   async BdfareMiniRules(@Body() data: searchResultDtobdf): Promise<any> {
     return this.bdFareService.miniRule(data);
