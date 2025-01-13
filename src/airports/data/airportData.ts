@@ -18826,9 +18826,9 @@ export const airportsData = [
     name: 'Asir, Saudi Arabia',
     location: 'Bisha Airport',
   },
-  // {
-  //   code: 'PKX',
-  //   name: 'Beijing Daxing International Airport',
-  //   location: 'Daxing, Beijing,Guangyang, Langfang, Hebei'
-  // },
+  {
+    code: 'PKX',
+    name: 'Beijing Daxing International Airport',
+    location: 'Daxing, Beijing, Guangyang, Langfang, Hebei',
+  },
 ];

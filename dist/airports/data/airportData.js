@@ -18828,5 +18828,10 @@ exports.airportsData = [
         name: 'Asir, Saudi Arabia',
         location: 'Bisha Airport',
     },
+    {
+        code: 'PKX',
+        name: 'Beijing Daxing International Airport',
+        location: 'Daxing, Beijing, Guangyang, Langfang, Hebei',
+    },
 ];
 //# sourceMappingURL=airportData.js.map

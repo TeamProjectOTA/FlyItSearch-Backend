@@ -82,31 +82,34 @@ let FlightController = class FlightController {
 exports.FlightController = FlightController;
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('/bdFare'),
+    (0, common_1.Post)('/api2'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flight_model_1.FlightSearchModel]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "searchFlights", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('/bdFare/fareRules'),
+    (0, common_1.Post)('/api2/fareRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [bdfare_model_1.searchResultDtobdf]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "BfFareRules", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('/bdFare/priceCheck'),
+    (0, common_1.Post)('/api2/priceCheck'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [bdfare_model_1.searchResultDtobdf]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "BdfarePriceCheck", null);
 __decorate([
+    (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('/bdFareMiniRule'),
+    (0, common_1.Post)('/api2MiniRule'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [bdfare_model_1.searchResultDtobdf]),
@@ -156,7 +159,7 @@ __decorate([
 ], FlightController.prototype, "airretrieve", null);
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
-    (0, common_1.Post)('fhb/airSearch/'),
+    (0, common_1.Post)('/api1/airSearch/'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -166,21 +169,21 @@ __decorate([
 __decorate([
     (0, swagger_1.ApiBearerAuth)('access_token'),
     (0, common_1.UseGuards)(user_tokens_guard_1.UserTokenGuard),
-    (0, common_1.Post)('flh/priceCheck'),
+    (0, common_1.Post)('/api1/priceCheck'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "airPrice", null);
 __decorate([
-    (0, common_1.Post)('flh/farePolicyMiniRules'),
+    (0, common_1.Post)('/api1/farePolicyMiniRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),
     __metadata("design:returntype", Promise)
 ], FlightController.prototype, "miniRules", null);
 __decorate([
-    (0, common_1.Post)('flh/fairRules'),
+    (0, common_1.Post)('/api1/fairRules'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [flyhub_model_1.searchResultDto]),

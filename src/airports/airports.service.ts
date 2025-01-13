@@ -119,11 +119,16 @@ export class AirportsService {
   }
 
   async airportName(code: string) {
-    const foundItem = airportsData.find((item) => item.code === code);
+    
+    if (!Array.isArray(airportsData)) {
+      return { code: '', name: '', location: '' }; 
+    }
+  
+    const foundItem = airportsData.find((item) => item?.code === code);
     if (foundItem) {
       return foundItem;
     } else {
-      return { code: '', name: '', location };
+      return { code: '', name: '', location: '' }; 
     }
   }
 }

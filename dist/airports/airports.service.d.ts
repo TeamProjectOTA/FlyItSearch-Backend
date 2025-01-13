@@ -17,9 +17,5 @@ export declare class AirportsService {
         code: string;
         name: string;
         location: string;
-    } | {
-        code: string;
-        name: string;
-        location: Location;
     }>;
 }

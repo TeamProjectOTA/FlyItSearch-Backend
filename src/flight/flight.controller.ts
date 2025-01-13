@@ -49,24 +49,27 @@ export class FlightController {
   @ApiBearerAuth('access_token')
   //@UseGuards(WhitelistGuard)
   //@UseGuards(RateLimiterGuard)
-  @Post('/bdFare')
+  @Post('/api2')
   async searchFlights(
     @Body() flightSearchModel: FlightSearchModel,
   ): Promise<any> {
     return this.bdFareService.airShopping(flightSearchModel);
   }
+  @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('/bdFare/fareRules')
+  @Post('/api2/fareRules')
   async BfFareRules(@Body() data: searchResultDtobdf): Promise<any> {
     return this.bdFareService.fareRules(data);
   }
+  @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('/bdFare/priceCheck')
+  @Post('/api2/priceCheck')
   async BdfarePriceCheck(@Body() data: searchResultDtobdf): Promise<any> {
     return this.bdFareService.offerPrice(data);
   }
+  @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('/bdFareMiniRule')
+  @Post('/api2MiniRule')
   async BdfareMiniRules(@Body() data: searchResultDtobdf): Promise<any> {
     return this.bdFareService.miniRule(data);
   }
@@ -99,7 +102,7 @@ export class FlightController {
   }
   @ApiBearerAuth('access_token')
   //@UseGuards(RateLimiterGuard)
-  @Post('fhb/airSearch/')
+  @Post('/api1/airSearch/')
   async convertToFlyAirSearchDto(
     @Body() flightSearchModel: FlightSearchModel,
     @Req() request: Request,
@@ -116,16 +119,16 @@ export class FlightController {
   }
   @ApiBearerAuth('access_token')
   @UseGuards(UserTokenGuard)
-  @Post('flh/priceCheck')
+  @Post('/api1/priceCheck')
   async airPrice(@Body() data: searchResultDto) {
     return await this.flyHubService.airPrice(data);
   }
 
-  @Post('flh/farePolicyMiniRules')
+  @Post('/api1/farePolicyMiniRules')
   async miniRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.bookingRules(data);
   }
-  @Post('flh/fairRules')
+  @Post('/api1/fairRules')
   async airRules(@Body() data: searchResultDto): Promise<any> {
     return await this.flyHubService.airRules(data);
   }

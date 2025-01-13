@@ -28,6 +28,7 @@ let BfFareUtil = class BfFareUtil {
         this.BookService = BookService;
         this.bookingIdSave = bookingIdSave;
         this.bookingSave = bookingSave;
+        this.markupPersentange = 15 / 100;
     }
     async afterSerarchDataModifierBdFare(SearchResponse, journeyType) {
         const FlightItenary = [];
@@ -36,20 +37,6 @@ let BfFareUtil = class BfFareUtil {
             for (const offerData of offersGroup) {
                 const offer = offerData?.offer;
                 const offerID = offer.offerId;
-                const validatingCarrier = offer?.validatingCarrier || 'N/A';
-                const fareType = offer?.fareType || 'Regular';
-                const IsBookable = offer?.fareType === 'OnHold';
-                const instantPayment = offer?.fareType !== 'OnHold';
-                const isRefundable = offer?.refundable || false;
-                const paxSegments = offer?.paxSegmentList || [];
-                const fareDetails = offer?.fareDetailList || [];
-                let netFare = offer?.price?.totalPayable?.total || 0;
-                const currency = offer?.price?.totalPayable?.curreny || 'BDT';
-                const baggageAllowances = offer?.baggageAllowanceList || [];
-                const seatsRemaining = offer?.seatsRemaining || 'N/A';
-                const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-                let totalFare = offer?.price?.gross?.total || 0;
-                let discount = offer?.price?.discount?.total || 0;
                 let tripType = 'Unknown';
                 if (journeyType === '1') {
                     tripType = 'Oneway';
@@ -60,21 +47,44 @@ let BfFareUtil = class BfFareUtil {
                 else if (journeyType === '3') {
                     tripType = 'Multicity';
                 }
-                const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
-                const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
-                const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat, 0);
-                const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee, 0);
+                const validatingCarrier = offer?.validatingCarrier || 'N/A';
+                const fareType = offer?.fareType || 'Regular';
+                const IsBookable = offer?.fareType === 'OnHold' || false;
+                const instantPayment = offer?.fareType !== 'OnHold' || true;
+                const isRefundable = offer?.refundable || false;
+                const paxSegments = offer?.paxSegmentList || [];
+                const fareDetails = offer?.fareDetailList || [];
+                let totalPayable = offer?.price?.totalPayable?.total || 0;
+                const currency = offer?.price?.totalPayable?.curreny || 'BDT';
+                const baggageAllowances = offer?.baggageAllowanceList || [];
+                const seatsRemaining = offer?.seatsRemaining || 'N/A';
+                const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+                    'UnKnown';
+                let discount = Math.ceil(offer?.price?.discount?.total * this.markupPersentange);
+                let addAmount = 0;
+                if (discount < 100) {
+                    addAmount = Math.ceil(totalPayable * 0.01);
+                    discount = 0;
+                }
+                const netFare = totalPayable + discount + addAmount;
+                const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare * item.fareDetail.paxCount, 0);
+                const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount, 0);
+                const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount, 0);
+                const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee * item.fareDetail.paxCount, 0);
                 const service = vat + others;
+                let totalFare = totalBaseFare + tax + service || 0;
                 const PriceBreakDown = fareDetails.map((fareDetailData) => {
                     const fareDetail = fareDetailData.fareDetail;
+                    const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
+                    const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
+                    const serviceFee = (fareDetail?.vat || 0) +
+                        (fareDetail?.otherFee * fareDetail?.paxCount || 0);
                     return {
                         PaxType: fareDetail?.paxType || 'Unknown',
-                        BaseFare: fareDetail?.baseFare || 0,
-                        Taxes: fareDetail?.tax || 0,
-                        OtherCharges: fareDetail?.otherFee || 0,
-                        Discount: fareDetail?.discount || 0,
-                        ServiceFee: fareDetail?.vat || 0,
-                        TotalFare: fareDetail?.subTotal || 0,
+                        BaseFare: baseFare,
+                        Taxes: taxes,
+                        ServiceFee: serviceFee,
+                        TotalFare: baseFare + taxes + serviceFee || 0,
                         PaxCount: fareDetail?.paxCount || 1,
                     };
                 });
@@ -224,19 +234,6 @@ let BfFareUtil = class BfFareUtil {
             for (const offerData of offersGroup) {
                 const offer = offerData?.offer;
                 const offerID = offer.offerId;
-                const validatingCarrier = offer?.validatingCarrier || 'N/A';
-                const fareType = offer?.fareType || 'Regular';
-                const IsBookable = offer?.fareType === 'OnHold';
-                const instantPayment = offer?.fareType !== 'OnHold';
-                const isRefundable = offer?.refundable || false;
-                const paxSegments = offer?.paxSegmentList || [];
-                const fareDetails = offer?.fareDetailList || [];
-                const totalFare = offer?.price?.totalPayable?.total || 0;
-                const currency = offer?.price?.totalPayable?.curreny || 'BDT';
-                const baggageAllowances = offer?.baggageAllowanceList || [];
-                const seatsRemaining = offer?.seatsRemaining || 'N/A';
-                const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-                const netFare = offer?.price?.gross?.total || 0;
                 let tripType = 'Unknown';
                 if (journeyType === '1') {
                     tripType = 'Oneway';
@@ -247,21 +244,44 @@ let BfFareUtil = class BfFareUtil {
                 else if (journeyType === '3') {
                     tripType = 'Multicity';
                 }
-                const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
-                const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
-                const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat, 0);
-                const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee, 0);
+                const validatingCarrier = offer?.validatingCarrier || 'N/A';
+                const fareType = offer?.fareType || 'Regular';
+                const IsBookable = offer?.fareType === 'OnHold';
+                const instantPayment = offer?.fareType !== 'OnHold';
+                const isRefundable = offer?.refundable || false;
+                const paxSegments = offer?.paxSegmentList || [];
+                const fareDetails = offer?.fareDetailList || [];
+                let totalPayable = offer?.price?.totalPayable?.total || 0;
+                const currency = offer?.price?.totalPayable?.curreny || 'BDT';
+                const baggageAllowances = offer?.baggageAllowanceList || [];
+                const seatsRemaining = offer?.seatsRemaining || 'N/A';
+                const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+                    'UnKnown';
+                let discount = Math.ceil(offer?.price?.discount?.total * this.markupPersentange);
+                let addAmount = 0;
+                if (discount < 100) {
+                    addAmount = Math.ceil(totalPayable * 0.01);
+                    discount = 0;
+                }
+                const netFare = totalPayable + discount + addAmount;
+                const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare * item.fareDetail.paxCount, 0);
+                const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount, 0);
+                const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount, 0);
+                const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee * item.fareDetail.paxCount, 0);
                 const service = vat + others;
+                let totalFare = totalBaseFare + tax + service || 0;
                 const PriceBreakDown = fareDetails.map((fareDetailData) => {
                     const fareDetail = fareDetailData.fareDetail;
+                    const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
+                    const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
+                    const serviceFee = (fareDetail?.vat || 0) +
+                        (fareDetail?.otherFee * fareDetail?.paxCount || 0);
                     return {
                         PaxType: fareDetail?.paxType || 'Unknown',
-                        BaseFare: fareDetail?.baseFare || 0,
-                        Taxes: fareDetail?.tax || 0,
-                        OtherCharges: fareDetail?.otherFee || 0,
-                        Discount: fareDetail?.discount || 0,
-                        ServiceFee: fareDetail?.vat || 0,
-                        TotalFare: fareDetail?.subTotal || 0,
+                        BaseFare: baseFare,
+                        Taxes: taxes,
+                        ServiceFee: serviceFee,
+                        TotalFare: baseFare + taxes + serviceFee || 0,
                         PaxCount: fareDetail?.paxCount || 1,
                     };
                 });
@@ -422,28 +442,38 @@ let BfFareUtil = class BfFareUtil {
             const isRefundable = offer?.refundable || false;
             const paxSegments = offer?.paxSegmentList || [];
             const fareDetails = offer?.fareDetailList || [];
-            const netFare = offer?.price?.totalPayable?.total || 0;
+            const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
+            let totalPayable = offer?.price?.totalPayable?.total || 0;
             const currency = offer?.price?.totalPayable?.curreny || 'BDT';
             const baggageAllowances = offer?.baggageAllowanceList || [];
             const seatsRemaining = offer?.seatsRemaining || 'N/A';
-            const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-            const totalFare = offer?.price?.gross?.total || 0;
-            const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
-            const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
-            const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
-            const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat, 0);
-            const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee, 0);
+            const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+                'UnKnown';
+            let discount = Math.ceil(offer?.price?.discount?.total * this.markupPersentange);
+            let addAmount = 0;
+            if (discount < 100) {
+                addAmount = Math.ceil(totalPayable * 0.01);
+                discount = 0;
+            }
+            const netFare = totalPayable + discount + addAmount;
+            const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare * item.fareDetail.paxCount, 0);
+            const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount, 0);
+            const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount, 0);
+            const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee * item.fareDetail.paxCount, 0);
             const service = vat + others;
+            let totalFare = totalBaseFare + tax + service || 0;
             const PriceBreakDown = fareDetails.map((fareDetailData) => {
                 const fareDetail = fareDetailData.fareDetail;
+                const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
+                const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
+                const serviceFee = (fareDetail?.vat || 0) +
+                    (fareDetail?.otherFee * fareDetail?.paxCount || 0);
                 return {
                     PaxType: fareDetail?.paxType || 'Unknown',
-                    BaseFare: fareDetail?.baseFare || 0,
-                    Taxes: fareDetail?.tax || 0,
-                    OtherCharges: fareDetail?.otherFee || 0,
-                    Discount: fareDetail?.discount || 0,
-                    ServiceFee: fareDetail?.vat || 0,
-                    TotalFare: fareDetail?.subTotal || 0,
+                    BaseFare: baseFare,
+                    Taxes: taxes,
+                    ServiceFee: serviceFee,
+                    TotalFare: baseFare + taxes + serviceFee || 0,
                     PaxCount: fareDetail?.paxCount || 1,
                 };
             });
@@ -640,28 +670,38 @@ let BfFareUtil = class BfFareUtil {
             const isRefundable = offer?.refundable || false;
             const paxSegments = offer?.paxSegmentList || [];
             const fareDetails = offer?.fareDetailList || [];
-            const netFare = offer?.price?.totalPayable?.total || 0;
+            const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
+            let totalPayable = offer?.price?.totalPayable?.total || 0;
             const currency = offer?.price?.totalPayable?.curreny || 'BDT';
             const baggageAllowances = offer?.baggageAllowanceList || [];
             const seatsRemaining = offer?.seatsRemaining || 'N/A';
-            const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName;
-            const totalFare = offer?.price?.gross?.total || 0;
-            const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
-            const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare, 0);
-            const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax, 0);
-            const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat, 0);
-            const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee, 0);
+            const carrierName = offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+                'UnKnown';
+            let discount = Math.ceil(offer?.price?.discount?.total * this.markupPersentange);
+            let addAmount = 0;
+            if (discount < 100) {
+                addAmount = Math.ceil(totalPayable * 0.01);
+                discount = 0;
+            }
+            const netFare = totalPayable + discount + addAmount;
+            const totalBaseFare = fareDetails.reduce((sum, item) => sum + item.fareDetail.baseFare * item.fareDetail.paxCount, 0);
+            const tax = fareDetails.reduce((sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount, 0);
+            const vat = fareDetails.reduce((sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount, 0);
+            const others = fareDetails.reduce((sum, item) => sum + item.fareDetail.otherFee * item.fareDetail.paxCount, 0);
             const service = vat + others;
+            let totalFare = totalBaseFare + tax + service || 0;
             const PriceBreakDown = fareDetails.map((fareDetailData) => {
                 const fareDetail = fareDetailData.fareDetail;
+                const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
+                const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
+                const serviceFee = (fareDetail?.vat || 0) +
+                    (fareDetail?.otherFee * fareDetail?.paxCount || 0);
                 return {
                     PaxType: fareDetail?.paxType || 'Unknown',
-                    BaseFare: fareDetail?.baseFare || 0,
-                    Taxes: fareDetail?.tax || 0,
-                    OtherCharges: fareDetail?.otherFee || 0,
-                    Discount: fareDetail?.discount || 0,
-                    ServiceFee: fareDetail?.vat || 0,
-                    TotalFare: fareDetail?.subTotal || 0,
+                    BaseFare: baseFare,
+                    Taxes: taxes,
+                    ServiceFee: serviceFee,
+                    TotalFare: baseFare + taxes + serviceFee || 0,
                     PaxCount: fareDetail?.paxCount || 1,
                 };
             });

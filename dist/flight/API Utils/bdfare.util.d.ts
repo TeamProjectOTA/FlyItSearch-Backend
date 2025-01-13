@@ -10,6 +10,7 @@ export declare class BfFareUtil {
     private readonly BookService;
     private readonly bookingIdSave;
     private readonly bookingSave;
+    markupPersentange: number;
     constructor(paymentService: PaymentService, airportService: AirportsService, BookService: BookingService, bookingIdSave: Repository<BookingIdSave>, bookingSave: Repository<BookingSave>);
     afterSerarchDataModifierBdFare(SearchResponse: any, journeyType?: string): Promise<any[]>;
     priceCheckWithAlldata(SearchResponse: any, journeyType?: string): Promise<any[]>;

@@ -104,12 +104,15 @@ let AirportsService = class AirportsService {
         return airportsData.country_code;
     }
     async airportName(code) {
-        const foundItem = airportData_1.airportsData.find((item) => item.code === code);
+        if (!Array.isArray(airportData_1.airportsData)) {
+            return { code: '', name: '', location: '' };
+        }
+        const foundItem = airportData_1.airportsData.find((item) => item?.code === code);
         if (foundItem) {
             return foundItem;
         }
         else {
-            return { code: '', name: '', location };
+            return { code: '', name: '', location: '' };
         }
     }
 };

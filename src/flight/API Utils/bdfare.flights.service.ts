@@ -121,24 +121,24 @@ export class BDFareService {
     //console.log(url,requestHeader)
     //return requestDto
 
-    try{
-    const response: AxiosResponse = await axios.post(
-      url,
-      requestDto,
-      requestHeader,
-    );
-    //console.log(response)
-    if (response.data.response != null) {
-      // return response.data.response;
-      return await this.bdfareUtil.afterSerarchDataModifierBdFare(
-        response.data.response,
-        tripType,
+    try {
+      const response: AxiosResponse = await axios.post(
+        url,
+        requestDto,
+        requestHeader,
       );
-    }
-    return [];}
-    catch(e){
-      console.log(e)
-      return []
+      //console.log(response)
+      if (response.data.response != null) {
+        // return response.data.response;
+        return await this.bdfareUtil.afterSerarchDataModifierBdFare(
+          response.data.response,
+          tripType,
+        );
+      }
+      return [];
+    } catch (e) {
+      console.log(e);
+      return [];
     }
   }
   async fareRules(data: searchResultDtobdf) {
