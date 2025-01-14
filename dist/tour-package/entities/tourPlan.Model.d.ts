@@ -1,7 +1,7 @@
-import { TourPackage } from './tour-package.entity';
+import { TourPackage } from './tourPackage.model';
 export declare class TourPlan {
     id: number;
-    tourPlanTitle: string;
-    dayPlan: string;
+    title: string;
+    plan: string;
     tourPackage: TourPackage;
 }

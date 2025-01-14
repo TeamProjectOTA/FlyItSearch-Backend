@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TourPlan = void 0;
 const typeorm_1 = require("typeorm");
-const tour_package_entity_1 = require("./tour-package.entity");
+const tourPackage_model_1 = require("./tourPackage.model");
 let TourPlan = class TourPlan {
 };
 exports.TourPlan = TourPlan;
@@ -22,16 +22,14 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], TourPlan.prototype, "tourPlanTitle", void 0);
+], TourPlan.prototype, "title", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], TourPlan.prototype, "dayPlan", void 0);
+], TourPlan.prototype, "plan", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => tour_package_entity_1.TourPackage, (tourPackage) => tourPackage.tourPlan, {
-        onDelete: 'CASCADE',
-    }),
-    __metadata("design:type", tour_package_entity_1.TourPackage)
+    (0, typeorm_1.ManyToOne)(() => tourPackage_model_1.TourPackage, (tourPackage) => tourPackage.tourPlans),
+    __metadata("design:type", tourPackage_model_1.TourPackage)
 ], TourPlan.prototype, "tourPackage", void 0);
 exports.TourPlan = TourPlan = __decorate([
     (0, typeorm_1.Entity)()

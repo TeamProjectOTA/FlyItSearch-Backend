@@ -9,9 +9,54 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Introduction = void 0;
+exports.TourPlan = exports.Introduction = exports.TourPackage = void 0;
 const typeorm_1 = require("typeorm");
-const tourPackage_model_1 = require("./tourPackage.model");
+let TourPackage = class TourPackage {
+};
+exports.TourPackage = TourPackage;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], TourPackage.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], TourPackage.prototype, "packageId", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], TourPackage.prototype, "status", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], TourPackage.prototype, "packageType", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Object)
+], TourPackage.prototype, "overView", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Array)
+], TourPackage.prototype, "mainImage", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Array)
+], TourPackage.prototype, "visitPlace", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Object)
+], TourPackage.prototype, "tourPlan", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Object)
+], TourPackage.prototype, "objective", void 0);
+__decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Object)
+], TourPackage.prototype, "metaInfo", void 0);
+exports.TourPackage = TourPackage = __decorate([
+    (0, typeorm_1.Entity)()
+], TourPackage);
 let Introduction = class Introduction {
 };
 exports.Introduction = Introduction;
@@ -28,6 +73,7 @@ __decorate([
     __metadata("design:type", String)
 ], Introduction.prototype, "subTitle", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Introduction.prototype, "tripType", void 0);
@@ -75,11 +121,25 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], Introduction.prototype, "packageDiscount", void 0);
-__decorate([
-    (0, typeorm_1.OneToOne)(() => tourPackage_model_1.TourPackage, (tourPackage) => tourPackage.introduction),
-    __metadata("design:type", tourPackage_model_1.TourPackage)
-], Introduction.prototype, "tourPackage", void 0);
 exports.Introduction = Introduction = __decorate([
     (0, typeorm_1.Entity)()
 ], Introduction);
-//# sourceMappingURL=introduction.model.js.map
+let TourPlan = class TourPlan {
+};
+exports.TourPlan = TourPlan;
+__decorate([
+    (0, typeorm_1.PrimaryGeneratedColumn)(),
+    __metadata("design:type", Number)
+], TourPlan.prototype, "id", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], TourPlan.prototype, "title", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], TourPlan.prototype, "plan", void 0);
+exports.TourPlan = TourPlan = __decorate([
+    (0, typeorm_1.Entity)()
+], TourPlan);
+//# sourceMappingURL=tourPackage.entity.js.map

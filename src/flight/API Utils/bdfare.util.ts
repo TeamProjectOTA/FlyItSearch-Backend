@@ -9,7 +9,7 @@ import { PaymentService } from 'src/payment/payment.service';
 
 @Injectable()
 export class BfFareUtil {
-  public markupPersentange:number
+  public markupPersentange: number;
   constructor(
     private readonly paymentService: PaymentService,
     private readonly airportService: AirportsService,
@@ -19,7 +19,7 @@ export class BfFareUtil {
     @InjectRepository(BookingSave)
     private readonly bookingSave: Repository<BookingSave>,
   ) {
-    this.markupPersentange=15/100
+    this.markupPersentange = 15 / 100;
   }
   async afterSerarchDataModifierBdFare(
     SearchResponse: any,
@@ -64,16 +64,18 @@ export class BfFareUtil {
           offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
           'UnKnown';
 
-        let discount: number = Math.ceil(offer?.price?.discount?.total*this.markupPersentange);
+        let discount: number = Math.ceil(
+          offer?.price?.discount?.total * this.markupPersentange,
+        );
 
         let addAmount: number = 0;
 
         if (discount < 100) {
           addAmount = Math.ceil(totalPayable * 0.01);
-          discount=0
+          discount = 0;
           // console.log(totalPayable,addAmount,discount)
         }
-       const netFare= totalPayable+discount+addAmount
+        const netFare = totalPayable + discount + addAmount;
         const totalBaseFare = fareDetails.reduce(
           (sum, item) =>
             sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
@@ -93,7 +95,7 @@ export class BfFareUtil {
           0,
         );
         const service = vat + others;
-        let totalFare = totalBaseFare + tax + service|| 0;
+        let totalFare = totalBaseFare + tax + service || 0;
         const PriceBreakDown = fareDetails.map((fareDetailData) => {
           const fareDetail = fareDetailData.fareDetail;
           const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
@@ -337,16 +339,18 @@ export class BfFareUtil {
           offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
           'UnKnown';
 
-        let discount: number = Math.ceil(offer?.price?.discount?.total*this.markupPersentange);
+        let discount: number = Math.ceil(
+          offer?.price?.discount?.total * this.markupPersentange,
+        );
 
         let addAmount: number = 0;
 
         if (discount < 100) {
           addAmount = Math.ceil(totalPayable * 0.01);
-          discount=0
+          discount = 0;
           // console.log(totalPayable,addAmount,discount)
         }
-       const netFare= totalPayable+discount+addAmount
+        const netFare = totalPayable + discount + addAmount;
         const totalBaseFare = fareDetails.reduce(
           (sum, item) =>
             sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
@@ -366,7 +370,7 @@ export class BfFareUtil {
           0,
         );
         const service = vat + others;
-        let totalFare = totalBaseFare + tax + service|| 0;
+        let totalFare = totalBaseFare + tax + service || 0;
         const PriceBreakDown = fareDetails.map((fareDetailData) => {
           const fareDetail = fareDetailData.fareDetail;
           const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
@@ -600,61 +604,63 @@ export class BfFareUtil {
       const fareDetails = offer?.fareDetailList || [];
       const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
       let totalPayable = offer?.price?.totalPayable?.total || 0;
-        const currency = offer?.price?.totalPayable?.curreny || 'BDT';
-        const baggageAllowances = offer?.baggageAllowanceList || [];
-        const seatsRemaining = offer?.seatsRemaining || 'N/A';
-        const carrierName =
-          offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
-          'UnKnown';
+      const currency = offer?.price?.totalPayable?.curreny || 'BDT';
+      const baggageAllowances = offer?.baggageAllowanceList || [];
+      const seatsRemaining = offer?.seatsRemaining || 'N/A';
+      const carrierName =
+        offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+        'UnKnown';
 
-        let discount: number = Math.ceil(offer?.price?.discount?.total*this.markupPersentange);
+      let discount: number = Math.ceil(
+        offer?.price?.discount?.total * this.markupPersentange,
+      );
 
-        let addAmount: number = 0;
+      let addAmount: number = 0;
 
-        if (discount < 100) {
-          addAmount = Math.ceil(totalPayable * 0.01);
-          discount=0
-          // console.log(totalPayable,addAmount,discount)
-        }
-       const netFare= totalPayable+discount+addAmount
-        const totalBaseFare = fareDetails.reduce(
-          (sum, item) =>
-            sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
-          0,
-        );
-        const tax = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount,
-          0,
-        );
-        const vat = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount,
-          0,
-        );
-        const others = fareDetails.reduce(
-          (sum, item) =>
-            sum + item.fareDetail.otherFee * item.fareDetail.paxCount,
-          0,
-        );
-        const service = vat + others;
-        let totalFare = totalBaseFare + tax + service|| 0;
-        const PriceBreakDown = fareDetails.map((fareDetailData) => {
-          const fareDetail = fareDetailData.fareDetail;
-          const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
-          const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
-          const serviceFee =
-            (fareDetail?.vat || 0) +
-            (fareDetail?.otherFee * fareDetail?.paxCount || 0);
-          return {
-            PaxType: fareDetail?.paxType || 'Unknown',
-            BaseFare: baseFare,
-            Taxes: taxes,
-            // OtherCharges: fareDetail?.otherFee*fareDetail?.paxCount || 0,
-            //  Discount: fareDetail?.discount || 0,
-            ServiceFee: serviceFee,
-            TotalFare: baseFare + taxes + serviceFee || 0,
-            PaxCount: fareDetail?.paxCount || 1,
-          };
-        });
+      if (discount < 100) {
+        addAmount = Math.ceil(totalPayable * 0.01);
+        discount = 0;
+        // console.log(totalPayable,addAmount,discount)
+      }
+      const netFare = totalPayable + discount + addAmount;
+      const totalBaseFare = fareDetails.reduce(
+        (sum, item) =>
+          sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
+        0,
+      );
+      const tax = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount,
+        0,
+      );
+      const vat = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount,
+        0,
+      );
+      const others = fareDetails.reduce(
+        (sum, item) =>
+          sum + item.fareDetail.otherFee * item.fareDetail.paxCount,
+        0,
+      );
+      const service = vat + others;
+      let totalFare = totalBaseFare + tax + service || 0;
+      const PriceBreakDown = fareDetails.map((fareDetailData) => {
+        const fareDetail = fareDetailData.fareDetail;
+        const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
+        const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
+        const serviceFee =
+          (fareDetail?.vat || 0) +
+          (fareDetail?.otherFee * fareDetail?.paxCount || 0);
+        return {
+          PaxType: fareDetail?.paxType || 'Unknown',
+          BaseFare: baseFare,
+          Taxes: taxes,
+          // OtherCharges: fareDetail?.otherFee*fareDetail?.paxCount || 0,
+          //  Discount: fareDetail?.discount || 0,
+          ServiceFee: serviceFee,
+          TotalFare: baseFare + taxes + serviceFee || 0,
+          PaxCount: fareDetail?.paxCount || 1,
+        };
+      });
 
       const groupedSegments = paxSegments.reduce((acc, segmentData) => {
         const segment = segmentData.paxSegment;
@@ -935,61 +941,63 @@ export class BfFareUtil {
       const fareDetails = offer?.fareDetailList || [];
       const pnr = offer?.paxSegmentList[0]?.paxSegment?.airlinePNR;
       let totalPayable = offer?.price?.totalPayable?.total || 0;
-        const currency = offer?.price?.totalPayable?.curreny || 'BDT';
-        const baggageAllowances = offer?.baggageAllowanceList || [];
-        const seatsRemaining = offer?.seatsRemaining || 'N/A';
-        const carrierName =
-          offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
-          'UnKnown';
+      const currency = offer?.price?.totalPayable?.curreny || 'BDT';
+      const baggageAllowances = offer?.baggageAllowanceList || [];
+      const seatsRemaining = offer?.seatsRemaining || 'N/A';
+      const carrierName =
+        offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+        'UnKnown';
 
-        let discount: number = Math.ceil(offer?.price?.discount?.total*this.markupPersentange);
+      let discount: number = Math.ceil(
+        offer?.price?.discount?.total * this.markupPersentange,
+      );
 
-        let addAmount: number = 0;
+      let addAmount: number = 0;
 
-        if (discount < 100) {
-          addAmount = Math.ceil(totalPayable * 0.01);
-          discount=0
-          // console.log(totalPayable,addAmount,discount)
-        }
-       const netFare= totalPayable+discount+addAmount
-        const totalBaseFare = fareDetails.reduce(
-          (sum, item) =>
-            sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
-          0,
-        );
-        const tax = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount,
-          0,
-        );
-        const vat = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount,
-          0,
-        );
-        const others = fareDetails.reduce(
-          (sum, item) =>
-            sum + item.fareDetail.otherFee * item.fareDetail.paxCount,
-          0,
-        );
-        const service = vat + others;
-        let totalFare = totalBaseFare + tax + service|| 0;
-        const PriceBreakDown = fareDetails.map((fareDetailData) => {
-          const fareDetail = fareDetailData.fareDetail;
-          const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
-          const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
-          const serviceFee =
-            (fareDetail?.vat || 0) +
-            (fareDetail?.otherFee * fareDetail?.paxCount || 0);
-          return {
-            PaxType: fareDetail?.paxType || 'Unknown',
-            BaseFare: baseFare,
-            Taxes: taxes,
-            // OtherCharges: fareDetail?.otherFee*fareDetail?.paxCount || 0,
-            //  Discount: fareDetail?.discount || 0,
-            ServiceFee: serviceFee,
-            TotalFare: baseFare + taxes + serviceFee || 0,
-            PaxCount: fareDetail?.paxCount || 1,
-          };
-        });
+      if (discount < 100) {
+        addAmount = Math.ceil(totalPayable * 0.01);
+        discount = 0;
+        // console.log(totalPayable,addAmount,discount)
+      }
+      const netFare = totalPayable + discount + addAmount;
+      const totalBaseFare = fareDetails.reduce(
+        (sum, item) =>
+          sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
+        0,
+      );
+      const tax = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount,
+        0,
+      );
+      const vat = fareDetails.reduce(
+        (sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount,
+        0,
+      );
+      const others = fareDetails.reduce(
+        (sum, item) =>
+          sum + item.fareDetail.otherFee * item.fareDetail.paxCount,
+        0,
+      );
+      const service = vat + others;
+      let totalFare = totalBaseFare + tax + service || 0;
+      const PriceBreakDown = fareDetails.map((fareDetailData) => {
+        const fareDetail = fareDetailData.fareDetail;
+        const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
+        const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
+        const serviceFee =
+          (fareDetail?.vat || 0) +
+          (fareDetail?.otherFee * fareDetail?.paxCount || 0);
+        return {
+          PaxType: fareDetail?.paxType || 'Unknown',
+          BaseFare: baseFare,
+          Taxes: taxes,
+          // OtherCharges: fareDetail?.otherFee*fareDetail?.paxCount || 0,
+          //  Discount: fareDetail?.discount || 0,
+          ServiceFee: serviceFee,
+          TotalFare: baseFare + taxes + serviceFee || 0,
+          PaxCount: fareDetail?.paxCount || 1,
+        };
+      });
 
       const groupedSegments = paxSegments.reduce((acc, segmentData) => {
         const segment = segmentData.paxSegment;

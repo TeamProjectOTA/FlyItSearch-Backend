@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { TourPackage } from './tour-package.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { TourPackage } from './tourPackage.model';
+
 
 @Entity()
 export class TourPlan {
@@ -7,13 +8,12 @@ export class TourPlan {
   id: number;
 
   @Column()
-  tourPlanTitle: string;
+  title: string;
 
   @Column()
-  dayPlan: string;
+  plan: string;
 
-  @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.tourPlan, {
-    onDelete: 'CASCADE',
-  })
+  // Many-to-One relation with TourPackage
+  @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.tourPlans)
   tourPackage: TourPackage;
 }
