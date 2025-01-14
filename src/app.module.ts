@@ -32,6 +32,7 @@ import { WhitelistModule } from './whitelist/whitelist.module';
 import { JwtMiddleware } from './rate-limiter/jwt.middleware';
 import { RateLimiterMiddleware } from './rate-limiter/rate-limiter.middleware';
 import { HotelModule } from './hotel/hotel.module';
+import { VisaModule } from './visa/visa.module';
 require('dotenv').config();
 
 @Module({
@@ -66,6 +67,7 @@ require('dotenv').config();
       connectTimeout: 60000,
       logging: false,
       timezone: 'Z',
+      migrations: ['src/migrations/*.ts'],  
     }),
     ScheduleModule.forRoot(),
     AdminModule,
@@ -91,6 +93,7 @@ require('dotenv').config();
     SheduleModule,
     WhitelistModule,
     HotelModule,
+    VisaModule,
   ],
 
   providers: [

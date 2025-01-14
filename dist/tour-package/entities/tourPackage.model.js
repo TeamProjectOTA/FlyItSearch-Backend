@@ -57,12 +57,12 @@ __decorate([
     __metadata("design:type", Object)
 ], TourPackage.prototype, "metaInfo", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => Introduction_model_1.Introduction),
+    (0, typeorm_1.OneToOne)(() => Introduction_model_1.Introduction, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", Introduction_model_1.Introduction)
 ], TourPackage.prototype, "introduction", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => tourPlan_Model_1.TourPlan, (tourPlan) => tourPlan.tourPackage),
+    (0, typeorm_1.OneToMany)(() => tourPlan_Model_1.TourPlan, (tourPlan) => tourPlan.tourPackage, { onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
 ], TourPackage.prototype, "tourPlans", void 0);
 exports.TourPackage = TourPackage = __decorate([

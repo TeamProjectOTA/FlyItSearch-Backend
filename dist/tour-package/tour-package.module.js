@@ -12,12 +12,15 @@ const tour_package_service_1 = require("./tour-package.service");
 const tour_package_controller_1 = require("./tour-package.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const admin_entity_1 = require("../admin/entities/admin.entity");
+const Introduction_model_1 = require("./entities/Introduction.model");
+const tourPlan_Model_1 = require("./entities/tourPlan.Model");
+const tourPackage_model_1 = require("./entities/tourPackage.model");
 let TourPackageModule = class TourPackageModule {
 };
 exports.TourPackageModule = TourPackageModule;
 exports.TourPackageModule = TourPackageModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, Introduction_model_1.Introduction, tourPlan_Model_1.TourPlan, tourPackage_model_1.TourPackage])],
         controllers: [tour_package_controller_1.TourPackageController],
         providers: [tour_package_service_1.TourPackageService],
     })

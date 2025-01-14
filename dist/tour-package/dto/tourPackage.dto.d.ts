@@ -19,7 +19,6 @@ export declare class TourPlanDto {
     plan: string;
 }
 export declare class CreateTourPackageDto {
-    packageId: string;
     status: string;
     packageType: string;
     overView: {

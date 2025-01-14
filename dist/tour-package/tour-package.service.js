@@ -8,15 +8,32 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TourPackageService = void 0;
 const common_1 = require("@nestjs/common");
+const tourPackage_model_1 = require("./entities/tourPackage.model");
+const typeorm_1 = require("@nestjs/typeorm");
+const Repository_1 = require("typeorm/repository/Repository");
 let TourPackageService = class TourPackageService {
-    constructor() { }
+    constructor(tourPackageRepository) {
+        this.tourPackageRepository = tourPackageRepository;
+    }
+    async create(createTourPackageDto) {
+        const packageId = `PKG${Math.floor(Math.random() * 1000000)}`;
+        const newTourPackage = this.tourPackageRepository.create({
+            ...createTourPackageDto,
+            packageId,
+        });
+        return this.tourPackageRepository.save(newTourPackage);
+    }
 };
 exports.TourPackageService = TourPackageService;
 exports.TourPackageService = TourPackageService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __param(0, (0, typeorm_1.InjectRepository)(tourPackage_model_1.TourPackage)),
+    __metadata("design:paramtypes", [Repository_1.Repository])
 ], TourPackageService);
 //# sourceMappingURL=tour-package.service.js.map

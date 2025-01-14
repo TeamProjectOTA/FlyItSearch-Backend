@@ -1,32 +1,30 @@
 import {
+  Body,
   Controller,
   Post,
-  Body,
-  Get,
-  UseInterceptors,
-  UploadedFiles,
-  Param,
-  ParseIntPipe,
-  Delete,
-  Query,
-  NotFoundException,
-  Logger,
-  HttpException,
-  HttpStatus,
-  NotAcceptableException,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { TourPackageService } from './tour-package.service';
-import {
-  CreateIntroductionDto,
-  CreateOverviewDto,
-  CreateTourPackageDto,
-  CreateVisitPlaceDto,
-} from './dto/create-tour-package.dto';
-import { ApiTags } from '@nestjs/swagger';
-import { multerConfig } from './mutlar/multer.config';
-import { MulterFile } from './mutlar/multer-file.interface';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { TourPackage } from './entities/tourPackage.model';
 
+import { TourPackageService } from './tour-package.service';
+import { CreateTourPackageDto } from './dto/tourPackage.dto';
 @ApiTags('Tour-Package')
 @Controller('tour-packages')
-export class TourPackageController {}
+export class TourPackageController {
+  constructor(private readonly tourPackageService: TourPackageService) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Create a new tour package' })
+  @ApiResponse({
+    status: 201,
+    description: 'The tour package has been successfully created.',
+    type: TourPackage,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request - Invalid data provided.',
+  })
+  async create(@Body() createTourPackageDto: CreateTourPackageDto): Promise<TourPackage> {
+    return this.tourPackageService.create(createTourPackageDto);
+  }
+}

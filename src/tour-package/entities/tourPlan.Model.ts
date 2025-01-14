@@ -13,7 +13,7 @@ export class TourPlan {
   @Column()
   plan: string;
 
-  // Many-to-One relation with TourPackage
+  
   @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.tourPlans)
   tourPackage: TourPackage;
 }

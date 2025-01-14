@@ -82,4 +82,4 @@ __decorate([
 exports.Introduction = Introduction = __decorate([
     (0, typeorm_1.Entity)()
 ], Introduction);
-//# sourceMappingURL=introduction.model.js.map
+//# sourceMappingURL=Introduction.model.js.map

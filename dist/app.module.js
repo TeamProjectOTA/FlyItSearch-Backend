@@ -37,6 +37,7 @@ const whitelist_module_1 = require("./whitelist/whitelist.module");
 const jwt_middleware_1 = require("./rate-limiter/jwt.middleware");
 const rate_limiter_middleware_1 = require("./rate-limiter/rate-limiter.middleware");
 const hotel_module_1 = require("./hotel/hotel.module");
+const visa_module_1 = require("./visa/visa.module");
 require('dotenv').config();
 let AppModule = class AppModule {
     configure(consumer) {
@@ -68,6 +69,7 @@ exports.AppModule = AppModule = __decorate([
                 connectTimeout: 60000,
                 logging: false,
                 timezone: 'Z',
+                migrations: ['src/migrations/*.ts'],
             }),
             schedule_1.ScheduleModule.forRoot(),
             admin_module_1.AdminModule,
@@ -93,6 +95,7 @@ exports.AppModule = AppModule = __decorate([
             shedule_module_1.SheduleModule,
             whitelist_module_1.WhitelistModule,
             hotel_module_1.HotelModule,
+            visa_module_1.VisaModule,
         ],
         providers: [
             {

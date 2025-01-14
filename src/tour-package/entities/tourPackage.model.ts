@@ -36,10 +36,10 @@ export class TourPackage {
     metaKeyword:string[]
     metadescription:string
   }
-  @OneToOne(() => Introduction)
-  @JoinColumn() 
+  @OneToOne(() => Introduction, { onDelete: 'CASCADE' })
+  @JoinColumn()
   introduction: Introduction;
-  @OneToMany(() => TourPlan, (tourPlan) => tourPlan.tourPackage)
+  @OneToMany(() => TourPlan, (tourPlan) => tourPlan.tourPackage, { onDelete: 'CASCADE' })
   tourPlans: TourPlan[];
 }
 
