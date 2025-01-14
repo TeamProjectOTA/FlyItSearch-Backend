@@ -139,4 +139,31 @@ export class UploadsService {
     });
     return { link: link };
   }
+
+  // async test(file:any){
+  //   const guideId = guide.uid;
+  //  const filetype = (file.originalname).split('.')[1];
+  //  const keyvalue = 'photo/'+guideId + '.' + filetype;
+
+  //  const params = {
+  //    Bucket: process.env.BUCKET_NAME,
+  //    Key: keyvalue,
+  //    Body: file.buffer,
+  //    ACL: 'public-read',
+  //    ContentType: file.mimetype
+  //  };
+
+  //  this.s3.putObject(params, (err, data) => {
+  //    if (err) { 
+  //      res.status(500).json({ status: 'error', message: 'Something Error In Code'});
+  //    } else {
+  //      const url = process.env.CDN_SPACES +'/'+ keyvalue;
+
+  //      guide['profile']= url;
+  //      this.guideRepository.update(guide.id, guide);
+  //      res.status(201).json({ status: 'success', message: 'Logo uploaded successfully', fileurl: url });
+  //    }
+  //  });
+
+  // }
 }
