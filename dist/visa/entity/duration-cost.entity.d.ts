@@ -6,5 +6,10 @@ export declare class DurationCost {
     duration: string;
     maximumStay: string;
     processingTime: string;
+    interview: string;
+    embassyFee: string;
+    agentFee: string;
+    serviceCharge: string;
+    processingFee: string;
     visa: Visa;
 }

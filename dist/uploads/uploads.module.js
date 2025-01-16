@@ -16,6 +16,7 @@ const user_entity_1 = require("../user/entities/user.entity");
 const user_module_1 = require("../user/user.module");
 const auth_module_1 = require("../auth/auth.module");
 const booking_model_1 = require("../book/booking.model");
+const upload_provider_service_1 = require("./upload.provider.service");
 let UploadsModule = class UploadsModule {
 };
 exports.UploadsModule = UploadsModule;
@@ -27,7 +28,8 @@ exports.UploadsModule = UploadsModule = __decorate([
             auth_module_1.AuthModule,
         ],
         controllers: [uploads_controller_1.UploadsController],
-        providers: [uploads_service_1.UploadsService],
+        providers: [uploads_service_1.UploadsService, upload_provider_service_1.DoSpacesServicerovider],
+        exports: [upload_provider_service_1.DoSpacesServicerovider]
     })
 ], UploadsModule);
 //# sourceMappingURL=uploads.module.js.map

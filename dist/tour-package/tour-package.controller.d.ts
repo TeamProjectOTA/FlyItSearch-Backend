@@ -5,4 +5,5 @@ export declare class TourPackageController {
     private readonly tourPackageService;
     constructor(tourPackageService: TourPackageService);
     create(createTourPackageDto: CreateTourPackageDto): Promise<TourPackage>;
+    findAll(): Promise<TourPackage[]>;
 }

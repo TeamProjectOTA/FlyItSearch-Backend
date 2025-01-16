@@ -16,6 +16,8 @@ exports.VisaController = void 0;
 const common_1 = require("@nestjs/common");
 const visa_service_1 = require("./visa.service");
 const visa_all_dto_1 = require("./dto/visa-all.dto");
+const swagger_1 = require("@nestjs/swagger");
+const visa_entity_1 = require("./entity/visa.entity");
 let VisaController = class VisaController {
     constructor(visaService) {
         this.visaService = visaService;
@@ -33,17 +35,69 @@ let VisaController = class VisaController {
     delete(id) {
         return this.visaService.deleteVisa(id);
     }
+    async updateVisa(id, visaAllDto) {
+        try {
+            const updatedVisa = await this.visaService.updateVisaAll(id, visaAllDto);
+            return updatedVisa;
+        }
+        catch (error) {
+            throw new Error(`Error updating visa: ${error.message}`);
+        }
+    }
 };
 exports.VisaController = VisaController;
 __decorate([
-    (0, common_1.Post)(),
+    (0, common_1.Post)("/createVisa"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [visa_all_dto_1.VisaAllDto]),
     __metadata("design:returntype", void 0)
 ], VisaController.prototype, "create", null);
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)("/findAllVisa"),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'successfull',
+        content: {
+            'application/json': {
+                example: {
+                    data: [
+                        {
+                            departureCountry: "Bangladesh",
+                            arrivalCountry: "United States",
+                            visaCategory: "Tourist",
+                            visaType: "Single-entry",
+                            cost: "200.00",
+                            durationCosts: [
+                                {
+                                    cost: "1500.00",
+                                    entry: "Consulate",
+                                    duration: "30 days",
+                                    maximumStay: "90 days",
+                                    processingTime: "10 business days",
+                                    interview: "Mandatory",
+                                    embassyFee: "100 USD",
+                                    agentFee: "50 USD",
+                                    serviceCharge: "20 USD",
+                                    processingFee: "30 USD"
+                                }
+                            ],
+                            visaRequiredDocuments: {
+                                profession: "Software Engineer",
+                                documents: "Required document",
+                                exceptionalCase: "If the applicant has no recent work experience, they may submit a self-declaration letter.",
+                                note: "Documents must be in English or translated to English."
+                            }
+                        }
+                    ],
+                    total: 20,
+                    page: "1",
+                    limit: 1,
+                    totalPages: 20
+                }
+            }
+        }
+    }),
     __param(0, (0, common_1.Query)('page')),
     __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
@@ -58,13 +112,65 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], VisaController.prototype, "findOne", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
+    (0, common_1.Delete)('/deleteVisa/:id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
 ], VisaController.prototype, "delete", null);
+__decorate([
+    (0, common_1.Patch)('/updateVisa/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Partially update Visa and related entities' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Visa updated successfully',
+        type: visa_entity_1.Visa,
+        example: {
+            'application/json': {
+                id: 19,
+                departureCountry: "India",
+                arrivalCountry: "United States",
+                visaCategory: "Tourist",
+                visaType: "Single-entry",
+                cost: 200.00,
+                createdAt: "2025-01-16T08:19:33.000Z",
+                updatedAt: "2025-01-16T08:19:33.000Z",
+                durationCosts: [
+                    {
+                        id: 29,
+                        cost: 1500.00,
+                        entry: "Consulate",
+                        duration: "30 days",
+                        maximumStay: "90 days",
+                        processingTime: "10 business days",
+                        interview: "Mandatory",
+                        embassyFee: "100 USD",
+                        agentFee: "50 USD",
+                        serviceCharge: "20 USD",
+                        processingFee: "30 USD"
+                    }
+                ],
+                visaRequiredDocuments: {
+                    id: 18,
+                    profession: "Software Engineer",
+                    documents: "Required document",
+                    exceptionalCase: "If the applicant has no recent work experience, they may submit a self-declaration letter.",
+                    note: "Documents must be in English or translated to English.",
+                    createdAt: "2025-01-16T08:19:33.000Z",
+                    updatedAt: "2025-01-16T08:19:33.000Z"
+                }
+            }
+        }
+    }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'Visa not found' }),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, visa_all_dto_1.VisaAllDto]),
+    __metadata("design:returntype", Promise)
+], VisaController.prototype, "updateVisa", null);
 exports.VisaController = VisaController = __decorate([
+    (0, swagger_1.ApiTags)("Visa"),
     (0, common_1.Controller)('visa'),
     __metadata("design:paramtypes", [visa_service_1.VisaService])
 ], VisaController);

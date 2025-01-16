@@ -9,12 +9,8 @@ export declare class VisaService {
     private readonly visaRequiredDocumentsRepository;
     constructor(visaRepository: Repository<Visa>, durationCostRepository: Repository<DurationCost>, visaRequiredDocumentsRepository: Repository<VisaRequiredDocuments>);
     createVisaAll(visaAllDto: VisaAllDto): Promise<Visa>;
-    findAll(page?: number, limit?: number): Promise<{
-        data: Visa[];
-        total: number;
-        page: number;
-        limit: number;
-    }>;
+    findAll(page?: number, limit?: number): Promise<any>;
     findOne(id: number): Promise<Visa>;
+    updateVisaAll(id: number, visaAllDto: VisaAllDto): Promise<Visa>;
     deleteVisa(id: number): Promise<any>;
 }

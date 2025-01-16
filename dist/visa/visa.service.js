@@ -37,45 +37,59 @@ let VisaService = class VisaService {
         });
         const savedVisa = await this.visaRepository.save(visa);
         if (visaAllDto.durationCosts) {
-            const durationCosts = visaAllDto.durationCosts.map(durationCostDto => {
-                const durationCost = this.durationCostRepository.create({
-                    cost: durationCostDto.cost,
-                    entry: durationCostDto.entry,
-                    duration: durationCostDto.duration,
-                    maximumStay: durationCostDto.maximumStay,
-                    processingTime: durationCostDto.processingTime,
-                    visa: savedVisa,
-                });
-                return this.durationCostRepository.save(durationCost);
-            });
-            await Promise.all(durationCosts);
+            const durationCosts = visaAllDto.durationCosts.map((durationCostDto) => this.durationCostRepository.create({
+                ...durationCostDto,
+                visa: savedVisa,
+            }));
+            await this.durationCostRepository.save(durationCosts);
         }
         if (visaAllDto.visaRequiredDocuments) {
-            const visaRequiredDocuments = visaAllDto.visaRequiredDocuments.map(docDto => {
-                const visaDocs = this.visaRequiredDocumentsRepository.create({
-                    profession: docDto.profession,
-                    documents: docDto.documents,
-                    exceptionalCase: docDto.exceptionalCase,
-                    note: docDto.note,
-                    visa: savedVisa,
-                });
-                return this.visaRequiredDocumentsRepository.save(visaDocs);
+            const visaRequiredDocument = visaAllDto.visaRequiredDocuments;
+            const visaDocs = this.visaRequiredDocumentsRepository.create({
+                ...visaRequiredDocument,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                visa: savedVisa,
             });
-            await Promise.all(visaRequiredDocuments);
+            await this.visaRequiredDocumentsRepository.save(visaDocs);
         }
         return savedVisa;
     }
     async findAll(page = 1, limit = 10) {
         const [data, total] = await this.visaRepository.findAndCount({
+            order: { id: "DESC" },
             relations: ['durationCosts', 'visaRequiredDocuments'],
             skip: (page - 1) * limit,
             take: limit,
+            select: [
+                'id',
+                'departureCountry',
+                'arrivalCountry',
+                'visaCategory',
+                'visaType',
+                'cost',
+            ],
         });
+        data.forEach((visa) => {
+            delete visa.id;
+            if (visa.visaRequiredDocuments) {
+                delete visa.visaRequiredDocuments.id;
+                delete visa.visaRequiredDocuments.createdAt;
+                delete visa.visaRequiredDocuments.updatedAt;
+            }
+            if (visa.durationCosts) {
+                visa.durationCosts.forEach((durationCost) => {
+                    delete durationCost.id;
+                });
+            }
+        });
+        const totalPages = Math.ceil(total / limit);
         return {
             data,
             total,
             page,
             limit,
+            totalPages
         };
     }
     async findOne(id) {
@@ -87,6 +101,51 @@ let VisaService = class VisaService {
             throw new common_1.NotFoundException();
         }
         return visa;
+    }
+    async updateVisaAll(id, visaAllDto) {
+        const existingVisa = await this.visaRepository.findOne({
+            where: { id },
+            relations: ['durationCosts', 'visaRequiredDocuments'],
+        });
+        if (!existingVisa) {
+            throw new Error('Visa not found');
+        }
+        existingVisa.departureCountry = visaAllDto.departureCountry;
+        existingVisa.arrivalCountry = visaAllDto.arrivalCountry;
+        existingVisa.visaCategory = visaAllDto.visaCategory;
+        existingVisa.visaType = visaAllDto.visaType;
+        existingVisa.cost = visaAllDto.cost;
+        existingVisa.updatedAt = new Date();
+        const updatedVisa = await this.visaRepository.save(existingVisa);
+        if (visaAllDto.durationCosts) {
+            await this.durationCostRepository.delete({ visa: existingVisa });
+            const durationCosts = visaAllDto.durationCosts.map((durationCostDto) => this.durationCostRepository.create({
+                ...durationCostDto,
+                visa: updatedVisa,
+            }));
+            await this.durationCostRepository.save(durationCosts);
+        }
+        if (visaAllDto.visaRequiredDocuments) {
+            const visaRequiredDocument = visaAllDto.visaRequiredDocuments;
+            if (existingVisa.visaRequiredDocuments) {
+                existingVisa.visaRequiredDocuments.profession = visaRequiredDocument.profession;
+                existingVisa.visaRequiredDocuments.documents = visaRequiredDocument.documents;
+                existingVisa.visaRequiredDocuments.exceptionalCase = visaRequiredDocument.exceptionalCase;
+                existingVisa.visaRequiredDocuments.note = visaRequiredDocument.note;
+                existingVisa.visaRequiredDocuments.updatedAt = new Date();
+                await this.visaRequiredDocumentsRepository.save(existingVisa.visaRequiredDocuments);
+            }
+            else {
+                const visaDocs = this.visaRequiredDocumentsRepository.create({
+                    ...visaRequiredDocument,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    visa: updatedVisa,
+                });
+                await this.visaRequiredDocumentsRepository.save(visaDocs);
+            }
+        }
+        return updatedVisa;
     }
     async deleteVisa(id) {
         const visa = await this.visaRepository.findOne({

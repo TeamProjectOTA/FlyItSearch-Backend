@@ -20,17 +20,42 @@ const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../user/entities/user.entity");
 const path_1 = require("path");
 const auth_service_1 = require("../auth/auth.service");
-const storage_1 = require("@google-cloud/storage");
 const uuid_1 = require("uuid");
+const AWS = require("aws-sdk");
+const upload_provider_service_1 = require("./upload.provider.service");
+const dotenv = require("dotenv");
+dotenv.config();
 let UploadsService = class UploadsService {
-    constructor(profilePictureRepository, authservice, userRepository) {
+    constructor(s3, profilePictureRepository, authservice, userRepository) {
+        this.s3 = s3;
         this.profilePictureRepository = profilePictureRepository;
         this.authservice = authservice;
         this.userRepository = userRepository;
-        this.storage = new storage_1.Storage({
-            keyFilename: process.env.GOOGLE_CLOUD_KEYFILE,
+    }
+    async uploadImage(file, res) {
+        const timestamp = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const random = `${timestamp}${randomNumber}`;
+        const folderName = 'PassportVisa';
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const fileName = `${folderName}/${random}-image${fileExtension}`;
+        const params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: fileName,
+            Body: file.buffer,
+            ACL: 'public-read',
+            ContentType: file.mimetype,
+        };
+        this.s3.putObject(params, (err, data) => {
+            if (err) {
+                console.error('Error uploading file:', err);
+                return res.status(500).json({ status: 'error', message: 'Error uploading file' });
+            }
+            else {
+                const url = process.env.CDN_SPACES + '/' + fileName;
+                return res.status(201).json({ link: url });
+            }
         });
-        this.bucket = process.env.GOOGLE_CLOUD_BUCKET_NAME;
     }
     async create(header, file) {
         const decodeToken = await this.authservice.decodeToken(header);
@@ -44,40 +69,34 @@ let UploadsService = class UploadsService {
             where: { user },
         });
         if (existingProfilePicture) {
-            let fileDeleted = false;
             try {
-                const bucketFile = this.storage
-                    .bucket(this.bucket)
-                    .file(existingProfilePicture.filename);
-                await bucketFile.delete();
-                fileDeleted = true;
-            }
-            catch (error) {
-                if (error.code === 404) {
-                    console.warn('File not found in Google Cloud bucket. Proceeding with database deletion.');
-                }
-                else {
-                    console.error('Error deleting file from Google Cloud:', error.message);
-                    throw new common_1.BadRequestException('Failed to delete the profile picture file from Google Cloud.');
-                }
-            }
-            try {
+                await this.s3
+                    .deleteObject({
+                    Bucket: process.env.BUCKET_NAME,
+                    Key: existingProfilePicture.filename,
+                })
+                    .promise();
+                console.log('File deleted from AWS S3:', existingProfilePicture.filename);
                 await this.profilePictureRepository.remove(existingProfilePicture);
             }
             catch (error) {
-                throw new common_1.BadRequestException('Failed to delete the profile picture from the database.');
+                console.error('Error deleting file from AWS S3:', error.message);
+                throw new common_1.BadRequestException('Failed to delete the profile picture.');
             }
         }
         const fileExtension = (0, path_1.extname)(file.originalname);
         const folderName = 'ProfilePicture';
-        const filename = `${folderName}/${user.passengerId}-ProfilePicture${(0, uuid_1.v4)()}${fileExtension}`;
+        const filename = `${folderName}/${user.passengerId}-ProfilePicture-${(0, uuid_1.v4)()}${fileExtension}`;
         try {
-            const bucketFile = this.storage.bucket(this.bucket).file(filename);
-            await bucketFile.save(file.buffer, {
-                contentType: file.mimetype,
-                public: true,
-            });
-            const publicUrl = `https://storage.googleapis.com/${this.bucket}/${filename}`;
+            const uploadParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: filename,
+                Body: file.buffer,
+                ACL: 'public-read',
+                ContentType: file.mimetype,
+            };
+            await this.s3.upload(uploadParams).promise();
+            const publicUrl = `${process.env.CDN_SPACES}/${filename}`;
             const profilePicture = this.profilePictureRepository.create({
                 user,
                 filename,
@@ -86,44 +105,22 @@ let UploadsService = class UploadsService {
             });
             const save = await this.profilePictureRepository.save(profilePicture);
             return {
-                Message: 'Image Uploaded Successful',
+                Message: 'Image Uploaded Successfully',
                 save: { link: save.link, size: save.size },
             };
         }
         catch (error) {
-            console.error('Error uploading file to Google Cloud:', error.message);
-            throw new common_1.BadRequestException('Failed to upload and save profile picture.');
+            throw new common_1.BadRequestException('Failed to upload and save profile picture.' + error);
         }
-    }
-    async uploadImage(file) {
-        const timestamp = Date.now();
-        const randomNumber = Math.floor(Math.random() * 1000);
-        const random = `${timestamp}${randomNumber}`;
-        const folderName = 'PassportVisa';
-        const fileExtension = (0, path_1.extname)(file.originalname);
-        const fileName = `${folderName}/${random}-image${fileExtension}`;
-        const blob = this.storage.bucket(this.bucket).file(fileName);
-        const blobStream = blob.createWriteStream({
-            metadata: { contentType: file.mimetype },
-            public: true,
-        });
-        const link = await new Promise((resolve, reject) => {
-            blobStream.on('error', (err) => reject(err));
-            blobStream.on('finish', () => {
-                const publicUrl = `https://storage.googleapis.com/${this.bucket}/${fileName}`;
-                resolve(publicUrl);
-            });
-            blobStream.end(file.buffer);
-        });
-        return { link: link };
     }
 };
 exports.UploadsService = UploadsService;
 exports.UploadsService = UploadsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),
-    __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
+    __param(0, (0, common_1.Inject)(upload_provider_service_1.DoSpacesServiceLib)),
+    __param(1, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),
+    __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __metadata("design:paramtypes", [AWS.S3, typeorm_2.Repository,
         auth_service_1.AuthService,
         typeorm_2.Repository])
 ], UploadsService);

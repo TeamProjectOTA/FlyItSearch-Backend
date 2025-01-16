@@ -67,7 +67,6 @@ require('dotenv').config();
       connectTimeout: 60000,
       logging: false,
       timezone: 'Z',
-      migrations: ['src/migrations/*.ts'],  
     }),
     ScheduleModule.forRoot(),
     AdminModule,

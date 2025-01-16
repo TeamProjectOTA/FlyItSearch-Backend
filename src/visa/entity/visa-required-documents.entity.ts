@@ -9,15 +9,19 @@ export class VisaRequiredDocuments {
   @Column()
   profession: string;
 
-  @Column('json')  
-  documents: any;
+  @Column()  
+  documents: string;
 
   @Column('text')
   exceptionalCase: string;
 
   @Column('text')
   note: string;
+  @Column()
+  createdAt: Date;
 
+  @Column()
+  updatedAt: Date;
   @OneToOne(() => Visa, visa => visa.visaRequiredDocuments)
   @JoinColumn({ name: 'visa_id' }) 
   visa: Visa;

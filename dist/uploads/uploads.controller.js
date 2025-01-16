@@ -29,7 +29,7 @@ let UploadsController = class UploadsController {
         }
         return await this.uploadsService.create(header, file);
     }
-    async uploadImage(file) {
+    async uploadImage(file, res) {
         if (!file) {
             throw new common_1.BadRequestException('File is required');
         }
@@ -41,7 +41,7 @@ let UploadsController = class UploadsController {
         if (file.size > maxSize) {
             throw new common_1.BadRequestException('File size exceeds the maximum limit of 5MB.');
         }
-        return this.uploadsService.uploadImage(file);
+        return this.uploadsService.uploadImage(file, res);
     }
 };
 exports.UploadsController = UploadsController;
@@ -77,8 +77,9 @@ __decorate([
     (0, common_1.Post)('/uploadDocuments'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
     __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Response]),
     __metadata("design:returntype", Promise)
 ], UploadsController.prototype, "uploadImage", null);
 exports.UploadsController = UploadsController = __decorate([

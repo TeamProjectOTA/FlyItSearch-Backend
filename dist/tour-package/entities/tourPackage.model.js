@@ -13,6 +13,8 @@ exports.TourPackage = void 0;
 const typeorm_1 = require("typeorm");
 const Introduction_model_1 = require("./Introduction.model");
 const tourPlan_Model_1 = require("./tourPlan.Model");
+const visitPlaceImage_model_1 = require("./visitPlaceImage.model");
+const mainImage_model_1 = require("./mainImage.model");
 let TourPackage = class TourPackage {
 };
 exports.TourPackage = TourPackage;
@@ -38,14 +40,6 @@ __decorate([
 ], TourPackage.prototype, "overView", void 0);
 __decorate([
     (0, typeorm_1.Column)('json', { nullable: false }),
-    __metadata("design:type", Array)
-], TourPackage.prototype, "mainImage", void 0);
-__decorate([
-    (0, typeorm_1.Column)('json', { nullable: false }),
-    __metadata("design:type", Array)
-], TourPackage.prototype, "visitPlace", void 0);
-__decorate([
-    (0, typeorm_1.Column)('json', { nullable: false }),
     __metadata("design:type", Object)
 ], TourPackage.prototype, "tourPlan", void 0);
 __decorate([
@@ -57,15 +51,22 @@ __decorate([
     __metadata("design:type", Object)
 ], TourPackage.prototype, "metaInfo", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => Introduction_model_1.Introduction, { onDelete: 'CASCADE' }),
-    (0, typeorm_1.JoinColumn)(),
+    (0, typeorm_1.OneToOne)(() => Introduction_model_1.Introduction, (introduction) => introduction.tourPackage),
     __metadata("design:type", Introduction_model_1.Introduction)
 ], TourPackage.prototype, "introduction", void 0);
 __decorate([
     (0, typeorm_1.OneToMany)(() => tourPlan_Model_1.TourPlan, (tourPlan) => tourPlan.tourPackage, { onDelete: 'CASCADE' }),
     __metadata("design:type", Array)
 ], TourPackage.prototype, "tourPlans", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => visitPlaceImage_model_1.VisitPlaceImage, (visitPlaceImage) => visitPlaceImage.tourPackage, { onDelete: 'CASCADE' }),
+    __metadata("design:type", Array)
+], TourPackage.prototype, "visitPlaceImage", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => mainImage_model_1.MainImage, (mainImage) => mainImage.tourPackage, { onDelete: 'CASCADE' }),
+    __metadata("design:type", Array)
+], TourPackage.prototype, "mainImage", void 0);
 exports.TourPackage = TourPackage = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)("tourpackage")
 ], TourPackage);
 //# sourceMappingURL=tourPackage.model.js.map

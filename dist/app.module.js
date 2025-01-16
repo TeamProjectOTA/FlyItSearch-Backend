@@ -69,7 +69,6 @@ exports.AppModule = AppModule = __decorate([
                 connectTimeout: 60000,
                 logging: false,
                 timezone: 'Z',
-                migrations: ['src/migrations/*.ts'],
             }),
             schedule_1.ScheduleModule.forRoot(),
             admin_module_1.AdminModule,

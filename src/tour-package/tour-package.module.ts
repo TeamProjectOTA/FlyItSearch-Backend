@@ -6,9 +6,11 @@ import { Admin } from 'src/admin/entities/admin.entity';
 import { Introduction } from './entities/Introduction.model';
 import { TourPlan } from './entities/tourPlan.Model';
 import { TourPackage } from './entities/tourPackage.model';
+import { VisitPlaceImage } from './entities/visitPlaceImage.model';
+import { MainImage } from './entities/mainImage.model';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Admin,Introduction,TourPlan,TourPackage])],
+  imports: [TypeOrmModule.forFeature([Admin,Introduction,TourPlan,TourPackage,VisitPlaceImage,MainImage])],
   controllers: [TourPackageController],
   providers: [TourPackageService],
 })

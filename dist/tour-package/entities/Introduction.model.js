@@ -76,10 +76,11 @@ __decorate([
     __metadata("design:type", String)
 ], Introduction.prototype, "packageDiscount", void 0);
 __decorate([
-    (0, typeorm_1.OneToOne)(() => tourPackage_model_1.TourPackage, (tourPackage) => tourPackage.introduction),
+    (0, typeorm_1.OneToOne)(() => tourPackage_model_1.TourPackage, (tourPackage) => tourPackage.introduction, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.JoinColumn)(),
     __metadata("design:type", tourPackage_model_1.TourPackage)
 ], Introduction.prototype, "tourPackage", void 0);
 exports.Introduction = Introduction = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)('introduction')
 ], Introduction);
 //# sourceMappingURL=Introduction.model.js.map

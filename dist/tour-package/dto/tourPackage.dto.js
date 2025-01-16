@@ -9,347 +9,146 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TourPackageDto = exports.CreateTourPackageDto = exports.TourPlanDto = exports.Introduction = void 0;
+exports.CreateTourPackageDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
 const class_validator_1 = require("class-validator");
-class Introduction {
+class CreateTourPlanDto {
 }
-exports.Introduction = Introduction;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Main title of the tour package introduction.',
-        example: 'Himalayan Trekking Adventure',
-        type: String,
-    }),
+    (0, swagger_1.ApiProperty)({ description: 'Title of the tour plan', default: '' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Introduction.prototype, "mainTitle", void 0);
+], CreateTourPlanDto.prototype, "title", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Subtitle of the tour package.',
-        example: 'An unforgettable journey to the highest peaks.',
-        type: String,
-    }),
+    (0, swagger_1.ApiProperty)({ description: 'Description of the tour plan', default: '' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], Introduction.prototype, "subTitle", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Type of trip (e.g., Adventure, Family, Romantic).',
-        example: 'Adventure',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "tripType", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Duration of the journey (e.g., "7 days").',
-        example: '7 days',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "journeyDuration", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Journey start date (e.g., "2025-06-01").',
-        example: '2025-06-01',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "journeyStartDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Journey end date (e.g., "2025-06-07").',
-        example: '2025-06-07',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "journeyEndDate", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Country where the journey will take place.',
-        example: 'Nepal',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "countryName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'City where the journey will take place.',
-        example: 'Kathmandu',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "cityName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Location of the journey (e.g., Everest Region).',
-        example: 'Everest Region',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "journeyLocation", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Total number of seats available for the tour.',
-        example: '20',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "totalSeat", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Minimum age requirement for the tour.',
-        example: '18',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "minimumAge", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Maximum age limit for the tour.',
-        example: '65',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "maximumAge", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Price of the tour package.',
-        example: '1500',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "packagePrice", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Discount on the package, if any.',
-        example: '10%',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], Introduction.prototype, "packageDiscount", void 0);
-class TourPlanDto {
+], CreateTourPlanDto.prototype, "plan", void 0);
+class CreateIntroductionDto {
 }
-exports.TourPlanDto = TourPlanDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Title for the day plan (e.g., "Day 1 - Arrival").',
-        example: 'Day 1 - Arrival',
-        type: String,
-    }),
+    (0, swagger_1.ApiProperty)({ description: 'Main title for the tour package', default: '' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TourPlanDto.prototype, "title", void 0);
+], CreateIntroductionDto.prototype, "mainTitle", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Description of the day’s plan (e.g., activities and schedule).',
-        example: 'Arrive in Kathmandu and get settled at the hotel.',
-        type: String,
-    }),
+    (0, swagger_1.ApiProperty)({ description: 'Sub title for the tour package', default: '' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
-], TourPlanDto.prototype, "plan", void 0);
+], CreateIntroductionDto.prototype, "subTitle", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Type of the trip (e.g., adventure, leisure)', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "tripType", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Journey duration (e.g., 5 days, 3 weeks)', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "journeyDuration", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Journey start date', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "journeyStartDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Journey end date', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "journeyEndDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Country name', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "countryName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'City name', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "cityName", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Journey location (e.g., region)', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "journeyLocation", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Total number of seats available for the tour', default: '0' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "totalSeat", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Minimum age for the tour', default: '0' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "minimumAge", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Maximum age for the tour', default: '0' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "maximumAge", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Price of the package', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "packagePrice", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Discount on the package (optional)', default: '' }),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateIntroductionDto.prototype, "packageDiscount", void 0);
 class CreateTourPackageDto {
 }
 exports.CreateTourPackageDto = CreateTourPackageDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Status of the package (e.g., "Active", "Inactive").',
-        example: 'Active',
-        type: String,
-    }),
+    (0, swagger_1.ApiProperty)({ description: 'Package status', default: 'active' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateTourPackageDto.prototype, "status", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Type of the tour package (e.g., "Adventure", "Family", "Romantic").',
-        example: 'Adventure',
-        type: String,
-    }),
+    (0, swagger_1.ApiProperty)({ description: 'Package type', default: 'standard' }),
+    (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], CreateTourPackageDto.prototype, "packageType", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'A brief overview of the package.',
-        example: {
-            packageOverView: 'An exciting adventure exploring the wild mountains.',
-            packageInclude: ['Flights', 'Hotels', 'Meals', 'Transport'],
-        },
-        type: Object,
+        description: 'Overview details of the package',
+        default: { packageOverView: '', packageInclude: [] },
     }),
+    (0, class_validator_1.IsObject)(),
     __metadata("design:type", Object)
 ], CreateTourPackageDto.prototype, "overView", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'Main images associated with the package.',
-        example: ['image1.jpg', 'image2.jpg'],
-        type: [String],
-    }),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], CreateTourPackageDto.prototype, "mainImage", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'List of places included in the tour package.',
-        example: ['Mount Everest Base Camp', 'Kathmandu', 'Pokhara'],
-        type: [String],
-    }),
-    (0, class_validator_1.IsArray)(),
-    __metadata("design:type", Array)
-], CreateTourPackageDto.prototype, "visitPlace", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Tour plan schedule for the package (e.g., day-by-day itinerary).',
-        example: {
-            day1: 'Arrive in Kathmandu and get settled.',
-            day2: 'Fly to Pokhara and begin trekking.',
-        },
-        type: Object,
+        description: 'Tour plan details',
+        default: {},
     }),
     (0, class_validator_1.IsObject)(),
     __metadata("design:type", Object)
 ], CreateTourPackageDto.prototype, "tourPlan", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'Additional policies and information regarding the tour package.',
-        example: {
-            inclusion: ['Guided tour', 'Meals provided', 'Trekking equipment'],
-            exclusion: ['Personal expenses', 'Travel insurance'],
-            bookingPolicy: 'Booking should be made at least 30 days in advance.',
-            refundPolicy: '50% refund if canceled within 7 days of booking.',
-        },
-        type: Object,
+        description: 'Objective details (inclusion, exclusion, booking & refund policies)',
+        default: { inclusion: {}, exclusion: {}, bookingPolicy: {}, refundPolicy: {} },
     }),
     (0, class_validator_1.IsObject)(),
     __metadata("design:type", Object)
 ], CreateTourPackageDto.prototype, "objective", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        description: 'Meta information for SEO purposes, including meta title, keywords, and description.',
-        example: {
-            metaTitle: 'Mountain Adventure Tour',
-            metaKeyword: ['Adventure', 'Trekking', 'Nepal', 'Everest'],
-            metadescription: 'Join our thrilling mountain adventure and explore the beauty of the Himalayas. Trek to Everest Base Camp.',
-        },
-        type: Object,
+        description: 'Meta information for the package (SEO)',
+        default: { metaTitle: '', metaKeyword: [], metadescription: '' },
     }),
     (0, class_validator_1.IsObject)(),
     __metadata("design:type", Object)
 ], CreateTourPackageDto.prototype, "metaInfo", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Introduction details for the tour package (e.g., title, subtitle, pricing).',
-        type: Introduction,
-    }),
-    __metadata("design:type", Introduction)
+    (0, swagger_1.ApiProperty)({ description: 'Introduction information', type: CreateIntroductionDto }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", CreateIntroductionDto)
 ], CreateTourPackageDto.prototype, "introduction", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'List of daily tour plans for the tour package.',
-        type: [TourPlanDto],
-    }),
-    (0, class_validator_1.IsArray)(),
+    (0, swagger_1.ApiProperty)({ description: 'Tour plans related to the package', type: [CreateTourPlanDto] }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], CreateTourPackageDto.prototype, "tourPlans", void 0);
-class TourPackageDto {
-}
-exports.TourPackageDto = TourPackageDto;
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Unique identifier for the tour package.',
-        example: 'PKG12345',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], TourPackageDto.prototype, "packageId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Status of the package (e.g., "Active", "Inactive").',
-        example: 'Active',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], TourPackageDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Type of the tour package (e.g., "Adventure", "Family", "Romantic").',
-        example: 'Adventure',
-        type: String,
-    }),
-    __metadata("design:type", String)
-], TourPackageDto.prototype, "packageType", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'A brief overview of the package.',
-        example: {
-            packageOverView: 'An exciting adventure exploring the wild mountains.',
-            packageInclude: ['Flights', 'Hotels', 'Meals', 'Transport'],
-        },
-        type: Object,
-    }),
-    __metadata("design:type", Object)
-], TourPackageDto.prototype, "overView", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Main images associated with the package.',
-        example: ['image1.jpg', 'image2.jpg'],
-        type: [String],
-    }),
-    __metadata("design:type", Array)
-], TourPackageDto.prototype, "mainImage", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'List of places included in the tour package.',
-        example: ['Mount Everest Base Camp', 'Kathmandu', 'Pokhara'],
-        type: [String],
-    }),
-    __metadata("design:type", Array)
-], TourPackageDto.prototype, "visitPlace", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Tour plan schedule for the package (e.g., day-by-day itinerary).',
-        example: {
-            day1: 'Arrive in Kathmandu and get settled.',
-            day2: 'Fly to Pokhara and begin trekking.',
-        },
-        type: Object,
-    }),
-    __metadata("design:type", Object)
-], TourPackageDto.prototype, "tourPlan", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Additional policies and information regarding the tour package.',
-        example: {
-            inclusion: ['Guided tour', 'Meals provided', 'Trekking equipment'],
-            exclusion: ['Personal expenses', 'Travel insurance'],
-            bookingPolicy: 'Booking should be made at least 30 days in advance.',
-            refundPolicy: '50% refund if canceled within 7 days of booking.',
-        },
-        type: Object,
-    }),
-    __metadata("design:type", Object)
-], TourPackageDto.prototype, "objective", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Meta information for SEO purposes, including meta title, keywords, and description.',
-        example: {
-            metaTitle: 'Mountain Adventure Tour',
-            metaKeyword: ['Adventure', 'Trekking', 'Nepal', 'Everest'],
-            metadescription: 'Join our thrilling mountain adventure and explore the beauty of the Himalayas. Trek to Everest Base Camp.',
-        },
-        type: Object,
-    }),
-    __metadata("design:type", Object)
-], TourPackageDto.prototype, "metaInfo", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'Introduction details for the tour package (e.g., title, subtitle, pricing).',
-        type: Introduction,
-    }),
-    __metadata("design:type", Introduction)
-], TourPackageDto.prototype, "introduction", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({
-        description: 'List of daily tour plans for the tour package.',
-        type: [TourPlanDto],
-    }),
-    __metadata("design:type", Array)
-], TourPackageDto.prototype, "tourPlans", void 0);
 //# sourceMappingURL=tourPackage.dto.js.map

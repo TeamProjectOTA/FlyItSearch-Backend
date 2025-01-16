@@ -3,24 +3,55 @@ import { TourPackage } from './entities/tourPackage.model';
 import { CreateTourPackageDto } from './dto/tourPackage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
+import { Introduction } from './entities/Introduction.model';
+import { TourPlan } from './entities/tourPlan.Model';
 
 @Injectable()
 export class TourPackageService {
   constructor(
     @InjectRepository(TourPackage)
-  private readonly tourPackageRepository: Repository<TourPackage>,) {}
-  async create(createTourPackageDto: CreateTourPackageDto): Promise<TourPackage> {
-  
-    const packageId = `PKG${Math.floor(Math.random() * 1000000)}`;
+  private readonly tourPackageRepository: Repository<TourPackage>,
+  @InjectRepository(Introduction)
+  private readonly introductionRepository: Repository<Introduction>,
+  @InjectRepository(TourPlan)
+  private readonly tourPlanRepository: Repository<TourPlan>,
+) {}
+async create(createTourPackageDto: CreateTourPackageDto): Promise<TourPackage> {
+  const packageId = `PKG${Math.floor(Math.random() * 1000000)}`; 
+  const tourPackage = this.tourPackageRepository.create({
+    packageId, 
+    ...createTourPackageDto, 
+  });
 
-    
-    const newTourPackage = this.tourPackageRepository.create({
-      ...createTourPackageDto,
-      packageId, 
+  const savedTourPackage = await this.tourPackageRepository.save(tourPackage);
+  if (createTourPackageDto.introduction) {
+    const introduction = this.introductionRepository.create({
+      ...createTourPackageDto.introduction,
+      tourPackage: savedTourPackage, 
     });
-
-    
-    return this.tourPackageRepository.save(newTourPackage);
+    await this.introductionRepository.save(introduction);
+  }
+  if (createTourPackageDto.tourPlans && createTourPackageDto.tourPlans.length) {
+    for (const plan of createTourPackageDto.tourPlans) {
+      const tourPlan = this.tourPlanRepository.create({
+        ...plan,
+        tourPackage: savedTourPackage, 
+      });
+      await this.tourPlanRepository.save(tourPlan);
+    }
   }
 
+  return savedTourPackage;
 }
+
+  
+  async findAll(): Promise<any> {
+    return this.tourPackageRepository.find(
+      {
+      relations: ['introduction', 'tourPlans','mainImage','visitPlaceImage'], 
+    }
+  );
+  }
+}
+
+

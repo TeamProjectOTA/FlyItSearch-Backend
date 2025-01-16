@@ -1,5 +1,7 @@
 import { Introduction } from './Introduction.model';
 import { TourPlan } from './tourPlan.Model';
+import { VisitPlaceImage } from './visitPlaceImage.model';
+import { MainImage } from './mainImage.model';
 export declare class TourPackage {
     id: number;
     packageId: string;
@@ -9,8 +11,6 @@ export declare class TourPackage {
         packageOverView: string;
         packageInclude: string[];
     };
-    mainImage: string[];
-    visitPlace: string[];
     tourPlan: any;
     objective: {
         inclusion: any;
@@ -25,4 +25,6 @@ export declare class TourPackage {
     };
     introduction: Introduction;
     tourPlans: TourPlan[];
+    visitPlaceImage: VisitPlaceImage[];
+    mainImage: MainImage[];
 }

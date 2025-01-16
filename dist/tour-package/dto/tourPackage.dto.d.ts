@@ -1,4 +1,8 @@
-export declare class Introduction {
+declare class CreateTourPlanDto {
+    title: string;
+    plan: string;
+}
+declare class CreateIntroductionDto {
     mainTitle: string;
     subTitle: string;
     tripType: string;
@@ -14,10 +18,6 @@ export declare class Introduction {
     packagePrice: string;
     packageDiscount?: string;
 }
-export declare class TourPlanDto {
-    title: string;
-    plan: string;
-}
 export declare class CreateTourPackageDto {
     status: string;
     packageType: string;
@@ -25,8 +25,6 @@ export declare class CreateTourPackageDto {
         packageOverView: string;
         packageInclude: string[];
     };
-    mainImage: string[];
-    visitPlace: string[];
     tourPlan: any;
     objective: {
         inclusion: any;
@@ -39,31 +37,7 @@ export declare class CreateTourPackageDto {
         metaKeyword: string[];
         metadescription: string;
     };
-    introduction: Introduction;
-    tourPlans: TourPlanDto[];
+    introduction: CreateIntroductionDto;
+    tourPlans: CreateTourPlanDto[];
 }
-export declare class TourPackageDto {
-    packageId: string;
-    status: string;
-    packageType: string;
-    overView: {
-        packageOverView: string;
-        packageInclude: string[];
-    };
-    mainImage: string[];
-    visitPlace: string[];
-    tourPlan: any;
-    objective: {
-        inclusion: any;
-        exclusion: any;
-        bookingPolicy: any;
-        refundPolicy: any;
-    };
-    metaInfo: {
-        metaTitle: string;
-        metaKeyword: string[];
-        metadescription: string;
-    };
-    introduction: Introduction;
-    tourPlans: TourPlanDto[];
-}
+export {};

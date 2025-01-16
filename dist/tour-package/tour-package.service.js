@@ -17,23 +17,53 @@ const common_1 = require("@nestjs/common");
 const tourPackage_model_1 = require("./entities/tourPackage.model");
 const typeorm_1 = require("@nestjs/typeorm");
 const Repository_1 = require("typeorm/repository/Repository");
+const Introduction_model_1 = require("./entities/Introduction.model");
+const tourPlan_Model_1 = require("./entities/tourPlan.Model");
 let TourPackageService = class TourPackageService {
-    constructor(tourPackageRepository) {
+    constructor(tourPackageRepository, introductionRepository, tourPlanRepository) {
         this.tourPackageRepository = tourPackageRepository;
+        this.introductionRepository = introductionRepository;
+        this.tourPlanRepository = tourPlanRepository;
     }
     async create(createTourPackageDto) {
         const packageId = `PKG${Math.floor(Math.random() * 1000000)}`;
-        const newTourPackage = this.tourPackageRepository.create({
-            ...createTourPackageDto,
+        const tourPackage = this.tourPackageRepository.create({
             packageId,
+            ...createTourPackageDto,
         });
-        return this.tourPackageRepository.save(newTourPackage);
+        const savedTourPackage = await this.tourPackageRepository.save(tourPackage);
+        if (createTourPackageDto.introduction) {
+            const introduction = this.introductionRepository.create({
+                ...createTourPackageDto.introduction,
+                tourPackage: savedTourPackage,
+            });
+            await this.introductionRepository.save(introduction);
+        }
+        if (createTourPackageDto.tourPlans && createTourPackageDto.tourPlans.length) {
+            for (const plan of createTourPackageDto.tourPlans) {
+                const tourPlan = this.tourPlanRepository.create({
+                    ...plan,
+                    tourPackage: savedTourPackage,
+                });
+                await this.tourPlanRepository.save(tourPlan);
+            }
+        }
+        return savedTourPackage;
+    }
+    async findAll() {
+        return this.tourPackageRepository.find({
+            relations: ['introduction', 'tourPlans', 'mainImage', 'visitPlaceImage'],
+        });
     }
 };
 exports.TourPackageService = TourPackageService;
 exports.TourPackageService = TourPackageService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(tourPackage_model_1.TourPackage)),
-    __metadata("design:paramtypes", [Repository_1.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(Introduction_model_1.Introduction)),
+    __param(2, (0, typeorm_1.InjectRepository)(tourPlan_Model_1.TourPlan)),
+    __metadata("design:paramtypes", [Repository_1.Repository,
+        Repository_1.Repository,
+        Repository_1.Repository])
 ], TourPackageService);
 //# sourceMappingURL=tour-package.service.js.map

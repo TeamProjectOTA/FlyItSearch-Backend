@@ -7,6 +7,7 @@ import { User } from 'src/user/entities/user.entity';
 import { UserModule } from 'src/user/user.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { BookingSave } from 'src/book/booking.model';
+import { DoSpacesServicerovider } from './upload.provider.service';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { BookingSave } from 'src/book/booking.model';
     AuthModule,
   ],
   controllers: [UploadsController],
-  providers: [UploadsService],
+  providers: [UploadsService,DoSpacesServicerovider],
+  exports:[DoSpacesServicerovider]
 })
 export class UploadsModule {}

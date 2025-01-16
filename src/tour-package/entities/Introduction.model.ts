@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import { TourPackage } from './tourPackage.model';
 
 
-@Entity()
+@Entity('introduction')
 export class Introduction {
   @PrimaryGeneratedColumn()
   id: number;
@@ -48,8 +48,7 @@ export class Introduction {
 
   @Column()
   packageDiscount?: string;
-
-  // One-to-One relation with TourPackage
-  @OneToOne(() => TourPackage, (tourPackage) => tourPackage.introduction)
+  @OneToOne(() => TourPackage, (tourPackage) => tourPackage.introduction,{onDelete: 'CASCADE'})
+  @JoinColumn()
   tourPackage: TourPackage;
 }

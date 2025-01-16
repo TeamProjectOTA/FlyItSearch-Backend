@@ -4,10 +4,15 @@ export declare class DurationCostDto {
     duration: string;
     maximumStay: string;
     processingTime: string;
+    interview: string;
+    embassyFee: string;
+    agentFee: string;
+    serviceCharge: string;
+    processingFee: string;
 }
 export declare class VisaRequiredDocumentsDto {
     profession: string;
-    documents: any[];
+    documents: any;
     exceptionalCase: string;
     note: string;
 }
@@ -18,5 +23,5 @@ export declare class VisaAllDto {
     visaType: string;
     cost: number;
     durationCosts?: DurationCostDto[];
-    visaRequiredDocuments?: VisaRequiredDocumentsDto[];
+    visaRequiredDocuments?: VisaRequiredDocumentsDto;
 }

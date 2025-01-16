@@ -40,6 +40,26 @@ __decorate([
     __metadata("design:type", String)
 ], DurationCost.prototype, "processingTime", void 0);
 __decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DurationCost.prototype, "interview", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DurationCost.prototype, "embassyFee", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DurationCost.prototype, "agentFee", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DurationCost.prototype, "serviceCharge", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], DurationCost.prototype, "processingFee", void 0);
+__decorate([
     (0, typeorm_1.ManyToOne)(() => visa_entity_1.Visa, visa => visa.durationCosts),
     __metadata("design:type", visa_entity_1.Visa)
 ], DurationCost.prototype, "visa", void 0);

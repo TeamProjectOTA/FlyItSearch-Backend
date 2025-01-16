@@ -25,25 +25,26 @@ let TourPackageController = class TourPackageController {
     async create(createTourPackageDto) {
         return this.tourPackageService.create(createTourPackageDto);
     }
+    async findAll() {
+        return this.tourPackageService.findAll();
+    }
 };
 exports.TourPackageController = TourPackageController;
 __decorate([
     (0, common_1.Post)(),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new tour package' }),
-    (0, swagger_1.ApiResponse)({
-        status: 201,
-        description: 'The tour package has been successfully created.',
-        type: tourPackage_model_1.TourPackage,
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: 'Bad Request - Invalid data provided.',
-    }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Tour package successfully created', type: tourPackage_model_1.TourPackage }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [tourPackage_dto_1.CreateTourPackageDto]),
     __metadata("design:returntype", Promise)
 ], TourPackageController.prototype, "create", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], TourPackageController.prototype, "findAll", null);
 exports.TourPackageController = TourPackageController = __decorate([
     (0, swagger_1.ApiTags)('Tour-Package'),
     (0, common_1.Controller)('tour-packages'),

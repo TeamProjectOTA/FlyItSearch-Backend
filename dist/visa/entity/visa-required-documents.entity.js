@@ -24,8 +24,8 @@ __decorate([
     __metadata("design:type", String)
 ], VisaRequiredDocuments.prototype, "profession", void 0);
 __decorate([
-    (0, typeorm_1.Column)('json'),
-    __metadata("design:type", Object)
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
 ], VisaRequiredDocuments.prototype, "documents", void 0);
 __decorate([
     (0, typeorm_1.Column)('text'),
@@ -35,6 +35,14 @@ __decorate([
     (0, typeorm_1.Column)('text'),
     __metadata("design:type", String)
 ], VisaRequiredDocuments.prototype, "note", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], VisaRequiredDocuments.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Date)
+], VisaRequiredDocuments.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => visa_entity_1.Visa, visa => visa.visaRequiredDocuments),
     (0, typeorm_1.JoinColumn)({ name: 'visa_id' }),

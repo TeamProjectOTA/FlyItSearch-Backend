@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,16 +16,12 @@ export class TourPackageController {
 
   @Post()
   @ApiOperation({ summary: 'Create a new tour package' })
-  @ApiResponse({
-    status: 201,
-    description: 'The tour package has been successfully created.',
-    type: TourPackage,
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Bad Request - Invalid data provided.',
-  })
+  @ApiResponse({ status: 201, description: 'Tour package successfully created', type: TourPackage })
   async create(@Body() createTourPackageDto: CreateTourPackageDto): Promise<TourPackage> {
     return this.tourPackageService.create(createTourPackageDto);
+  }
+  @Get()
+  async findAll(): Promise<TourPackage[]> {
+    return this.tourPackageService.findAll();
   }
 }
