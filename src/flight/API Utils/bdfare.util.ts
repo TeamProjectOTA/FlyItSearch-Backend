@@ -61,7 +61,7 @@ export class BfFareUtil {
         const baggageAllowances = offer?.baggageAllowanceList || [];
         const seatsRemaining = offer?.seatsRemaining || 'N/A';
         const carrierName =
-          offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+          offer?.paxSegmentList[0]?.paxSegment?.marketingCarrierInfo?.carrierName ||
           'UnKnown';
 
         let discount: number = Math.ceil(
@@ -78,26 +78,26 @@ export class BfFareUtil {
         const netFare = totalPayable + discount + addAmount;
         const totalBaseFare = fareDetails.reduce(
           (sum, item) =>
-            sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
+            sum + item?.fareDetail?.baseFare * item?.fareDetail?.paxCount,
           0,
         );
         const tax = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount,
+          (sum, item) => sum + item?.fareDetail?.tax * item?.fareDetail?.paxCount,
           0,
         );
         const vat = fareDetails.reduce(
-          (sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount,
+          (sum, item) => sum + item?.fareDetail?.vat * item?.fareDetail?.paxCount,
           0,
         );
         const others = fareDetails.reduce(
           (sum, item) =>
-            sum + item.fareDetail.otherFee * item.fareDetail.paxCount,
+            sum + item?.fareDetail?.otherFee * item?.fareDetail?.paxCount,
           0,
         );
         const service = vat + others;
         let totalFare = totalBaseFare + tax + service || 0;
         const PriceBreakDown = fareDetails.map((fareDetailData) => {
-          const fareDetail = fareDetailData.fareDetail;
+          const fareDetail = fareDetailData?.fareDetail;
           const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
           const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
           const serviceFee =
@@ -124,7 +124,7 @@ export class BfFareUtil {
         }, {});
 
         const baggageDetails = baggageAllowances.map((baggageAllowanceData) => {
-          const allowance = baggageAllowanceData.baggageAllowance;
+          const allowance = baggageAllowanceData?.baggageAllowance;
           return {
             Checkin: allowance?.checkIn,
             Cabin: allowance?.cabin,
@@ -133,30 +133,30 @@ export class BfFareUtil {
 
         const mergedData = PriceBreakDown.map((pax) => {
           const bags = baggageDetails.flatMap((detail) => {
-            const checkinBag = detail.Checkin.find(
-              (bag) => bag.paxType === pax.PaxType,
+            const checkinBag = detail?.Checkin.find(
+              (bag) => bag?.paxType === pax?.PaxType,
             );
-            const cabinBag = detail.Cabin.find(
-              (bag) => bag.paxType === pax.PaxType,
+            const cabinBag = detail?.Cabin.find(
+              (bag) => bag?.paxType === pax?.PaxType,
             );
             return checkinBag && cabinBag
               ? [
                   {
-                    Allowance: checkinBag.allowance,
-                    AllowanceCabin: cabinBag.allowance,
+                    Allowance: checkinBag?.allowance,
+                    AllowanceCabin: cabinBag?.allowance,
                   },
                 ]
               : [];
           });
 
           const farecomponent = paxSegments.flatMap((segment) => {
-            const origin = segment.paxSegment.departure.iatA_LocationCode;
-            const destination = segment.paxSegment.arrival.iatA_LocationCode;
+            const origin = segment?.paxSegment?.departure?.iatA_LocationCode;
+            const destination = segment?.paxSegment?.arrival?.iatA_LocationCode;
             const depdate =
-              segment.paxSegment.departure.aircraftScheduledDateTime;
+              segment?.paxSegment?.departure?.aircraftScheduledDateTime;
             const carrier =
-              segment.paxSegment.marketingCarrierInfo.carrierDesigCode;
-            const rbd = segment.paxSegment.rbd;
+              segment?.paxSegment?.marketingCarrierInfo?.carrierDesigCode;
+            const rbd = segment?.paxSegment?.rbd;
             return [
               {
                 Origin: origin,
@@ -256,7 +256,7 @@ export class BfFareUtil {
               SegmentCode: {
                 bookingCode: segment?.rbd,
                 cabinCode: segment?.cabinType,
-                seatsAvailable: offer.seatsRemaining,
+                seatsAvailable: offer?.seatsRemaining,
               },
             })),
           };
@@ -265,9 +265,9 @@ export class BfFareUtil {
         if (fareType == 'OnHold') {
           FlightItenary.push({
             System: 'API2',
-            SearchId: SearchResponse.traceId, //traceId
+            SearchId: SearchResponse?.traceId, //traceId
             ResultId: offerID, //offerId
-            PassportMadatory: SearchResponse.passportRequired,
+            PassportMadatory: SearchResponse?.passportRequired,
             FareType: fareType,
             Refundable: isRefundable,
             TripType: tripType,
@@ -582,8 +582,8 @@ export class BfFareUtil {
     for (const offerData of orderItem) {
       let TimeLimit: string = null;
       if (bookingStatus == 'IssueInProcess') {
-        if (SearchResponse.paymentTimeLimit) {
-          const lastTicketDate: string = SearchResponse.paymentTimeLimit;
+        if (SearchResponse?.paymentTimeLimit) {
+          const lastTicketDate: string = SearchResponse?.paymentTimeLimit;
           TimeLimit = `${lastTicketDate}`;
         }
       } else {
@@ -608,7 +608,7 @@ export class BfFareUtil {
       const baggageAllowances = offer?.baggageAllowanceList || [];
       const seatsRemaining = offer?.seatsRemaining || 'N/A';
       const carrierName =
-        offer.paxSegmentList[0].paxSegment.marketingCarrierInfo.carrierName ||
+        offer?.paxSegmentList[0]?.paxSegment?.marketingCarrierInfo?.carrierName ||
         'UnKnown';
 
       let discount: number = Math.ceil(
@@ -625,26 +625,26 @@ export class BfFareUtil {
       const netFare = totalPayable + discount + addAmount;
       const totalBaseFare = fareDetails.reduce(
         (sum, item) =>
-          sum + item.fareDetail.baseFare * item.fareDetail.paxCount,
+          sum + item?.fareDetail?.baseFare * item?.fareDetail?.paxCount,
         0,
       );
       const tax = fareDetails.reduce(
-        (sum, item) => sum + item.fareDetail.tax * item.fareDetail.paxCount,
+        (sum, item) => sum + item?.fareDetail?.tax * item?.fareDetail?.paxCount,
         0,
       );
       const vat = fareDetails.reduce(
-        (sum, item) => sum + item.fareDetail.vat * item.fareDetail.paxCount,
+        (sum, item) => sum + item?.fareDetail?.vat * item?.fareDetail?.paxCount,
         0,
       );
       const others = fareDetails.reduce(
         (sum, item) =>
-          sum + item.fareDetail.otherFee * item.fareDetail.paxCount,
+          sum + item?.fareDetail?.otherFee * item?.fareDetail?.paxCount,
         0,
       );
       const service = vat + others;
       let totalFare = totalBaseFare + tax + service || 0;
       const PriceBreakDown = fareDetails.map((fareDetailData) => {
-        const fareDetail = fareDetailData.fareDetail;
+        const fareDetail = fareDetailData?.fareDetail;
         const baseFare = fareDetail?.baseFare * fareDetail?.paxCount || 0;
         const taxes = fareDetail?.tax * fareDetail?.paxCount || 0;
         const serviceFee =
@@ -663,7 +663,7 @@ export class BfFareUtil {
       });
 
       const groupedSegments = paxSegments.reduce((acc, segmentData) => {
-        const segment = segmentData.paxSegment;
+        const segment = segmentData?.paxSegment;
         (acc[segment?.segmentGroup] = acc[segment?.segmentGroup] || []).push(
           segment,
         );
@@ -671,7 +671,7 @@ export class BfFareUtil {
       }, {});
 
       const baggageDetails = baggageAllowances.map((baggageAllowanceData) => {
-        const allowance = baggageAllowanceData.baggageAllowance;
+        const allowance = baggageAllowanceData?.baggageAllowance;
         return {
           Checkin: allowance?.checkIn,
           Cabin: allowance?.cabin,
@@ -680,30 +680,30 @@ export class BfFareUtil {
 
       const mergedData = PriceBreakDown.map((pax) => {
         const bags = baggageDetails.flatMap((detail) => {
-          const checkinBag = detail.Checkin.find(
-            (bag) => bag.paxType === pax.PaxType,
+          const checkinBag = detail?.Checkin?.find(
+            (bag) => bag?.paxType === pax?.PaxType,
           );
-          const cabinBag = detail.Cabin.find(
-            (bag) => bag.paxType === pax.PaxType,
+          const cabinBag = detail?.Cabin.find(
+            (bag) => bag?.paxType === pax?.PaxType,
           );
           return checkinBag && cabinBag
             ? [
                 {
-                  Allowance: checkinBag.allowance,
-                  AllowanceCabin: cabinBag.allowance,
+                  Allowance: checkinBag?.allowance,
+                  AllowanceCabin: cabinBag?.allowance,
                 },
               ]
             : [];
         });
 
         const farecomponent = paxSegments.flatMap((segment) => {
-          const origin = segment.paxSegment.departure.iatA_LocationCode;
-          const destination = segment.paxSegment.arrival.iatA_LocationCode;
+          const origin = segment?.paxSegment?.departure?.iatA_LocationCode;
+          const destination = segment?.paxSegment?.arrival?.iatA_LocationCode;
           const depdate =
-            segment.paxSegment.departure.aircraftScheduledDateTime;
+            segment?.paxSegment?.departure?.aircraftScheduledDateTime;
           const carrier =
-            segment.paxSegment.marketingCarrierInfo.carrierDesigCode;
-          const rbd = segment.paxSegment.rbd;
+            segment?.paxSegment?.marketingCarrierInfo?.carrierDesigCode;
+          const rbd = segment?.paxSegment?.rbd;
           return [
             {
               Origin: origin,
@@ -781,15 +781,15 @@ export class BfFareUtil {
               '',
             ),
 
-            DepAirPort: departureLocations[index].name,
-            DepLocation: `${departureLocations[index].location}`,
+            DepAirPort: departureLocations[index]?.name,
+            DepLocation: `${departureLocations[index]?.location}`,
             ArrTo: segment?.arrival?.iatA_LocationCode,
             ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
               'Z',
               '',
             ),
-            ArrAirPort: arivalLocations[index].name,
-            ArrLocation: `${arivalLocations[index].location}`,
+            ArrAirPort: arivalLocations[index]?.name,
+            ArrLocation: `${arivalLocations[index]?.location}`,
             CabinClass: segment?.cabinType,
             Duration: segment?.duration,
             AircraftTypeNameIatA:
@@ -831,16 +831,16 @@ export class BfFareUtil {
         FFAirline: null,
         FFNumber: '',
         Ticket: pax?.ticketDocument?.ticketDocNbr
-          ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }]
+          ? [{ TicketNo: pax?.ticketDocument?.ticketDocNbr }]
           : null,
       }));
       FlightItenary.push({
         System: 'API2',
-        SearchId: SearchResponse.traceId, //traceId
+        SearchId: SearchResponse?.traceId, //traceId
         BookingId: fisId,
         BookingDate: bookingDate,
         BookingStatus: bookingStatus,
-        PassportMadatory: SearchResponse.passportRequired,
+        PassportMadatory: SearchResponse?.passportRequired,
         FareType: fareType,
         Refundable: isRefundable,
         TripType: tripType,
@@ -859,7 +859,7 @@ export class BfFareUtil {
         SeatsRemaining: seatsRemaining,
         PriceBreakDown: mergedData,
         RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
-        SSR: SearchResponse.availableSSR,
+        SSR: SearchResponse?.availableSSR,
         AllLegsInfo: AllLegsInfo,
         PassengerList: passengerList,
       });
@@ -1008,7 +1008,7 @@ export class BfFareUtil {
       }, {});
 
       const baggageDetails = baggageAllowances.map((baggageAllowanceData) => {
-        const allowance = baggageAllowanceData.baggageAllowance;
+        const allowance = baggageAllowanceData?.baggageAllowance;
         return {
           Checkin: allowance?.checkIn,
           Cabin: allowance?.cabin,
@@ -1017,30 +1017,30 @@ export class BfFareUtil {
 
       const mergedData = PriceBreakDown.map((pax) => {
         const bags = baggageDetails.flatMap((detail) => {
-          const checkinBag = detail.Checkin.find(
-            (bag) => bag.paxType === pax.PaxType,
+          const checkinBag = detail?.Checkin?.find(
+            (bag) => bag?.paxType === pax?.PaxType,
           );
-          const cabinBag = detail.Cabin.find(
-            (bag) => bag.paxType === pax.PaxType,
+          const cabinBag = detail?.Cabin?.find(
+            (bag) => bag?.paxType === pax?.PaxType,
           );
           return checkinBag && cabinBag
             ? [
                 {
-                  Allowance: checkinBag.allowance,
-                  AllowanceCabin: cabinBag.allowance,
+                  Allowance: checkinBag?.allowance,
+                  AllowanceCabin: cabinBag?.allowance,
                 },
               ]
             : [];
         });
 
         const farecomponent = paxSegments.flatMap((segment) => {
-          const origin = segment.paxSegment.departure.iatA_LocationCode;
-          const destination = segment.paxSegment.arrival.iatA_LocationCode;
+          const origin = segment?.paxSegment?.departure?.iatA_LocationCode;
+          const destination = segment?.paxSegment?.arrival?.iatA_LocationCode;
           const depdate =
-            segment.paxSegment.departure.aircraftScheduledDateTime;
+            segment?.paxSegment?.departure?.aircraftScheduledDateTime;
           const carrier =
-            segment.paxSegment.marketingCarrierInfo.carrierDesigCode;
-          const rbd = segment.paxSegment.rbd;
+            segment?.paxSegment?.marketingCarrierInfo?.carrierDesigCode;
+          const rbd = segment?.paxSegment?.rbd;
           return [
             {
               Origin: origin,
@@ -1118,15 +1118,15 @@ export class BfFareUtil {
               '',
             ),
 
-            DepAirPort: departureLocations[index].name,
-            DepLocation: `${departureLocations[index].location}`,
+            DepAirPort: departureLocations[index]?.name,
+            DepLocation: `${departureLocations[index]?.location}`,
             ArrTo: segment?.arrival?.iatA_LocationCode,
             ArrTime: segment?.arrival?.aircraftScheduledDateTime.replace(
               'Z',
               '',
             ),
-            ArrAirPort: arivalLocations[index].name,
-            ArrLocation: `${arivalLocations[index].location}`,
+            ArrAirPort: arivalLocations[index]?.name,
+            ArrLocation: `${arivalLocations[index]?.location}`,
             CabinClass: segment?.cabinType,
             Duration: segment?.duration,
             AircraftTypeNameIatA:
@@ -1140,7 +1140,7 @@ export class BfFareUtil {
             SegmentCode: {
               bookingCode: segment?.rbd,
               cabinCode: segment?.cabinType,
-              seatsAvailable: offer.seatsRemaining,
+              seatsAvailable: offer?.seatsRemaining,
             },
           })),
         };
@@ -1167,14 +1167,14 @@ export class BfFareUtil {
         FFAirline: null,
         FFNumber: '',
         Ticket: pax?.ticketDocument?.ticketDocNbr
-          ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }]
+          ? [{ TicketNo: pax?.ticketDocument?.ticketDocNbr }]
           : null,
       }));
       let status: string;
-      if (SearchResponse.orderStatus == 'OnHold') {
+      if (SearchResponse?.orderStatus == 'OnHold') {
         status = 'Booked';
       } else {
-        status = SearchResponse.orderStatus;
+        status = SearchResponse?.orderStatus;
       }
       FlightItenary.push({
         System: 'API2',
