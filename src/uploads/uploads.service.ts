@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   NotFoundException,
@@ -16,6 +18,9 @@ import { v4 as uuidv4 } from 'uuid';
 import * as AWS from 'aws-sdk';
 import { DoSpacesServiceLib } from './upload.provider.service';
 import * as dotenv from "dotenv"
+import { VisitPlaceImage } from 'src/tour-package/entities/visitPlaceImage.model';
+import { MainImage } from 'src/tour-package/entities/mainImage.model';
+import { TourPackage } from 'src/tour-package/entities/tourPackage.model';
 dotenv.config();
 
 @Injectable()
@@ -28,6 +33,12 @@ export class UploadsService {
     private readonly authservice: AuthService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(VisitPlaceImage)
+    private readonly visitPlaceImageRepository:Repository<VisitPlaceImage>,
+    @InjectRepository(MainImage)
+    private readonly mainImageRepository:Repository<VisitPlaceImage>,
+    @InjectRepository(TourPackage)
+      private readonly tourPackageRepository: Repository<TourPackage>,
   ){}
 
   // async create(header: any, file: Express.Multer.File): Promise<any> {
@@ -232,87 +243,66 @@ async create(header: any, file: Express.Multer.File): Promise<any> {
   }
 }
 
+async saveVisitPlaceImages(tourPackageId: number, files: Express.Multer.File[]): Promise<VisitPlaceImage[]> {
+  if (files.length < 1 || files.length > 6) {
+    throw new HttpException('You must upload between 1 to 6 images.', HttpStatus.BAD_REQUEST);
+  }
 
-// async updateTourPackageImages(
-//   tourPackageId: number,
-//   files: Express.Multer.File[],
-// ): Promise<void> {
-//   const tourPackage = await this.tourPackageRepository.findOne({
-//     where: { id: tourPackageId },
-//     relations: ['mainImage'],
-//   });
+  const tourPackage = await this.tourPackageRepository.findOne({
+    where: { id: tourPackageId },
+    relations: ['visitPlaceImage'], // Fetch existing images for the TourPackage
+  });
 
-//   if (!tourPackage) {
-//     throw new NotFoundException('Tour package not found');
-//   }
+  if (!tourPackage) {
+    throw new HttpException('TourPackage not found', HttpStatus.NOT_FOUND);
+  }
 
-//   // Delete existing images from both bucket and database
-//   await this.deleteImagesByTourPackage(tourPackageId);
+  const existingImagesCount = tourPackage.visitPlaceImage.length;
+  const savedImages: VisitPlaceImage[] = [];
 
-//   // Upload new images and save them in the database
-//   if (files && files.length > 0) {
-//     for (const file of files) {
-//       const imageUrl = await this.uploadImageToBucket(file);
-//       const mainImage = this.mainImageRepository.create({
-//         imageUrl,
-//         tourPackage,
-//       });
-//       await this.mainImageRepository.save(mainImage);
-//     }
-//   }
-// }
+  // Upload and save images one at a time
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
 
-// private async deleteImagesByTourPackage(tourPackageId: number): Promise<void> {
-//   const images = await this.mainImageRepository.find({
-//     where: { tourPackage: { id: tourPackageId } },
-//   });
+    // Upload single image
+    const uploadedImageUrl = await this.uploadSingleToDO(file);
 
-//   for (const image of images) {
-//     const imageKey = image.imageUrl.split(process.env.SPACES_BUCKET_NAME + '/')[1];
-//     if (imageKey) {
-//       const params = {
-//         Bucket: process.env.SPACES_BUCKET_NAME,
-//         Key: imageKey,
-//       };
+    // Create a VisitPlaceImage entity
+    const visitPlaceImage = this.visitPlaceImageRepository.create({
+      imageUrl: uploadedImageUrl,
+      index: existingImagesCount + i + 1, // Assign sequential index
+      tourPackage,
+    });
 
-//       try {
-//         // Delete the image from the DigitalOcean Spaces bucket
-//         await this.s3.deleteObject(params).promise();
-//       } catch (err) {
-//         console.error(`Error deleting image from bucket:`, err);
-//         // Continue even if one image fails to delete
-//       }
-//     }
+    // Save the entity to the database
+    const savedImage = await this.visitPlaceImageRepository.save(visitPlaceImage);
 
-//     // Delete the image record from the database
-//     await this.mainImageRepository.delete(image.id);
-//   }
-// }
+    // Add saved image to the result array
+    savedImages.push(savedImage);
+  }
+
+  return savedImages;
+}
+
+private async uploadSingleToDO(file: Express.Multer.File): Promise<string> {
+  const fileName = `tourpackageVisitplaceimage/${Date.now()}-${file.originalname}`;
+  const params = {
+    Bucket: process.env.SPACES_BUCKET_NAME,
+    Key: fileName,
+    Body: file.buffer,
+    ACL: 'public-read',
+    ContentType: file.mimetype,
+  };
+
+  try {
+    const data = await this.s3.upload(params).promise();
+    return `${process.env.CDN_SPACES}/${fileName}`;
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw new HttpException('Error uploading file to DigitalOcean Spaces', HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
 
 
-// private async uploadImageToBucket(file: Express.Multer.File): Promise<string> {
-//   const timestamp = Date.now();
-//   const randomNumber = Math.floor(Math.random() * 1000);
-//   const random = `${timestamp}${randomNumber}`;
-//   const folderName = 'TourPackageImages';
-//   const fileExtension = extname(file.originalname);
-//   const fileName = `${folderName}/${random}-image${fileExtension}`;
-
-//   const params = {
-//     Bucket: process.env.SPACES_BUCKET_NAME,
-//     Key: fileName,
-//     Body: file.buffer,
-//     ACL: 'public-read',
-//     ContentType: file.mimetype,
-//   };
-
-//   try {
-//     const { Location: imageUrl } = await this.s3.upload(params).promise();
-//     return imageUrl;
-//   } catch (err) {
-//     console.error('Error uploading image:', err);
-//     throw new Error('Error uploading image');
-//   }
-// }
 
 }

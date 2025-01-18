@@ -7,6 +7,8 @@ import {
   Headers,
   UseGuards,
   Res,
+  Param,
+  UploadedFiles,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import {
@@ -77,6 +79,33 @@ export class UploadsController {
     }
     return this.uploadsService.uploadImage(file,res);
   }
+
+  @Post('upload/:tourPackageId')
+  @UseInterceptors(FilesInterceptor('images', 6)) // Allow up to 6 files
+  async uploadVisitPlaceImages(
+    @Param('tourPackageId') tourPackageId: number,
+    @UploadedFiles() files: Express.Multer.File[]
+  ) {
+    return this.uploadsService.saveVisitPlaceImages(tourPackageId, files);
+  }
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   // @Post("/test")
   // @UseInterceptors(FileInterceptor('file'))

@@ -21,6 +21,10 @@ __decorate([
 ], VisitPlaceImage.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], VisitPlaceImage.prototype, "index", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], VisitPlaceImage.prototype, "imageUrl", void 0);
 __decorate([

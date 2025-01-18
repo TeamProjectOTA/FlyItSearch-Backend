@@ -25,14 +25,8 @@ export class Introduction {
   @Column()
   journeyEndDate: string;
 
-  @Column()
-  countryName: string;
-
-  @Column()
-  cityName: string;
-
-  @Column()
-  journeyLocation: string;
+  @Column('json', { nullable: true })
+  journeyLocation: any;
 
   @Column()
   totalSeat: string;
@@ -45,9 +39,18 @@ export class Introduction {
 
   @Column()
   packagePrice: string;
+  @Column()
+  withAirFare:boolean;
 
   @Column()
-  packageDiscount?: string;
+  withHotel:boolean
+
+  @Column()
+  packageDiscountType?: string;
+  @Column()
+  packageDiscountAmount?: string;
+
+
   @OneToOne(() => TourPackage, (tourPackage) => tourPackage.introduction,{onDelete: 'CASCADE'})
   @JoinColumn()
   tourPackage: TourPackage;

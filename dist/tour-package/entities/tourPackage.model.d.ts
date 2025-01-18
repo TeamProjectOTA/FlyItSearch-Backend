@@ -23,6 +23,7 @@ export declare class TourPackage {
         metaKeyword: string[];
         metadescription: string;
     };
+    accommodation: any;
     introduction: Introduction;
     tourPlans: TourPlan[];
     visitPlaceImage: VisitPlaceImage[];

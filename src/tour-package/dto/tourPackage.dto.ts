@@ -38,17 +38,10 @@ class CreateIntroductionDto {
   @IsString()
   journeyEndDate: string;
 
-  @ApiProperty({ description: 'Country name', default: '' })
-  @IsString()
-  countryName: string;
-
-  @ApiProperty({ description: 'City name', default: '' })
-  @IsString()
-  cityName: string;
 
   @ApiProperty({ description: 'Journey location (e.g., region)', default: '' })
   @IsString()
-  journeyLocation: string;
+  journeyLocation: string[];
 
   @ApiProperty({ description: 'Total number of seats available for the tour', default: '0' })
   @IsString()

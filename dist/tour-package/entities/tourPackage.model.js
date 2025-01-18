@@ -51,6 +51,10 @@ __decorate([
     __metadata("design:type", Object)
 ], TourPackage.prototype, "metaInfo", void 0);
 __decorate([
+    (0, typeorm_1.Column)('json', { nullable: false }),
+    __metadata("design:type", Object)
+], TourPackage.prototype, "accommodation", void 0);
+__decorate([
     (0, typeorm_1.OneToOne)(() => Introduction_model_1.Introduction, (introduction) => introduction.tourPackage),
     __metadata("design:type", Introduction_model_1.Introduction)
 ], TourPackage.prototype, "introduction", void 0);

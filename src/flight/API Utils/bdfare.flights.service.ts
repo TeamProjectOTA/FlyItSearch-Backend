@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   NotFoundException,
+  RequestTimeoutException,
 } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { BookingIdSave, FlightSearchModel } from '../flight.model';
@@ -238,7 +239,7 @@ export class BDFareService {
   ) {
     //console.log(bookingdata)
     const data = this.bookingDataModification(bookingdata);
-    //return data
+    //  return data
     const OrderSellRequest = {
       method: 'post',
       maxBodyLength: Infinity,
@@ -259,11 +260,11 @@ export class BDFareService {
       },
       data: data,
     };
-
+try{
     const response: AxiosResponse = await axios(OrderSellRequest);
     const response1: AxiosResponse = await axios(OrderCreateRequest);
     // console.log(response1)
-
+// return response.data
     return await this.bdfareUtil.bookingDataTransformer(
       response1.data.response,
       header,
@@ -271,6 +272,11 @@ export class BDFareService {
       personIds,
       userIp,
     );
+  }
+    catch(e){
+      console.log(e)
+      return new RequestTimeoutException()
+    }
   }
 
   async flightRetrieve(

@@ -19,10 +19,6 @@ export class TourPackage {
     packageOverView:string;
     packageInclude:string[];
   };
-  // @Column('json', { nullable: false })
-  // mainImage:string[]
-  // @Column('json', { nullable: false })
-  // visitPlace:string[]
   @Column('json', { nullable: false })
   tourPlan:any
   @Column('json', { nullable: false })
@@ -38,6 +34,10 @@ export class TourPackage {
     metaKeyword:string[]
     metadescription:string
   }
+
+  @Column('json', { nullable: false })
+  accommodation:any
+
   @OneToOne(() => Introduction, (introduction) => introduction.tourPackage)
   introduction: Introduction;
   @OneToMany(() => TourPlan, (tourPlan) => tourPlan.tourPackage, { onDelete: 'CASCADE' })

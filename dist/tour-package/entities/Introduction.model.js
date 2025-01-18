@@ -44,16 +44,8 @@ __decorate([
     __metadata("design:type", String)
 ], Introduction.prototype, "journeyEndDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Introduction.prototype, "countryName", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], Introduction.prototype, "cityName", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)('json', { nullable: true }),
+    __metadata("design:type", Object)
 ], Introduction.prototype, "journeyLocation", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
@@ -73,8 +65,20 @@ __decorate([
 ], Introduction.prototype, "packagePrice", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], Introduction.prototype, "withAirFare", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Boolean)
+], Introduction.prototype, "withHotel", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], Introduction.prototype, "packageDiscount", void 0);
+], Introduction.prototype, "packageDiscountType", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", String)
+], Introduction.prototype, "packageDiscountAmount", void 0);
 __decorate([
     (0, typeorm_1.OneToOne)(() => tourPackage_model_1.TourPackage, (tourPackage) => tourPackage.introduction, { onDelete: 'CASCADE' }),
     (0, typeorm_1.JoinColumn)(),

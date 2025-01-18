@@ -17,12 +17,13 @@ const tourPlan_Model_1 = require("./entities/tourPlan.Model");
 const tourPackage_model_1 = require("./entities/tourPackage.model");
 const visitPlaceImage_model_1 = require("./entities/visitPlaceImage.model");
 const mainImage_model_1 = require("./entities/mainImage.model");
+const uploads_module_1 = require("../uploads/uploads.module");
 let TourPackageModule = class TourPackageModule {
 };
 exports.TourPackageModule = TourPackageModule;
 exports.TourPackageModule = TourPackageModule = __decorate([
     (0, common_1.Module)({
-        imports: [typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, Introduction_model_1.Introduction, tourPlan_Model_1.TourPlan, tourPackage_model_1.TourPackage, visitPlaceImage_model_1.VisitPlaceImage, mainImage_model_1.MainImage])],
+        imports: [typeorm_1.TypeOrmModule.forFeature([admin_entity_1.Admin, Introduction_model_1.Introduction, tourPlan_Model_1.TourPlan, tourPackage_model_1.TourPackage, visitPlaceImage_model_1.VisitPlaceImage, mainImage_model_1.MainImage]), uploads_module_1.UploadsModule],
         controllers: [tour_package_controller_1.TourPackageController],
         providers: [tour_package_service_1.TourPackageService],
     })

@@ -200,9 +200,15 @@ let BDFareService = class BDFareService {
             },
             data: data,
         };
-        const response = await (0, axios_1.default)(OrderSellRequest);
-        const response1 = await (0, axios_1.default)(OrderCreateRequest);
-        return await this.bdfareUtil.bookingDataTransformer(response1.data.response, header, currentTimestamp, personIds, userIp);
+        try {
+            const response = await (0, axios_1.default)(OrderSellRequest);
+            const response1 = await (0, axios_1.default)(OrderCreateRequest);
+            return await this.bdfareUtil.bookingDataTransformer(response1.data.response, header, currentTimestamp, personIds, userIp);
+        }
+        catch (e) {
+            console.log(e);
+            return new common_1.RequestTimeoutException();
+        }
     }
     async flightRetrieve(BookingID, header, userIp) {
         const findBooking = await this.bookingSaveRepository.findOne({

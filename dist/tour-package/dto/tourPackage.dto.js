@@ -57,19 +57,9 @@ __decorate([
     __metadata("design:type", String)
 ], CreateIntroductionDto.prototype, "journeyEndDate", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Country name', default: '' }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateIntroductionDto.prototype, "countryName", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ description: 'City name', default: '' }),
-    (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
-], CreateIntroductionDto.prototype, "cityName", void 0);
-__decorate([
     (0, swagger_1.ApiProperty)({ description: 'Journey location (e.g., region)', default: '' }),
     (0, class_validator_1.IsString)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Array)
 ], CreateIntroductionDto.prototype, "journeyLocation", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ description: 'Total number of seats available for the tour', default: '0' }),

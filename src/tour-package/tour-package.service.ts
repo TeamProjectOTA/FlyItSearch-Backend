@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { TourPackage } from './entities/tourPackage.model';
 import { CreateTourPackageDto } from './dto/tourPackage.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm/repository/Repository';
 import { Introduction } from './entities/Introduction.model';
 import { TourPlan } from './entities/tourPlan.Model';
+import { DoSpacesServiceLib } from 'src/uploads/upload.provider.service';
 
 @Injectable()
 export class TourPackageService {
@@ -15,6 +16,7 @@ export class TourPackageService {
   private readonly introductionRepository: Repository<Introduction>,
   @InjectRepository(TourPlan)
   private readonly tourPlanRepository: Repository<TourPlan>,
+   
 ) {}
 async create(createTourPackageDto: CreateTourPackageDto): Promise<TourPackage> {
   const packageId = `PKG${Math.floor(Math.random() * 1000000)}`; 

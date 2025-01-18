@@ -43,6 +43,9 @@ let UploadsController = class UploadsController {
         }
         return this.uploadsService.uploadImage(file, res);
     }
+    async uploadVisitPlaceImages(tourPackageId, files) {
+        return this.uploadsService.saveVisitPlaceImages(tourPackageId, files);
+    }
 };
 exports.UploadsController = UploadsController;
 __decorate([
@@ -82,6 +85,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, Response]),
     __metadata("design:returntype", Promise)
 ], UploadsController.prototype, "uploadImage", null);
+__decorate([
+    (0, common_1.Post)('upload/:tourPackageId'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images', 6)),
+    __param(0, (0, common_1.Param)('tourPackageId')),
+    __param(1, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Array]),
+    __metadata("design:returntype", Promise)
+], UploadsController.prototype, "uploadVisitPlaceImages", null);
 exports.UploadsController = UploadsController = __decorate([
     (0, swagger_1.ApiTags)('Uploads'),
     (0, common_1.Controller)('upload'),

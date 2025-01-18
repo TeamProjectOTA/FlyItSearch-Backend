@@ -7,13 +7,14 @@ export declare class Introduction {
     journeyDuration: string;
     journeyStartDate: string;
     journeyEndDate: string;
-    countryName: string;
-    cityName: string;
-    journeyLocation: string;
+    journeyLocation: any;
     totalSeat: string;
     minimumAge: string;
     maximumAge: string;
     packagePrice: string;
-    packageDiscount?: string;
+    withAirFare: boolean;
+    withHotel: boolean;
+    packageDiscountType?: string;
+    packageDiscountAmount?: string;
     tourPackage: TourPackage;
 }

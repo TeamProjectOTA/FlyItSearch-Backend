@@ -5,8 +5,13 @@ import { TourPackage } from "./tourPackage.model";
 export class VisitPlaceImage{
     @PrimaryGeneratedColumn()
     id:number
+
+    @Column()
+    index:number
+    
     @Column()
     imageUrl: string
+
     @ManyToOne(() => TourPackage, (tourPackage) => tourPackage.visitPlaceImage)
     tourPackage: TourPackage;
 }

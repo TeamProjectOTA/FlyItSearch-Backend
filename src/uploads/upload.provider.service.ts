@@ -1,4 +1,4 @@
-// index.ts
+
 import * as AWS from 'aws-sdk';
 import { Provider } from '@nestjs/common';
 

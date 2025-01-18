@@ -1148,25 +1148,25 @@ export class BfFareUtil {
       }
       const passengerList = SearchResponse.paxList.map((pax, index) => ({
         Title: pax.individual.title.toUpperCase(),
-        FirstName: pax.individual.givenName,
-        LastName: pax.individual.surname,
-        PaxType: pax.ptc,
-        DateOfBirth: pax.individual.birthdate,
-        Gender: pax.individual.gender,
-        PassportNumber: pax.individual.identityDoc.identityDocID || '',
-        PassportExpiryDate: pax.individual.identityDoc.expiryDate || null,
+        FirstName: pax?.individual?.givenName,
+        LastName: pax?.individual?.surname,
+        PaxType: pax?.ptc,
+        DateOfBirth: pax?.individual?.birthdate,
+        Gender: pax?.individual?.gender,
+        PassportNumber: pax?.individual?.identityDoc?.identityDocID || '',
+        PassportExpiryDate: pax?.individual?.identityDoc?.expiryDate || null,
         PassportNationality:
-          pax.individual.identityDoc.issuingCountryCode || '',
+          pax?.individual?.identityDoc?.issuingCountryCode || '',
         Address1: '',
         Address2: '',
         CountryCode: 'BD',
-        Nationality: pax.individual.nationality,
+        Nationality: pax?.individual?.nationality,
         ContactNumber:
-          '+' + SearchResponse.contactDetail.phoneNumber.replace('-', ''),
-        Email: SearchResponse.contactDetail.emailAddress,
+          '+' + SearchResponse?.contactDetail?.phoneNumber.replace('-', ''),
+        Email: SearchResponse?.contactDetail?.emailAddress,
         FFAirline: null,
         FFNumber: '',
-        Ticket: pax.ticketDocument?.ticketDocNbr
+        Ticket: pax?.ticketDocument?.ticketDocNbr
           ? [{ TicketNo: pax.ticketDocument.ticketDocNbr }]
           : null,
       }));
@@ -1178,10 +1178,10 @@ export class BfFareUtil {
       }
       FlightItenary.push({
         System: 'API2',
-        SearchId: SearchResponse.traceId, //traceId
+        SearchId: SearchResponse?.traceId, //traceId
         BookingId: randomId,
         BookingStatus: status,
-        PassportMadatory: SearchResponse.passportRequired,
+        PassportMadatory: SearchResponse?.passportRequired,
         FareType: fareType,
         Refundable: isRefundable,
         BookingDate: currentTimestamp || null,
@@ -1200,7 +1200,7 @@ export class BfFareUtil {
         SeatsRemaining: seatsRemaining,
         PriceBreakDown: mergedData,
         RePriceStatus: SearchResponse?.offerChangeInfo?.typeOfChange,
-        SSR: SearchResponse.availableSSR,
+        SSR: SearchResponse?.availableSSR,
         AllLegsInfo: AllLegsInfo,
         PassengerList: passengerList,
       });
@@ -1211,12 +1211,12 @@ export class BfFareUtil {
     // const sslpaymentLink = await this.paymentService
     //   .dataModification(FlightItenary, header)
     //   .catch(() => null);
-    const surjopay = await this.paymentService.formdata(
-      FlightItenary,
-      header,
-      userIp,
-    );
-    const bkash = await this.paymentService.bkashInit(FlightItenary, header);
+    const surjopay = await this.paymentService
+        .formdata(FlightItenary, header, userIp)
+        .catch(() => 'NA');
+      const bkash = await this.paymentService
+        .bkashInit(FlightItenary, header)
+        .catch(() => 'NA');
 
     // const price = FlightItenary?.[0]?.NetFare || 0;
 

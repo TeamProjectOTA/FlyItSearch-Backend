@@ -9,9 +9,7 @@ declare class CreateIntroductionDto {
     journeyDuration: string;
     journeyStartDate: string;
     journeyEndDate: string;
-    countryName: string;
-    cityName: string;
-    journeyLocation: string;
+    journeyLocation: string[];
     totalSeat: string;
     minimumAge: string;
     maximumAge: string;

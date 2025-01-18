@@ -24,13 +24,19 @@ const uuid_1 = require("uuid");
 const AWS = require("aws-sdk");
 const upload_provider_service_1 = require("./upload.provider.service");
 const dotenv = require("dotenv");
+const visitPlaceImage_model_1 = require("../tour-package/entities/visitPlaceImage.model");
+const mainImage_model_1 = require("../tour-package/entities/mainImage.model");
+const tourPackage_model_1 = require("../tour-package/entities/tourPackage.model");
 dotenv.config();
 let UploadsService = class UploadsService {
-    constructor(s3, profilePictureRepository, authservice, userRepository) {
+    constructor(s3, profilePictureRepository, authservice, userRepository, visitPlaceImageRepository, mainImageRepository, tourPackageRepository) {
         this.s3 = s3;
         this.profilePictureRepository = profilePictureRepository;
         this.authservice = authservice;
         this.userRepository = userRepository;
+        this.visitPlaceImageRepository = visitPlaceImageRepository;
+        this.mainImageRepository = mainImageRepository;
+        this.tourPackageRepository = tourPackageRepository;
     }
     async uploadImage(file, res) {
         const timestamp = Date.now();
@@ -113,6 +119,50 @@ let UploadsService = class UploadsService {
             throw new common_1.BadRequestException('Failed to upload and save profile picture.' + error);
         }
     }
+    async saveVisitPlaceImages(tourPackageId, files) {
+        if (files.length < 1 || files.length > 6) {
+            throw new common_1.HttpException('You must upload between 1 to 6 images.', common_1.HttpStatus.BAD_REQUEST);
+        }
+        const tourPackage = await this.tourPackageRepository.findOne({
+            where: { id: tourPackageId },
+            relations: ['visitPlaceImage'],
+        });
+        if (!tourPackage) {
+            throw new common_1.HttpException('TourPackage not found', common_1.HttpStatus.NOT_FOUND);
+        }
+        const existingImagesCount = tourPackage.visitPlaceImage.length;
+        const savedImages = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const uploadedImageUrl = await this.uploadSingleToDO(file);
+            const visitPlaceImage = this.visitPlaceImageRepository.create({
+                imageUrl: uploadedImageUrl,
+                index: existingImagesCount + i + 1,
+                tourPackage,
+            });
+            const savedImage = await this.visitPlaceImageRepository.save(visitPlaceImage);
+            savedImages.push(savedImage);
+        }
+        return savedImages;
+    }
+    async uploadSingleToDO(file) {
+        const fileName = `tourpackageVisitplaceimage/${Date.now()}-${file.originalname}`;
+        const params = {
+            Bucket: process.env.SPACES_BUCKET_NAME,
+            Key: fileName,
+            Body: file.buffer,
+            ACL: 'public-read',
+            ContentType: file.mimetype,
+        };
+        try {
+            const data = await this.s3.upload(params).promise();
+            return `${process.env.CDN_SPACES}/${fileName}`;
+        }
+        catch (error) {
+            console.error('Error uploading file:', error);
+            throw new common_1.HttpException('Error uploading file to DigitalOcean Spaces', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 };
 exports.UploadsService = UploadsService;
 exports.UploadsService = UploadsService = __decorate([
@@ -120,8 +170,14 @@ exports.UploadsService = UploadsService = __decorate([
     __param(0, (0, common_1.Inject)(upload_provider_service_1.DoSpacesServiceLib)),
     __param(1, (0, typeorm_1.InjectRepository)(uploads_model_1.ProfilePicture)),
     __param(3, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
+    __param(4, (0, typeorm_1.InjectRepository)(visitPlaceImage_model_1.VisitPlaceImage)),
+    __param(5, (0, typeorm_1.InjectRepository)(mainImage_model_1.MainImage)),
+    __param(6, (0, typeorm_1.InjectRepository)(tourPackage_model_1.TourPackage)),
     __metadata("design:paramtypes", [AWS.S3, typeorm_2.Repository,
         auth_service_1.AuthService,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository])
 ], UploadsService);
 //# sourceMappingURL=uploads.service.js.map

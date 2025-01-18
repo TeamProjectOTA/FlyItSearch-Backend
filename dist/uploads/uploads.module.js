@@ -17,13 +17,16 @@ const user_module_1 = require("../user/user.module");
 const auth_module_1 = require("../auth/auth.module");
 const booking_model_1 = require("../book/booking.model");
 const upload_provider_service_1 = require("./upload.provider.service");
+const visitPlaceImage_model_1 = require("../tour-package/entities/visitPlaceImage.model");
+const mainImage_model_1 = require("../tour-package/entities/mainImage.model");
+const tourPackage_model_1 = require("../tour-package/entities/tourPackage.model");
 let UploadsModule = class UploadsModule {
 };
 exports.UploadsModule = UploadsModule;
 exports.UploadsModule = UploadsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([uploads_model_1.ProfilePicture, user_entity_1.User, booking_model_1.BookingSave]),
+            typeorm_1.TypeOrmModule.forFeature([uploads_model_1.ProfilePicture, user_entity_1.User, booking_model_1.BookingSave, visitPlaceImage_model_1.VisitPlaceImage, mainImage_model_1.MainImage, tourPackage_model_1.TourPackage]),
             user_module_1.UserModule,
             auth_module_1.AuthModule,
         ],
