@@ -132,9 +132,13 @@ let UploadsService = class UploadsService {
         }
         const existingImagesCount = tourPackage.visitPlaceImage.length;
         const savedImages = [];
+        const packageId = tourPackage.packageId;
+        if (existingImagesCount > 6) {
+            throw new common_1.ConflictException('You Can not add more than 6 picture to a tourpackage VisitPlaceImage');
+        }
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const uploadedImageUrl = await this.uploadSingleToDO(file);
+            const uploadedImageUrl = await this.uploadSingleToDO(packageId, file);
             const visitPlaceImage = this.visitPlaceImageRepository.create({
                 imageUrl: uploadedImageUrl,
                 index: existingImagesCount + i + 1,
@@ -145,22 +149,210 @@ let UploadsService = class UploadsService {
         }
         return savedImages;
     }
-    async uploadSingleToDO(file) {
-        const fileName = `tourpackageVisitplaceimage/${Date.now()}-${file.originalname}`;
+    async uploadSingleToDO(packageId, file) {
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const folderName = 'tourpackage/Visitplaceimage';
+        const filename = `${folderName}/${packageId}-visitPlace-${(0, uuid_1.v4)()}${fileExtension}`;
         const params = {
-            Bucket: process.env.SPACES_BUCKET_NAME,
-            Key: fileName,
+            Bucket: process.env.BUCKET_NAME,
+            Key: filename,
             Body: file.buffer,
             ACL: 'public-read',
             ContentType: file.mimetype,
         };
         try {
             const data = await this.s3.upload(params).promise();
-            return `${process.env.CDN_SPACES}/${fileName}`;
+            return `${process.env.CDN_SPACES}/${filename}`;
         }
         catch (error) {
             console.error('Error uploading file:', error);
             throw new common_1.HttpException('Error uploading file to DigitalOcean Spaces', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async updateVisitPlaceByTourPackage(id, file) {
+        const visitPlaceImages = await this.visitPlaceImageRepository.findOne({
+            where: { id: id },
+            relations: ['tourPackage']
+        });
+        const tourPackage = visitPlaceImages.tourPackage;
+        if (!visitPlaceImages) {
+            throw new common_1.NotFoundException('No images found for the given tour package');
+        }
+        try {
+            const image = visitPlaceImages;
+            const key = image.imageUrl.split(`${process.env.CDN_SPACES}/`)[1];
+            await this.s3
+                .deleteObject({
+                Bucket: process.env.BUCKET_NAME,
+                Key: key,
+            })
+                .promise();
+            console.log('File deleted from AWS S3:', key);
+        }
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to delete existing images from AWS S3');
+        }
+        const packageId = tourPackage.packageId;
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const folderName = 'tourpackageVisitplaceimage';
+        const filename = `${folderName}/${packageId}-visitPlace-${(0, uuid_1.v4)()}${fileExtension}`;
+        try {
+            const uploadParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: filename,
+                Body: file.buffer,
+                ACL: 'public-read',
+                ContentType: file.mimetype,
+            };
+            await this.s3.upload(uploadParams).promise();
+            const publicUrl = `${process.env.CDN_SPACES}/${filename}`;
+            const image = visitPlaceImages;
+            image.imageUrl = publicUrl;
+            await this.visitPlaceImageRepository.save(image);
+            return {
+                message: 'Image URLs updated successfully for the tour package',
+                images: visitPlaceImages,
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to upload and update image URLs');
+        }
+    }
+    async saveMainImage(tourPackageId, files) {
+        if (files.length < 1 || files.length > 6) {
+            throw new common_1.HttpException('You must upload between 1 to 6 images.', common_1.HttpStatus.BAD_REQUEST);
+        }
+        const tourPackage = await this.tourPackageRepository.findOne({
+            where: { id: tourPackageId },
+            relations: ['mainImage'],
+        });
+        if (!tourPackage) {
+            throw new common_1.HttpException('TourPackage not found', common_1.HttpStatus.NOT_FOUND);
+        }
+        const existingImagesCount = tourPackage.mainImage.length;
+        const savedImages = [];
+        const packageId = tourPackage.packageId;
+        if (existingImagesCount >= 6) {
+            throw new common_1.ConflictException('You Can not add more than 6 picture to a tourpackage VisitPlaceImage');
+        }
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const uploadedImageUrl = await this.singlePictureUploadToMainImage(packageId, file);
+            const mainImage = this.mainImageRepository.create({
+                imageUrl: uploadedImageUrl,
+                index: existingImagesCount + i + 1,
+                tourPackage,
+            });
+            const savedImage = await this.mainImageRepository.save(mainImage);
+            savedImages.push(savedImage);
+        }
+        return savedImages;
+    }
+    async singlePictureUploadToMainImage(packageId, file) {
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const folderName = 'tourpackage/MainImage';
+        const filename = `${folderName}/${packageId}-mainImage-${(0, uuid_1.v4)()}${fileExtension}`;
+        const params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: filename,
+            Body: file.buffer,
+            ACL: 'public-read',
+            ContentType: file.mimetype,
+        };
+        try {
+            const data = await this.s3.upload(params).promise();
+            return `${process.env.CDN_SPACES}/${filename}`;
+        }
+        catch (error) {
+            console.error('Error uploading file:', error);
+            throw new common_1.HttpException('Error uploading file to DigitalOcean Spaces', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    async mainImageUpdateByTourPackage(id, file) {
+        const mainImage = await this.mainImageRepository.findOne({
+            where: { id: id },
+            relations: ['tourPackage']
+        });
+        if (!mainImage) {
+            throw new common_1.NotFoundException('No images found for the given tour package');
+        }
+        const tourPackage = mainImage.tourPackage;
+        try {
+            const image = mainImage;
+            const key = image.imageUrl.split(`${process.env.CDN_SPACES}/`)[1];
+            await this.s3
+                .deleteObject({
+                Bucket: process.env.BUCKET_NAME,
+                Key: key,
+            })
+                .promise();
+        }
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to delete existing images from AWS S3');
+        }
+        const packageId = tourPackage.packageId;
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const folderName = 'tourpackage/MainImage';
+        const filename = `${folderName}/${packageId}-mainImage-${(0, uuid_1.v4)()}${fileExtension}`;
+        try {
+            const uploadParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: filename,
+                Body: file.buffer,
+                ACL: 'public-read',
+                ContentType: file.mimetype,
+            };
+            await this.s3.upload(uploadParams).promise();
+            const publicUrl = `${process.env.CDN_SPACES}/${filename}`;
+            const image = mainImage;
+            image.imageUrl = publicUrl;
+            await this.mainImageRepository.save(image);
+            return {
+                message: 'Image URLs updated successfully for the tour package',
+                images: mainImage,
+            };
+        }
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to upload and update image URLs');
+        }
+    }
+    async uploadImageUpdate(file, existingImageLink) {
+        if (existingImageLink) {
+            const existingFileName = existingImageLink.split('/').pop();
+            const deleteParams = {
+                Bucket: process.env.BUCKET_NAME,
+                Key: existingFileName,
+            };
+            try {
+                await this.s3.deleteObject(deleteParams).promise();
+                console.log('Existing image deleted');
+            }
+            catch (err) {
+                console.error('Error deleting existing image:', err);
+                throw new Error('Error deleting existing image');
+            }
+        }
+        const timestamp = Date.now();
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const random = `${timestamp}${randomNumber}`;
+        const folderName = 'PassportVisa';
+        const fileExtension = (0, path_1.extname)(file.originalname);
+        const fileName = `${folderName}/${random}-image${fileExtension}`;
+        const params = {
+            Bucket: process.env.BUCKET_NAME,
+            Key: fileName,
+            Body: file.buffer,
+            ACL: 'public-read',
+            ContentType: file.mimetype,
+        };
+        try {
+            await this.s3.putObject(params).promise();
+            const url = process.env.CDN_SPACES + '/' + fileName;
+            return { link: url };
+        }
+        catch (err) {
+            console.error('Error uploading file:', err);
+            throw new Error('Error uploading file');
         }
     }
 };

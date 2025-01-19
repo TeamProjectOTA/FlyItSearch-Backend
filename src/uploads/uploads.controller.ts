@@ -9,6 +9,10 @@ import {
   Res,
   Param,
   UploadedFiles,
+  Delete,
+  Query,
+  Patch,
+  Body,
 } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
 import {
@@ -80,17 +84,77 @@ export class UploadsController {
     return this.uploadsService.uploadImage(file,res);
   }
 
-  @Post('upload/:tourPackageId')
-  @UseInterceptors(FilesInterceptor('images', 6)) // Allow up to 6 files
+  @Post('uploadVisitPlace/:tourPackageId')
+  @UseInterceptors(FilesInterceptor('images', 6)) 
   async uploadVisitPlaceImages(
     @Param('tourPackageId') tourPackageId: number,
     @UploadedFiles() files: Express.Multer.File[]
   ) {
     return this.uploadsService.saveVisitPlaceImages(tourPackageId, files);
   }
+  @Patch('updateVisitPlace/:tourPackageId')
+  @UseInterceptors(FileInterceptor('file')) 
+  async patchVisitPlaceImageByTourPackage(
+    @Param('tourPackageId') tourPackageId: number,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<any> {
+    if (!file) {
+      throw new BadRequestException('No file provided for upload.');
+    }
+
+    try {
+      return await this.uploadsService.updateVisitPlaceByTourPackage(tourPackageId, file);
+    } catch (error) {
+      throw new BadRequestException('Failed to update images for the tour package. ' + error.message);
+    }
+  }
+
+  
+  @Post('uploadMainImages/:tourPackageId')
+  @UseInterceptors(FilesInterceptor('images', 6)) 
+  async uploadMainImage(
+    @Param('tourPackageId') tourPackageId: number,
+    @UploadedFiles() files: Express.Multer.File[]
+  ) {
+    if (!files) {
+      throw new BadRequestException('No file provided for upload.');
+    }
+
+    return this.uploadsService.saveMainImage(tourPackageId, files);
+  }
+  @Patch('updateMainImages/:tourPackageId')
+  @UseInterceptors(FileInterceptor('file')) 
+  async updateMainImages(
+    @Param('tourPackageId') tourPackageId: number,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<any> {
+    if (!file) {
+      throw new BadRequestException('No file provided for upload.');
+    }
+
+    try {
+      return await this.uploadsService.mainImageUpdateByTourPackage(tourPackageId, file);
+    } catch (error) {
+      throw new BadRequestException('Failed to update images for the tour package. ' + error.message);
+    }
+  }
+  
   
 
-
+  @Post('upload/update')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImageUpdate(
+    @UploadedFile() file: any, 
+    @Body('existingImageLink') existingImageLink?: string
+  ) {
+    try {
+      console.log(file,existingImageLink)
+      const result = await this.uploadsService.uploadImageUpdate(file, existingImageLink);
+      return result;
+    } catch (error) {
+      return { status: 'error', message: error.message };
+    }
+  }
 
 
 

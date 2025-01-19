@@ -46,6 +46,44 @@ let UploadsController = class UploadsController {
     async uploadVisitPlaceImages(tourPackageId, files) {
         return this.uploadsService.saveVisitPlaceImages(tourPackageId, files);
     }
+    async patchVisitPlaceImageByTourPackage(tourPackageId, file) {
+        if (!file) {
+            throw new common_1.BadRequestException('No file provided for upload.');
+        }
+        try {
+            return await this.uploadsService.updateVisitPlaceByTourPackage(tourPackageId, file);
+        }
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to update images for the tour package. ' + error.message);
+        }
+    }
+    async uploadMainImage(tourPackageId, files) {
+        if (!files) {
+            throw new common_1.BadRequestException('No file provided for upload.');
+        }
+        return this.uploadsService.saveMainImage(tourPackageId, files);
+    }
+    async updateMainImages(tourPackageId, file) {
+        if (!file) {
+            throw new common_1.BadRequestException('No file provided for upload.');
+        }
+        try {
+            return await this.uploadsService.mainImageUpdateByTourPackage(tourPackageId, file);
+        }
+        catch (error) {
+            throw new common_1.BadRequestException('Failed to update images for the tour package. ' + error.message);
+        }
+    }
+    async uploadImageUpdate(file, existingImageLink) {
+        try {
+            console.log(file, existingImageLink);
+            const result = await this.uploadsService.uploadImageUpdate(file, existingImageLink);
+            return result;
+        }
+        catch (error) {
+            return { status: 'error', message: error.message };
+        }
+    }
 };
 exports.UploadsController = UploadsController;
 __decorate([
@@ -86,7 +124,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UploadsController.prototype, "uploadImage", null);
 __decorate([
-    (0, common_1.Post)('upload/:tourPackageId'),
+    (0, common_1.Post)('uploadVisitPlace/:tourPackageId'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images', 6)),
     __param(0, (0, common_1.Param)('tourPackageId')),
     __param(1, (0, common_1.UploadedFiles)()),
@@ -94,6 +132,42 @@ __decorate([
     __metadata("design:paramtypes", [Number, Array]),
     __metadata("design:returntype", Promise)
 ], UploadsController.prototype, "uploadVisitPlaceImages", null);
+__decorate([
+    (0, common_1.Patch)('updateVisitPlace/:tourPackageId'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.Param)('tourPackageId')),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UploadsController.prototype, "patchVisitPlaceImageByTourPackage", null);
+__decorate([
+    (0, common_1.Post)('uploadMainImages/:tourPackageId'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FilesInterceptor)('images', 6)),
+    __param(0, (0, common_1.Param)('tourPackageId')),
+    __param(1, (0, common_1.UploadedFiles)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Array]),
+    __metadata("design:returntype", Promise)
+], UploadsController.prototype, "uploadMainImage", null);
+__decorate([
+    (0, common_1.Patch)('updateMainImages/:tourPackageId'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.Param)('tourPackageId')),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", Promise)
+], UploadsController.prototype, "updateMainImages", null);
+__decorate([
+    (0, common_1.Post)('upload/update'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, common_1.Body)('existingImageLink')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], UploadsController.prototype, "uploadImageUpdate", null);
 exports.UploadsController = UploadsController = __decorate([
     (0, swagger_1.ApiTags)('Uploads'),
     (0, common_1.Controller)('upload'),

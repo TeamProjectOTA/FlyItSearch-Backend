@@ -189,16 +189,14 @@ export class BDFareService {
       //console.log(response)
       //return response.data.response
       if (!response.data.response) {
-        return [];
-      }
+        throw new NotFoundException('Resource not found');
+    }
       return await this.bdfareUtil.afterSerarchDataModifierBdFare(
         response.data.response,
       );
     } catch (error) {
-      console.error('Error calling external API', error);
-      throw new HttpException(
-        'Error calling external API',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      
+      throw new NotFoundException(
       );
     }
   }

@@ -148,13 +148,12 @@ let BDFareService = class BDFareService {
         try {
             const response = await axios_1.default.post(url, transformedData, requestHeader);
             if (!response.data.response) {
-                return [];
+                throw new common_1.NotFoundException('Resource not found');
             }
             return await this.bdfareUtil.afterSerarchDataModifierBdFare(response.data.response);
         }
         catch (error) {
-            console.error('Error calling external API', error);
-            throw new common_1.HttpException('Error calling external API', common_1.HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new common_1.NotFoundException();
         }
     }
     async miniRule(data) {
