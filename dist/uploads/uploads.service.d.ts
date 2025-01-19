@@ -4,6 +4,7 @@ import { User } from 'src/user/entities/user.entity';
 import { AuthService } from 'src/auth/auth.service';
 import * as AWS from 'aws-sdk';
 import { VisitPlaceImage } from 'src/tour-package/entities/visitPlaceImage.model';
+import { MainImage } from 'src/tour-package/entities/mainImage.model';
 import { TourPackage } from 'src/tour-package/entities/tourPackage.model';
 export declare class UploadsService {
     private readonly s3;
@@ -18,4 +19,9 @@ export declare class UploadsService {
     create(header: any, file: Express.Multer.File): Promise<any>;
     saveVisitPlaceImages(tourPackageId: number, files: Express.Multer.File[]): Promise<VisitPlaceImage[]>;
     private uploadSingleToDO;
+    updateVisitPlaceByTourPackage(id: number, file: Express.Multer.File): Promise<any>;
+    saveMainImage(tourPackageId: number, files: Express.Multer.File[]): Promise<MainImage[]>;
+    private singlePictureUploadToMainImage;
+    mainImageUpdateByTourPackage(id: number, file: Express.Multer.File): Promise<any>;
+    uploadImageUpdate(file: any, existingImageLink?: string): Promise<any>;
 }
